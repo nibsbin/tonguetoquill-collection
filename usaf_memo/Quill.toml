@@ -1,0 +1,5 @@
+[Quill]
+name = "usaf_memo"
+backend = "typst"
+glue = "glue.typ"
+template = "usaf_memo.md"
