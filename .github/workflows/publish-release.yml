@@ -1,0 +1,57 @@
+name: Publish Quills to Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'  # Matches semantic versioning tags like v1.0.0, v2.1.3, etc.
+
+permissions:
+  contents: write
+
+jobs:
+  publish-quills:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Find and zip all quills
+        id: zip-quills
+        run: |
+          # Create directory for zipped quills
+          mkdir -p release-artifacts
+          
+          # Initialize manifest file
+          MANIFEST_FILE="release-artifacts/manifest.txt"
+          > "$MANIFEST_FILE"
+          
+          # Find all quill directories (immediate subdirectories of quills/)
+          for quill_dir in quills/*/; do
+            if [ -d "$quill_dir" ]; then
+              # Get the quill name (directory name)
+              quill_name=$(basename "$quill_dir")
+              
+              # Create zip file for the quill
+              zip_file="release-artifacts/${quill_name}.zip"
+              
+              # Zip the quill directory
+              (cd quills && zip -r "../${zip_file}" "${quill_name}")
+              
+              # Add quill name to manifest
+              echo "$quill_name" >> "$MANIFEST_FILE"
+              
+              echo "Zipped: $quill_name"
+            fi
+          done
+          
+          echo "Manifest created with quills:"
+          cat "$MANIFEST_FILE"
+      
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-artifacts/*.zip
+            release-artifacts/manifest.txt
+          fail_on_unmatched_files: true
