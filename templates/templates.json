@@ -1,0 +1,12 @@
+[
+    {
+        "name": "U.S. Air Force Memo",
+        "description": "AFH 33-337 compliant official memorandum for the U.S. Air Force.",
+        "file": "usaf_template.md"
+    },
+    {
+        "name": "U.S. Space Force Memo",
+        "description": "Official memorandum template for the U.S. Space Force.",
+        "file": "ussf_template.md"
+    }
+]
