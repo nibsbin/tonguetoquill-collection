@@ -18,7 +18,8 @@ jobs:
       
       - name: Build release artifacts (zip quills + templates) and manifest
         run: |
-          sh .github/workflows/build_artifacts.sh
+          chmod +x .github/workflows/build_artifacts.sh
+          ./.github/workflows/build_artifacts.sh
       
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
