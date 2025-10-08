@@ -22,9 +22,10 @@ jobs:
           # Create directory for zipped quills
           mkdir -p release-artifacts
           
-          # Initialize manifest file
-          MANIFEST_FILE="release-artifacts/manifest.txt"
-          > "$MANIFEST_FILE"
+          # Initialize JSON manifest file
+          MANIFEST_FILE="release-artifacts/manifest.json"
+          echo '[' > "$MANIFEST_FILE"
+          FIRST_ENTRY=1
           
           # Find all quill directories (immediate subdirectories of quills/)
           for quill_dir in quills/*/; do
@@ -32,14 +33,18 @@ jobs:
               # Get the quill name (directory name)
               quill_name=$(basename "$quill_dir")
               
-              # Create zip file for the quill (prefix with 'quill-' to avoid name collisions)
-              zip_file="release-artifacts/quill-${quill_name}.zip"
+              # Create zip file for the quill (prefix with 'quill__' to avoid name collisions)
+              zip_file="release-artifacts/quill__${quill_name}.zip"
 
               # Zip the quill directory
               (cd quills && zip -r "../${zip_file}" "${quill_name}")
 
-              # Add artifact filename and quill name to manifest
-              echo "${zip_file##*/} : ${quill_name}" >> "$MANIFEST_FILE"
+              # Add artifact filename and quill name to JSON manifest
+              if [ "$FIRST_ENTRY" -eq 0 ]; then
+                echo ',' >> "$MANIFEST_FILE"
+              fi
+              printf '  {"file":"%s","source":"%s"}\n' "${zip_file##*/}" "${quill_name}" >> "$MANIFEST_FILE"
+              FIRST_ENTRY=0
 
               echo "Zipped: ${zip_file##*/}"
             fi
@@ -49,11 +54,18 @@ jobs:
           if [ -d "templates" ]; then
             templates_zip="release-artifacts/templates.zip"
             (cd templates && zip -r "../${templates_zip}" .)
-            echo "${templates_zip##*/} : templates" >> "$MANIFEST_FILE"
+            if [ "$FIRST_ENTRY" -eq 0 ]; then
+              echo ',' >> "$MANIFEST_FILE"
+            fi
+            printf '  {"file":"%s","source":"%s"}\n' "${templates_zip##*/}" "templates" >> "$MANIFEST_FILE"
+            FIRST_ENTRY=0
             echo "Zipped: ${templates_zip##*/}"
           fi
-          
-          echo "Manifest created with quills:"
+
+          # Close JSON array
+          echo ']' >> "$MANIFEST_FILE"
+
+          echo "Manifest created (JSON):"
           cat "$MANIFEST_FILE"
       
       - name: Create Release and Upload Assets
@@ -61,5 +73,5 @@ jobs:
         with:
           files: |
             release-artifacts/*.zip
-            release-artifacts/manifest.txt
+            release-artifacts/manifest.json
           fail_on_unmatched_files: true
