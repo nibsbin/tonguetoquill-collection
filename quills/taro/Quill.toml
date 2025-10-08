@@ -1,0 +1,5 @@
+[Quill]
+name = "taro"
+backend = "typst"
+glue = "glue.typ"
+template = "taro.md"
