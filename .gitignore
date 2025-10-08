@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*~
+
+# Typst / build outputs
+*.pdf
+*.zip
+release-artifacts/
+
+# Secrets and environment
+.env
+*.pem
+*.key
