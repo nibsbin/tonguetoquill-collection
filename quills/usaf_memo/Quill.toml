@@ -5,15 +5,15 @@ glue = "glue.typ"
 example = "usaf_memo.md"
 
 [fields]
-letterhead_title = { description = "Title in letterhead", required = false }
-letterhead_caption = { description = "Caption in letterhead", required = false }
-#letterhead_seal = { description = "Path to seal image", required = false }
-date = { description = "Date of memo (YYYY-MM-DD); defaults to today", required = false }
-memo_for = { description = "To whom the memo is addressed (multiline)"}
-memo_from = { description = "From whom the memo is sent (multiline)" }
-subject = { description = "Subject of the memo"}
-references = { description = "References for the memo (array)"}
-cc = { description = "Carbon copy recipients (array)" }
-distribution = { description = "Distribution list (array)"}
-attachments = { description = "Attachments (array)"}
-signature_block = { description = "Signature block (multiline)"}
+letterhead_title = { description = "Title in letterhead" }
+letterhead_caption = { description = "Caption in letterhead"}
+#letterhead_seal = { description = "Path to seal image"}
+date = { description = "Date of memo (YYYY-MM-DD); defaults to today"}
+memo_for = { description = "To whom the memo is addressed (multiline)", required = true }
+memo_from = { description = "From whom the memo is sent (multiline)", required = true }
+subject = { description = "Subject of the memo", required = true }
+references = { description = "References for the memo (array)", required = false }
+cc = { description = "Carbon copy recipients (array)", required = false }
+distribution = { description = "Distribution list (array)", required = false }
+attachments = { description = "Attachments (array)", required = false }
+signature_block = { description = "Signature block (multiline)", required = true }
