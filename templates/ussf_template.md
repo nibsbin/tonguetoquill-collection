@@ -15,6 +15,7 @@ memo_from:
 subject: Comply without pain -- markdown to official memo
 signature_block:
   - FIRST M. LAST, Rank, USSF
+footer-tag-line: Semper Supra
 ---
 
 Write your paragraphs here. Separate them with two new lines.
