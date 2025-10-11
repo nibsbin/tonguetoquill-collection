@@ -1,5 +1,7 @@
 #import "@preview/tonguetoquill-usaf-memo:0.1.1": official-memorandum, indorsement
 
+#show raw: set text(font: "space mono")
+
 // Generate the official memorandum with validated and processed input
 #show:official-memorandum.with(
   // Letterhead configuration
