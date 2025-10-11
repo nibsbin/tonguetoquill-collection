@@ -39,8 +39,8 @@
   {% endif %}
 
   // Optional footer tag line
-  {% if footer_tag_line is defined %}
-  footer-tag-line: {{ footer_tag_line | String(default="asdf") }},
+  {% if tag_line is defined %}
+  footer-tag-line: {{ tag_line | String }},
   {% endif %}
 
   // Signature block

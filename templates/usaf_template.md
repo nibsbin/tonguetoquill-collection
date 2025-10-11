@@ -13,7 +13,7 @@ memo_from:
 subject: Comply without pain -- markdown to official memo
 signature_block:
   - FIRST M. LAST, Rank, USAF
-footer-tag-line: Aim High
+tag_line: Aim High
 ---
 
 Write your paragraphs here. Separate them with two new lines.
