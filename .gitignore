@@ -8,7 +8,6 @@
 *~
 
 # Typst / build outputs
-*.pdf
 *.zip
 release-artifacts/
 
