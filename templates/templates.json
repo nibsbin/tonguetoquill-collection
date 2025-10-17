@@ -13,5 +13,10 @@
         "name": "Taro Template",
         "description": "Official Taro ice cream template.",
         "file": "taro.md"
+    },
+    {
+        "name": "Fry's Aircrew Qualification Report",
+        "description": "Fry's Aircrew Qualification Report.",
+        "file": "af8_fry.md"
     }
 ]
