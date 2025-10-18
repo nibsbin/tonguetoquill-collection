@@ -2,21 +2,25 @@
     {
         "name": "U.S. Air Force Memo",
         "description": "AFH 33-337 compliant official memorandum for the U.S. Air Force.",
-        "file": "usaf_template.md"
+        "file": "usaf_template.md",
+        "production": true
     },
     {
         "name": "U.S. Space Force Memo",
         "description": "Official memorandum template for the U.S. Space Force.",
-        "file": "ussf_template.md"
+        "file": "ussf_template.md",
+        "production": true
     },
     {
         "name": "Taro Template",
         "description": "Official Taro ice cream template.",
-        "file": "taro.md"
+        "file": "taro.md",
+        "production": false
     },
     {
         "name": "Fry's Aircrew Qualification Report",
         "description": "Fry's Aircrew Qualification Report.",
-        "file": "af8_fry.md"
+        "file": "af8_fry.md",
+        "production": false
     }
 ]
