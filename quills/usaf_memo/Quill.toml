@@ -6,16 +6,16 @@ example_file = "usaf_memo.md"
 description = "Typesetted USAF Official Memorandum"
 
 [fields]
-letterhead_title = { description = "Title in letterhead" , default = "DEPARTMENT OF THE AIR FORCE"}
-letterhead_caption = { description = "Caption in letterhead" , default = "123 Raynor's Raiders"}
-date = { description = "Date of memo (YYYY-MM-DD); defaults to today", default = ""}
-memo_for = { description = "To whom the memo is addressed (multiline)" }
-memo_from = { description = "From whom the memo is sent (multiline)"}
-subject = { description = "Subject of the memo" }
-references = { description = "References for the memo (array)", default = []}
-cc = { description = "Carbon copy recipients (array)" , default = []}
-distribution = { description = "Distribution list (array)" , default = []}
-attachments = { description = "Attachments (array)" , default = []}
-signature_block = { description = "Signature block (multiline)" }
-tag_line = { description = "Tag line at bottom of memo" , default = "Aim High"}
-classification = { description = "Classification level of the memo; e.g. SECRET//TAGS" , default = ""}
+letterhead_title = { description = "Title in letterhead", type = "string", default = "DEPARTMENT OF THE AIR FORCE"}
+letterhead_caption = { description = "Caption lines in letterhead", type = "array", default = ["123 Raynor's Raiders"]}
+date = { description = "Date of memo (YYYY-MM-DD); defaults to today", type = "string", default = ""}
+memo_for = { description = "List of recipients", type = "array"}
+memo_from = { description = "The name, address, etc. of the memorandum sender", type = "array"}
+subject = { description = "Subject of the memo" , type = "string"}
+references = { description = "References for the memo", type = "array", default = []}
+cc = { description = "Carbon copy recipients", type = "array", default = []}
+distribution = { description = "Distribution list", type = "array", default = []}
+attachments = { description = "List of attachments", type = "array", default = []}
+signature_block = { description = "Signature block lines", type = "array"}
+tag_line = { description = "Tag line at bottom of memo", type = "string", default = "Aim High"}
+classification = { description = "Classification level of the memo; e.g. SECRET//TAGS", type = "string", default = ""}
