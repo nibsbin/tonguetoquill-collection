@@ -9,8 +9,8 @@ description = "Typesetted USAF Official Memorandum"
 letterhead_title = { description = "Title in letterhead", type = "string", default = "DEPARTMENT OF THE AIR FORCE"}
 letterhead_caption = { description = "Caption lines in letterhead", type = "array", default = ["123 Raynor's Raiders"]}
 date = { description = "Date of memo (YYYY-MM-DD); defaults to today", type = "string", default = ""}
-memo_for = { description = "List of recipients", type = "array"}
-memo_from = { description = "The name, address, etc. of the memorandum sender", type = "array"}
+memo_for = { description = "List of recipient organization symbols", type = "array"}
+memo_from = { description = "Sender information as array: [ORG/SYMBOL, 'Organization Name', 'Street Address', 'City State ZIP']", type = "array"}
 subject = { description = "Subject of the memo" , type = "string"}
 references = { description = "References for the memo", type = "array", default = []}
 cc = { description = "Carbon copy recipients", type = "array", default = []}
