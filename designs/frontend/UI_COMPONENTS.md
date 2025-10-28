@@ -27,6 +27,10 @@ Component specifications for TongueToQuill, adapted for SvelteKit 5 with mobile 
 
 **Accessibility**: Navigation landmark, ARIA labels, keyboard navigation, focus trap in drawer mode
 
+See ![page design screenshot](visuals/sidebar_expanded.png) and ![sidebar expanded screenshot](visuals/sidebar_expanded.png) for visual references of the sidebar in collapsed and expanded states.
+
+See ![settings popover screenshot](visuals/settings.png) for settings options.
+
 ---
 
 ### TopMenu Component
@@ -42,6 +46,8 @@ Component specifications for TongueToQuill, adapted for SvelteKit 5 with mobile 
 - Minimum 48px height for touch
 
 **Accessibility**: Banner landmark, visible labels or ARIA labels, announced unsaved state
+
+See ![more actions screenshot](visuals/more_actions.png) for visual reference of the top menu and expanded "more actions" popover menu. We should have feature parity.
 
 ---
 
