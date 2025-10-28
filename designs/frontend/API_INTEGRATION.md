@@ -2,756 +2,303 @@
 
 ## Overview
 
-TongueToQuill integrates with a RESTful backend API for authentication, document management, and user profiles. The frontend handles authentication flows, API communication, and error handling while maintaining a responsive user experience.
+TongueToQuill integrates with a RESTful backend API for authentication, document management, and user profiles. The frontend handles API communication, error handling, and state synchronization while maintaining a responsive user experience.
 
 ## API Architecture
 
 ### Base Configuration
 
-```typescript
-// lib/config/api.ts
-export const API_CONFIG = {
-  baseUrl: import.meta.env.PUBLIC_API_URL || 'http://localhost:3000',
-  timeout: 30000, // 30 seconds
-  retryAttempts: 3,
-  retryDelay: 1000 // 1 second
-}
+**API Settings**:
+- Base URL (environment-specific)
+- Timeout configuration (30 seconds default)
+- Retry strategy (3 attempts with exponential backoff)
+- Credentials handling (include cookies)
 
-export const ENDPOINTS = {
-  // Auth
-  login: '/auth/login',
-  logout: '/auth/logout',
-  refresh: '/auth/refresh',
-  me: '/auth/me',
-  
-  // Documents
-  documents: '/api/documents',
-  document: (id: string) => `/api/documents/${id}`,
-  
-  // User
-  profile: '/api/profile',
-  preferences: '/api/preferences'
-} as const
-```
+**Endpoints**:
+- Authentication: `/auth/*`
+- Documents: `/api/documents/*`
+- User: `/api/profile`, `/api/preferences`
 
-### API Client
+### API Client Pattern
 
-```typescript
-// lib/services/api.ts
-import { goto } from '$app/navigation'
-import { API_CONFIG, ENDPOINTS } from '$lib/config/api'
+**Features**:
+- Centralized request handling
+- Automatic error handling
+- Token refresh on 401
+- Request/response interceptors
+- Timeout management
+- Retry logic
 
-interface RequestOptions extends RequestInit {
-  timeout?: number
-  retry?: boolean
-}
+**HTTP Methods**:
+- GET: Fetch resources
+- POST: Create resources
+- PUT: Update resources
+- DELETE: Remove resources
 
-class APIError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public data?: unknown
-  ) {
-    super(message)
-    this.name = 'APIError'
-  }
-}
-
-class APIClient {
-  private baseUrl: string
-  
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl
-  }
-  
-  private async request<T>(
-    endpoint: string,
-    options: RequestOptions = {}
-  ): Promise<T> {
-    const { timeout = API_CONFIG.timeout, retry = true, ...init } = options
-    
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), timeout)
-    
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        ...init,
-        signal: controller.signal,
-        credentials: 'include', // Include cookies
-        headers: {
-          'Content-Type': 'application/json',
-          ...init.headers
-        }
-      })
-      
-      clearTimeout(timeoutId)
-      
-      // Handle authentication errors
-      if (response.status === 401) {
-        // Try to refresh token
-        const refreshed = await this.refreshToken()
-        if (refreshed && retry) {
-          // Retry original request
-          return this.request(endpoint, { ...options, retry: false })
-        } else {
-          // Redirect to login
-          goto('/login')
-          throw new APIError('Unauthorized', 401)
-        }
-      }
-      
-      // Handle other errors
-      if (!response.ok) {
-        const data = await response.json().catch(() => null)
-        throw new APIError(
-          data?.message || 'Request failed',
-          response.status,
-          data
-        )
-      }
-      
-      // Handle empty responses
-      const contentType = response.headers.get('content-type')
-      if (!contentType?.includes('application/json')) {
-        return {} as T
-      }
-      
-      return response.json()
-    } catch (error) {
-      clearTimeout(timeoutId)
-      
-      if (error instanceof APIError) {
-        throw error
-      }
-      
-      if (error.name === 'AbortError') {
-        throw new APIError('Request timeout', 408)
-      }
-      
-      throw new APIError('Network error', 0, error)
-    }
-  }
-  
-  async get<T>(endpoint: string, options?: RequestOptions): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'GET' })
-  }
-  
-  async post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-  }
-  
-  async put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
-    return this.request<T>(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: JSON.stringify(data)
-    })
-  }
-  
-  async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'DELETE' })
-  }
-  
-  private async refreshToken(): Promise<boolean> {
-    try {
-      await this.post(ENDPOINTS.refresh)
-      return true
-    } catch {
-      return false
-    }
-  }
-}
-
-export const api = new APIClient(API_CONFIG.baseUrl)
-```
+**Error Handling**:
+- Network errors
+- Timeout errors
+- HTTP error codes
+- Retry on transient failures
+- Redirect on authentication failure
 
 ## Authentication Integration
 
 ### Login Flow
 
-```typescript
-// lib/services/auth.ts
-import { api } from './api'
-import { ENDPOINTS } from '$lib/config/api'
-import type { User, LoginCredentials } from '$lib/types'
+**Process**:
+1. User submits credentials via form action
+2. Server validates and sets HTTP-only cookie
+3. User redirected to app
+4. Session verified on protected routes
 
-export async function login(credentials: LoginCredentials): Promise<User> {
-  const response = await api.post<{ user: User }>(
-    ENDPOINTS.login,
-    credentials
-  )
-  return response.user
-}
-
-export async function logout(): Promise<void> {
-  await api.post(ENDPOINTS.logout)
-}
-
-export async function getCurrentUser(): Promise<User | null> {
-  try {
-    const response = await api.get<{ user: User }>(ENDPOINTS.me)
-    return response.user
-  } catch (error) {
-    if (error instanceof APIError && error.status === 401) {
-      return null
-    }
-    throw error
-  }
-}
-
-export async function refreshToken(): Promise<boolean> {
-  try {
-    await api.post(ENDPOINTS.refresh)
-    return true
-  } catch {
-    return false
-  }
-}
-```
-
-### Login Component
-
-```svelte
-<!-- routes/(auth)/login/+page.svelte -->
-<script>
-  import { enhance } from '$app/forms'
-  import { goto } from '$app/navigation'
-  import type { ActionData } from './$types'
-  
-  let { form }: { form: ActionData } = $props()
-  let isSubmitting = $state(false)
-</script>
-
-<form 
-  method="POST" 
-  use:enhance={() => {
-    isSubmitting = true
-    
-    return async ({ result, update }) => {
-      isSubmitting = false
-      
-      if (result.type === 'redirect') {
-        goto(result.location)
-      } else {
-        await update()
-      }
-    }
-  }}
->
-  <h1>Login to TongueToQuill</h1>
-  
-  <label for="email">Email</label>
-  <input 
-    id="email"
-    name="email" 
-    type="email" 
-    required 
-    autocomplete="email"
-    value={form?.email || ''}
-  />
-  
-  <label for="password">Password</label>
-  <input 
-    id="password"
-    name="password" 
-    type="password" 
-    required
-    autocomplete="current-password"
-  />
-  
-  {#if form?.error}
-    <p class="error" role="alert">{form.error}</p>
-  {/if}
-  
-  <button disabled={isSubmitting}>
-    {isSubmitting ? 'Logging in...' : 'Login'}
-  </button>
-</form>
-```
-
-### Login Server Action
-
-```typescript
-// routes/(auth)/login/+page.server.ts
-import { fail, redirect } from '@sveltejs/kit'
-import type { Actions } from './$types'
-import { login } from '$lib/services/auth'
-
-export const actions = {
-  default: async ({ request, cookies }) => {
-    const data = await request.formData()
-    const email = data.get('email')
-    const password = data.get('password')
-    
-    if (!email || !password) {
-      return fail(400, { 
-        email,
-        error: 'Email and password are required' 
-      })
-    }
-    
-    try {
-      const user = await login({
-        email: email.toString(),
-        password: password.toString()
-      })
-      
-      // Session cookie is set by backend
-      // Redirect to app
-      throw redirect(303, '/editor')
-    } catch (error) {
-      return fail(401, {
-        email,
-        error: 'Invalid email or password'
-      })
-    }
-  }
-} satisfies Actions
-```
+**Token Management**:
+- JWT stored in HTTP-only cookies
+- Automatic refresh before expiration
+- Logout clears session
+- Failed refresh redirects to login
 
 ### Protected Routes
 
-```typescript
-// routes/(app)/+layout.server.ts
-import type { LayoutServerLoad } from './$types'
-import { redirect } from '@sveltejs/kit'
+**Server-Side Protection**:
+- Verify authentication in server hooks
+- Load user data in layout
+- Redirect if not authenticated
+- Pass user to client via page data
 
-export const load: LayoutServerLoad = async ({ locals }) => {
-  // User is set in hooks.server.ts
-  if (!locals.user) {
-    throw redirect(302, '/login')
-  }
-  
-  return {
-    user: locals.user
-  }
-}
-```
+**Client-Side Behavior**:
+- Access user from page data
+- Handle auth errors gracefully
+- Redirect to login when needed
 
-### Server Hooks
+### Session Management
 
-```typescript
-// hooks.server.ts
-import type { Handle } from '@sveltejs/kit'
-import { getCurrentUser } from '$lib/services/auth'
-
-export const handle: Handle = async ({ event, resolve }) => {
-  // Try to get current user from session
-  try {
-    const user = await getCurrentUser()
-    event.locals.user = user
-  } catch {
-    event.locals.user = null
-  }
-  
-  return resolve(event)
-}
-```
+**Features**:
+- Automatic token refresh
+- Session timeout warnings
+- Ability to extend session
+- Logout on inactivity
 
 ## Document Management
 
 ### Document Service
 
-```typescript
-// lib/services/documents.ts
-import { api } from './api'
-import { ENDPOINTS } from '$lib/config/api'
-import type { Document, CreateDocumentData, UpdateDocumentData } from '$lib/types'
+**Operations**:
+- **List**: Get all user documents
+- **Get**: Fetch single document by ID
+- **Create**: Create new document
+- **Update**: Modify document content
+- **Delete**: Remove document
 
-export async function getDocuments(userId: string): Promise<Document[]> {
-  const response = await api.get<{ documents: Document[] }>(
-    `${ENDPOINTS.documents}?userId=${userId}`
-  )
-  return response.documents
-}
+**Error Handling**:
+- 400: Validation errors
+- 403: Permission denied
+- 404: Document not found
+- 500: Server errors
 
-export async function getDocument(id: string): Promise<Document> {
-  const response = await api.get<{ document: Document }>(
-    ENDPOINTS.document(id)
-  )
-  return response.document
-}
+### CRUD Patterns
 
-export async function createDocument(data: CreateDocumentData): Promise<Document> {
-  const response = await api.post<{ document: Document }>(
-    ENDPOINTS.documents,
-    data
-  )
-  return response.document
-}
+**Loading Documents**: Fetch on page load via load function
 
-export async function updateDocument(
-  id: string,
-  data: UpdateDocumentData
-): Promise<Document> {
-  const response = await api.put<{ document: Document }>(
-    ENDPOINTS.document(id),
-    data
-  )
-  return response.document
-}
+**Creating Documents**: Form action or API call, optimistic UI update
 
-export async function deleteDocument(id: string): Promise<void> {
-  await api.delete(ENDPOINTS.document(id))
-}
-```
+**Updating Documents**: Auto-save with debounce, optimistic updates
 
-### Document CRUD Operations
-
-**Loading Documents**:
-```typescript
-// routes/(app)/documents/+page.server.ts
-import type { PageServerLoad } from './$types'
-import { getDocuments } from '$lib/services/documents'
-
-export const load: PageServerLoad = async ({ locals }) => {
-  const documents = await getDocuments(locals.user.id)
-  
-  return {
-    documents
-  }
-}
-```
-
-**Creating Documents**:
-```typescript
-// routes/(app)/documents/+page.server.ts
-import type { Actions } from './$types'
-import { createDocument } from '$lib/services/documents'
-
-export const actions = {
-  create: async ({ request, locals }) => {
-    const data = await request.formData()
-    const name = data.get('name')
-    
-    const document = await createDocument({
-      name: name.toString(),
-      ownerId: locals.user.id,
-      content: ''
-    })
-    
-    return { success: true, document }
-  }
-} satisfies Actions
-```
-
-**Updating Documents**:
-```typescript
-// routes/(app)/editor/[id]/+page.server.ts
-import type { Actions } from './$types'
-import { updateDocument } from '$lib/services/documents'
-
-export const actions = {
-  save: async ({ params, request, locals }) => {
-    const data = await request.formData()
-    const content = data.get('content')
-    
-    await updateDocument(params.id, {
-      content: content.toString()
-    })
-    
-    return { success: true }
-  }
-} satisfies Actions
-```
+**Deleting Documents**: Confirmation dialog, optimistic removal, rollback on error
 
 ## Real-Time Updates (Optional)
 
 ### WebSocket Connection
 
-```typescript
-// lib/services/websocket.ts
-import { writable } from 'svelte/store'
+**Features**:
+- Real-time collaboration
+- Document change notifications
+- Presence indicators
+- Reconnection on disconnect
 
-interface WSMessage {
-  type: string
-  payload: unknown
-}
-
-class WSClient {
-  private ws: WebSocket | null = null
-  private reconnectAttempts = 0
-  private maxReconnectAttempts = 5
-  
-  public messages = writable<WSMessage[]>([])
-  public connected = writable(false)
-  
-  connect(userId: string) {
-    const wsUrl = import.meta.env.PUBLIC_WS_URL || 'ws://localhost:3000/ws'
-    this.ws = new WebSocket(`${wsUrl}?userId=${userId}`)
-    
-    this.ws.onopen = () => {
-      this.connected.set(true)
-      this.reconnectAttempts = 0
-    }
-    
-    this.ws.onmessage = (event) => {
-      const message = JSON.parse(event.data)
-      this.messages.update(msgs => [...msgs, message])
-    }
-    
-    this.ws.onclose = () => {
-      this.connected.set(false)
-      this.reconnect()
-    }
-    
-    this.ws.onerror = (error) => {
-      console.error('WebSocket error:', error)
-    }
-  }
-  
-  private reconnect() {
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      return
-    }
-    
-    this.reconnectAttempts++
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000)
-    
-    setTimeout(() => {
-      this.connect(userId)
-    }, delay)
-  }
-  
-  send(message: WSMessage) {
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(message))
-    }
-  }
-  
-  disconnect() {
-    this.ws?.close()
-  }
-}
-
-export const wsClient = new WSClient()
-```
+**Connection Management**:
+- Connect on app init
+- Heartbeat to maintain connection
+- Exponential backoff on reconnect
+- Clean disconnect on logout
 
 ## Error Handling
 
-### Error Boundary Component
+### Error Patterns
 
-```svelte
-<!-- lib/components/ErrorBoundary.svelte -->
-<script>
-  import { onMount } from 'svelte'
-  
-  let error = $state<Error | null>(null)
-  
-  onMount(() => {
-    const handleError = (event: ErrorEvent) => {
-      error = event.error
-      event.preventDefault()
-    }
-    
-    window.addEventListener('error', handleError)
-    return () => window.removeEventListener('error', handleError)
-  })
-</script>
+**Network Errors**: Toast notification, retry option
 
-{#if error}
-  <div class="error-boundary">
-    <h2>Something went wrong</h2>
-    <p>{error.message}</p>
-    <button onclick={() => window.location.reload()}>
-      Reload Page
-    </button>
-  </div>
-{:else}
-  <slot />
-{/if}
-```
+**Validation Errors**: Inline form errors, error summary
 
-### API Error Toast
+**Permission Errors**: Redirect or error message
 
-```svelte
-<script>
-  import { toast } from 'svelte-sonner'
-  import { api } from '$lib/services/api'
-  
-  async function handleAPICall() {
-    try {
-      await api.post('/api/documents', { name: 'New Doc' })
-      toast.success('Document created')
-    } catch (error) {
-      if (error instanceof APIError) {
-        if (error.status === 400) {
-          toast.error('Invalid input')
-        } else if (error.status === 403) {
-          toast.error('Permission denied')
-        } else if (error.status === 404) {
-          toast.error('Not found')
-        } else if (error.status === 500) {
-          toast.error('Server error')
-        } else {
-          toast.error('Network error')
-        }
-      } else {
-        toast.error('Unknown error occurred')
-      }
-    }
-  }
-</script>
-```
+**Server Errors**: User-friendly message, error logging
+
+### Error Boundaries
+
+**Page-Level**: Catch load errors, show error page
+
+**Component-Level**: Graceful degradation, fallback UI
+
+**Global Handler**: Catch unhandled errors, log to service
+
+### User Feedback
+
+**Error Toasts**: Brief, actionable error messages
+
+**Inline Errors**: Next to form fields
+
+**Error Pages**: For fatal errors with retry/home options
+
+**Loading States**: Indicate pending operations
 
 ## Optimistic Updates
 
-### Optimistic Document Update
+### Pattern
 
-```svelte
-<script>
-  import { documents } from '$lib/stores/documents'
-  import { updateDocument } from '$lib/services/documents'
-  
-  async function saveDocument(id: string, content: string) {
-    // Optimistic update
-    const originalDocs = $documents
-    documents.updateContent(id, content)
-    documents.markSaved(id)
-    
-    try {
-      // Server update
-      await updateDocument(id, { content })
-    } catch (error) {
-      // Rollback on error
-      documents.set(originalDocs)
-      toast.error('Failed to save document')
-    }
-  }
-</script>
-```
+**Process**:
+1. Update local state immediately
+2. Send request to server
+3. On success: Keep update
+4. On error: Rollback and show error
+
+**Use Cases**:
+- Document content updates
+- Document creation
+- Preference changes
+- Simple toggles
+
+**Benefits**:
+- Instant feedback
+- Better perceived performance
+- Resilient to network latency
 
 ## Data Fetching Patterns
 
 ### Loading States
 
-```svelte
-<script>
-  import { onMount } from 'svelte'
-  
-  let documents = $state<Document[]>([])
-  let isLoading = $state(true)
-  let error = $state<string | null>(null)
-  
-  onMount(async () => {
-    try {
-      documents = await getDocuments(userId)
-    } catch (e) {
-      error = e.message
-    } finally {
-      isLoading = false
-    }
-  })
-</script>
+**States**: Idle, Loading, Success, Error
 
-{#if isLoading}
-  <LoadingSpinner />
-{:else if error}
-  <ErrorMessage message={error} />
-{:else if documents.length === 0}
-  <EmptyState />
-{:else}
-  <DocumentList {documents} />
-{/if}
-```
+**UI Patterns**:
+- Loading: Skeleton or spinner
+- Success: Show data
+- Error: Error message with retry
+- Empty: Empty state message
 
 ### Pagination
 
-```svelte
-<script>
-  let page = $state(1)
-  let documents = $state<Document[]>([])
-  let hasMore = $state(true)
-  
-  async function loadMore() {
-    const response = await api.get(`/api/documents?page=${page}&limit=20`)
-    documents = [...documents, ...response.documents]
-    hasMore = response.hasMore
-    page++
-  }
-</script>
+**Strategies**:
+- Offset-based: Page numbers
+- Cursor-based: Efficient for large datasets
+- Infinite scroll: Load more on scroll
 
-<DocumentList {documents} />
+**Implementation**:
+- Server provides pagination metadata
+- Client tracks current page/cursor
+- Load more on user action or intersection
 
-{#if hasMore}
-  <button onclick={loadMore}>Load More</button>
-{/if}
-```
+### Caching
 
-### Infinite Scroll
-
-```svelte
-<script>
-  import { onMount } from 'svelte'
-  
-  let sentinelEl: HTMLDivElement
-  
-  onMount(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
-        loadMore()
-      }
-    })
-    
-    observer.observe(sentinelEl)
-    
-    return () => observer.disconnect()
-  })
-</script>
-
-<DocumentList {documents} />
-<div bind:this={sentinelEl}></div>
-```
+**Strategies**:
+- In-memory cache for session
+- LocalStorage for persistence
+- IndexedDB for large datasets
+- Cache invalidation on mutations
 
 ## Type Safety
 
 ### API Response Types
 
-```typescript
-// lib/types/api.ts
-export interface Document {
-  id: string
-  name: string
-  content: string
-  ownerId: string
-  createdAt: string
-  updatedAt: string
-}
+**TypeScript Interfaces**:
+- Define types for all API responses
+- Share types between frontend and backend
+- Runtime validation of responses
+- Type-safe error handling
 
-export interface User {
-  id: string
-  email: string
-  firstName: string
-  lastName: string
-  role: 'admin' | 'editor' | 'viewer'
-}
+**Type Generation**:
+- Generate from OpenAPI spec (optional)
+- Manual type definitions
+- Zod schemas for validation
 
-export interface LoginCredentials {
-  email: string
-  password: string
-}
+### Request/Response Validation
 
-export interface CreateDocumentData {
-  name: string
-  ownerId: string
-  content: string
-}
+**Client-Side**: Type checking, basic validation
 
-export interface UpdateDocumentData {
-  name?: string
-  content?: string
-}
-```
+**Server-Side**: Full validation, sanitization, authorization
 
-### Generated Types (Optional)
+**Runtime**: Validate unexpected responses, handle gracefully
 
-```typescript
-// Use openapi-typescript to generate types from OpenAPI spec
-import type { paths } from '$lib/types/generated-api'
+## Performance Optimization
 
-type DocumentsResponse = paths['/api/documents']['get']['responses']['200']['content']['application/json']
-```
+### Request Optimization
+
+**Batching**: Combine multiple requests where possible
+
+**Debouncing**: Delay requests until user pauses
+
+**Caching**: Reuse responses for repeated requests
+
+**Prefetching**: Load likely-needed data in advance
+
+### Response Handling
+
+**Streaming**: Use for large responses
+
+**Compression**: Enable gzip/brotli
+
+**Minimal Payloads**: Request only needed fields
+
+**Pagination**: Load data in chunks
+
+## API Integration Best Practices
+
+### Request Practices
+
+- Always include timeout
+- Set appropriate headers
+- Handle all error cases
+- Log errors for debugging
+- Use HTTPS in production
+
+### Response Practices
+
+- Validate response structure
+- Handle empty responses
+- Parse errors gracefully
+- Update state atomically
+- Show user feedback
+
+### Security Practices
+
+- Never expose tokens to client JavaScript
+- Validate all user input
+- Use CSRF protection
+- Sanitize responses
+- Rate limit requests
+- Monitor for suspicious activity
+
+## Testing Strategies
+
+### API Testing
+
+**Unit Tests**: Mock API responses, test error handling
+
+**Integration Tests**: Test against real/mock server
+
+**E2E Tests**: Full user flows with API
+
+### Error Scenario Testing
+
+- Network failures
+- Timeout errors
+- Server errors
+- Invalid responses
+- Authentication failures
+- Permission errors
+
+### Performance Testing
+
+- Response times
+- Concurrent requests
+- Large payloads
+- Network throttling

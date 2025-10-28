@@ -11,575 +11,259 @@ The TongueToQuill design system provides a consistent visual language across des
 - **Alternative**: Light theme (accessibility, user preference)
 - **Support**: High contrast mode for Section 508 compliance
 
-### Dark Theme Colors
+### Dark Theme
 
-#### Background Layers
-```css
---bg-primary: oklch(0.145 0 0)        /* zinc-900: Main background */
---bg-secondary: oklch(0.188 0 0)      /* zinc-800: Elevated surfaces */
---bg-tertiary: oklch(0.269 0 0)       /* zinc-700: Active/hover states */
---bg-overlay: oklch(0.145 0 / 0.95)   /* Modal/drawer backgrounds */
-```
+**Background Layers**:
+- Primary: zinc-900 (main background)
+- Secondary: zinc-800 (elevated surfaces)
+- Tertiary: zinc-700 (active/hover states)
+- Overlay: zinc-900 with transparency (modals/drawers)
 
-#### Text Colors
-```css
---text-primary: oklch(0.985 0 0)      /* zinc-100: Primary text */
---text-secondary: oklch(0.849 0 0)    /* zinc-300: Secondary text */
---text-tertiary: oklch(0.708 0 0)     /* zinc-400: Muted text */
---text-disabled: oklch(0.536 0 0)     /* zinc-500: Disabled state */
-```
+**Text Colors**:
+- Primary: zinc-100 (main text)
+- Secondary: zinc-300 (secondary text)
+- Tertiary: zinc-400 (muted text)
+- Disabled: zinc-500 (disabled state)
 
-#### Interactive Colors
-```css
---interactive-default: oklch(0.708 0 0)    /* zinc-400: Default buttons */
---interactive-hover: oklch(0.985 0 0)      /* zinc-100: Hover state */
---interactive-active: oklch(0.269 0 0)     /* zinc-700: Active background */
-```
+**Interactive Colors**:
+- Default: zinc-400 (default state)
+- Hover: zinc-100 (hover state)
+- Active: zinc-700 background (active state)
 
-#### Semantic Colors
-```css
---success: oklch(0.65 0.16 145)       /* Green: Success messages */
---error: oklch(0.55 0.22 27)          /* Red: Errors, destructive */
---warning: oklch(0.75 0.15 85)        /* Yellow: Warnings */
---info: oklch(0.60 0.15 250)          /* Blue: Information */
-```
+**Semantic Colors**:
+- Success: Green tones
+- Error: Red tones
+- Warning: Yellow tones
+- Info: Blue tones
 
-#### Brand Color
-```css
---brand-primary: #355e93               /* USAF Blue: Accents */
---brand-hover: #2a4b75                 /* Darker shade for hover */
-```
+**Brand**: USAF Blue (#355e93) for accents and primary actions
 
-### Light Theme Colors
+### Light Theme
 
-#### Background Layers
-```css
---bg-primary: oklch(1.0 0 0)           /* White: Main background */
---bg-secondary: oklch(0.97 0 0)        /* Light gray: Surfaces */
---bg-tertiary: oklch(0.93 0 0)         /* Medium gray: Hover */
---bg-overlay: oklch(1.0 0 / 0.95)      /* Modal backgrounds */
-```
+**Background Layers**:
+- Primary: White
+- Secondary: Light gray
+- Tertiary: Medium gray
+- Overlay: White with transparency
 
-#### Text Colors
-```css
---text-primary: oklch(0.20 0 0)        /* Near black: Primary text */
---text-secondary: oklch(0.35 0 0)      /* Dark gray: Secondary */
---text-tertiary: oklch(0.50 0 0)       /* Medium gray: Muted */
---text-disabled: oklch(0.65 0 0)       /* Light gray: Disabled */
-```
+**Text Colors**:
+- Primary: Near black
+- Secondary: Dark gray
+- Tertiary: Medium gray
+- Disabled: Light gray
 
 ### High Contrast Mode
 
 Activated via user preference or system setting:
-
-```css
-@media (prefers-contrast: high) {
-  --text-primary: #000000 or #FFFFFF
-  --bg-primary: #FFFFFF or #000000
-  /* Ensure 7:1 contrast ratio minimum */
-}
-```
+- Minimum 7:1 contrast ratio
+- Pure black/white backgrounds
+- Bold text and borders
 
 ### Color Usage Guidelines
 
-**Do**:
 - Use semantic colors for status messages
-- Maintain 4.5:1 contrast for normal text
-- Maintain 7:1 contrast for small text in high contrast mode
+- Maintain 4.5:1 contrast minimum for normal text
+- Never rely on color alone for information
 - Test with color blindness simulators
-
-**Don't**:
-- Use color as the only indicator
-- Mix theme colors (stay within theme)
-- Override semantic color meanings
 
 ## Typography
 
-### Font Stack
+### Font Families
 
-#### UI Font: System Stack
-```css
-font-family: -apple-system, BlinkMacSystemFont, 
-             "Segoe UI", Roboto, Oxygen, Ubuntu, 
-             "Helvetica Neue", Arial, sans-serif;
-```
-
-**Benefits**:
-- Native appearance on each platform
-- Optimal rendering
-- No font loading delay
-- Better performance
-
-#### Editor Font: Monospace Stack
-```css
-font-family: "SF Mono", Monaco, "Cascadia Code",
-             "Roboto Mono", Consolas, monospace;
-```
-
-#### Preview Font: Serif Stack
-```css
-font-family: "Crimson Text", Georgia, 
-             "Times New Roman", serif;
-```
+**UI Font**: System stack for native appearance and performance
+**Editor Font**: Monospace stack for code editing
+**Preview Font**: Serif stack for professional document rendering
 
 ### Type Scale
 
-#### Desktop Scale
-```css
---text-xs: 0.75rem      /* 12px - Small labels */
---text-sm: 0.875rem     /* 14px - Secondary text */
---text-base: 1rem       /* 16px - Body text */
---text-lg: 1.125rem     /* 18px - Emphasized text */
---text-xl: 1.25rem      /* 20px - H3 */
---text-2xl: 1.5rem      /* 24px - H2 */
---text-3xl: 1.875rem    /* 30px - H1 */
---text-4xl: 2.25rem     /* 36px - Page titles */
-```
+**Desktop**:
+- Base: 16px
+- Range: 12px (xs) to 36px (4xl)
 
-#### Mobile Scale (Fluid)
-```css
-/* Base size increases slightly on mobile */
-html {
-  font-size: 16px;      /* Mobile base */
-  
-  @media (min-width: 768px) {
-    font-size: 16px;    /* Tablet base */
-  }
-  
-  @media (min-width: 1024px) {
-    font-size: 16px;    /* Desktop base */
-  }
-}
-
-/* Editor specific: prevent zoom on focus */
-textarea, input {
-  font-size: max(16px, 1rem);
-}
-```
+**Mobile**:
+- Base: 16px (prevents zoom on input focus)
+- Fluid scaling for larger devices
 
 ### Font Weights
-```css
---font-normal: 400
---font-medium: 500
---font-semibold: 600
---font-bold: 700
-```
+- Normal: 400
+- Medium: 500
+- Semibold: 600
+- Bold: 700
 
 ### Line Heights
-```css
---leading-tight: 1.25      /* Headings */
---leading-normal: 1.5      /* Body text */
---leading-relaxed: 1.75    /* Long-form content */
-```
+- Tight: 1.25 (headings)
+- Normal: 1.5 (body text)
+- Relaxed: 1.75 (long-form content)
 
 ### Typography Guidelines
 
 **Accessibility**:
 - Minimum 16px for body text
 - 1.5 line height for readability
-- Adequate spacing between paragraphs
 - Support text resize up to 200%
 
-**Mobile Optimization**:
-- Larger minimum font sizes (prevent zoom)
-- Generous line height (easier reading)
+**Mobile**:
+- Larger minimum sizes
+- Generous line heights
 - Shorter line lengths (60-80 characters)
 
 ## Spacing System
 
-### Base Unit: 4px (0.25rem)
+### Base Unit
+4px (0.25rem)
 
-#### Spacing Scale
-```css
---space-0: 0           /* 0px */
---space-1: 0.25rem     /* 4px */
---space-2: 0.5rem      /* 8px */
---space-3: 0.75rem     /* 12px */
---space-4: 1rem        /* 16px */
---space-5: 1.25rem     /* 20px */
---space-6: 1.5rem      /* 24px */
---space-8: 2rem        /* 32px */
---space-10: 2.5rem     /* 40px */
---space-12: 3rem       /* 48px */
---space-16: 4rem       /* 64px */
-```
+### Spacing Scale
+0px, 4px, 8px, 12px, 16px, 20px, 24px, 32px, 40px, 48px, 64px
 
 ### Layout Spacing
 
-#### Component Heights
-```css
---height-topbar: 3rem         /* 48px */
---height-toolbar: 2.5rem      /* 40px */
---width-sidebar-expanded: 14rem   /* 224px */
---width-sidebar-collapsed: 3rem   /* 48px */
-```
+**Component Heights**:
+- Top bar: 48px
+- Toolbar: 40px
+- Sidebar expanded: 224px
+- Sidebar collapsed: 48px
 
-#### Padding Standards
-```css
---padding-xs: var(--space-1)      /* Tight spacing */
---padding-sm: var(--space-2)      /* Compact components */
---padding-md: var(--space-4)      /* Standard spacing */
---padding-lg: var(--space-6)      /* Generous spacing */
---padding-xl: var(--space-8)      /* Spacious layouts */
-```
+**Padding Standards**:
+- Tight: 4px
+- Compact: 8px
+- Standard: 16px
+- Generous: 24px
+- Spacious: 32px
 
-#### Mobile Touch Targets
-```css
---touch-target-min: 44px      /* Minimum for mobile */
---touch-spacing-min: 8px      /* Minimum gap between targets */
-```
+**Mobile Touch Targets**:
+- Minimum: 44px
+- Spacing: 8px minimum between targets
 
 ### Responsive Spacing
 
-```css
-/* Mobile first */
-.container {
-  padding: var(--space-4);
-  
-  @media (min-width: 768px) {
-    padding: var(--space-6);
-  }
-  
-  @media (min-width: 1024px) {
-    padding: var(--space-8);
-  }
-}
-```
+Use mobile-first approach with increasing spacing at larger breakpoints
 
 ## Border Radius
 
 ### Border Scale
-```css
---radius-sm: 0.25rem    /* 4px - Small elements */
---radius-md: 0.5rem     /* 8px - Buttons, inputs */
---radius-lg: 0.75rem    /* 12px - Cards, modals */
---radius-xl: 1rem       /* 16px - Large containers */
---radius-full: 9999px   /* Circular/pill shapes */
-```
+- Small: 4px
+- Medium: 8px
+- Large: 12px
+- XL: 16px
+- Full: 9999px (circular/pill)
 
 ### Usage
-- Buttons: `--radius-md`
-- Cards: `--radius-lg`
-- Modals: `--radius-lg`
-- Images: `--radius-md`
-- Pills/badges: `--radius-full`
+- Buttons: Medium
+- Cards: Large
+- Modals: Large
+- Images: Medium
+- Pills/badges: Full
 
 ## Shadows & Elevation
 
 ### Shadow Scale
-```css
---shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05)
---shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1)
---shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1)
---shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1)
-```
+- Small: Subtle depth
+- Medium: Standard elevation
+- Large: Prominent elevation
+- XL: Maximum elevation
 
 ### Elevation Layers
-```
-z-index: 0     /* Base content */
-z-index: 10    /* Dropdowns, tooltips */
-z-index: 20    /* Sticky headers */
-z-index: 30    /* Modals, dialogs */
-z-index: 40    /* Toasts, notifications */
-z-index: 50    /* Maximum (debug/dev tools) */
-```
+- Base: 0 (content)
+- Dropdowns: 10
+- Sticky: 20
+- Modals: 30
+- Toasts: 40
 
 ### Mobile Shadows
-Reduced shadows on mobile for performance:
-
-```css
-@media (max-width: 767px) {
-  --shadow-md: var(--shadow-sm);
-  --shadow-lg: var(--shadow-md);
-}
-```
+Reduced for performance, rely more on borders
 
 ## Icons
 
-### Icon System: Lucide Svelte
-
-**Benefits**:
-- Consistent stroke width
-- Optimized SVGs
-- Tree-shakeable
-- Accessible by default
+### Icon System
+Lucide Svelte for consistent, optimized icons
 
 ### Icon Sizes
-```css
---icon-xs: 0.75rem    /* 12px */
---icon-sm: 1rem       /* 16px - Default */
---icon-md: 1.25rem    /* 20px - Emphasized */
---icon-lg: 1.5rem     /* 24px - Headers */
---icon-xl: 2rem       /* 32px - Features */
-```
+- XS: 12px
+- SM: 16px (default)
+- MD: 20px
+- LG: 24px
+- XL: 32px
 
-### Icon Usage
-```svelte
-<script>
-  import { FileText, Save, Share } from 'lucide-svelte'
-</script>
-
-<!-- Standard size -->
-<FileText size={16} />
-
-<!-- Responsive size -->
-<Save class="w-4 h-4 md:w-5 md:h-5" />
-
-<!-- With accessibility -->
-<Share size={16} aria-label="Share document" />
-```
-
-### Icon Color
-Icons inherit text color by default:
-
-```css
-.icon {
-  color: currentColor;
-  /* Inherits from parent text color */
-}
-```
+### Icon Guidelines
+- Inherit text color by default
+- Consistent stroke width
+- Accessible labels for icon-only buttons
 
 ## Transitions & Animations
 
 ### Duration Scale
-```css
---duration-fast: 150ms      /* Micro-interactions */
---duration-base: 300ms      /* Standard transitions */
---duration-slow: 500ms      /* Complex animations */
-```
+- Fast: 150ms (micro-interactions)
+- Base: 300ms (standard transitions)
+- Slow: 500ms (complex animations)
 
 ### Easing Functions
-```css
---ease-in: cubic-bezier(0.4, 0, 1, 1)
---ease-out: cubic-bezier(0, 0, 0.2, 1)
---ease-in-out: cubic-bezier(0.4, 0, 0.2, 1)
---ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55)
-```
+- Ease-in: Entry animations
+- Ease-out: Exit animations
+- Ease-in-out: State changes
+- Spring: Playful interactions
 
 ### Reduced Motion
-```css
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-```
+Honor `prefers-reduced-motion` system setting, reduce or eliminate animations
 
 ### Animation Patterns
-
-#### Fade In
-```css
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-```
-
-#### Slide In
-```css
-@keyframes slide-in {
-  from {
-    transform: translateY(10px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-```
-
-#### Mobile-Specific
-Bottom sheet slide-up:
-```css
-@keyframes slide-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-```
+- Fade in/out for content
+- Slide for panels and drawers
+- Scale for modals
+- Bottom sheet slide-up for mobile
 
 ## Responsive Design
 
 ### Breakpoint System
+- **sm: 640px** - Mobile landscape
+- **md: 768px** - Tablet portrait
+- **lg: 1024px** - Desktop
+- **xl: 1280px** - Large desktop
+- **2xl: 1536px** - Extra large
 
-#### Standard Breakpoints
-```css
-/* Mobile first approach */
-$breakpoint-sm: 640px;   /* Mobile landscape */
-$breakpoint-md: 768px;   /* Tablet portrait */
-$breakpoint-lg: 1024px;  /* Desktop */
-$breakpoint-xl: 1280px;  /* Large desktop */
-$breakpoint-2xl: 1536px; /* Extra large */
-```
+### Container Widths
+Full width with max-width constraints at each breakpoint
 
-#### Container Widths
-```css
-/* Max widths at breakpoints */
-.container {
-  width: 100%;
-  padding: 0 1rem;
-  
-  @media (min-width: 640px) {
-    max-width: 640px;
-  }
-  
-  @media (min-width: 768px) {
-    max-width: 768px;
-  }
-  
-  @media (min-width: 1024px) {
-    max-width: 1024px;
-  }
-  
-  @media (min-width: 1280px) {
-    max-width: 1280px;
-  }
-}
-```
-
-### Mobile-First Utilities
-
-```css
-/* Base styles for mobile */
-.text-responsive {
-  font-size: 1rem;
-  
-  /* Tablet */
-  @media (min-width: 768px) {
-    font-size: 1.125rem;
-  }
-  
-  /* Desktop */
-  @media (min-width: 1024px) {
-    font-size: 1.25rem;
-  }
-}
-```
+### Mobile-First Approach
+Base styles for mobile, enhance at larger breakpoints
 
 ## Accessibility Features
 
 ### Focus Indicators
-
-#### Visible Focus Ring
-```css
-:focus-visible {
-  outline: 2px solid var(--brand-primary);
-  outline-offset: 2px;
-}
-
-/* High contrast mode */
-@media (prefers-contrast: high) {
-  :focus-visible {
-    outline-width: 3px;
-    outline-color: currentColor;
-  }
-}
-```
+- Visible outline: 2px solid
+- Offset: 2px
+- High contrast: 3px solid
+- Never remove focus styles
 
 ### Text Contrast
-
-Ensure WCAG AA compliance:
 - Normal text: 4.5:1 minimum
 - Large text: 3:1 minimum
 - UI components: 3:1 minimum
+- WCAG AA compliance
 
 ### Skip Links
-```css
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: var(--bg-primary);
-  padding: 8px;
-  z-index: 100;
-}
+Hidden by default, visible on focus for keyboard navigation
 
-.skip-link:focus {
-  top: 0;
-}
-```
+## Theme System
 
-## Dark Mode Toggle
+### Dark Mode Toggle
+- Default: Dark theme
+- Toggle: Light theme
+- System: Follow OS preference
+- Persisted to user preferences
 
-### Implementation
-```svelte
-<script>
-  import { browser } from '$app/environment'
-  
-  let theme = $state(
-    browser 
-      ? localStorage.getItem('theme') || 'dark'
-      : 'dark'
-  )
-  
-  $effect(() => {
-    if (browser) {
-      document.documentElement.classList.toggle('dark', theme === 'dark')
-      localStorage.setItem('theme', theme)
-    }
-  })
-</script>
-```
-
-### System Preference
-```css
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    /* Dark theme variables */
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not(.dark) {
-    /* Light theme variables */
-  }
-}
-```
+### Theme Implementation
+- CSS custom properties for all design tokens
+- Class toggle on root element
+- Smooth transitions between themes
 
 ## Design Tokens
 
-All design values should be defined as CSS custom properties for consistency and themability:
+All design values defined as CSS variables for consistency and themability:
+- Colors
+- Spacing
+- Typography
+- Borders
+- Shadows
+- Transitions
 
-```css
-:root {
-  /* Colors */
-  --color-*: ...;
-  
-  /* Spacing */
-  --space-*: ...;
-  
-  /* Typography */
-  --font-*: ...;
-  --text-*: ...;
-  
-  /* Borders */
-  --radius-*: ...;
-  
-  /* Shadows */
-  --shadow-*: ...;
-  
-  /* Transitions */
-  --duration-*: ...;
-  --ease-*: ...;
-}
-```
-
-Use Tailwind's theme extension to sync with design tokens:
-
-```javascript
-// tailwind.config.js
-export default {
-  theme: {
-    extend: {
-      colors: {
-        primary: 'var(--color-primary)',
-        // etc.
-      },
-      spacing: {
-        // Reference CSS variables
-      }
-    }
-  }
-}
-```
+Synced with Tailwind configuration for unified system.

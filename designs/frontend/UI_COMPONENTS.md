@@ -2,100 +2,47 @@
 
 ## Overview
 
-Component specifications for TongueToQuill, adapted for SvelteKit 5 with mobile support and accessibility. Components follow the VSCode-inspired aesthetic from the legacy design while supporting modern web standards.
+Component specifications for TongueToQuill, adapted for SvelteKit 5 with mobile support and accessibility. Components follow the VSCode-inspired aesthetic while supporting modern responsive design patterns.
 
 ## Layout Components
 
 ### Sidebar Component
 
-**File**: `lib/components/layout/Sidebar.svelte`
+**Purpose**: Collapsible navigation for file management, user profile, and settings
 
-#### Purpose
-Collapsible navigation providing file management, user profile, and settings access.
+**States**:
+- Desktop Expanded: 224px width, full content visible
+- Desktop Collapsed: 48px width, icons only
+- Mobile: Full-screen drawer overlay
 
-#### States
-- **Desktop Expanded**: 224px width, full content visible
-- **Desktop Collapsed**: 48px width, icons only
-- **Mobile**: Drawer overlay, full width when open
+**Sections**:
+- Header: Toggle button + branding
+- File List: Scrollable document list with create/select/delete actions
+- Footer: User profile + settings access
 
-#### Props
-```typescript
-interface SidebarProps {
-  files: FileItem[]
-  activeFileId: string
-  isExpanded?: boolean
-  onNewFile: () => void
-  onFileSelect: (fileId: string) => void
-  onDeleteFile: (fileId: string) => void
-}
-```
-
-#### Mobile Behavior
+**Mobile Behavior**:
 - Renders as drawer/modal overlay
-- Swipe right to open, swipe left to close
-- Backdrop click to dismiss
-- Fixed position, z-index above content
+- Swipe gestures for open/close
+- Backdrop dismissal
+- Fixed position over content
 
-#### Structure
-```
-┌─────────────────────┐
-│ [☰] TongueToQuill  │  ← Header (toggle + branding)
-├─────────────────────┤
-│ [+] New Document    │  ← Create button
-├─────────────────────┤
-│ [📄] memo-1.md      │  ← File list (scrollable)
-│ [📄] letter-2.md    │
-│     ...             │
-├─────────────────────┤
-│ [👤] Profile        │  ← User profile
-│ [⚙️] Settings       │  ← Settings
-└─────────────────────┘
-```
-
-#### Accessibility
-- `<nav role="navigation" aria-label="Main navigation">`
-- `aria-expanded` on hamburger button
-- `aria-current="page"` on active file
-- Keyboard: Tab navigation, Enter to activate
-- Focus trap when drawer open on mobile
+**Accessibility**: Navigation landmark, ARIA labels, keyboard navigation, focus trap in drawer mode
 
 ---
 
 ### TopMenu Component
 
-**File**: `lib/components/layout/TopMenu.svelte`
+**Purpose**: Header bar displaying file information and document actions
 
-#### Purpose
-Header bar with file info and document actions.
+**Layout**: Logo + filename | download + share + more actions
 
-#### Props
-```typescript
-interface TopMenuProps {
-  fileName: string
-  isDirty?: boolean
-  onDownload: () => void
-  onShare: () => void
-}
-```
-
-#### Structure
-```
-┌────────────────────────────────────────────┐
-│ [Logo] memo-1.md *    [Download] [Share] [⋮] │
-└────────────────────────────────────────────┘
-```
-
-#### Mobile Adaptation
-- Logo scales down on small screens
+**Mobile Adaptation**:
+- Logo scales appropriately
 - Filename truncates with ellipsis
-- Actions collapse to meatball menu
-- Minimum height: 48px (touch target)
+- Actions may collapse to menu
+- Minimum 48px height for touch
 
-#### Accessibility
-- `<header role="banner">`
-- Action buttons have visible labels on desktop
-- Icon-only buttons have `aria-label`
-- Unsaved indicator announced by screen reader
+**Accessibility**: Banner landmark, visible labels or ARIA labels, announced unsaved state
 
 ---
 
@@ -103,127 +50,64 @@ interface TopMenuProps {
 
 ### EditorToolbar Component
 
-**File**: `lib/components/editor/Toolbar.svelte`
+**Purpose**: Formatting controls and editor mode selection
 
-#### Purpose
-Formatting controls and editor mode toggle.
+**Formatting Tools**:
+- Text formatting: Bold, Italic, Strikethrough
+- Blocks: Code, Quote
+- Lists: Bullet, Numbered
+- Links: Insert link
 
-#### Props
-```typescript
-interface ToolbarProps {
-  onFormat: (type: FormatType) => void
-  mode: 'markdown' | 'wizard'
-  onModeChange: (mode: 'markdown' | 'wizard') => void
-  disabled?: boolean
-}
+**Mode Toggle**: Markdown | Wizard (future)
 
-type FormatType = 
-  | 'bold' | 'italic' | 'strikethrough'
-  | 'code' | 'quote'
-  | 'unordered-list' | 'ordered-list'
-  | 'link'
-```
+**Mobile Adaptation**:
+- Horizontal scroll for overflow
+- Priority grouping
+- 44px minimum touch targets
+- Sticky positioning
 
-#### Mobile Adaptation
-- Horizontal scroll for toolbar overflow
-- Groups prioritized: text → blocks → links
-- Touch targets: 44x44px minimum
-- Sticky positioning on scroll
-
-#### Structure (Desktop)
-```
-┌──────────────────────────────────────────────┐
-│ [B] [I] [S] | [<>] ["] | [•] [1.] | [🔗]  [Markdown ▼] │
-└──────────────────────────────────────────────┘
-```
-
-#### Structure (Mobile)
-```
-┌────────────────────────────────────┐
-│ [B] [I] [<>] [•] [🔗] → │ [Markdown ▼] │
-└────────────────────────────────────┘
-```
-
-#### Accessibility
-- `<toolbar role="toolbar" aria-label="Formatting options">`
-- Each button has `aria-label` describing action
-- Keyboard shortcuts announced in labels
-- Mode toggle uses radio group semantics
+**Accessibility**: Toolbar role, button labels, keyboard shortcuts announced
 
 ---
 
 ### MarkdownEditor Component
 
-**File**: `lib/components/editor/MarkdownEditor.svelte`
+**Purpose**: Text input area for raw markdown editing
 
-#### Purpose
-Text input for raw markdown editing.
-
-#### Props
-```typescript
-interface EditorProps {
-  value: string
-  onChange: (value: string) => void
-  onSelectionChange?: (start: number, end: number) => void
-  disabled?: boolean
-  placeholder?: string
-}
-```
-
-#### Features
+**Features**:
 - Syntax highlighting (optional)
 - Line numbers (toggleable)
 - Auto-indent
-- Tab key inserts spaces
+- Tab handling
 - Undo/redo support
 
-#### Mobile Optimization
-- Larger font size (18px) to prevent zoom
-- Optimized virtual keyboard handling
-- Touch-friendly selection handles
+**Mobile Optimization**:
+- 18px minimum font (prevents zoom)
+- Virtual keyboard handling
+- Touch selection
 - Auto-save on blur
 
-#### Accessibility
-- `<textarea aria-label="Markdown editor">`
-- `aria-describedby` for editor instructions
-- Keyboard shortcuts don't conflict with assistive tech
-- Status messages via `aria-live` region
+**Accessibility**: Labeled editor region, keyboard shortcuts, status announcements
 
 ---
 
 ### MarkdownPreview Component
 
-**File**: `lib/components/editor/Preview.svelte`
+**Purpose**: Rendered document output display
 
-#### Purpose
-Rendered markdown output display.
+**Rendering**:
+- Quillmark for professional output
+- Markdown fallback renderer
+- Debounced updates
+- Scroll preservation
 
-#### Props
-```typescript
-interface PreviewProps {
-  content: string
-  quill?: string
-  isLoading?: boolean
-}
-```
-
-#### Rendering
-- Uses Quillmark for professional output
-- Fallback to basic markdown renderer
-- Debounced updates (50ms)
-- Preserves scroll position on update
-
-#### Mobile Optimization
-- Touch-friendly scrolling
+**Mobile Optimization**:
+- Touch scrolling
 - Responsive typography
-- Zoom enabled for accessibility
-- Horizontal scroll for wide tables
+- Zoom enabled
+- Horizontal scroll for tables
 
-#### Accessibility
-- `<article role="document" aria-label="Document preview">`
-- Heading hierarchy maintained
-- Alt text for images
-- Color contrast meets WCAG AA
+**Accessibility**: Document landmark, heading hierarchy, image alt text, color contrast
 
 ---
 
@@ -231,115 +115,55 @@ interface PreviewProps {
 
 ### Button Component
 
-**File**: `lib/components/ui/Button.svelte`
+**Variants**: Primary, Secondary, Ghost, Destructive
+**Sizes**: Small, Medium, Large, Icon-only
+**States**: Default, Hover, Active, Focus, Disabled, Loading
 
-#### Variants
-```typescript
-type ButtonVariant = 
-  | 'primary' | 'secondary' | 'ghost' | 'destructive'
-
-type ButtonSize = 
-  | 'sm' | 'md' | 'lg' | 'icon'
-```
-
-#### Usage
-```svelte
-<Button variant="primary" size="md" onclick={handleClick}>
-  Save Document
-</Button>
-
-<Button variant="ghost" size="icon" aria-label="Close">
-  <X />
-</Button>
-```
-
-#### States
-- Default, Hover, Active, Focus, Disabled
-- Loading state with spinner
-- Icon-only with accessible label
-
-#### Accessibility
-- Minimum 44x44px on mobile
-- Focus visible indicator
-- Disabled state communicated to screen readers
-- Loading state announced
+**Mobile**: 44x44px minimum touch size
+**Accessibility**: Focus indicators, disabled state communicated, loading announced
 
 ---
 
 ### Dialog Component
 
-**File**: `lib/components/ui/Dialog.svelte`
+**Purpose**: Modal dialogs for confirmations, forms, and alerts
 
-#### Purpose
-Modal dialogs for confirmations, forms, and alerts.
-
-#### Props
-```typescript
-interface DialogProps {
-  open: boolean
-  title: string
-  description?: string
-  onClose: () => void
-  children: Snippet
-}
-```
-
-#### Mobile Adaptation
+**Mobile Adaptation**:
 - Full-screen on small devices
 - Bottom sheet on medium devices
 - Centered modal on desktop
-- Swipe down to dismiss (mobile)
+- Swipe to dismiss (mobile)
 
-#### Accessibility
-- `role="dialog" aria-modal="true"`
-- Focus trap inside dialog
-- Focus returns to trigger on close
-- ESC key to dismiss
-- Backdrop click to dismiss (configurable)
+**Accessibility**: Dialog role, modal attribute, focus trap, ESC/backdrop dismissal, focus return
 
 ---
 
 ### Dropdown Menu Component
 
-**File**: `lib/components/ui/DropdownMenu.svelte`
+**Purpose**: Contextual menus for actions and options
 
-#### Purpose
-Contextual menus for actions and navigation.
-
-#### Mobile Adaptation
-- Bottom sheet presentation on mobile
-- Larger touch targets (48px height)
+**Mobile Adaptation**:
+- Bottom sheet presentation
+- Larger touch targets (48px)
 - Native-feeling interactions
 
-#### Accessibility
-- `role="menu"` with `role="menuitem"` children
-- Arrow key navigation
-- Type-ahead search
-- Focus management
+**Accessibility**: Menu role, arrow navigation, type-ahead, focus management
 
 ---
 
 ### Toast Component
 
-**File**: `lib/components/ui/Toast.svelte`
+**Purpose**: Temporary notification messages
 
-#### Purpose
-Temporary notification messages.
+**Types**: Success, Error, Warning, Info
 
-#### Types
-- Success, Error, Warning, Info
-
-#### Mobile Optimization
-- Positioned at bottom on mobile
+**Mobile Optimization**:
+- Bottom positioning
 - Swipe to dismiss
-- Stack vertically
-- Auto-dismiss after 5 seconds
+- Vertical stacking
+- Auto-dismiss timing
 
-#### Accessibility
-- `role="status"` or `role="alert"`
-- `aria-live="polite"` or `"assertive"`
-- Screen reader announces message
-- Persists until dismissed by user or timeout
+**Accessibility**: Status/alert roles, live regions, screen reader announcements
 
 ---
 
@@ -347,57 +171,26 @@ Temporary notification messages.
 
 ### TemplateSelector Component
 
-**File**: `lib/components/document/TemplateSelector.svelte`
+**Purpose**: Choose document template (quill)
 
-#### Purpose
-Choose document template (quill).
-
-#### Props
-```typescript
-interface TemplateSelectorProps {
-  templates: Template[]
-  selected?: string
-  onSelect: (templateId: string) => void
-}
-```
-
-#### Mobile Adaptation
-- Grid on desktop (3 columns)
-- List on mobile (1 column)
+**Layout**:
+- Desktop: Grid (3 columns)
+- Mobile: List (1 column)
 - Large preview thumbnails
-- Horizontal scroll on tablet
 
-#### Accessibility
-- Radio group semantics
-- Keyboard navigation (arrow keys)
-- Template previews have alt text
+**Accessibility**: Radio group, keyboard navigation, preview descriptions
 
 ---
 
 ### DocumentMetadata Component
 
-**File**: `lib/components/document/Metadata.svelte`
+**Purpose**: Display and edit document metadata
 
-#### Purpose
-Display and edit document metadata.
+**Fields**: Title, Subject, Letterhead, Date, Classification
 
-#### Fields
-- Title
-- Subject (for memos)
-- Letterhead title
-- Date
-- Classification
+**Mobile Optimization**: Full-width fields, native pickers, touch-optimized dropdowns
 
-#### Mobile Optimization
-- Full-width form fields
-- Native date pickers
-- Dropdown selects optimized for touch
-
-#### Accessibility
-- Form labels associated with inputs
-- Required fields marked
-- Validation errors announced
-- Error summary at top
+**Accessibility**: Form labels, required indicators, validation errors, error summary
 
 ---
 
@@ -405,124 +198,44 @@ Display and edit document metadata.
 
 ### Breakpoint Strategy
 
-```typescript
-// Tailwind breakpoints
-sm: 640px   // Mobile landscape
-md: 768px   // Tablet portrait
-lg: 1024px  // Tablet landscape / Small desktop
-xl: 1280px  // Desktop
-2xl: 1536px // Large desktop
-```
+- **sm: 640px** - Mobile landscape
+- **md: 768px** - Tablet portrait
+- **lg: 1024px** - Desktop
+- **xl: 1280px** - Large desktop
 
 ### Layout Adaptations
 
-**Desktop (lg+)**:
-- Sidebar: 224px fixed, collapsible to 48px
-- Split view: Editor 50% | Preview 50%
-- Toolbar: All buttons visible
+**Desktop**: Sidebar (224px/48px) + split editor/preview (50/50)
+**Tablet**: Drawer sidebar + split view (60/40)
+**Mobile**: Full drawer + tabbed editor OR preview
 
-**Tablet (md-lg)**:
-- Sidebar: Drawer overlay
-- Split view: Editor 60% | Preview 40%
-- Toolbar: Horizontal scroll
+### Component State
 
-**Mobile (sm)**:
-- Sidebar: Full-screen drawer
-- Single view: Tabs for Editor/Preview
-- Toolbar: Essential tools only, scroll for more
-- Bottom navigation for mode switching
-
-### Component Patterns
-
-```svelte
-<script>
-  let innerWidth = $state(0)
-  let isMobile = $derived(innerWidth < 768)
-</script>
-
-<svelte:window bind:innerWidth />
-
-{#if isMobile}
-  <MobileLayout />
-{:else}
-  <DesktopLayout />
-{/if}
-```
+- Use Svelte 5 runes for component-local state
+- Use stores for cross-component state
+- Context API for dependency injection
 
 ## Touch Interactions
 
 ### Gestures
-- Swipe right: Open sidebar
-- Swipe left: Close sidebar
+- Swipe right/left: Sidebar open/close
 - Pull down: Refresh document list
 - Pinch zoom: Adjust preview size
 
 ### Touch Targets
-- Minimum size: 44x44px
-- Spacing between targets: 8px minimum
-- Active area extends beyond visible bounds
+- Minimum: 44x44px
+- Spacing: 8px minimum between targets
+- Extended active area beyond visible bounds
 
 ## Animation Guidelines
 
 ### Transitions
-```css
-/* Standard duration */
-transition: all 300ms ease-in-out;
-
-/* Sidebar expand/collapse */
-transition: width 300ms, opacity 200ms;
-
-/* Modal appearance */
-transition: opacity 150ms, transform 150ms;
-```
+- Standard duration: 300ms
+- Sidebar: 300ms ease-in-out
+- Modal: 150ms ease-out
+- Respect `prefers-reduced-motion`
 
 ### Mobile Considerations
-- Respect `prefers-reduced-motion`
 - Native-feeling animations
-- 60fps performance on low-end devices
-
-## Component State Management
-
-### Local State
-Use Svelte 5 runes for component-specific state:
-
-```svelte
-<script>
-  let isExpanded = $state(false)
-  let files = $state<File[]>([])
-  
-  let activeFile = $derived(
-    files.find(f => f.id === activeFileId)
-  )
-  
-  $effect(() => {
-    if (autoSave && content !== lastSaved) {
-      saveDocument()
-    }
-  })
-</script>
-```
-
-### Shared State
-Use stores for cross-component state:
-
-```svelte
-<script>
-  import { user } from '$lib/stores/auth'
-  import { preferences } from '$lib/stores/settings'
-</script>
-```
-
-## Testing Considerations
-
-### Component Tests
-- Render without errors
-- Handle all prop combinations
-- Respond to user interactions
-- Emit expected events
-- Meet accessibility standards
-
-### Responsive Tests
-- Test at all breakpoints
-- Touch vs mouse interactions
-- Portrait and landscape orientations
+- 60fps performance target
+- Reduced animations on low-end devices

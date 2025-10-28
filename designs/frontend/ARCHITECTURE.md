@@ -6,15 +6,12 @@ TongueToQuill is a professional single-page application built with SvelteKit 5, 
 
 ## Technology Stack
 
-- **Framework**: SvelteKit 5
-- **Language**: TypeScript
+- **Framework**: SvelteKit 5 with TypeScript
 - **Styling**: Tailwind CSS 4.0
-- **State Management**: Svelte 5 runes ($state, $derived, $effect)
-- **Form Handling**: SvelteKit form actions
-- **Authentication**: JWT-based (Keycloak/Supabase)
+- **State Management**: Svelte 5 runes and stores
+- **Authentication**: JWT-based (Keycloak or Supabase)
 - **Document Rendering**: Quillmark integration
-- **Icons**: Lucide Svelte
-- **Notifications**: Svelte Sonner
+- **UI Components**: Lucide Svelte icons, Svelte Sonner notifications
 
 ## Project Structure
 
@@ -22,396 +19,186 @@ TongueToQuill is a professional single-page application built with SvelteKit 5, 
 src/
 ├── lib/
 │   ├── components/           # Reusable UI components
-│   │   ├── layout/          # Layout components (Sidebar, TopMenu)
-│   │   ├── editor/          # Editor components (Toolbar, Editor, Preview)
-│   │   ├── ui/              # Generic UI components (Button, Dialog, etc.)
+│   │   ├── layout/          # Sidebar, TopMenu
+│   │   ├── editor/          # Toolbar, Editor, Preview
+│   │   ├── ui/              # Generic components (Button, Dialog, Toast)
 │   │   └── document/        # Document-specific components
 │   ├── stores/              # Global state stores
 │   ├── services/            # API service layer
 │   ├── utils/               # Utility functions
-│   ├── types/               # TypeScript type definitions
-│   └── config/              # Configuration constants
+│   ├── types/               # TypeScript definitions
+│   └── config/              # Configuration
 ├── routes/
-│   ├── (app)/               # Protected app routes
-│   │   ├── editor/          # Document editor
-│   │   ├── documents/       # Document management
-│   │   └── settings/        # User settings
-│   ├── (auth)/              # Authentication routes
-│   │   ├── login/
-│   │   └── logout/
-│   └── (marketing)/         # Public routes
-│       ├── about/
-│       ├── privacy/
-│       └── terms/
-└── app.html                 # Root HTML template
+│   ├── (app)/               # Protected routes (editor, documents, settings)
+│   ├── (auth)/              # Auth routes (login, logout)
+│   └── (marketing)/         # Public routes (about, privacy, terms)
+└── app.html                 # Root template
 ```
 
 ## Routing Architecture
 
 ### Route Groups
 
-**Protected Routes** `(app)`:
-- Require authentication
-- Load user context in layout
-- Redirect to login if unauthenticated
+**Protected Routes `(app)`**: Require authentication, redirect to login if not authenticated
+**Auth Routes `(auth)`**: Login/logout flows, redirect to app if already authenticated
+**Marketing Routes `(marketing)`**: Public pages accessible without authentication
 
-**Auth Routes** `(auth)`:
-- Handle login/logout flows
-- Redirect to app if authenticated
+### Data Loading Strategy
 
-**Marketing Routes** `(marketing)`:
-- Public pages
-- No authentication required
-
-### Page Load Strategy
-
-```typescript
-// +page.ts - Universal load (runs on server and client)
-export const load = async ({ fetch, params }) => {
-  // Fetch initial data
-  return { documents, templates }
-}
-
-// +page.server.ts - Server-only load
-export const load = async ({ locals, params }) => {
-  // Access server-only resources
-  return { user: locals.user }
-}
-```
+- **Universal Load**: Runs on both server and client for public data
+- **Server Load**: Server-only for session data and protected resources
+- Protected routes load user context in layout, handle redirects automatically
 
 ## Component Architecture
 
-### Component Patterns
+### Component Hierarchy
 
-**Layout Components**: 
-- Persistent across navigation
-- Handle global state
-- Manage authentication state
+- **Layout Components**: Persistent across navigation, manage global state
+- **Page Components**: Route-specific views, consume data from load functions
+- **Reusable Components**: Pure presentational, props-based communication
 
-**Page Components**: 
-- Route-specific views
-- Use data from load functions
-- Handle form actions
+### Communication Patterns
 
-**Reusable Components**: 
-- Pure, presentational
-- Accept props via Svelte 5 snippets
-- Emit events for interactions
-
-### Component Communication
-
-```typescript
-// Parent to child: Props
-<EditorToolbar 
-  onFormat={handleFormat}
-  mode={editorMode}
-/>
-
-// Child to parent: Callbacks
-function handleFormat(type: string) {
-  // Handle formatting
-}
-
-// Global state: Stores
-import { user } from '$lib/stores/auth'
-```
+- Parent to child via props
+- Child to parent via callbacks/events
+- Cross-component via global stores
 
 ## State Management
 
-### Svelte 5 Runes
+### Reactive State (Svelte 5 Runes)
 
-**Component State** (`$state`):
-```typescript
-let isExpanded = $state(false)
-let files = $state<File[]>([])
-```
-
-**Derived State** (`$derived`):
-```typescript
-let activeFile = $derived(
-  files.find(f => f.id === activeFileId)
-)
-```
-
-**Side Effects** (`$effect`):
-```typescript
-$effect(() => {
-  // Auto-save when content changes
-  if (autoSave && content) {
-    saveDocument(content)
-  }
-})
-```
+- **$state**: Component-local reactive variables
+- **$derived**: Auto-computed values from dependencies
+- **$effect**: Side effects on reactive changes
 
 ### Global Stores
 
-Use stores for truly global state:
-- User authentication state
-- Application preferences
-- Notification queue
+For application-wide state:
+- Authentication status
+- User preferences
+- Document management
 
-```typescript
-// lib/stores/auth.ts
-import { writable } from 'svelte/store'
+### Form State
 
-export const user = writable<User | null>(null)
-export const isAuthenticated = writable(false)
-```
+Server-side validation with progressive enhancement:
+- Works without JavaScript (standard form submission)
+- Enhanced with JavaScript (optimistic updates, client validation)
 
 ## Server-Side Architecture
 
 ### API Routes
 
-**Endpoints** (`/api/*`):
-```typescript
-// src/routes/api/documents/+server.ts
-export async function GET({ locals }) {
-  const documents = await getDocuments(locals.user.id)
-  return json(documents)
-}
-
-export async function POST({ request, locals }) {
-  const data = await request.json()
-  const doc = await createDocument(data, locals.user.id)
-  return json(doc, { status: 201 })
-}
-```
+RESTful endpoints for:
+- Document operations
+- User management
+- Settings
 
 ### Form Actions
 
-**Server Actions** (`+page.server.ts`):
-```typescript
-export const actions = {
-  updateDocument: async ({ request, locals }) => {
-    const data = await request.formData()
-    const content = data.get('content')
-    
-    await updateDocument(id, content, locals.user.id)
-    
-    return { success: true }
-  }
-}
-```
-
-## Authentication Flow
+Handle server-side:
+- Form validation
+- Database operations
+- File handling
+- Authentication
 
 ### Session Management
 
-```typescript
-// hooks.server.ts
-export async function handle({ event, resolve }) {
-  const token = event.cookies.get('access_token')
-  
-  if (token) {
-    event.locals.user = await verifyToken(token)
-  }
-  
-  return resolve(event)
-}
-```
-
-### Protected Routes
-
-```typescript
-// (app)/+layout.server.ts
-export const load = async ({ locals }) => {
-  if (!locals.user) {
-    throw redirect(302, '/login')
-  }
-  
-  return { user: locals.user }
-}
-```
+- HTTP-only cookies for tokens
+- Automatic token refresh
+- Protected route verification
+- Redirect handling
 
 ## Progressive Enhancement
 
-### Forms
+### Core Philosophy
 
-All forms work without JavaScript:
-```svelte
-<form method="POST" action="?/createDocument" use:enhance>
-  <input name="title" required />
-  <button>Create</button>
-</form>
-```
+- Base functionality works without JavaScript
+- JavaScript enhances user experience
+- Graceful degradation for older browsers
 
-With JavaScript:
-- Optimistic UI updates
-- Client-side validation
-- Loading states
+### Enhancement Patterns
 
-### Navigation
+- Forms submit via HTTP POST by default
+- Enhanced with optimistic UI and validation
+- Navigation server-rendered, client-enhanced
+- Loading states added progressively
 
-- Server-side navigation works by default
-- Client-side navigation for speed (SvelteKit default)
-- Fallback to full page load on error
-
-## Performance Optimization
+## Performance Strategy
 
 ### Code Splitting
 
 - Automatic route-based splitting
 - Dynamic imports for heavy components
-- Lazy load Quillmark engine
+- Lazy loading non-critical features
 
-```typescript
-const QuillmarkPreview = lazy(() => 
-  import('$lib/components/QuillmarkPreview.svelte')
-)
-```
+### Rendering Approach
 
-### Data Loading
+- SSR for initial page load
+- Client hydration for interactivity
+- Debounced updates for live preview
 
-- Parallel data fetching in load functions
-- Streaming with promises
-- Cache responses where appropriate
+### Data Fetching
 
-### Rendering
+- Parallel loading where possible
+- Promise streaming for faster perceived performance
+- Strategic caching
 
-- SSR for initial page load (SEO, performance)
-- Client-side hydration for interactivity
-- Debounce preview updates (50ms)
+## Mobile Architecture
 
-## Error Handling
+### Responsive Design
 
-### Error Pages
+Breakpoints: 640px (mobile), 768px (tablet), 1024px (desktop), 1280px+ (large)
 
-```typescript
-// +error.svelte
-<script>
-  import { page } from '$app/stores'
-</script>
+### Adaptive Layouts
 
-<h1>{$page.status}: {$page.error.message}</h1>
-```
+- **Desktop**: Sidebar + split editor/preview
+- **Tablet**: Drawer sidebar + collapsible preview
+- **Mobile**: Full-screen drawer + tabbed editor/preview
 
-### Error Boundaries
+### Mobile Features
 
-```typescript
-// Catch errors in load functions
-export const load = async () => {
-  try {
-    return await fetchData()
-  } catch (error) {
-    throw error(500, 'Failed to load data')
-  }
-}
-```
-
-## Build Configuration
-
-### Adapters
-
-Development/Preview:
-- `@sveltejs/adapter-auto`
-
-Production Options:
-- `@sveltejs/adapter-node` (self-hosted)
-- `@sveltejs/adapter-vercel` (Vercel)
-- `@sveltejs/adapter-cloudflare` (Cloudflare Pages)
-
-### Environment Variables
-
-```
-PUBLIC_API_URL=https://api.tonguetoquill.com
-PUBLIC_APP_NAME=TongueToQuill
-AUTH_PROVIDER=supabase
-SUPABASE_URL=...
-SUPABASE_ANON_KEY=...
-```
-
-## Development Workflow
-
-### Type Safety
-
-```typescript
-// Generate types from backend schemas
-import type { Document, User } from '$lib/types/api'
-
-// Use throughout application
-const doc: Document = await fetchDocument(id)
-```
-
-### Testing Strategy
-
-- Unit tests: Vitest
-- Component tests: Testing Library
-- E2E tests: Playwright
-- Type checking: TypeScript strict mode
-
-## Mobile Considerations
-
-### Responsive Breakpoints
-
-```css
-/* Tailwind breakpoints */
-sm: 640px   /* Mobile landscape */
-md: 768px   /* Tablet */
-lg: 1024px  /* Desktop */
-xl: 1280px  /* Large desktop */
-```
-
-### Mobile-Specific Features
-
-- Touch-friendly controls (44x44px minimum)
-- Swipe gestures for sidebar
-- Bottom sheet for file list
+- Touch-optimized controls (44px min)
+- Swipe gestures for navigation
+- Bottom sheet patterns
 - Native share integration
-- Responsive typography scaling
 
-### Adaptive Layout
+## Security Architecture
 
-- Desktop: Split editor/preview
-- Tablet: Collapsible preview
-- Mobile: Tabbed editor OR preview
+### Protection Layers
 
-## Security
+- XSS prevention (automatic escaping)
+- CSRF tokens
+- HTTP-only session cookies
+- Content Security Policy
+- Input validation (client and server)
 
-### XSS Prevention
+### Authentication Security
 
-- Sanitize user input
-- Use Svelte's automatic escaping
-- Validate markdown before rendering
+- JWT in HTTP-only cookies
+- Automatic token refresh
+- Session management
+- Attack prevention (CSRF, XSS, injection)
 
-### CSRF Protection
+## Build & Deployment
 
-- SvelteKit CSRF tokens
-- HTTP-only cookies
-- SameSite cookie attribute
+### Build Strategy
 
-### Content Security Policy
+- TypeScript compilation
+- Component bundling
+- Asset optimization
+- Server build for SSR
 
-```typescript
-// svelte.config.js
-kit: {
-  csp: {
-    directives: {
-      'default-src': ['self'],
-      'script-src': ['self'],
-      'style-src': ['self', 'unsafe-inline']
-    }
-  }
-}
-```
+### Deployment Options
 
-## Deployment
+- adapter-auto: Development
+- adapter-node: Self-hosted
+- adapter-vercel: Vercel
+- adapter-cloudflare: Cloudflare Pages
 
-### Build Process
+### Production Considerations
 
-```bash
-npm run build
-# Outputs to .svelte-kit/output
-```
-
-### Environment Setup
-
-- Configure adapter for target platform
-- Set environment variables
-- Enable/disable SSR as needed
-- Configure prerendering for static pages
-
-### Monitoring
-
-- Error tracking (Sentry)
-- Analytics (privacy-focused)
-- Performance monitoring (Web Vitals)
+- SSR configuration
+- Static page prerendering
+- Error tracking setup
+- Analytics integration
+- Performance monitoring

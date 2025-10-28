@@ -2,125 +2,90 @@
 
 ## Overview
 
-This directory contains comprehensive design documentation for the TongueToQuill frontend rewrite using SvelteKit 5. The design maintains the professional VSCode-inspired aesthetic from the legacy implementation while modernizing the architecture, adding mobile support, and ensuring Section 508 compliance.
+This directory contains high-level design documentation for the TongueToQuill frontend rewrite using SvelteKit 5. The design maintains the professional VSCode-inspired aesthetic from the legacy implementation while modernizing the architecture, adding mobile support, and ensuring Section 508 compliance.
 
 ## Design Documents
 
 ### [ARCHITECTURE.md](./ARCHITECTURE.md)
 **SvelteKit 5 Application Architecture**
-- Project structure and organization
-- Routing strategy with route groups
-- Server-side and client-side patterns
-- Component architecture patterns
-- Progressive enhancement approach
-- Build and deployment configuration
-- Performance optimization strategies
 
-**Key Concepts**: SvelteKit 5, TypeScript, SSR, Progressive Enhancement, Route Groups
+High-level overview of application structure, routing strategy, component organization, and deployment considerations.
+
+**Topics**: Project structure, route groups, component hierarchy, state management patterns, progressive enhancement, mobile architecture, security, deployment
 
 ---
 
 ### [UI_COMPONENTS.md](./UI_COMPONENTS.md)
 **Component Specifications**
-- Layout components (Sidebar, TopMenu)
-- Editor components (Toolbar, Editor, Preview)
-- UI component library (Button, Dialog, Toast, etc.)
-- Document-specific components
-- Responsive patterns for all screen sizes
-- Mobile adaptations and touch interactions
-- Component state management with Svelte 5 runes
 
-**Key Concepts**: Component Design, Mobile-First, Touch Interactions, Accessibility
+Component design specifications including layout, editor, and UI components with responsive and accessibility considerations.
+
+**Topics**: Layout components (Sidebar, TopMenu), editor components (Toolbar, Editor, Preview), UI library (Button, Dialog, Toast), responsive patterns, touch interactions, animations
 
 ---
 
 ### [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
 **Visual Design Language**
-- Color palette (dark theme, light theme, high contrast)
-- Typography system (fonts, scales, line heights)
-- Spacing system and layout measurements
-- Border radius and shadows
-- Icon system (Lucide Svelte)
-- Transitions and animations
-- Responsive design breakpoints
-- Design tokens and CSS variables
 
-**Key Concepts**: Design System, Theming, Responsive Design, Design Tokens
+Visual design system defining colors, typography, spacing, and other design tokens for consistent UI across platforms.
+
+**Topics**: Color palette (dark/light/high-contrast), typography system, spacing scale, border radius, shadows, icons, transitions, responsive breakpoints, accessibility features
 
 ---
 
 ### [ACCESSIBILITY.md](./ACCESSIBILITY.md)
 **Section 508 & WCAG 2.1 Level AA Compliance**
-- Section 508 requirements implementation
-- WCAG 2.1 principles (Perceivable, Operable, Understandable, Robust)
-- Screen reader support patterns
-- Keyboard navigation strategy
-- Color contrast requirements
-- Focus management
-- ARIA usage guidelines
-- Touch target sizing
-- Testing procedures and checklists
 
-**Key Concepts**: Accessibility, Section 508, WCAG 2.1, ARIA, Keyboard Navigation
+Accessibility requirements and implementation strategies for Section 508 compliance and WCAG 2.1 Level AA.
+
+**Topics**: Section 508 requirements, WCAG principles (Perceivable, Operable, Understandable, Robust), screen reader support, keyboard navigation, testing procedures, compliance checklist
 
 ---
 
 ### [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md)
-**State Management with Svelte 5 Runes**
-- Svelte 5 runes (`$state`, `$derived`, `$effect`)
-- Global stores (authentication, preferences, documents)
-- Form state with SvelteKit form actions
-- Progressive enhancement patterns
-- Document state management
-- State persistence (localStorage, IndexedDB)
-- Context API usage
-- When to use each state pattern
+**State Management Patterns**
 
-**Key Concepts**: Svelte 5 Runes, Stores, Form Actions, Progressive Enhancement
+State management approach using Svelte 5 runes, global stores, and server-side state.
+
+**Topics**: Svelte 5 runes ($state, $derived, $effect), global stores, form state, document management, persistence strategies, context API, best practices
 
 ---
 
 ### [API_INTEGRATION.md](./API_INTEGRATION.md)
-**Backend Integration & Communication**
-- API client architecture
-- Authentication flows (login, logout, token refresh)
-- Document CRUD operations
-- Error handling and retries
-- Optimistic updates
-- Real-time updates (WebSocket)
-- Type-safe API calls
-- Loading states and pagination
+**Backend Integration**
 
-**Key Concepts**: API Integration, Authentication, Error Handling, Type Safety
+Backend API integration patterns for authentication, document management, and data synchronization.
+
+**Topics**: API client architecture, authentication flows, document CRUD, error handling, optimistic updates, real-time updates, type safety, performance optimization
 
 ---
 
 ## Design Principles
 
 ### 1. SvelteKit 5 Best Practices
-- Use Svelte 5 runes for reactive state
-- Leverage SvelteKit's file-based routing
+- Leverage Svelte 5 runes for reactive state
+- Use file-based routing with route groups
 - Implement progressive enhancement
 - Server-side rendering for performance
 - Type-safe development with TypeScript
 
 ### 2. Mobile-First Design
-- Responsive layouts at all breakpoints
-- Touch-friendly interactions (44x44px minimum)
+- Responsive layouts at all breakpoints (640px, 768px, 1024px, 1280px)
+- Touch-optimized interactions (44px minimum targets)
 - Adaptive UI patterns (drawer, bottom sheet, tabs)
-- Optimized performance for mobile devices
 - Native-feeling gestures and animations
+- Performance optimization for mobile devices
 
 ### 3. Section 508 Compliance
-- Keyboard accessibility throughout
-- Screen reader support with ARIA
+- Keyboard accessibility for all functionality
+- Screen reader support with semantic HTML and ARIA
 - Sufficient color contrast (4.5:1 minimum)
-- Focus indicators always visible
-- Alternative text for all images
-- Forms with proper labels and error messages
+- Visible focus indicators
+- Alternative text for images
+- Proper form labels and error messages
 
 ### 4. Professional Aesthetic
-- VSCode-inspired dark theme
+- VSCode-inspired dark theme with zinc-900 palette
 - Clean, minimal interface
 - Smooth transitions (300ms standard)
 - Consistent spacing and typography
@@ -131,30 +96,30 @@ This directory contains comprehensive design documentation for the TongueToQuill
 - Lazy loading for heavy components
 - Debounced preview updates
 - Optimized bundle sizes
-- Fast initial page loads
+- Fast initial page loads with SSR
 
 ## Legacy Design Compatibility
 
 The new design maintains visual compatibility with the legacy React implementation while modernizing the technical foundation:
 
 ### Preserved Elements
-- **Color Palette**: Zinc-900 dark theme with brand blue (#355e93)
+- **Color Palette**: Zinc-900 dark theme with USAF blue (#355e93)
 - **Layout**: Collapsible sidebar, split editor/preview, top menu
 - **Typography**: System fonts for UI, monospace for editor, serif for preview
-- **Interactions**: 300ms transitions, hover states, active states
+- **Interactions**: 300ms transitions, hover states, toast notifications
 - **Components**: Sidebar, TopMenu, EditorToolbar, MarkdownEditor, MarkdownPreview
 
 ### Modernized Elements
 - **Framework**: React → SvelteKit 5
 - **State**: React hooks → Svelte 5 runes + stores
 - **Routing**: Client-only → File-based with SSR
-- **Forms**: Client-side → Progressive enhancement with form actions
+- **Forms**: Client-side → Progressive enhancement
 - **Mobile**: Desktop-only → Fully responsive
 - **Accessibility**: Basic → Section 508 compliant
 
 ## Backend Integration
 
-The frontend is designed to integrate with the backend services documented in `designs/backend/`:
+The frontend integrates with backend services documented in `designs/backend/`:
 
 ### Authentication (AUTH.md)
 - JWT-based authentication (Keycloak or Supabase)
@@ -174,7 +139,7 @@ The frontend is designed to integrate with the backend services documented in `d
 1. Review ARCHITECTURE.md for project structure
 2. Study UI_COMPONENTS.md for component patterns
 3. Reference DESIGN_SYSTEM.md for styling
-4. Implement ACCESSIBILITY.md requirements throughout
+4. Implement ACCESSIBILITY.md requirements
 5. Use STATE_MANAGEMENT.md patterns for state
 6. Follow API_INTEGRATION.md for backend communication
 
@@ -189,7 +154,7 @@ The frontend is designed to integrate with the backend services documented in `d
 ### Quality Checklist
 - [ ] TypeScript strict mode passing
 - [ ] All components keyboard accessible
-- [ ] Color contrast meets WCAG AA
+- [ ] Color contrast meets WCAG AA (4.5:1)
 - [ ] Mobile-responsive at all breakpoints
 - [ ] Touch targets minimum 44x44px
 - [ ] Forms work without JavaScript
@@ -198,73 +163,61 @@ The frontend is designed to integrate with the backend services documented in `d
 - [ ] SSR working correctly
 - [ ] Section 508 compliant
 
-## Technology Stack Summary
+## Technology Stack
 
-**Core**:
-- SvelteKit 5 (Framework)
-- TypeScript (Language)
-- Tailwind CSS 4.0 (Styling)
+**Core**: SvelteKit 5, TypeScript, Tailwind CSS 4.0
 
-**State & Data**:
-- Svelte 5 runes (Component state)
-- Svelte stores (Global state)
-- Form actions (Server state)
+**State**: Svelte 5 runes, Svelte stores, form actions
 
-**UI & Components**:
-- Lucide Svelte (Icons)
-- Svelte Sonner (Toasts)
-- Custom component library
+**UI**: Lucide Svelte (icons), Svelte Sonner (toasts)
 
-**Document Rendering**:
-- Quillmark (Professional output)
-- Markdown rendering with remark-gfm
+**Document Rendering**: Quillmark, markdown with remark-gfm
 
-**Authentication**:
-- JWT tokens
-- HTTP-only cookies
-- Keycloak or Supabase
+**Authentication**: JWT tokens, HTTP-only cookies, Keycloak or Supabase
+
+## Key Patterns
+
+### Responsive Layout
+- **Desktop**: Sidebar (224px/48px) + split editor/preview (50/50)
+- **Tablet**: Drawer sidebar + split view (60/40)
+- **Mobile**: Full-screen drawer + tabbed editor OR preview
+
+### State Management
+- Component-local: Svelte 5 runes ($state, $derived, $effect)
+- Global: Svelte stores for auth, preferences, documents
+- Server: Form actions for validated operations
+
+### Progressive Enhancement
+- Base: Forms work without JavaScript (HTTP POST)
+- Enhanced: Optimistic updates, client validation, loading states
+- Fallback: Server handles all validation
 
 ## References
 
-### SvelteKit Resources
+### SvelteKit
 - [SvelteKit Documentation](https://kit.svelte.dev/)
 - [Svelte 5 Runes](https://svelte.dev/docs/svelte/what-are-runes)
-- [Svelte Tutorial](https://learn.svelte.dev/)
 
-### Design Resources
+### Design
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Lucide Icons](https://lucide.dev/)
+
+### Accessibility
 - [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Section 508](https://www.section508.gov/)
 
-### Backend Integration
+### Backend
 - See `designs/backend/` for API specifications
 - See `designs/legacy/QUILLMARK_INTEGRATION.md` for rendering
 
-## Maintenance
+## Document Maintenance
 
-### Updating Documentation
-When making significant changes:
-1. Update relevant design documents
-2. Keep code examples current
-3. Update technology stack if changed
-4. Revise implementation guidelines
-5. Update this README if structure changes
-
-### Version History
-- **v1.0** (Current): Initial SvelteKit 5 design documentation
-  - Complete architecture specification
-  - Mobile-responsive design
-  - Section 508 compliance
-  - Backend integration patterns
-
-## Contact
-
-For questions or clarifications about the frontend design:
-1. Review the relevant design document first
-2. Check legacy design docs for context
-3. Ensure consistency with design principles
-4. Document any proposed changes
+When updating documentation:
+1. Keep high-level focus
+2. Avoid implementation details
+3. Update cross-references
+4. Maintain consistency
+5. Version significant changes
 
 ---
 
