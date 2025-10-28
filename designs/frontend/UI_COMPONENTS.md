@@ -22,7 +22,6 @@ Component specifications for TongueToQuill, adapted for SvelteKit 5 with mobile 
 
 **Mobile Behavior**:
 - Renders as drawer/modal overlay
-- Swipe gestures for open/close
 - Backdrop dismissal
 - Fixed position over content
 
@@ -34,7 +33,7 @@ Component specifications for TongueToQuill, adapted for SvelteKit 5 with mobile 
 
 **Purpose**: Header bar displaying file information and document actions
 
-**Layout**: Logo + filename | download + share + more actions
+**Layout**: Logo + filename | download + more actions (meatball menu)
 
 **Mobile Adaptation**:
 - Logo scales appropriately
@@ -171,12 +170,13 @@ Component specifications for TongueToQuill, adapted for SvelteKit 5 with mobile 
 
 ### TemplateSelector Component
 
+Keep it simple for now. 
+
 **Purpose**: Choose document template (quill)
 
 **Layout**:
 - Desktop: Grid (3 columns)
 - Mobile: List (1 column)
-- Large preview thumbnails
 
 **Accessibility**: Radio group, keyboard navigation, preview descriptions
 

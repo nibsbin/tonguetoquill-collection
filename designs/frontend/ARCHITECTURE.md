@@ -13,28 +13,6 @@ TongueToQuill is a professional single-page application built with SvelteKit 5, 
 - **Document Rendering**: Quillmark integration
 - **UI Components**: Lucide Svelte icons, Svelte Sonner notifications
 
-## Project Structure
-
-```
-src/
-├── lib/
-│   ├── components/           # Reusable UI components
-│   │   ├── layout/          # Sidebar, TopMenu
-│   │   ├── editor/          # Toolbar, Editor, Preview
-│   │   ├── ui/              # Generic components (Button, Dialog, Toast)
-│   │   └── document/        # Document-specific components
-│   ├── stores/              # Global state stores
-│   ├── services/            # API service layer
-│   ├── utils/               # Utility functions
-│   ├── types/               # TypeScript definitions
-│   └── config/              # Configuration
-├── routes/
-│   ├── (app)/               # Protected routes (editor, documents, settings)
-│   ├── (auth)/              # Auth routes (login, logout)
-│   └── (marketing)/         # Public routes (about, privacy, terms)
-└── app.html                 # Root template
-```
-
 ## Routing Architecture
 
 ### Route Groups

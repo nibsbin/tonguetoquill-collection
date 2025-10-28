@@ -106,22 +106,6 @@ TongueToQuill integrates with a RESTful backend API for authentication, document
 
 **Deleting Documents**: Confirmation dialog, optimistic removal, rollback on error
 
-## Real-Time Updates (Optional)
-
-### WebSocket Connection
-
-**Features**:
-- Real-time collaboration
-- Document change notifications
-- Presence indicators
-- Reconnection on disconnect
-
-**Connection Management**:
-- Connect on app init
-- Heartbeat to maintain connection
-- Exponential backoff on reconnect
-- Clean disconnect on logout
-
 ## Error Handling
 
 ### Error Patterns
@@ -295,10 +279,3 @@ TongueToQuill integrates with a RESTful backend API for authentication, document
 - Invalid responses
 - Authentication failures
 - Permission errors
-
-### Performance Testing
-
-- Response times
-- Concurrent requests
-- Large payloads
-- Network throttling
