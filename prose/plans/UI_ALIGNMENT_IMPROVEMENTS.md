@@ -24,19 +24,23 @@ The current UI has minor visual inconsistencies that can be improved:
 
 **Objective**: Change TopMenu background from `zinc-800` to `zinc-900` to match sidebar background
 
-**Rationale**: 
+**Rationale**:
+
 - Creates visual consistency across the top portion of the interface
 - Reduces visual complexity by using the same background color
 - Maintains the dark theme aesthetic while improving unity
 
 **Files to Modify**:
+
 - `src/lib/components/TopMenu.svelte`
 
 **Changes**:
+
 - Update background class from `bg-zinc-800` to `bg-zinc-900`
 - Verify text contrast remains accessible (zinc-300 text on zinc-900 background meets WCAG AA)
 
 **Design System Updates**:
+
 - Already updated in `prose/designs/frontend/DESIGN_SYSTEM.md` - Background Layers section
 - Already updated in `prose/designs/frontend/UI_COMPONENTS.md` - TopMenu Component section
 
@@ -45,19 +49,23 @@ The current UI has minor visual inconsistencies that can be improved:
 **Objective**: Add a subtle right border to the sidebar using the tertiary color (zinc-700)
 
 **Rationale**:
+
 - Provides clear visual separation between sidebar and main content area
 - Uses existing tertiary color (zinc-700) consistent with other dividers
 - Subtle 1px border maintains professional, minimal aesthetic
 
 **Files to Modify**:
+
 - `src/lib/components/Sidebar.svelte`
 
 **Changes**:
+
 - Add `border-r border-zinc-700` class to desktop sidebar container
 - Apply to both expanded (224px) and collapsed (48px) states
 - Mobile drawer (Sheet component) should not have this border (full-screen overlay)
 
 **Design System Updates**:
+
 - Already updated in `prose/designs/frontend/UI_COMPONENTS.md` - Sidebar Component section
 
 ### Task 3: Align Sidebar Divider with Editor Toolbar
@@ -65,15 +73,18 @@ The current UI has minor visual inconsistencies that can be improved:
 **Objective**: Reduce logo size slightly to align the sidebar divider with the editor toolbar bottom border
 
 **Rationale**:
+
 - Creates visual harmony between sidebar and content area
 - The current logo (32px/h-8) in a 48px container leaves the divider at 96px from top
 - The editor toolbar bottom border is at 96px from top (48px TopMenu + 48px Toolbar)
 - Reducing logo to 28px (h-7) in a 44px container aligns both horizontal lines
 
 **Files to Modify**:
+
 - `src/lib/components/Sidebar.svelte`
 
 **Changes**:
+
 - Update logo container height from `h-12` (48px) to `h-11` (44px)
 - Update logo image height from `h-8` (32px) to `h-7` (28px)
 - This creates alignment: 48px header + 44px logo section + border = 92px (vs toolbar at 96px)
@@ -82,13 +93,14 @@ The current UI has minor visual inconsistencies that can be improved:
 **Note**: The logo should maintain its aspect ratio. Only the height constraint changes; width adjusts proportionally.
 
 **Design System Updates**:
+
 - Already updated in `prose/designs/frontend/UI_COMPONENTS.md` - Sidebar Component Logo Section
 
 ## Visual Verification
 
 After implementing these changes, verify:
 
-1. **TopMenu Background**: 
+1. **TopMenu Background**:
    - TopMenu and Sidebar both use zinc-900 background
    - TopMenu maintains zinc-700 bottom border
    - Text remains readable (zinc-300 on zinc-900)
@@ -112,7 +124,6 @@ After implementing these changes, verify:
 - **UI Components**: `prose/designs/frontend/UI_COMPONENTS.md`
   - Sidebar Component (Visual Design, Logo Section, Separator)
   - TopMenu Component (Structure)
-  
 - **Related Plans**:
   - `prose/plans/UI_REWORK.md` - Phase 6.5 UI updates
   - `prose/plans/REPAIR.md` - Post-rework technical debt
@@ -156,6 +167,7 @@ After implementing these changes, verify:
 ## Timeline
 
 Estimated implementation time: 30-60 minutes
+
 - Design doc updates: 10 minutes ✅
 - Implementation: 20-30 minutes
 - Testing/verification: 10-20 minutes

@@ -824,6 +824,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `prose/designs
 **Recovery Phases** (from REPAIR.md):
 
 **Phase R1: Auto-Save Implementation** (8 hours):
+
 - Implement 7-second debounce auto-save
 - Add save status indicator to TopMenu
 - Implement manual save (Ctrl+S)
@@ -831,6 +832,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `prose/designs
 - Test guest and authenticated save flows
 
 **Phase R2: Document Persistence** (8 hours):
+
 - Fix content persistence to localStorage/API
 - Implement dirty state tracking
 - Add unsaved changes warning on document switch
@@ -838,30 +840,35 @@ Implement CodeMirror 6 editor with extended markdown support. See `prose/designs
 - Test data integrity
 
 **Phase R3: Settings Integration** (4 hours):
+
 - Connect auto-save toggle to save logic
 - Add line numbers extension to CodeMirror
 - Read and apply settings from localStorage
 - Immediate updates without reload
 
 **Phase R4: Mobile Enhancements** (6 hours):
+
 - Implement mobile tab switcher (Editor/Preview)
 - Conditional rendering for mobile vs desktop
 - Touch optimization
 - Test at all breakpoints
 
 **Phase R5: Additional Features** (6 hours):
+
 - Add mode toggle tabs to EditorToolbar (UI stub)
 - Implement delete confirmation dialog
 - Add keyboard shortcuts to tooltips
 - Display classification message toast
 
 **Phase R6: Accessibility Fixes** (6 hours):
+
 - Add skip to main content link
 - ARIA labels audit and fixes
 - Keyboard shortcuts help dialog
 - Screen reader testing
 
 **Phase R7: Testing and Documentation** (8 hours):
+
 - E2E test suite for all flows
 - Update design documents
 - Code quality improvements

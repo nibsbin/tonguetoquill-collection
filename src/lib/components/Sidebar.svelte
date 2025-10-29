@@ -140,8 +140,8 @@
 	</div>
 
 	<!-- Logo centered below -->
-	<div class="relative flex h-12 items-center justify-center overflow-hidden">
-		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-8 flex-shrink-0" />
+	<div class="relative flex h-11 items-center justify-center overflow-hidden">
+		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-7 flex-shrink-0" />
 	</div>
 
 	<Separator class="bg-zinc-700" />
@@ -320,7 +320,7 @@
 {:else}
 	<!-- Desktop Sidebar -->
 	<div
-		class="flex h-screen flex-col overflow-hidden bg-zinc-900 text-zinc-100 transition-all duration-300 {isExpanded
+		class="flex h-screen flex-col overflow-hidden border-r border-zinc-700 bg-zinc-900 text-zinc-100 transition-all duration-300 {isExpanded
 			? 'w-56'
 			: 'w-12'}"
 	>
@@ -329,9 +329,9 @@
 {/if}
 
 <!-- Delete Confirmation Dialog -->
-<Dialog 
-	open={deleteDialogOpen} 
-	title="Delete Document" 
+<Dialog
+	open={deleteDialogOpen}
+	title="Delete Document"
 	description="Are you sure you want to delete this document? This action cannot be undone."
 	onClose={cancelDelete}
 >

@@ -1,6 +1,6 @@
 ---
 name: Architect
-description: Specialized agent that crafts medium to high level design documents and plans 
+description: Specialized agent that crafts medium to high level design documents and plans
 ---
 
 # Architect Agent

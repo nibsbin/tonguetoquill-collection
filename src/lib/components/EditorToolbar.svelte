@@ -1,5 +1,15 @@
 <script lang="ts">
-	import { Bold, Italic, Strikethrough, Code, List, ListOrdered, Quote, Link, Save } from 'lucide-svelte';
+	import {
+		Bold,
+		Italic,
+		Strikethrough,
+		Code,
+		List,
+		ListOrdered,
+		Quote,
+		Link,
+		Save
+	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
 
@@ -123,7 +133,9 @@
 			<Button
 				variant="ghost"
 				size="sm"
-				class="h-7 gap-1 px-2 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100 {isDirty ? 'text-blue-400' : ''}"
+				class="h-7 gap-1 px-2 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100 {isDirty
+					? 'text-blue-400'
+					: ''}"
 				onclick={onManualSave}
 				title="Save (Ctrl+S)"
 				disabled={!isDirty}

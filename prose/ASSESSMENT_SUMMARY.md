@@ -12,18 +12,21 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 ## Assessment Methodology
 
 ### 1. Code Review
+
 - Analyzed all UI components in `src/lib/components/`
 - Examined state management in `src/lib/stores/`
 - Reviewed route structure and page implementations
 - Compared against design specifications in `prose/designs/`
 
 ### 2. Specification Comparison
+
 - Cross-referenced implementation with `prose/plans/UI_REWORK.md`
 - Validated against `prose/designs/frontend/UI_COMPONENTS.md`
 - Checked state management patterns from `prose/designs/frontend/STATE_MANAGEMENT.md`
 - Verified accessibility requirements from `prose/designs/frontend/ACCESSIBILITY.md`
 
 ### 3. Functional Testing
+
 - Documented current behavior vs. expected behavior
 - Identified missing functionality
 - Traced data flow through components
@@ -34,6 +37,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 ### Category 1: Data Persistence (CRITICAL)
 
 **Finding 1.1: Auto-Save Completely Missing**
+
 - **Severity**: HIGH (Critical data loss risk)
 - **Evidence**: No auto-save logic in `DocumentEditor.svelte`
 - **Impact**: Users lose all work if they don't manually save (which also doesn't work)
@@ -41,8 +45,9 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 - **Recovery**: REPAIR.md Phase R1 (8 hours)
 
 **Finding 1.2: Content Changes Not Persisted**
+
 - **Severity**: HIGH (Critical data loss)
-- **Evidence**: 
+- **Evidence**:
   - `DocumentEditor.updateDebouncedContent()` only updates preview
   - No calls to `documentStore.updateDocument()` or API endpoints
   - Content exists only in component local state
@@ -51,6 +56,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 - **Recovery**: REPAIR.md Phase R2 (8 hours)
 
 **Finding 1.3: No Unsaved Changes Warning**
+
 - **Severity**: MEDIUM (User confusion, data loss)
 - **Evidence**: No dirty state tracking, no warning dialogs
 - **Impact**: Users can accidentally lose work by switching documents
@@ -60,6 +66,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 ### Category 2: Settings and Preferences
 
 **Finding 2.1: Settings Toggles Non-Functional**
+
 - **Severity**: MEDIUM (Poor UX, broken promises)
 - **Evidence**:
   - `Sidebar.svelte` writes to localStorage correctly
@@ -70,6 +77,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 - **Recovery**: REPAIR.md Phase R3 (4 hours)
 
 **Finding 2.2: Line Numbers Not Configurable**
+
 - **Severity**: LOW (Missing feature)
 - **Evidence**: CodeMirror initialized without line numbers extension
 - **Impact**: User preference ignored
@@ -79,8 +87,9 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 ### Category 3: Mobile Experience
 
 **Finding 3.1: Preview Inaccessible on Mobile**
+
 - **Severity**: MEDIUM (Broken mobile UX)
-- **Evidence**: 
+- **Evidence**:
   - `DocumentEditor.svelte` has `lg:block` on preview (hidden on mobile)
   - TODO comment: "Mobile tabs for editor/preview toggle"
 - **Impact**: Mobile users cannot preview their markdown
@@ -90,6 +99,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 ### Category 4: User Interface Completeness
 
 **Finding 4.1: Mode Toggle Missing from Toolbar**
+
 - **Severity**: MEDIUM (Incomplete UI)
 - **Evidence**: `EditorToolbar.svelte` has no mode toggle tabs
 - **Impact**: Wizard mode (future feature) has no UI entry point
@@ -97,6 +107,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 - **Recovery**: REPAIR.md Phase R5 (6 hours)
 
 **Finding 4.2: Delete Confirmation Missing**
+
 - **Severity**: MEDIUM (Accidental data loss risk)
 - **Evidence**: `Sidebar.handleDeleteFile()` has last-doc check but no dialog
 - **Impact**: Users can accidentally delete documents
@@ -104,6 +115,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 - **Recovery**: REPAIR.md Phase R5
 
 **Finding 4.3: No Save Status Indicator**
+
 - **Severity**: MEDIUM (Poor feedback)
 - **Evidence**: TopMenu shows only filename, no save status
 - **Impact**: Users don't know if their work is saved
@@ -113,6 +125,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 ### Category 5: Keyboard and Accessibility
 
 **Finding 5.1: Ctrl+S Manual Save Not Implemented**
+
 - **Severity**: MEDIUM (Expected feature missing)
 - **Evidence**: CodeMirror has Ctrl+B and Ctrl+I, no Ctrl+S
 - **Impact**: Power users cannot manually trigger save
@@ -120,6 +133,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 - **Recovery**: REPAIR.md Phase R1
 
 **Finding 5.2: Keyboard Shortcuts Not Documented in Tooltips**
+
 - **Severity**: LOW (Discoverability issue)
 - **Evidence**: Tooltips show "Bold", not "Bold (Ctrl+B)"
 - **Impact**: Users unaware of keyboard shortcuts
@@ -127,8 +141,9 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 - **Recovery**: REPAIR.md Phase R5
 
 **Finding 5.3: Accessibility Gaps**
+
 - **Severity**: MEDIUM (Section 508 compliance risk)
-- **Evidence**: 
+- **Evidence**:
   - No skip to main content link
   - Some ARIA labels missing
   - Keyboard shortcuts help dialog not implemented
@@ -139,6 +154,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 ### Category 6: Polish Features
 
 **Finding 6.1: Classification Message Not Displayed**
+
 - **Severity**: LOW (Phase 9 feature)
 - **Evidence**: Sonner toast library integrated but no classification message trigger
 - **Impact**: Security notice not shown to users
@@ -150,6 +166,7 @@ This assessment identifies **10 distinct regressions** across functionality, sta
 ### Document Content Flow (BROKEN)
 
 **Current Flow:**
+
 ```
 User types → CodeMirror onChange
            → DocumentEditor.updateDebouncedContent()
@@ -159,6 +176,7 @@ User types → CodeMirror onChange
 ```
 
 **Expected Flow:**
+
 ```
 User types → CodeMirror onChange
            → DocumentEditor.updateDebouncedContent()
@@ -174,6 +192,7 @@ User types → CodeMirror onChange
 ### Settings Application Flow (BROKEN)
 
 **Current Flow:**
+
 ```
 User toggles setting → Sidebar.handleAutoSaveChange()
                      → localStorage.setItem()
@@ -181,6 +200,7 @@ User toggles setting → Sidebar.handleAutoSaveChange()
 ```
 
 **Expected Flow:**
+
 ```
 User toggles setting → Sidebar.handleAutoSaveChange()
                      → localStorage.setItem()
@@ -192,6 +212,7 @@ User toggles setting → Sidebar.handleAutoSaveChange()
 ### Document Switch Flow (BROKEN)
 
 **Current Flow:**
+
 ```
 User clicks document → Sidebar.handleFileSelect()
                      → documentStore.setActiveDocumentId()
@@ -201,6 +222,7 @@ User clicks document → Sidebar.handleFileSelect()
 ```
 
 **Expected Flow:**
+
 ```
 User clicks document → Check if current doc has unsaved changes
                      → If dirty: Show warning dialog
@@ -216,17 +238,20 @@ User clicks document → Check if current doc has unsaved changes
 ### User Impact
 
 **Critical Issues (Data Loss)**:
+
 - Users lose all edits when switching documents
 - No indication that work is not being saved
 - No recovery mechanism for lost content
 - Guest mode especially vulnerable (no server-side backup)
 
 **High Frustration Issues**:
+
 - Settings appear to work but do nothing
 - Mobile users cannot preview their work
 - No confirmation before destructive actions
 
 **Confusion Issues**:
+
 - No feedback on save status
 - Keyboard shortcuts not discoverable
 - Missing features users expect from specifications
@@ -234,12 +259,14 @@ User clicks document → Check if current doc has unsaved changes
 ### Development Impact
 
 **Technical Debt Introduced**:
+
 - ~46 hours of repair work needed
 - State management patterns need completion
 - Component integration incomplete
 - Testing coverage gaps created
 
 **Positive Outcomes from Phase 6.5**:
+
 - Visual design aligned with specifications
 - Component structure sound
 - Responsive foundation solid
@@ -316,18 +343,21 @@ Recovery will be considered complete when:
 The following design documents have been updated to reflect post-Phase 6.5 state:
 
 ### `prose/designs/frontend/STATE_MANAGEMENT.md`
+
 - Added Phase 6.5 status note in overview
 - Flagged auto-save implementation as missing
 - Added code example for required auto-save logic
 - Cross-referenced REPAIR.md for recovery
 
 ### `prose/designs/frontend/UI_COMPONENTS.md`
+
 - Added Phase 6.5 status note in overview
 - Marked mode toggle as not implemented
 - Updated editor features with current status
 - Added warnings for missing functionality
 
 ### `prose/plans/MVP_PLAN.md`
+
 - Inserted Phase 6.6 after Phase 6.5
 - Added comprehensive recovery plan summary
 - Updated Phase 7 to reference Phase 6.6 for auto-save
@@ -340,6 +370,7 @@ Phase 6.5 achieved its visual design goals but created significant technical deb
 The repair plan provides a clear, prioritized path to feature parity. Critical issues (auto-save, persistence) can be addressed quickly, followed by user experience improvements and polish.
 
 **Recommended Next Steps**:
+
 1. Review and approve REPAIR.md
 2. Begin implementation with Phase R1 (Auto-Save)
 3. Proceed through phases in priority order

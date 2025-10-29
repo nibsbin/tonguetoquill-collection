@@ -9,18 +9,21 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 ### What Was Completed in Phase 6.5
 
 ✅ **Visual Design Updates**:
+
 - Color palette aligned with zinc-900/800/700 theme
 - Typography updated (Lato for UI, Crimson Text for preview)
 - Component sizing matches specifications (48px heights, 224px sidebar)
 - Border radius and transitions standardized
 
 ✅ **Component Structure Updates**:
+
 - Sidebar reworked with hamburger menu, logo, file list, settings footer
 - TopMenu simplified with download button and more actions menu
 - EditorToolbar updated with icon-only buttons and separators
 - Settings popover implemented with switches
 
 ✅ **Layout Improvements**:
+
 - Responsive sidebar (collapsed/expanded states)
 - Mobile drawer implementation using Sheet component
 - Split editor/preview layout
@@ -34,6 +37,7 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Impact**: Users can lose work if they don't manually save. No save status indicator, no debounced auto-save.
 
 **Expected Behavior** (per DESIGN_SYSTEM.md and STATE_MANAGEMENT.md):
+
 - 7-second debounce after last keystroke
 - Save status indicator (Saving..., Saved, Error)
 - Optimistic UI updates
@@ -41,6 +45,7 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 - Settings toggle for auto-save (UI exists, logic missing)
 
 **Current State**:
+
 - Content updates are tracked in DocumentEditor component
 - No auto-save logic implemented
 - No save status indicator in TopMenu
@@ -51,12 +56,14 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Issue**: EditorToolbar has no mode toggle tabs as specified in UI_REWORK.md and UI_COMPONENTS.md.
 
 **Expected Behavior**:
+
 - Right-aligned tabs: "Markdown" and "Wizard"
 - Active tab styling (zinc-700 background, zinc-100 text)
 - Tab switching changes editor mode
 - Wizard mode provides guided document creation (future feature)
 
 **Current State**:
+
 - Mode toggle completely missing from EditorToolbar
 - Only formatting buttons implemented
 
@@ -67,12 +74,14 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Impact**: All edits are lost when switching documents or refreshing the page.
 
 **Expected Behavior**:
+
 - Content changes trigger auto-save (with debounce)
 - Changes persist to localStorage (guest mode) or API (authenticated mode)
 - Switching documents preserves unsaved changes (with warning)
 - Manual save option via Ctrl+S
 
 **Current State**:
+
 - `DocumentEditor` tracks content in local state
 - `updateDebouncedContent` updates preview only
 - No calls to `documentStore.updateDocument()` or API
@@ -85,11 +94,13 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Impact**: User preferences are ignored.
 
 **Expected Behavior**:
+
 - Auto-save toggle enables/disables auto-save functionality
 - Line Numbers toggle shows/hides CodeMirror line numbers gutter
 - Settings persist across sessions
 
 **Current State**:
+
 - Sidebar component reads/writes localStorage correctly
 - Values stored but never consumed by editor or auto-save logic
 - CodeMirror editor doesn't receive line numbers preference
@@ -99,11 +110,13 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Issue**: Keyboard shortcuts defined in MarkdownEditor (Ctrl+B, Ctrl+I) work, but Ctrl+S manual save is not implemented.
 
 **Expected Behavior**:
+
 - Ctrl/Cmd+S triggers manual save (bypasses debounce)
 - Other shortcuts as defined in DESIGN_SYSTEM.md
 - Tooltip hints show keyboard shortcuts
 
 **Current State**:
+
 - Bold (Ctrl+B) and Italic (Ctrl+I) work
 - No Ctrl+S handler
 - Tooltips show formatting names but not shortcuts
@@ -113,11 +126,13 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Issue**: Mobile layout (<768px) shows only editor, no way to toggle to preview.
 
 **Expected Behavior** (per DESIGN_SYSTEM.md Navigation Patterns):
+
 - Tabbed interface on mobile: Editor OR Preview
 - Tab bar for switching between views
 - Preview hidden on desktop in split view
 
 **Current State**:
+
 - Preview hidden on mobile (`lg:block` class)
 - No tab switcher implemented
 - Comment in code: "TODO: Mobile tabs for editor/preview toggle"
@@ -127,11 +142,13 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Issue**: Classification message toast (Phase 9 feature) not implemented.
 
 **Expected Behavior**:
+
 - Toast on app load: "This system is not authorized for controlled information."
 - Persistent toast (no auto-dismiss)
 - Top-center positioning
 
 **Current State**:
+
 - Sonner toast library integrated
 - No classification message trigger
 
@@ -140,11 +157,13 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Issue**: CodeMirror editor doesn't support line numbers toggle from settings.
 
 **Expected Behavior**:
+
 - Settings toggle controls line numbers display
 - Default state configurable
 - Immediate visual update when toggled
 
 **Current State**:
+
 - CodeMirror initialized without line numbers extension
 - Settings UI exists but not wired to editor
 
@@ -153,12 +172,14 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Issue**: No confirmation dialog when deleting documents.
 
 **Expected Behavior** (per UI_COMPONENTS.md):
+
 - Confirmation dialog before deletion
 - Warning if deleting last document
 - Cancel and confirm actions
 - Optimistic UI with rollback on error
 
 **Current State**:
+
 - `handleDeleteFile()` has check for last document
 - No dialog component shown
 - Immediate deletion without confirmation
@@ -168,12 +189,14 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 **Issue**: Some accessibility features specified in ACCESSIBILITY.md are missing.
 
 **Gaps Identified**:
+
 - No skip to main content link
 - ARIA labels missing on some icon-only buttons
 - Focus trap not verified in dialogs
 - Keyboard shortcuts help dialog not implemented
 
 **Current State**:
+
 - Basic keyboard navigation works
 - Focus indicators present
 - Screen reader testing not documented
@@ -183,6 +206,7 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 ### Current State Flow
 
 #### Document Loading:
+
 1. User opens app → `+page.svelte` fetches auth status
 2. `documentStore.fetchDocuments()` called
 3. Guest mode: loads from localStorage
@@ -190,6 +214,7 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 5. Documents displayed in Sidebar
 
 #### Document Selection:
+
 1. User clicks document in Sidebar
 2. `handleFileSelect(id)` sets `documentStore.activeDocumentId`
 3. `DocumentEditor` component mounts with `documentId` prop
@@ -197,6 +222,7 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 5. Content loaded into local state
 
 #### Content Editing:
+
 1. User types in `MarkdownEditor`
 2. CodeMirror triggers `onChange(newContent)`
 3. `DocumentEditor.updateDebouncedContent()` called
@@ -208,6 +234,7 @@ This document outlines the technical debt incurred during Phase 6.5 UI Rework an
 ### Broken State Flows
 
 #### Auto-Save Flow (MISSING):
+
 ```
 Expected:
 Content change → 7s debounce → Save API call → Update store → Status indicator
@@ -217,6 +244,7 @@ Content change → Preview update → [END]
 ```
 
 #### Settings Application (BROKEN):
+
 ```
 Expected:
 Toggle auto-save → localStorage → Auto-save logic enabled/disabled
@@ -226,6 +254,7 @@ Toggle auto-save → localStorage → [NOT CONSUMED]
 ```
 
 #### Document Switch with Unsaved Changes (BROKEN):
+
 ```
 Expected:
 User switches doc → Check dirty flag → Show warning → Save or discard
@@ -271,6 +300,7 @@ User switches doc → New doc loads → Previous changes lost
    - Test guest vs authenticated mode saving
 
 **Deliverables**:
+
 - Auto-save functionality working with 7-second debounce
 - Save status indicator in TopMenu
 - Manual save via Ctrl+S
@@ -316,6 +346,7 @@ User switches doc → New doc loads → Previous changes lost
    - Test localStorage quota limits (guest mode)
 
 **Deliverables**:
+
 - Content persists to localStorage/API correctly
 - Unsaved changes warning dialog
 - Dirty state indicator in UI
@@ -353,6 +384,7 @@ User switches doc → New doc loads → Previous changes lost
    - Test settings persist across sessions
 
 **Deliverables**:
+
 - Auto-save toggle controls auto-save behavior
 - Line numbers toggle controls editor display
 - Settings properly consumed by components
@@ -389,6 +421,7 @@ User switches doc → New doc loads → Previous changes lost
    - Test touch interactions
 
 **Deliverables**:
+
 - Mobile tab switcher for editor/preview
 - Proper mobile layout at all breakpoints
 - Touch-optimized interactions
@@ -433,6 +466,7 @@ User switches doc → New doc loads → Previous changes lost
    - Test classification message display
 
 **Deliverables**:
+
 - Mode toggle tabs in EditorToolbar (UI only)
 - Delete confirmation dialog
 - Enhanced keyboard shortcuts
@@ -476,6 +510,7 @@ User switches doc → New doc loads → Previous changes lost
    - Color contrast verification
 
 **Deliverables**:
+
 - Skip to main content link
 - Complete ARIA labeling
 - Keyboard shortcuts help dialog
@@ -517,6 +552,7 @@ User switches doc → New doc loads → Previous changes lost
    - Optimize re-renders if needed
 
 **Deliverables**:
+
 - Comprehensive E2E test suite
 - Updated design documentation
 - Clean codebase with no TODOs
@@ -601,6 +637,7 @@ User switches doc → New doc loads → Previous changes lost
 ## References
 
 ### Design Documents
+
 - `prose/designs/frontend/STATE_MANAGEMENT.md`: State management patterns and auto-save specification
 - `prose/designs/frontend/UI_COMPONENTS.md`: Component specifications and behavior
 - `prose/designs/frontend/DESIGN_SYSTEM.md`: Visual design, auto-save behavior, navigation patterns
@@ -608,10 +645,12 @@ User switches doc → New doc loads → Previous changes lost
 - `prose/designs/frontend/API_INTEGRATION.md`: Backend integration patterns
 
 ### Plan Documents
+
 - `prose/plans/MVP_PLAN.md`: Overall MVP phases and requirements
 - `prose/plans/UI_REWORK.md`: Phase 6.5 implementation details
 
 ### Mock Project Reference
+
 - `prose/legacy/mock_project/`: Reference implementation for visual design
 
 ---
@@ -621,6 +660,7 @@ User switches doc → New doc loads → Previous changes lost
 Phase 6.5 successfully updated the visual design and component structure to match the desired UI, but several critical features were removed or left incomplete. This repair plan provides a structured approach to recover feature parity while maintaining the improved visual design. The phased approach prioritizes high-impact functionality (auto-save, persistence) before polish features (mode toggle, accessibility enhancements).
 
 **Next Steps**:
+
 1. Review and approve this repair plan
 2. Insert as Phase 6.6 in MVP_PLAN.md
 3. Begin implementation with Phase R1 (Auto-Save)
