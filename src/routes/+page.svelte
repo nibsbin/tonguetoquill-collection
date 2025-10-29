@@ -1,7 +1,7 @@
 <script lang="ts">
 	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { onMount } from 'svelte';
-	import { Toaster } from 'svelte-sonner';
+	import { Toaster, toast } from 'svelte-sonner';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
@@ -13,6 +13,12 @@
 	let autoSave = new AutoSave();
 
 	onMount(async () => {
+		// Show classification message
+		toast.info('This system is not authorized for controlled information.', {
+			duration: 10000,
+			position: 'top-center'
+		});
+
 		try {
 			const response = await fetch('/api/auth/me');
 			if (response.ok) {

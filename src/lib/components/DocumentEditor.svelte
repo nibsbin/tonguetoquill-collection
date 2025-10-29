@@ -23,6 +23,8 @@
 	let autoSaveEnabled = $state(true);
 	let showLineNumbers = $state(true);
 	let previousDocumentId = $state<string | null>(null);
+	let mobileView = $state<'editor' | 'preview'>('editor');
+	let isMobile = $state(false);
 
 	// Track dirty state (unsaved changes)
 	let isDirty = $derived(content !== initialContent);
@@ -120,6 +122,13 @@
 			showLineNumbers = savedLineNumbers === 'true';
 		}
 
+		// Check if mobile
+		const checkMobile = () => {
+			isMobile = window.innerWidth < 768;
+		};
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+
 		// Listen for storage events (when settings change)
 		const handleStorageChange = (e: StorageEvent) => {
 			if (e.key === 'auto-save' && e.newValue !== null) {
@@ -133,6 +142,7 @@
 
 		return () => {
 			window.removeEventListener('storage', handleStorageChange);
+			window.removeEventListener('resize', checkMobile);
 		};
 	});
 
@@ -150,24 +160,43 @@
 		<p class="text-zinc-400">Loading document...</p>
 	</div>
 {:else}
-	<div class="flex h-full flex-1">
-		<!-- Editor Section -->
-		<div class="flex flex-1 flex-col border-r border-zinc-700">
-			<EditorToolbar onFormat={handleFormat} isDirty={isDirty} onManualSave={handleManualSave} />
-			<MarkdownEditor 
-				bind:this={editorRef} 
-				value={content} 
-				onChange={updateDebouncedContent} 
-				onSave={handleManualSave}
-				{showLineNumbers}
-			/>
-		</div>
+	<div class="flex h-full flex-1 flex-col">
+		<!-- Mobile Tab Switcher (< 768px) -->
+		{#if isMobile}
+			<div class="flex border-b border-zinc-700 bg-zinc-800">
+				<button
+					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'editor' ? 'bg-zinc-700 text-zinc-100' : 'text-zinc-400 hover:text-zinc-300'}"
+					onclick={() => mobileView = 'editor'}
+				>
+					Editor
+				</button>
+				<button
+					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'preview' ? 'bg-zinc-700 text-zinc-100' : 'text-zinc-400 hover:text-zinc-300'}"
+					onclick={() => mobileView = 'preview'}
+				>
+					Preview
+				</button>
+			</div>
+		{/if}
 
-		<!-- Preview Section (Desktop) -->
-		<div class="hidden flex-1 overflow-auto lg:block">
-			<MarkdownPreview markdown={debouncedContent} />
-		</div>
+		<!-- Content Area -->
+		<div class="flex flex-1 overflow-hidden">
+			<!-- Editor Section -->
+			<div class="flex flex-1 flex-col border-r border-zinc-700 {isMobile && mobileView !== 'editor' ? 'hidden' : ''}">
+				<EditorToolbar onFormat={handleFormat} isDirty={isDirty} onManualSave={handleManualSave} />
+				<MarkdownEditor 
+					bind:this={editorRef} 
+					value={content} 
+					onChange={updateDebouncedContent} 
+					onSave={handleManualSave}
+					{showLineNumbers}
+				/>
+			</div>
 
-		<!-- TODO: Mobile tabs for editor/preview toggle -->
+			<!-- Preview Section (Desktop: always visible, Mobile: toggled) -->
+			<div class="flex-1 overflow-auto {isMobile ? (mobileView === 'preview' ? '' : 'hidden') : 'hidden lg:block'}">
+				<MarkdownPreview markdown={debouncedContent} />
+			</div>
+		</div>
 	</div>
 {/if}

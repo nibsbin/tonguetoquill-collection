@@ -10,6 +10,7 @@
 	import Sheet from '$lib/components/ui/sheet.svelte';
 	import SheetTrigger from '$lib/components/ui/sheet-trigger.svelte';
 	import SheetContent from '$lib/components/ui/sheet-content.svelte';
+	import Dialog from '$lib/components/Dialog.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { onMount } from 'svelte';
 
@@ -25,6 +26,8 @@
 	let popoverOpen = $state(false);
 	let mobileSheetOpen = $state(false);
 	let isMobile = $state(false);
+	let deleteDialogOpen = $state(false);
+	let documentToDelete = $state<string | null>(null);
 
 	onMount(() => {
 		// Check if sidebar should be expanded from localStorage
@@ -82,7 +85,22 @@
 			// Can't delete the last file
 			return;
 		}
-		documentStore.deleteDocument(fileId);
+		// Show confirmation dialog
+		documentToDelete = fileId;
+		deleteDialogOpen = true;
+	}
+
+	function confirmDelete() {
+		if (documentToDelete) {
+			documentStore.deleteDocument(documentToDelete);
+			documentToDelete = null;
+		}
+		deleteDialogOpen = false;
+	}
+
+	function cancelDelete() {
+		documentToDelete = null;
+		deleteDialogOpen = false;
 	}
 
 	function handleAutoSaveChange(value: boolean) {
@@ -304,3 +322,36 @@
 		{@render sidebarContent()}
 	</div>
 {/if}
+
+<!-- Delete Confirmation Dialog -->
+<Dialog 
+	open={deleteDialogOpen} 
+	title="Delete Document" 
+	description="Are you sure you want to delete this document? This action cannot be undone."
+	onClose={cancelDelete}
+>
+	{#snippet children()}
+		<div class="flex justify-end gap-2">
+			<Button
+				variant="ghost"
+				size="sm"
+				class="text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+				onclick={cancelDelete}
+			>
+				{#snippet children()}
+					Cancel
+				{/snippet}
+			</Button>
+			<Button
+				variant="default"
+				size="sm"
+				class="bg-red-600 text-white hover:bg-red-700"
+				onclick={confirmDelete}
+			>
+				{#snippet children()}
+					Delete
+				{/snippet}
+			</Button>
+		</div>
+	{/snippet}
+</Dialog>
