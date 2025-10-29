@@ -47,13 +47,13 @@
 	}
 </script>
 
-<div class="flex h-12 items-center justify-between border-b border-zinc-700 bg-zinc-900 px-4">
+<div class="flex h-12 items-center justify-between border-b border-border bg-background px-4">
 	<div class="flex items-center gap-2">
-		<span class="text-zinc-300">{fileName}</span>
+		<span class="text-foreground/80">{fileName}</span>
 
 		<!-- Save Status Indicator -->
 		{#if saveStatus === 'saving'}
-			<div class="flex items-center gap-1 text-xs text-zinc-400">
+			<div class="flex items-center gap-1 text-xs text-muted-foreground">
 				<Loader2 class="h-3 w-3 animate-spin" />
 				<span>Saving...</span>
 			</div>
@@ -71,11 +71,11 @@
 	</div>
 
 	<div class="flex items-center gap-2">
-		<div class="rounded-md border border-zinc-600 p-0.5">
+		<div class="rounded-md border border-border-hover p-0.5">
 			<Button
 				variant="ghost"
 				size="sm"
-				class="h-7 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100"
+				class="h-7 text-foreground/80 hover:bg-accent hover:text-foreground"
 				onclick={onDownload}
 				aria-label="Download document"
 			>
@@ -94,7 +94,7 @@
 						<Button
 							variant="ghost"
 							size="sm"
-							class="h-8 w-8 p-0 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100"
+							class="h-8 w-8 p-0 text-foreground/80 hover:bg-accent hover:text-foreground"
 							aria-label="More options"
 						>
 							{#snippet children()}
@@ -103,10 +103,10 @@
 						</Button>
 					{/snippet}
 				</DropdownMenuTrigger>
-				<DropdownMenuContent align="end" class="w-56 border-zinc-700 bg-zinc-800 text-zinc-100">
+				<DropdownMenuContent align="end" class="w-56 border-border bg-surface-elevated text-foreground">
 					{#snippet children()}
 						<DropdownMenuItem
-							class="text-zinc-300 focus:bg-zinc-700 focus:text-zinc-100"
+							class="text-foreground/80 focus:bg-accent focus:text-foreground"
 							onclick={handleKeyboardShortcuts}
 						>
 							{#snippet children()}
@@ -115,10 +115,10 @@
 							{/snippet}
 						</DropdownMenuItem>
 
-						<DropdownMenuSeparator class="bg-zinc-700" />
+						<DropdownMenuSeparator class="bg-border" />
 
 						<DropdownMenuItem
-							class="text-zinc-300 focus:bg-zinc-700 focus:text-zinc-100"
+							class="text-foreground/80 focus:bg-accent focus:text-foreground"
 							onclick={handleAbout}
 						>
 							{#snippet children()}
@@ -129,7 +129,7 @@
 						</DropdownMenuItem>
 
 						<DropdownMenuItem
-							class="text-zinc-300 focus:bg-zinc-700 focus:text-zinc-100"
+							class="text-foreground/80 focus:bg-accent focus:text-foreground"
 							onclick={handleTerms}
 						>
 							{#snippet children()}
@@ -140,7 +140,7 @@
 						</DropdownMenuItem>
 
 						<DropdownMenuItem
-							class="text-zinc-300 focus:bg-zinc-700 focus:text-zinc-100"
+							class="text-foreground/80 focus:bg-accent focus:text-foreground"
 							onclick={handlePrivacy}
 						>
 							{#snippet children()}

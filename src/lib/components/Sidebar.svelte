@@ -120,7 +120,7 @@
 		<Button
 			variant="ghost"
 			size="icon"
-			class="flex-shrink-0 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+			class="flex-shrink-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={handleToggle}
 			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 		>
@@ -130,7 +130,7 @@
 		</Button>
 
 		<span
-			class="pointer-events-none absolute right-0 left-0 text-center whitespace-nowrap text-zinc-100 transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
 			style="font-family: 'Lato', Arial, sans-serif; font-weight: 700; font-size: 1.2rem;"
@@ -144,14 +144,14 @@
 		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-7 flex-shrink-0" />
 	</div>
 
-	<Separator class="bg-zinc-700" />
+	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
 	<div class="flex-1 overflow-y-auto p-2">
 		<div class="space-y-1">
 			<Button
 				variant="ghost"
-				class="w-full justify-start text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+				class="w-full justify-start text-foreground/80 hover:bg-accent hover:text-foreground"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
@@ -164,20 +164,20 @@
 			</Button>
 
 			{#if documentStore.documents.length > 0 && isExpanded}
-				<Separator class="my-2 bg-zinc-700" />
+				<Separator class="my-2 bg-border" />
 				{#each documentStore.documents as doc (doc.id)}
 					<div
 						class="group -mr-2 flex items-center gap-1 rounded pr-2 pl-2 {doc.id ===
 						documentStore.activeDocumentId
-							? 'bg-zinc-700'
-							: 'hover:bg-zinc-800'}"
+							? 'bg-accent'
+							: 'hover:bg-accent/50'}"
 					>
 						<Button
 							variant="ghost"
 							class="flex-1 justify-start text-sm hover:bg-transparent {doc.id ===
 							documentStore.activeDocumentId
-								? 'text-zinc-100'
-								: 'text-zinc-400 hover:text-zinc-100'}"
+								? 'text-foreground'
+								: 'text-muted-foreground hover:text-foreground'}"
 							onclick={() => handleFileSelect(doc.id)}
 						>
 							{#snippet children()}
@@ -190,7 +190,7 @@
 						<Button
 							variant="ghost"
 							size="icon"
-							class="h-8 w-8 flex-shrink-0 text-zinc-500 opacity-0 group-hover:opacity-100 hover:bg-transparent hover:text-red-400"
+							class="h-8 w-8 flex-shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-transparent hover:text-red-400"
 							onclick={(e) => {
 								e.stopPropagation();
 								handleDeleteFile(doc.id);
@@ -208,12 +208,12 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="space-y-1 border-t border-zinc-700 p-2">
+	<div class="space-y-1 border-t border-border p-2">
 		<!-- User Profile Button -->
 		{#if user}
 			<Button
 				variant="ghost"
-				class="w-full justify-start text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+				class="w-full justify-start text-muted-foreground hover:bg-accent hover:text-foreground"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
@@ -235,7 +235,7 @@
 					{#snippet children()}
 						<Button
 							variant="ghost"
-							class="w-full justify-start text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+							class="w-full justify-start text-muted-foreground hover:bg-accent hover:text-foreground"
 							aria-label="Settings"
 						>
 							{#snippet children()}
@@ -250,7 +250,7 @@
 				<PopoverContent
 					side="right"
 					align="end"
-					class="w-64 border-zinc-700 bg-zinc-800 p-0 text-zinc-100"
+					class="w-64 border-border bg-surface-elevated p-0 text-foreground"
 				>
 					{#snippet children()}
 						<div class="p-4">
@@ -258,7 +258,7 @@
 
 							<div class="space-y-4">
 								<div class="flex items-center justify-between">
-									<Label for="auto-save" class="text-zinc-300">
+									<Label for="auto-save" class="text-foreground/80">
 										{#snippet children()}
 											Auto-save
 										{/snippet}
@@ -271,7 +271,7 @@
 								</div>
 
 								<div class="flex items-center justify-between">
-									<Label for="line-numbers" class="text-zinc-300">
+									<Label for="line-numbers" class="text-foreground/80">
 										{#snippet children()}
 											Line Numbers
 										{/snippet}
@@ -301,7 +301,7 @@
 						<Button
 							variant="ghost"
 							size="icon"
-							class="fixed top-2 left-2 z-40 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 lg:hidden"
+							class="fixed top-2 left-2 z-40 text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
 						>
 							{#snippet children()}
 								<Menu class="h-5 w-5" />
@@ -309,7 +309,7 @@
 						</Button>
 					{/snippet}
 				</SheetTrigger>
-				<SheetContent side="left" class="flex w-56 flex-col bg-zinc-900 p-0 text-zinc-100">
+				<SheetContent side="left" class="flex w-56 flex-col bg-background p-0 text-foreground">
 					{#snippet children()}
 						{@render sidebarContent()}
 					{/snippet}
@@ -320,7 +320,7 @@
 {:else}
 	<!-- Desktop Sidebar -->
 	<div
-		class="flex h-screen flex-col overflow-hidden border-r border-zinc-700 bg-zinc-900 text-zinc-100 transition-all duration-300 {isExpanded
+		class="flex h-screen flex-col overflow-hidden border-r border-border bg-background text-foreground transition-all duration-300 {isExpanded
 			? 'w-56'
 			: 'w-12'}"
 	>
@@ -340,7 +340,7 @@
 			<Button
 				variant="ghost"
 				size="sm"
-				class="text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+				class="text-muted-foreground hover:bg-accent hover:text-foreground"
 				onclick={cancelDelete}
 			>
 				{#snippet children()}
