@@ -177,7 +177,7 @@ The frontend integrates with backend services documented in `designs/backend/`:
 
 **State**: Svelte 5 runes, Svelte stores, form actions
 
-**UI**: Lucide Svelte (icons), Svelte Sonner (toasts)
+**UI**: shadcn-svelte (component library with icons and toasts)
 
 **Editor**: CodeMirror 6 with custom language mode (see [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md))
 
@@ -250,7 +250,7 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 
 ### Design
 - [Tailwind CSS](https://tailwindcss.com/)
-- [Lucide Icons](https://lucide.dev/)
+- [shadcn-svelte](https://www.shadcn-svelte.com/)
 
 ### Accessibility
 - [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)

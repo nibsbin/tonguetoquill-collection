@@ -11,7 +11,7 @@ Tonguetoquill is a professional single-page application built with SvelteKit 5, 
 - **State Management**: Svelte 5 runes and stores
 - **Authentication**: JWT-based (Keycloak or Supabase)
 - **Document Rendering**: Quillmark integration
-- **UI Components**: Lucide Svelte icons, Svelte Sonner notifications
+- **UI Components**: shadcn-svelte (includes icons and notifications)
 
 ## Routing Architecture
 
