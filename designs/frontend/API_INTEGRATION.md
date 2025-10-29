@@ -11,12 +11,14 @@ For authentication details, see [designs/backend/AUTH.md](../backend/AUTH.md).
 ### Base Configuration
 
 **API Settings**:
+
 - Base URL (environment-specific)
 - Timeout: 30 seconds (see [DESIGN_SYSTEM.md - Auto-Save](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for save timeout)
 - Retry strategy: Up to 3 attempts with exponential backoff
 - Credentials: Include cookies (for JWT tokens)
 
 **Endpoints**:
+
 - Authentication: `/auth/*`
 - Documents: `/api/documents/*`
 - User: `/api/profile`, `/api/preferences`
@@ -24,6 +26,7 @@ For authentication details, see [designs/backend/AUTH.md](../backend/AUTH.md).
 ### API Client Pattern
 
 **Features**:
+
 - Centralized request handling
 - Automatic error handling
 - Token refresh on 401
@@ -32,12 +35,14 @@ For authentication details, see [designs/backend/AUTH.md](../backend/AUTH.md).
 - Retry logic
 
 **HTTP Methods**:
+
 - GET: Fetch resources
 - POST: Create resources
 - PUT: Update resources
 - DELETE: Remove resources
 
 **Error Handling**:
+
 - Network errors
 - Timeout errors
 - HTTP error codes
@@ -51,12 +56,14 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for complete authentication ar
 ### Login Flow
 
 **Process**:
+
 1. User submits credentials via form action
 2. Server validates and sets HTTP-only cookie with JWT
 3. User redirected to app
 4. Session verified on protected routes
 
 **Token Management**:
+
 - JWT stored in HTTP-only cookies (never accessible to JavaScript)
 - Automatic token refresh before expiration (proactive, ~5 minutes before)
 - Logout clears session cookie
@@ -65,12 +72,14 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for complete authentication ar
 ### Protected Routes
 
 **Server-Side Protection**:
+
 - Verify authentication in SvelteKit server hooks
 - Load user data in layout server load function
 - Redirect to login if not authenticated
 - Pass user to client via page data
 
 **Client-Side Behavior**:
+
 - Access user from page data
 - Handle auth errors gracefully (show toast, redirect)
 - Redirect to login when session expires
@@ -80,6 +89,7 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for complete authentication ar
 See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refresh specifications.
 
 **Features**:
+
 - Automatic token refresh (proactive, before expiration)
 - Session timeout warnings (optional, based on backend config)
 - Logout on inactivity (optional, based on backend config)
@@ -89,6 +99,7 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refres
 ### Document Service
 
 **Operations**:
+
 - **List**: Get all user's documents
 - **Get**: Fetch single document by ID
 - **Create**: Create new blank markdown document
@@ -98,6 +109,7 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refres
 **Ownership**: Each document owned by single user (creator). No sharing in MVP.
 
 **Error Handling**:
+
 - 400: Validation errors
 - 403: Permission denied (not document owner)
 - 404: Document not found
@@ -148,18 +160,21 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refres
 ### Pattern
 
 **Process**:
+
 1. Update local state immediately
 2. Send request to server
 3. On success: Keep update
 4. On error: Rollback and show error toast
 
 **Use Cases**:
+
 - Document content updates (save operations)
 - Document creation
 - Document deletion
 - Preference changes
 
 **Benefits**:
+
 - Instant feedback
 - Better perceived performance
 - Resilient to network latency
@@ -171,6 +186,7 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refres
 **States**: Idle, Loading, Success, Error
 
 **UI Patterns**:
+
 - Loading: Skeleton or spinner
 - Success: Show data
 - Error: Error message with retry
@@ -179,11 +195,13 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refres
 ### Pagination
 
 **Strategies**:
+
 - Offset-based: Page numbers
 - Cursor-based: Efficient for large datasets
 - Infinite scroll: Load more on scroll
 
 **Implementation**:
+
 - Server provides pagination metadata
 - Client tracks current page/cursor
 - Load more on user action or intersection
@@ -191,6 +209,7 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refres
 ### Caching
 
 **Strategies**:
+
 - In-memory cache for session
 - LocalStorage for persistence
 - IndexedDB for large datasets
@@ -201,12 +220,14 @@ See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refres
 ### API Response Types
 
 **TypeScript Interfaces**:
+
 - Define types for all API responses
 - Share types between frontend and backend
 - Runtime validation of responses
 - Type-safe error handling
 
 **Type Generation**:
+
 - Generate from OpenAPI spec (optional)
 - Manual type definitions
 - Zod schemas for validation

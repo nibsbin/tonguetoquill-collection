@@ -5,6 +5,7 @@
 This document outlines a phased approach to implementing the Tonguetoquill MVP - a professional markdown document editor with authentication, auto-save, and Section 508 compliance. The plan balances backend and frontend development to enable incremental testing and validation.
 
 **Technology Stack:**
+
 - **Framework**: SvelteKit 5 (full-stack: frontend + backend)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS 4.0
@@ -26,6 +27,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 ### 1.1 Project Initialization
 
 **SvelteKit 5 Full-Stack Project:**
+
 - Initialize SvelteKit 5 project with TypeScript
 - Select options: TypeScript strict mode, ESLint, Prettier, Playwright, Vitest
 - Configure Tailwind CSS 4.0
@@ -33,6 +35,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 
 **Project Structure:**
 Organize into logical directories:
+
 - `src/lib/`: Reusable components, services, stores, utilities
   - `components/`: Svelte UI components
   - `services/`: Authentication and document service providers
@@ -46,17 +49,20 @@ Organize into logical directories:
 - `src/hooks.server.ts`: Server-side middleware (authentication)
 
 **Core Dependencies:**
+
 - `shadcn-svelte`: Component library with built-in Lucide icons and Sonner toast notifications
 - CodeMirror 6 packages (see `designs/frontend/MARKDOWN_EDITOR.md` - Dependencies section)
 - `zod`: Schema validation for runtime validation, form schemas, and type-safe environment variables
 
 **Environment Configuration:**
+
 - Create `.env` file for development (not committed)
 - Create `.env.example` template (committed to repo)
 - Configure SvelteKit to load environment variables
 - Use `PUBLIC_` prefix for client-accessible variables
 
 **Development Tools:**
+
 - ESLint configuration for SvelteKit and TypeScript
 - Prettier configuration with Svelte plugin
 - Set up git hooks with `husky` (pre-commit linting)
@@ -64,6 +70,7 @@ Organize into logical directories:
 
 **Development Scripts:**
 Standard SvelteKit scripts in `package.json`:
+
 - `dev`: Run development server
 - `build`: Build for production
 - `preview`: Preview production build
@@ -75,6 +82,7 @@ Standard SvelteKit scripts in `package.json`:
 
 **Environment Configuration:**
 Development environment variables (`.env` file):
+
 - `USE_AUTH_MOCKS=true`: Enable mock authentication provider
 - `USE_DB_MOCKS=true`: Enable mock document service
 - `NODE_ENV=development`: Development mode
@@ -84,6 +92,7 @@ Development environment variables (`.env` file):
 Template file (`.env.example`) committed to repository as reference.
 
 **Deliverables:**
+
 - Single SvelteKit 5 full-stack project initialized
 - Project structure with organized directories (`lib/`, `routes/`)
 - Tailwind CSS 4.0 configured and working
@@ -107,6 +116,7 @@ Template file (`.env.example`) committed to repository as reference.
 ### 2.1 Authentication Contract Definition
 
 **Tasks:**
+
 - Define AuthContract interface (TypeScript) with all authentication methods
 - Define core types: `User`, `Session`, `AuthResult`, `UUID`
 - Define `AuthError` class with proper error codes
@@ -116,6 +126,7 @@ Template file (`.env.example`) committed to repository as reference.
 - Document mock limitations vs real Supabase behavior
 
 **Type Safety Considerations:**
+
 - Use `UUID` type alias for all user/session IDs (validates format in strict mode)
 - Use `Record<string, any>` instead of `object` for metadata (more flexible)
 - `getCurrentUser` returns `User | null` (handle missing user gracefully)
@@ -124,6 +135,7 @@ Template file (`.env.example`) committed to repository as reference.
 
 **Contract Interface:**
 Define TypeScript interfaces for authentication with proper type safety:
+
 - `UUID` type for all user and session identifiers
 - `User` interface (id, email, dodid, profile, timestamps)
 - `Session` interface (access_token, refresh_token, expiry, user)
@@ -133,6 +145,7 @@ Define TypeScript interfaces for authentication with proper type safety:
 - `TokenPayload` interface for JWT structure
 
 **Key Methods:**
+
 - `signUp`: Create new user account
 - `signIn`: Authenticate user and create session
 - `signOut`: Invalidate session
@@ -142,6 +155,7 @@ Define TypeScript interfaces for authentication with proper type safety:
 - `verifyEmail`: Confirm email verification
 
 **Type Safety Requirements:**
+
 - All IDs use UUID type instead of plain strings
 - Error codes are strongly typed (prevents typos)
 - Nullable return types where appropriate (e.g., `User | null`)
@@ -152,6 +166,7 @@ Define TypeScript interfaces for authentication with proper type safety:
 ### 2.2 Mock Authentication Provider
 
 **Tasks:**
+
 - Implement MockAuthProvider implementing the AuthContract interface
 - Use in-memory Map-based storage for users and sessions
 - Generate proper UUIDs using `crypto.randomUUID()`
@@ -165,16 +180,17 @@ Mock tokens must match Supabase JWT format for seamless Phase 10 migration:
 
 ```typescript
 interface MockTokenPayload {
-  sub: UUID;              // user ID (subject)
-  email: string;          // user email
-  exp: number;            // expiry timestamp (Unix epoch)
-  iat: number;            // issued at timestamp (Unix epoch)
-  role: 'authenticated';  // user role (always 'authenticated' for MVP)
-  aud: 'authenticated';   // audience claim
+	sub: UUID; // user ID (subject)
+	email: string; // user email
+	exp: number; // expiry timestamp (Unix epoch)
+	iat: number; // issued at timestamp (Unix epoch)
+	role: 'authenticated'; // user role (always 'authenticated' for MVP)
+	aud: 'authenticated'; // audience claim
 }
 ```
 
 **Token Generation Strategy:**
+
 - Use simple base64 encoding for MVP (not cryptographically secure)
 - Format: `header.payload.signature` (standard JWT structure)
 - Header: `{"alg":"HS256","typ":"JWT"}` (base64 encoded)
@@ -183,6 +199,7 @@ interface MockTokenPayload {
 - Store signature validation logic for middleware
 
 **Mock Features:**
+
 - Email format validation
 - Password strength validation (optional for MVP)
 - Duplicate user detection
@@ -195,6 +212,7 @@ interface MockTokenPayload {
 ### 2.3 Database Schema Contracts & Mock Service
 
 **Tasks:**
+
 - Define database schema interfaces (User, Document types)
 - Document table structure matching `designs/backend/SCHEMAS.md`
 - Implement MockDocumentService with in-memory storage
@@ -203,6 +221,7 @@ interface MockTokenPayload {
 - Support all CRUD operations with ownership verification
 
 **Document Type Definitions:**
+
 - `Document` interface (id, owner_id, name, content, content_size_bytes, timestamps)
 - `DocumentMetadata` interface (same as Document but without content field for performance)
 - `DocumentListResult` interface (documents array, pagination info)
@@ -210,12 +229,14 @@ interface MockTokenPayload {
 - All IDs use UUID type for consistency
 
 **Validation Rules:**
+
 - Document name: 1-255 characters, trimmed, no leading/trailing whitespace
 - Content: Max 524,288 bytes (0.5 MB)
 - Ownership verification on all operations
 - Accurate content_size_bytes calculation using UTF-8 byte length
 
 **Mock Document Service Methods:**
+
 - `createDocument`: Create new document (validate name, content size, generate UUID)
 - `getDocumentMetadata`: Return metadata only (no content field for performance)
 - `getDocumentContent`: Return full document with content
@@ -227,6 +248,7 @@ interface MockTokenPayload {
 All methods accept UUID parameters for user and document IDs, and verify ownership before operations.
 
 **Mock Storage:**
+
 - Use Map for in-memory storage
 - Generate realistic timestamps
 - Calculate content_size_bytes accurately
@@ -237,6 +259,7 @@ All methods accept UUID parameters for user and document IDs, and verify ownersh
 ### 2.4 Authentication Routes with Mock Backend
 
 **Implement Routes:**
+
 - `POST /auth/register`: User registration (via MockAuthProvider)
 - `POST /auth/login`: User login, set HTTP-only cookies
 - `POST /auth/refresh`: Refresh access tokens
@@ -247,6 +270,7 @@ All methods accept UUID parameters for user and document IDs, and verify ownersh
 - `GET /auth/callback`: OAuth callback stub (future Keycloak)
 
 **Mock Authentication Middleware:**
+
 - Extract and validate mock JWT tokens from cookies
 - Verify signature using MOCK_JWT_SECRET
 - Check token expiry (reject if exp < current time)
@@ -254,11 +278,13 @@ All methods accept UUID parameters for user and document IDs, and verify ownersh
 - Handle expired tokens with proper error responses
 
 **Error Handling:**
+
 - Implement standard error response format: `{ "error": "error_code", "message": "description" }`
 - Handle common auth errors (401, 403, 400)
 - Realistic error messages matching Supabase error formats
 
 **Environment Configuration:**
+
 ```bash
 # .env for development with mocks
 USE_AUTH_MOCKS=true
@@ -272,6 +298,7 @@ MOCK_JWT_SECRET=dev-secret-key
 ### 2.5 Contract Testing Framework
 
 **Tasks:**
+
 - Set up contract test suite using Vitest
 - Write tests that will run against BOTH mock and real providers
 - Test all authentication flows (signup, login, logout, refresh)
@@ -280,6 +307,7 @@ MOCK_JWT_SECRET=dev-secret-key
 - Use conditional test execution (skip real provider tests during mock-only development)
 
 **Test Coverage:**
+
 - Authentication operations (signup, login, logout, session refresh)
 - Document CRUD operations (create, read, update, delete, list)
 - Validation logic (email format, password strength, content size limits)
@@ -293,20 +321,21 @@ Contract tests ensure that mock providers behave identically to real providers. 
 
 Document key behavioral differences between mock and real Supabase providers:
 
-| Feature | Mock Provider | Real Supabase Provider |
-|---------|---------------|------------------------|
-| Email Verification | Simulated (no emails sent) | Real emails sent via configured SMTP |
-| Password Reset | Simulated flow | Real email with reset link |
-| Rate Limiting | Not enforced | Built-in rate limiting active |
-| Concurrent Sessions | Simple in-memory tracking | Database-backed session management |
-| Network Failures | Can simulate delays | Real network conditions |
-| Token Refresh | Deterministic timing | Clock-based expiration |
-| JWKS Validation | Simple signature check | Full JWKS endpoint validation with caching |
-| Database Transactions | In-memory Map operations | PostgreSQL ACID transactions |
+| Feature               | Mock Provider              | Real Supabase Provider                     |
+| --------------------- | -------------------------- | ------------------------------------------ |
+| Email Verification    | Simulated (no emails sent) | Real emails sent via configured SMTP       |
+| Password Reset        | Simulated flow             | Real email with reset link                 |
+| Rate Limiting         | Not enforced               | Built-in rate limiting active              |
+| Concurrent Sessions   | Simple in-memory tracking  | Database-backed session management         |
+| Network Failures      | Can simulate delays        | Real network conditions                    |
+| Token Refresh         | Deterministic timing       | Clock-based expiration                     |
+| JWKS Validation       | Simple signature check     | Full JWKS endpoint validation with caching |
+| Database Transactions | In-memory Map operations   | PostgreSQL ACID transactions               |
 
 **Reference**: Testing section in `designs/backend/AUTH.md`
 
 **Deliverables:**
+
 - Complete AuthContract interface and documentation
 - Fully functional MockAuthProvider with JWT token generation
 - MockDocumentService with validation
@@ -324,6 +353,7 @@ Document key behavioral differences between mock and real Supabase providers:
 ### 3.1 Document Service Implementation
 
 **Core Methods:**
+
 - `createDocument(userId, name, content)`: Create new document in memory
 - `getDocumentMetadata(userId, documentId)`: Get metadata only
 - `getDocumentContent(userId, documentId)`: Get full document with content
@@ -333,6 +363,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - `listUserDocuments(userId, limit, offset)`: List user's documents (metadata only)
 
 **Validation:**
+
 - Document name: 1-255 characters, no leading/trailing whitespace
 - Content: Max 524,288 bytes (0.5 MB)
 - Ownership verification on all operations
@@ -340,6 +371,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - Accurate content_size_bytes calculation
 
 **Mock Data Persistence:**
+
 - In-memory Map storage
 - Optional: Export/import mock data to JSON for testing
 - Simulate realistic delays (50-200ms)
@@ -349,6 +381,7 @@ Document key behavioral differences between mock and real Supabase providers:
 ### 3.2 Document API Routes
 
 **Implement Routes:**
+
 - `POST /api/documents`: Create document
 - `GET /api/documents`: List user's documents (pagination)
 - `GET /api/documents/:id`: Get document with content
@@ -358,16 +391,19 @@ Document key behavioral differences between mock and real Supabase providers:
 - `DELETE /api/documents/:id`: Delete document
 
 **Authorization:**
+
 - All routes require authentication (mock JWT validation)
 - Verify document ownership before any operation
 
 **Error Handling:**
+
 - 404: Document not found
 - 403: Not authorized (wrong owner)
 - 400: Validation errors
 - 413: Content too large
 
 **Deliverables:**
+
 - Complete mock document service with authorization
 - API endpoints for all document operations
 - Unit tests for service methods
@@ -382,6 +418,7 @@ Document key behavioral differences between mock and real Supabase providers:
 ### 4.1 Authentication UI
 
 **Login Page (`(auth)/login`):**
+
 - Email and password form
 - Client-side validation (progressive enhancement)
 - Server action for authentication (calls mock API)
@@ -389,12 +426,14 @@ Document key behavioral differences between mock and real Supabase providers:
 - Redirect to app on success
 
 **Registration Flow:**
+
 - Registration form with email, password, DODID
 - Server-side validation
 - Email verification flow (mock)
 - Success/error handling
 
 **Session Management:**
+
 - Server hooks for JWT validation (mock tokens)
 - Automatic token refresh (proactive, 5 minutes before expiry)
 - Redirect to login on auth failure
@@ -405,17 +444,20 @@ Document key behavioral differences between mock and real Supabase providers:
 ### 4.2 Application Layout
 
 **Main Layout (`(app)/+layout.svelte`):**
+
 - Top menu bar (48px height)
 - Sidebar (collapsible: 224px expanded, 48px collapsed)
 - Main content area
 - Responsive breakpoints (mobile drawer, tablet/desktop sidebar)
 
 **Components:**
+
 - Sidebar: Navigation, document list, user profile, settings
 - TopMenu: Document name, save status, actions (download, more)
 - Toast container for notifications
 
 **State Management:**
+
 - Authentication store (user info, login/logout)
 - Preferences store (sidebar state, auto-save setting)
 - LocalStorage persistence for preferences
@@ -425,6 +467,7 @@ Document key behavioral differences between mock and real Supabase providers:
 ### 4.3 Design System Foundation
 
 **Implement Core Tokens:**
+
 - Color palette (zinc-900 theme, USAF blue accent)
 - Typography system (system, monospace, serif stacks)
 - Spacing scale (4px base unit)
@@ -432,6 +475,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - Tailwind CSS configuration
 
 **Accessibility Setup:**
+
 - Focus indicator styles (2px solid USAF blue, 3px in high contrast)
 - Color contrast validation (4.5:1 minimum)
 - `prefers-contrast` and `prefers-reduced-motion` support
@@ -440,6 +484,7 @@ Document key behavioral differences between mock and real Supabase providers:
 **Reference**: `designs/frontend/DESIGN_SYSTEM.md`
 
 **Deliverables:**
+
 - Working authentication flow (login/logout) with mocks
 - Application layout with responsive sidebar
 - Design system tokens in Tailwind config
@@ -454,6 +499,7 @@ Document key behavioral differences between mock and real Supabase providers:
 ### 5.1 Document List & Navigation
 
 **Document List (Sidebar):**
+
 - Display user's documents (name, creation date)
 - "New Document" button
 - Selected state highlighting
@@ -462,12 +508,14 @@ Document key behavioral differences between mock and real Supabase providers:
 - Error handling and retry
 
 **Document Store:**
+
 - Global store for document list
 - Active document ID tracking
 - CRUD operation methods
 - Loading/error states
 
 **API Integration:**
+
 - Fetch documents on app load (from mock API)
 - Optimistic updates for create/delete
 - Error handling with rollback
@@ -478,6 +526,7 @@ Document key behavioral differences between mock and real Supabase providers:
 ### 5.2 Document Creation & Deletion
 
 **Create Document:**
+
 - "New Document" button in sidebar
 - Default name: "Untitled Document" or timestamp-based
 - Blank markdown content
@@ -485,12 +534,14 @@ Document key behavioral differences between mock and real Supabase providers:
 - Optimistic UI update
 
 **Delete Document:**
+
 - Confirmation dialog before deletion
 - Optimistic removal from list
 - Rollback on error
 - Toast notification on success/error
 
 **Dialogs:**
+
 - Reusable Dialog component
 - Modal backdrop with dismiss
 - Focus trap and keyboard handling (ESC to close)
@@ -501,18 +552,21 @@ Document key behavioral differences between mock and real Supabase providers:
 ### 5.3 Basic E2E Tests
 
 **Test Coverage:**
+
 - User can create a new document
 - Document appears in sidebar list
 - User can delete a document with confirmation
 - Error handling when API fails
 
 **Testing Strategy:**
+
 - Use Playwright for E2E tests
 - Run against mock API (no Supabase dependency)
 - Focus on critical user flows only
 - Keep test suite lightweight for fast iteration
 
 **Deliverables:**
+
 - Document list in sidebar with navigation
 - Create and delete document functionality
 - Confirmation dialogs
@@ -548,6 +602,7 @@ For optimal development velocity and reduced risk, implement the editor in stage
    - Complete the extended markdown implementation
 
 **Phase Mapping to MARKDOWN_EDITOR.md:**
+
 - Phase 6.1 (this phase) encompasses MARKDOWN_EDITOR.md Phases 1-5
 - Additional polish work (Phases 6-8 in MARKDOWN_EDITOR.md) continues within Phase 6 scope
 - Prioritize getting basic markdown working before complex Lezer grammar development
@@ -557,6 +612,7 @@ For optimal development velocity and reduced risk, implement the editor in stage
 **Editor Implementation:**
 
 Implement CodeMirror 6 editor with extended markdown support. See `designs/frontend/MARKDOWN_EDITOR.md` for complete architecture, including:
+
 - Custom Lezer grammar for SCOPE/QUILL metadata blocks
 - Horizontal rule disambiguation algorithm
 - Folding strategy and implementation
@@ -565,6 +621,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Accessibility features
 
 **Key Features:**
+
 - CodeMirror 6 with custom language mode for extended markdown
 - Syntax highlighting for standard markdown and metadata blocks (SCOPE/QUILL)
 - Code folding for YAML frontmatter and inline metadata blocks
@@ -573,6 +630,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Undo/redo with transaction history
 
 **Toolbar:**
+
 - Formatting buttons: Bold, Italic, Strikethrough
 - Block formatting: Code block, Quote
 - Lists: Bullet, Numbered
@@ -582,6 +640,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Tooltips with keyboard shortcuts
 
 **Keyboard Shortcuts:**
+
 - Ctrl/Cmd+B: Bold
 - Ctrl/Cmd+I: Italic
 - Ctrl/Cmd+S: Save (manual trigger)
@@ -594,6 +653,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 6.2 Live Preview
 
 **Preview Component:**
+
 - Rendered markdown in split pane
 - White background with professional typography
 - Max-width 800px, centered
@@ -601,6 +661,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Debounced rendering (updates after user stops typing)
 
 **Markdown Rendering:**
+
 - Parse extended markdown with metadata blocks (SCOPE/QUILL)
 - Support GitHub Flavored Markdown (tables, strikethrough)
 - Syntax highlighting for code blocks
@@ -608,6 +669,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Proper handling of inline metadata blocks per PARSE.md
 
 **Performance:**
+
 - Debounced preview updates (300-500ms delay)
 - Preserve scroll position during updates
 - Show previous render to avoid flashes (per DESIGN_SYSTEM.md loading states)
@@ -617,14 +679,17 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 6.3 Responsive Layout
 
 **Desktop (≥1024px):**
+
 - Split panes: Editor (50%) | Preview (50%)
 - Resizable divider (optional for MVP)
 
 **Tablet (768px-1023px):**
+
 - Collapsible preview or tabbed view
 - Full editor with toggle to preview
 
 **Mobile (<768px):**
+
 - Tabbed interface: Editor OR Preview
 - Tab bar for switching
 - Full-screen drawer sidebar
@@ -634,6 +699,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 6.4 Editor E2E Tests
 
 **Test Coverage:**
+
 - User can type markdown in editor
 - Toolbar formatting buttons work (bold, italic, etc.)
 - Keyboard shortcuts apply formatting
@@ -641,12 +707,14 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Editor content persists when switching documents
 
 **Testing Strategy:**
+
 - Test core editing interactions
 - Verify toolbar functionality
 - Keep tests focused on user-facing behavior
 - Skip low-level CodeMirror internals
 
 **Deliverables:**
+
 - CodeMirror 6 markdown editor with custom language mode
 - Extended markdown syntax highlighting (SCOPE/QUILL blocks)
 - Code folding for metadata blocks
@@ -664,6 +732,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 7.1 Auto-Save Implementation
 
 **Auto-Save Logic:**
+
 - 7-second debounce after last keystroke
 - Only save if document has unsaved changes
 - Manual save via Ctrl/Cmd+S
@@ -672,12 +741,14 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Saves to mock API
 
 **Save Status Indicator:**
+
 - Saving: Spinner icon + "Saving..."
 - Saved: Checkmark icon + "Saved" (brief display)
 - Unsaved: Dot indicator or asterisk in title
 - Error: Red error icon + error message
 
 **Settings Integration:**
+
 - Auto-save toggle in settings dialog
 - Persist preference to localStorage
 - Default: Auto-save enabled
@@ -687,16 +758,19 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 7.2 Document State Management
 
 **Tracking Changes:**
+
 - Dirty flag when content changes
 - Clear flag on successful save
 - Preserve unsaved changes on navigation (optional warning)
 
 **Conflict Resolution:**
+
 - Last write wins (MVP strategy)
 - No conflict detection
 - Timestamp update on save
 
 **Error Handling:**
+
 - Display error toast on save failure
 - Keep local changes in editor (don't discard)
 - Provide retry button
@@ -707,6 +781,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 7.3 Auto-Save E2E Tests
 
 **Test Coverage:**
+
 - Auto-save triggers after 7 seconds of inactivity
 - Save status indicator updates correctly
 - Manual save (Ctrl+S) works immediately
@@ -714,11 +789,13 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Error handling when save fails
 
 **Testing Strategy:**
+
 - Use timer mocking for debounce testing
 - Verify save indicator states
 - Test error recovery flow
 
 **Deliverables:**
+
 - Auto-save with 7-second debounce
 - Save status indicators
 - Settings toggle for auto-save
@@ -734,6 +811,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 8.1 Section 508 Compliance
 
 **Keyboard Navigation:**
+
 - Test full keyboard navigation (tab order)
 - No keyboard traps
 - Visible focus indicators on all interactive elements
@@ -741,6 +819,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - ESC to close modals/menus
 
 **Screen Reader Support:**
+
 - Semantic HTML (nav, main, aside landmarks)
 - ARIA labels for icon-only buttons
 - ARIA live regions for dynamic content (toasts, save status)
@@ -748,12 +827,14 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Form labels associated with inputs
 
 **Color Contrast:**
+
 - Validate all text meets 4.5:1 minimum contrast
 - Large text meets 3:1 minimum
 - UI components meet 3:1 minimum
 - High contrast mode support (7:1 via `prefers-contrast: high`)
 
 **Touch Targets:**
+
 - Minimum 44x44px touch targets on mobile
 - 8px minimum spacing between targets
 - Increased button sizes on mobile (48px height inputs)
@@ -763,18 +844,21 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 8.2 Form Validation & Error Handling
 
 **Client-Side Validation:**
+
 - Progressive enhancement (works without JS)
 - Immediate feedback on blur
 - Inline error messages
 - Error summary at top of form
 
 **Server-Side Validation:**
+
 - Authoritative validation (always runs)
 - Return structured error format
 - Display field-specific errors
 - Preserve user input on error
 
 **Error Display:**
+
 - Inline errors below fields (red text, alert icon)
 - Error summary at form top (multiple errors)
 - Toast notifications for non-field errors
@@ -785,18 +869,21 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 8.3 Mobile Optimization
 
 **Responsive Testing:**
+
 - Test at all breakpoints (640px, 768px, 1024px, 1280px)
 - Mobile drawer sidebar
 - Tabbed editor/preview on mobile
 - Bottom sheet dialogs on mobile
 
 **Touch Optimization:**
+
 - Larger touch targets (44px minimum)
 - Touch-friendly text selection
 - Virtual keyboard handling
 - Auto-save on blur (mobile)
 
 **Performance:**
+
 - Code splitting by route
 - Lazy loading heavy components (preview renderer)
 - Optimized bundle sizes
@@ -807,22 +894,26 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 8.4 Polish & UX Enhancements
 
 **Loading States:**
+
 - Skeleton loaders for document list
 - Spinner for save operations
 - Loading delay threshold (300ms)
 - Preserve previous preview during updates
 
 **Animations:**
+
 - 300ms transitions (per DESIGN_SYSTEM.md)
 - Respect `prefers-reduced-motion`
 - Smooth sidebar collapse/expand
 - Fade in/out for toasts
 
 **Empty States:**
+
 - "No documents" message with "Create" CTA
 - Empty preview when no content
 
 **Keyboard Shortcuts Help:**
+
 - Help dialog with all shortcuts
 - Accessible via "?" key or menu
 - Keyboard shortcuts in tooltips
@@ -830,6 +921,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 **Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Loading States, Transitions
 
 **Deliverables:**
+
 - Section 508 compliant application
 - Complete keyboard navigation
 - Screen reader tested
@@ -845,17 +937,20 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 9.1 Settings Dialog
 
 **Settings Panel:**
+
 - Auto-save toggle (enable/disable)
 - Additional preferences (future: font size, theme)
 - Save button to persist changes
 - Cancel button to dismiss without saving
 
 **Toggle Component:**
+
 - Clear on/off states
 - Accessible label
 - Keyboard support (Space to toggle)
 
 **Persistence:**
+
 - Save to localStorage
 - Sync with global preferences store
 - Load on app initialization
@@ -865,17 +960,20 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 9.2 Document Actions
 
 **Download Document:**
+
 - Download as .md file
 - Filename matches document name
 - Trigger via button in TopMenu
 
 **More Actions Menu:**
+
 - Keyboard Shortcuts: Opens help dialog
 - About: Application information
 - Terms of Use: Legal terms page
 - Privacy Policy: Privacy information page
 
 **Dropdown Menu Component:**
+
 - Anchored to trigger button
 - Smart positioning (flip if near edge)
 - Arrow key navigation
@@ -886,14 +984,15 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ### 9.3 Classification Message
 
 **Message Display:**
+
 - Toast notification on app load
 - Message: "This system is not authorized for controlled information."
-
 
 **References**
 See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 
 **Deliverables:**
+
 - Settings dialog with auto-save toggle
 - Download document functionality
 - More actions menu with help/about
@@ -911,6 +1010,7 @@ See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 ### 10.1 Supabase Setup & Migration
 
 **Supabase Project Setup:**
+
 - Create Supabase project (cloud or self-hosted)
 - Configure authentication settings
 - Set up email templates (verification, password reset)
@@ -918,6 +1018,7 @@ See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 - Obtain production credentials (URL, anon key, service role key)
 
 **Database Migration:**
+
 - Create PostgreSQL tables matching mock schema:
   - Users table (id, email, dodid, profile JSONB, timestamps)
   - Documents table (id, owner_id, name, content, content_size_bytes, timestamps)
@@ -931,6 +1032,7 @@ See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 ### 10.2 Supabase Provider Implementation
 
 **SupabaseAuthProvider:**
+
 - Implement AuthContract interface using Supabase client
 - JWT validation using Supabase JWKS
 - JWKS caching (24-hour cache with invalidation)
@@ -938,12 +1040,14 @@ See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 - Error mapping from Supabase errors to standard format
 
 **SupabaseDocumentService:**
+
 - Implement all CRUD operations using Supabase client
 - Use Supabase RLS for authorization
 - Optimize TOAST queries for large content fields
 - Transaction support for complex operations
 
 **Authentication Middleware:**
+
 - Replace mock JWT validation with real Supabase validation
 - JWKS verification
 - Session refresh logic
@@ -954,6 +1058,7 @@ See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 ### 10.3 Provider Switching & Environment Configuration
 
 **Environment Configuration:**
+
 ```bash
 # .env.production
 USE_AUTH_MOCKS=false
@@ -965,21 +1070,23 @@ SUPABASE_JWT_SECRET=your-jwt-secret
 ```
 
 **Provider Factory Update:**
+
 ```typescript
 // Update provider factory to use real Supabase
 export const createAuthProvider = () => {
-  if (process.env.USE_AUTH_MOCKS === 'true') {
-    return new MockAuthProvider()
-  }
-  return new SupabaseAuthProvider({
-    url: process.env.SUPABASE_URL!,
-    key: process.env.SUPABASE_ANON_KEY!,
-    jwtSecret: process.env.SUPABASE_JWT_SECRET!
-  })
-}
+	if (process.env.USE_AUTH_MOCKS === 'true') {
+		return new MockAuthProvider();
+	}
+	return new SupabaseAuthProvider({
+		url: process.env.SUPABASE_URL!,
+		key: process.env.SUPABASE_ANON_KEY!,
+		jwtSecret: process.env.SUPABASE_JWT_SECRET!
+	});
+};
 ```
 
 **Migration Strategy:**
+
 - Update backend to use real providers
 - Run contract tests against real Supabase (all should pass)
 - Update frontend API URLs if needed
@@ -988,6 +1095,7 @@ export const createAuthProvider = () => {
 ### 10.4 Contract Test Validation
 
 **Run Full Contract Test Suite:**
+
 - Enable integration tests: `RUN_INTEGRATION_TESTS=true`
 - Run all contract tests against SupabaseAuthProvider
 - Run all contract tests against SupabaseDocumentService
@@ -995,6 +1103,7 @@ export const createAuthProvider = () => {
 - Fix any discrepancies between mock and real behavior
 
 **Additional Supabase-Specific Tests:**
+
 - Email verification flow (real emails in test mode)
 - Password reset flow
 - Session expiry and refresh
@@ -1004,17 +1113,20 @@ export const createAuthProvider = () => {
 ### 10.5 Integration Testing
 
 **Integration Tests:**
+
 - API endpoint tests with real database
 - Authentication flows end-to-end
 - Document CRUD operations
 - Error handling and edge cases
 
 **Test Data Management:**
+
 - Seed test database with realistic data
 - Cleanup scripts for test data
 - Isolated test environment
 
 **Deliverables:**
+
 - Real Supabase integration complete
 - All contract tests passing against real providers
 - SupabaseAuthProvider fully functional
@@ -1031,6 +1143,7 @@ export const createAuthProvider = () => {
 ### 11.1 End-to-End Testing
 
 **E2E Test Suite:**
+
 - Complete user flows (register, login, create document, edit, save, delete)
 - Authentication flows (login, logout, session refresh)
 - Document management flows
@@ -1038,6 +1151,7 @@ export const createAuthProvider = () => {
 - Accessibility workflows
 
 **Test Execution:**
+
 - Run against real Supabase (staging environment)
 - Cross-browser testing (Chrome, Firefox, Safari, Edge)
 - Mobile device testing (iOS, Android)
@@ -1048,6 +1162,7 @@ export const createAuthProvider = () => {
 ### 11.2 Performance Optimization
 
 **Frontend:**
+
 - Bundle size analysis and optimization
 - Code splitting by route
 - Lazy loading non-critical components
@@ -1055,6 +1170,7 @@ export const createAuthProvider = () => {
 - Debounced preview updates
 
 **Backend:**
+
 - Query optimization (indexes, TOAST)
 - JWKS caching validation
 - Connection pooling
@@ -1062,12 +1178,14 @@ export const createAuthProvider = () => {
 - Response compression
 
 **Database:**
+
 - Index performance analysis
 - Query plan optimization
 - TOAST configuration for large content
 - Connection pool tuning
 
 **Monitoring:**
+
 - Error tracking (Sentry or similar)
 - Performance monitoring (Supabase analytics)
 - User analytics (optional)
@@ -1076,6 +1194,7 @@ export const createAuthProvider = () => {
 ### 11.3 Vercel Deployment
 
 **Project Configuration:**
+
 - Configure SvelteKit adapter-auto (detects Vercel automatically)
 - Set up Vercel project linked to Git repository
 - Configure build settings:
@@ -1086,6 +1205,7 @@ export const createAuthProvider = () => {
 
 **Environment Variables:**
 Configure in Vercel dashboard:
+
 - `SUPABASE_URL`: Production Supabase project URL
 - `SUPABASE_ANON_KEY`: Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key (sensitive)
@@ -1095,6 +1215,7 @@ Configure in Vercel dashboard:
 - `USE_DB_MOCKS=false`: Disable mocks in production
 
 **Deployment Configuration:**
+
 - Production branch: `main` (auto-deploy)
 - Preview deployments: All pull requests
 - Custom domain configuration (optional)
@@ -1102,6 +1223,7 @@ Configure in Vercel dashboard:
 - CDN: Automatic edge network
 
 **Vercel-Specific Features:**
+
 - Edge Functions: Automatic serverless functions
 - ISR (Incremental Static Regeneration): For static pages
 - Analytics: Built-in Web Vitals tracking
@@ -1112,6 +1234,7 @@ Configure in Vercel dashboard:
 ### 11.4 Database Migration & Seeding
 
 **Production Database Setup:**
+
 - Run migration scripts in production Supabase
 - Verify all tables, indexes, and constraints
 - Configure RLS policies
@@ -1119,6 +1242,7 @@ Configure in Vercel dashboard:
 - Test rollback procedures
 
 **Seed Data (Optional):**
+
 - Create sample documents for demo
 - Test user accounts for UAT
 - Documentation for seeding process
@@ -1126,6 +1250,7 @@ Configure in Vercel dashboard:
 ### 11.5 Launch Preparation
 
 **Pre-Launch Checklist:**
+
 - [ ] All E2E tests passing
 - [ ] Accessibility audit complete
 - [ ] Performance benchmarks met
@@ -1138,6 +1263,7 @@ Configure in Vercel dashboard:
 - [ ] User documentation ready
 
 **Post-Deployment Validation:**
+
 - Smoke testing in production
 - Monitor error rates and performance
 - Verify authentication flows
@@ -1145,12 +1271,14 @@ Configure in Vercel dashboard:
 - Validate mobile responsiveness
 
 **Launch:**
+
 - Deploy to production via Vercel
 - Monitor initial traffic and errors
 - Gather user feedback
 - Address critical issues immediately
 
 **Deliverables:**
+
 - Comprehensive E2E test suite
 - Production deployment to Vercel
 - Performance optimizations complete
@@ -1277,7 +1405,7 @@ Configure in Vercel dashboard:
 ✅ **Easy Debugging**: Inspect mock state directly, add logging  
 ✅ **Cost Effective**: No test database costs during development  
 ✅ **Quick Iteration**: Modify mock behavior instantly for testing edge cases  
-✅ **Offline Development**: Work without internet connection  
+✅ **Offline Development**: Work without internet connection
 
 ### When Mocks Are Used
 
@@ -1298,22 +1426,26 @@ Configure in Vercel dashboard:
 ## Post-MVP Roadmap
 
 ### Phase 12: Quillmark Integration
+
 - Integrate Quillmark for formatted document output
 - USAF memo templates
 - Document export to PDF/DOCX
 
 ### Phase 13: Collaboration Features
+
 - Document sharing (read-only, edit permissions)
 - Real-time collaborative editing
 - Comment threads
 
 ### Phase 14: Advanced Features
+
 - Document version history
 - Search and filtering
 - Document templates library
 - Tags and categories
 
 ### Phase 15: Enterprise Features
+
 - Keycloak authentication provider
 - SSO/SAML integration
 - Advanced user management
@@ -1326,11 +1458,13 @@ Configure in Vercel dashboard:
 ### Design Documents
 
 **Backend:**
+
 - `designs/backend/AUTH.md`: Authentication architecture
 - `designs/backend/SCHEMAS.md`: Database schemas
 - `designs/backend/SERVICES.md`: Service layer specifications
 
 **Frontend:**
+
 - `designs/frontend/INDEX.md`: Frontend documentation overview
 - `designs/frontend/ARCHITECTURE.md`: SvelteKit architecture
 - `designs/frontend/API_INTEGRATION.md`: Backend integration patterns
@@ -1376,4 +1510,4 @@ Configure in Vercel dashboard:
 
 ---
 
-*This revised MVP plan incorporates feedback to enable fast, AI-agent-driven development while maintaining a clear path to production deployment on Vercel. The mock-first strategy with contract validation ensures seamless Supabase integration in Phase 10.*
+_This revised MVP plan incorporates feedback to enable fast, AI-agent-driven development while maintaining a clear path to production deployment on Vercel. The mock-first strategy with contract validation ensures seamless Supabase integration in Phase 10._

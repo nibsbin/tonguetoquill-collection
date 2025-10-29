@@ -9,6 +9,7 @@ This document details the markdown parsing and Extended YAML Metadata Standard i
 Quillmark uses a **frontmatter-aware markdown parser** that separates YAML metadata from document content.
 
 **Key capabilities:**
+
 - Parse YAML frontmatter delimited by `---` markers
 - Support inline metadata sections with SCOPE/QUILL keys (Extended YAML Metadata Standard)
 - Aggregate scoped blocks into collections (arrays of objects)
@@ -22,12 +23,14 @@ Quillmark uses a **frontmatter-aware markdown parser** that separates YAML metad
 ### 1. Separation of Concerns
 
 The parser decomposes markdown documents into:
+
 - **Frontmatter fields**: YAML key-value pairs accessible via `HashMap<String, QuillValue>`
 - **Body content**: Raw markdown text stored under the reserved `BODY_FIELD` constant
 
 ### 2. Error Handling Strategy
 
 **Strict fail-fast** for malformed YAML:
+
 - **Invalid YAML**: Returns error with descriptive message
 - **Unclosed frontmatter**: Returns error if `---` opening exists but closing marker is missing
 - **No frontmatter**: Gracefully treats entire content as body (not an error)
@@ -41,10 +44,12 @@ Only YAML frontmatter is supported. Backends can convert to their native formats
 ### ParsedDocument
 
 Stores both frontmatter fields and document body in a single `HashMap<String, QuillValue>`.
+
 - Body is stored under special `BODY_FIELD = "body"` constant
 - Private fields enforce access through validated methods
 
 **Public API:**
+
 - `new(fields)` - Constructor
 - `body()` - Returns `Option<&str>` for document body
 - `get_field(name)` - Returns `Option<&QuillValue>` for any field
@@ -79,6 +84,7 @@ The parser handles various edge cases:
 See `quillmark-core/src/parse.rs` for complete API documentation and examples.
 
 Basic usage:
+
 - `ParsedDocument::from_markdown(markdown)` - Parse markdown with frontmatter
 - `doc.body()` - Access body content
 - `doc.get_field(name)` - Access frontmatter fields
@@ -98,30 +104,38 @@ The extended standard allows metadata blocks to appear anywhere in the document 
 ---
 title: Global Metadata
 ---
+
 Main document body.
 
 ---
+
 SCOPE: sub_documents
 title: First Sub-Document
+
 ---
+
 Body of first sub-document.
 
 ---
+
 SCOPE: sub_documents
 title: Second Sub-Document
+
 ---
+
 Body of second sub-document.
 ```
 
 **Resulting structure:**
+
 ```json
 {
-  "title": "Global Metadata",
-  "body": "Main document body.",
-  "sub_documents": [
-    {"title": "First Sub-Document", "body": "Body of first sub-document."},
-    {"title": "Second Sub-Document", "body": "Body of second sub-document."}
-  ]
+	"title": "Global Metadata",
+	"body": "Main document body.",
+	"sub_documents": [
+		{ "title": "First Sub-Document", "body": "Body of first sub-document." },
+		{ "title": "Second Sub-Document", "body": "Body of second sub-document." }
+	]
 }
 ```
 
@@ -145,10 +159,9 @@ Body of second sub-document.
 ### Validation
 
 The parser validates:
+
 - Multiple global frontmatter blocks → error
 - Name collisions between global fields and scoped attributes → error
 - Reserved field names in scopes → error
 - Invalid scope name syntax → error
 - Both SCOPE and QUILL in same block → error
-
-

@@ -5,9 +5,11 @@
 The Tonguetoquill application uses a flex-based layout system to create a responsive, VSCode-inspired interface.
 
 ### Root Container
+
 ```tsx
 <div className="h-screen flex bg-zinc-900">
 ```
+
 - Full viewport height (`h-screen`)
 - Horizontal flex container
 - Dark background as base theme
@@ -18,6 +20,7 @@ The Tonguetoquill application uses a flex-based layout system to create a respon
 ## Layout Breakdown
 
 ### High-Level Structure
+
 ```
 ┌────────────────────────────────────────────────────┐
 │                   Full Screen                      │
@@ -38,25 +41,29 @@ The Tonguetoquill application uses a flex-based layout system to create a respon
 ## 1. Sidebar Layout
 
 ### Container Specifications
+
 ```tsx
-className="h-screen bg-zinc-900 text-zinc-100 
-           transition-all duration-300 
+className="h-screen bg-zinc-900 text-zinc-100
+           transition-all duration-300
            flex flex-col overflow-hidden
            ${isExpanded ? 'w-56' : 'w-12'}"
 ```
 
 #### Dimensions
+
 - **Height**: Full screen (`h-screen`)
-- **Width**: 
+- **Width**:
   - Expanded: 224px (`w-56`)
   - Collapsed: 48px (`w-12`)
 - **Transition**: 300ms all properties
 
 #### Flex Layout
+
 - **Direction**: Column (`flex-col`)
 - **Overflow**: Hidden (prevents content from breaking layout during transitions)
 
 ### Internal Structure
+
 ```
 ┌─────────────────┐
 │   Header        │ ← Fixed height (h-12)
@@ -74,25 +81,31 @@ className="h-screen bg-zinc-900 text-zinc-100
 #### Section Breakdown
 
 1. **Header Section**
+
    ```tsx
    <div className="relative flex items-center h-12 p-1">
    ```
+
    - Fixed height: 48px
    - Contains hamburger menu and brand title
    - Uses relative positioning for centered title overlay
 
 2. **File List Section**
+
    ```tsx
    <div className="flex-1 p-2 overflow-y-auto">
    ```
+
    - Fills available space (`flex-1`)
    - Vertical scroll when content overflows
    - Padding: 8px all sides
 
 3. **Bottom Section**
+
    ```tsx
    <div className="p-2 border-t border-zinc-700 space-y-1">
    ```
+
    - Fixed at bottom (no flex-grow)
    - Top border as separator
    - Contains Profile and Settings buttons
@@ -100,6 +113,7 @@ className="h-screen bg-zinc-900 text-zinc-100
 ### Responsive Behavior
 
 #### Collapsed State (48px width)
+
 - Only icons visible
 - Content fades out (opacity-0)
 - Icons remain centered
@@ -107,6 +121,7 @@ className="h-screen bg-zinc-900 text-zinc-100
 - Maintains all functionality
 
 #### Expanded State (224px width)
+
 - Full content visible
 - Text fades in with animation
 - Icons align left with text labels
@@ -118,13 +133,16 @@ className="h-screen bg-zinc-900 text-zinc-100
 ## 2. Main Content Area
 
 ### Container Specifications
+
 ```tsx
 <div className="flex-1 flex flex-col">
 ```
+
 - Fills remaining horizontal space after sidebar
 - Vertical flex container for stacking TopMenu and editor panel
 
 ### Structure
+
 ```
 ┌─────────────────────────────────────┐
 │         Top Menu (h-12)             │
@@ -141,21 +159,25 @@ className="h-screen bg-zinc-900 text-zinc-100
 ## 3. Top Menu Layout
 
 ### Container Specifications
+
 ```tsx
-<div className="h-12 bg-zinc-800 border-b border-zinc-700 
+<div className="h-12 bg-zinc-800 border-b border-zinc-700
                 flex items-center justify-between px-4">
 ```
 
 #### Dimensions
+
 - Height: 48px (fixed, `h-12`)
 - Padding: 16px horizontal
 
 #### Flex Layout
+
 - Direction: Row (default)
 - Justify: Space between
 - Align: Center vertically
 
 ### Internal Structure
+
 ```
 ┌────────────────────────────────────────────────┐
 │ [Logo] [Filename]           [Download] [Menu] │
@@ -163,17 +185,21 @@ className="h-screen bg-zinc-900 text-zinc-100
 ```
 
 #### Left Section
+
 ```tsx
 <div className="flex items-center gap-2">
 ```
+
 - Logo + filename grouping
 - Gap: 8px between elements
 - Aligned center vertically
 
 #### Right Section
+
 ```tsx
 <div className="flex items-center gap-2">
 ```
+
 - Download button + meatball menu
 - Gap: 8px between elements
 - Aligned center vertically
@@ -183,14 +209,17 @@ className="h-screen bg-zinc-900 text-zinc-100
 ## 4. Split Editor Panel
 
 ### Container Specifications
+
 ```tsx
 <div className="flex-1 flex">
 ```
+
 - Fills remaining vertical space
 - Horizontal flex container
 - Creates 50/50 split by default
 
 ### Structure
+
 ```
 ┌──────────────────────┬───────────────────────┐
 │   Editor Section     │   Preview Section     │
@@ -211,16 +240,19 @@ className="h-screen bg-zinc-900 text-zinc-100
 ## 5. Editor Section Layout
 
 ### Container Specifications
+
 ```tsx
 <div className="flex-1 flex flex-col border-r border-zinc-700">
 ```
 
 #### Flex Layout
+
 - Takes 50% of horizontal space (`flex-1`)
 - Vertical flex direction (`flex-col`)
 - Right border as visual separator
 
 ### Internal Structure
+
 ```
 ┌────────────────────┐
 │   Toolbar (h-10)   │ ← Fixed height
@@ -232,11 +264,13 @@ className="h-screen bg-zinc-900 text-zinc-100
 ```
 
 #### Toolbar
+
 - Fixed height: 40px (`h-10`)
 - Contains formatting buttons and mode toggle
 - Sticky at top of editor section
 
 #### Editor Area
+
 - Fills remaining space (`flex-1`)
 - Contains MarkdownEditor component
 - Scrollable textarea inside
@@ -246,15 +280,18 @@ className="h-screen bg-zinc-900 text-zinc-100
 ## 6. Preview Section Layout
 
 ### Container Specifications
+
 ```tsx
 <div className="flex-1 overflow-auto">
 ```
 
 #### Flex Layout
+
 - Takes 50% of horizontal space (`flex-1`)
 - Allows vertical scrolling (`overflow-auto`)
 
 ### Internal Structure
+
 - Single child: MarkdownPreview component
 - Preview component fills available space
 - Content scrolls vertically when needed
@@ -264,18 +301,22 @@ className="h-screen bg-zinc-900 text-zinc-100
 ## Responsive Considerations
 
 ### Current Implementation
+
 The application is designed primarily for desktop use with a minimum recommended width to accommodate the split-panel layout.
 
 ### Breakpoint Behavior
 
 #### Minimum Usable Width
+
 - Sidebar collapsed: 48px
 - Editor section: ~400px minimum recommended
 - Preview section: ~400px minimum recommended
 - **Total minimum**: ~850px for comfortable use
 
 #### Mobile/Tablet Considerations (Future)
+
 Potential responsive improvements for smaller screens:
+
 - Switch to tabbed view (Editor OR Preview, not both)
 - Sidebar becomes drawer/overlay
 - TopMenu condensed/hamburger menu
@@ -284,11 +325,13 @@ Potential responsive improvements for smaller screens:
 ### Overflow Handling
 
 #### Vertical Overflow
+
 - **Sidebar File List**: Scrollable (`overflow-y-auto`)
 - **Editor**: Textarea with natural scroll
 - **Preview**: Container scrollable (`overflow-auto`)
 
 #### Horizontal Overflow
+
 - **Sidebar**: Hidden (`overflow-hidden`)
 - **TopMenu**: Text truncation on filename if very long
 - **File Names**: Truncate with ellipsis (`.truncate`)
@@ -300,11 +343,13 @@ Potential responsive improvements for smaller screens:
 ## Z-Index Layers
 
 ### Stacking Order (Implicit)
+
 1. **Base Layer**: Main layout (Sidebar, Editor, Preview)
 2. **Overlay Layer**: Popovers, Dropdowns
 3. **Toast Layer**: Notification toasts (highest)
 
 ### Managed by Components
+
 - Popovers and dropdowns use shadcn/ui defaults
 - Toaster component manages toast z-index
 - No custom z-index values in application code
@@ -314,6 +359,7 @@ Potential responsive improvements for smaller screens:
 ## Spacing & Gutters
 
 ### Component Gaps
+
 ```
 Sidebar to Main Content: 0 (adjacent, no gap)
 Editor to Preview: 0 (border only, no gap)
@@ -323,6 +369,7 @@ Sidebar Items: 4px vertical (space-y-1)
 ```
 
 ### Content Padding
+
 ```
 Sidebar Container: 8px (p-2)
 Sidebar Header: 4px (p-1)
@@ -334,6 +381,7 @@ Popover Content: 16px all sides (p-4)
 ```
 
 ### Border Widths
+
 - All borders: 1px (default Tailwind)
 - Border colors vary by component (see Design System)
 
@@ -342,17 +390,20 @@ Popover Content: 16px all sides (p-4)
 ## Performance Considerations
 
 ### Layout Optimization
+
 - Fixed heights where possible (TopMenu, Toolbar, Sidebar header)
 - Flex-grow for dynamic content areas
 - Overflow auto only where needed (prevents unnecessary scroll containers)
 - Will-change not used (transitions are simple enough)
 
 ### Reflow Prevention
+
 - Sidebar width transition isolated to sidebar container
 - Content areas use flex-1 to adapt naturally
 - No layout shifts on interaction
 
 ### Rendering
+
 - Virtual scrolling not needed (file lists typically small)
 - Preview renders on every keystroke (acceptable with react-markdown optimization)
 - No unnecessary nested scrolling containers
@@ -362,15 +413,18 @@ Popover Content: 16px all sides (p-4)
 ## Accessibility Layout Features
 
 ### Focus Management
+
 - Logical tab order: Sidebar → TopMenu → Toolbar → Editor
 - All interactive elements keyboard accessible
 - Focus visible on all controls
 
 ### Semantic Structure
+
 - Div-based layout (functional, not semantic)
 - Future: Consider adding landmark regions (nav, main, aside)
 
 ### Screen Reader Considerations
+
 - Current: Relies on visual layout
 - Future: Add ARIA labels for regions
 - Future: Add screen reader announcements for file switching
@@ -380,17 +434,20 @@ Popover Content: 16px all sides (p-4)
 ## Layout Constraints
 
 ### Fixed Elements
+
 - Sidebar width: 48px or 224px (no in-between)
 - TopMenu height: 48px
 - Toolbar height: 40px
 - All fixed values use Tailwind spacing scale
 
 ### Flexible Elements
+
 - Main content width: Adapts to sidebar state
 - Editor/Preview width: Always equal (both flex-1)
 - Content height: Fills available vertical space
 
 ### Immutable Proportions
+
 - Editor:Preview ratio is always 1:1 horizontally
 - Sidebar never grows vertically (always full height)
 - TopMenu never wraps (assumes sufficient horizontal space)
