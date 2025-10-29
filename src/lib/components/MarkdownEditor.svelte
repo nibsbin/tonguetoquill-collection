@@ -207,8 +207,9 @@
 				break;
 		}
 	}
-
+	
 	onMount(() => {
+		const styles = getComputedStyle(document.documentElement);
 		const extensions = [
 			markdown(),
 			history(),
@@ -273,7 +274,7 @@
 					backgroundColor: '#3f3f46' // zinc-700
 				},
 				'.cm-gutters': {
-					backgroundColor: '#27272a', // zinc-800
+					backgroundColor: '#18181b', // match editor background (zinc-900)
 					color: '#71717a', // zinc-500
 					border: 'none'
 				}
@@ -384,7 +385,7 @@
 						backgroundColor: '#3f3f46' // zinc-700
 					},
 					'.cm-gutters': {
-						backgroundColor: '#27272a', // zinc-800
+						backgroundColor: '#18181b', // match editor background (zinc-900)
 						color: '#71717a', // zinc-500
 						border: 'none'
 					}
