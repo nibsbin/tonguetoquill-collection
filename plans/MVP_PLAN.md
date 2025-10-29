@@ -843,31 +843,21 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 
 **Reference**: `designs/frontend/UI_COMPONENTS.md`
 
-### 9.3 Classification Banner
+### 9.3 Classification Message
 
-**Toast Notification Pattern:**
-- Persistent toast at top-center
-- Shows document classification level
-- Color-coded by classification (Blue, Yellow, Orange, Red)
-- Shield icon
-- Dismissible but reappears on reload
-- Z-index: 40 (toast layer)
+**Message Display:**
+- Toast notification on app load
+- Message: "This system is not authorized for controlled information."
 
-**Implementation:**
-- Use Svelte Sonner toast library
-- Custom styling per DESIGN_SYSTEM.md
-- Trigger on document load
-- Persist across navigation (until dismissed)
 
-**Note**: For MVP, classification level can be hardcoded or document metadata field. Full classification system is post-MVP.
-
-**Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Classification Banner
+**References**
+See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 
 **Deliverables:**
 - Settings dialog with auto-save toggle
 - Download document functionality
 - More actions menu with help/about
-- Classification banner toast
+- Classification message toast
 - Complete MVP feature set using mock providers
 
 ---
@@ -1145,7 +1135,7 @@ Configure in Vercel dashboard:
 - ✅ Keyboard shortcuts
 - ✅ Settings (auto-save toggle)
 - ✅ Download document
-- ✅ Classification banner (basic implementation)
+- ✅ Classification message (basic implementation)
 
 ### Explicitly Excluded from MVP
 
@@ -1157,7 +1147,7 @@ Configure in Vercel dashboard:
 - ❌ Quillmark integration (post-MVP)
 - ❌ Keycloak authentication (architecture supports, not implemented)
 - ❌ User profile editing (basic profile display only)
-- ❌ Full classification system (basic banner only)
+- ❌ Full classification system (basic message only)
 
 ---
 
@@ -1262,6 +1252,8 @@ Configure in Vercel dashboard:
 - **Integration Tests**: Validate against real Supabase in CI/CD
 - **Staging Environment**: Pre-production testing with real services
 - **Production**: Final deployment with production Supabase instance
+
+---
 
 ## Post-MVP Roadmap
 
