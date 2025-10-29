@@ -15,7 +15,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 
 **MVP Scope**: Single-user document editing with authentication, markdown editor, live preview, auto-save, and mobile-responsive UI.
 
-**Development Strategy**: Uses **mock providers** for Phases 1-9 to enable parallel development without external dependencies. Real Supabase integration occurs in Phase 10.
+**Development Strategy**: Uses **mock providers** for Phases 1-9 to enable parallel development without external dependencies. Real Supabase integration occurs in Phase 10. Follow KISS and DRY principles to minimize complexity.
 
 ---
 
