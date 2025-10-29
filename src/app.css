@@ -129,6 +129,7 @@ body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
 /* Screen reader only utility */

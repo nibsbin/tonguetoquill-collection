@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, FileText, Plus, Settings, Trash2, User } from 'lucide-svelte';
+	import { Menu, FileText, Plus, Settings, Trash2, User, Sun, Moon, Monitor } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
 	import Popover from '$lib/components/ui/popover.svelte';
@@ -17,6 +17,7 @@
 	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
 	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { mode, setMode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 
 	type SidebarProps = {
@@ -259,9 +260,55 @@
 				>
 					{#snippet children()}
 						<div class="p-4">
-							<h3 class="mb-4">Settings</h3>
+							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
 							<div class="space-y-4">
+								<!-- Theme Selection -->
+								<div class="space-y-2">
+									<Label class="text-sm font-medium">
+										{#snippet children()}
+											Theme
+										{/snippet}
+									</Label>
+									<div class="grid grid-cols-3 gap-2">
+										<Button
+											variant={$mode === 'light' ? 'default' : 'outline'}
+											size="sm"
+											class="h-9 w-full"
+											onclick={() => setMode('light')}
+										>
+											{#snippet children()}
+												<Sun class="mr-1 h-4 w-4" />
+												Light
+											{/snippet}
+										</Button>
+										<Button
+											variant={$mode === 'dark' ? 'default' : 'outline'}
+											size="sm"
+											class="h-9 w-full"
+											onclick={() => setMode('dark')}
+										>
+											{#snippet children()}
+												<Moon class="mr-1 h-4 w-4" />
+												Dark
+											{/snippet}
+										</Button>
+										<Button
+											variant={$mode === 'system' ? 'default' : 'outline'}
+											size="sm"
+											class="h-9 w-full"
+											onclick={() => setMode('system')}
+										>
+											{#snippet children()}
+												<Monitor class="mr-1 h-4 w-4" />
+												System
+											{/snippet}
+										</Button>
+									</div>
+								</div>
+
+								<Separator class="my-3 bg-border" />
+
 								<div class="flex items-center justify-between">
 									<Label for="auto-save" class="text-foreground/80">
 										{#snippet children()}
