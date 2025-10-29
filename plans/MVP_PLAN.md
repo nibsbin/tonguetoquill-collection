@@ -46,10 +46,9 @@ Organize into logical directories:
 - `src/hooks.server.ts`: Server-side middleware (authentication)
 
 **Core Dependencies:**
-- `lucide-svelte`: Icon library
-- `svelte-sonner`: Toast notifications
+- `shadcn-svelte`: Component library with built-in Lucide icons and Sonner toast notifications
 - CodeMirror 6 packages (see `designs/frontend/MARKDOWN_EDITOR.md` - Dependencies section)
-- `zod`: Schema validation (optional but recommended)
+- `zod`: Schema validation for runtime validation, form schemas, and type-safe environment variables
 
 **Environment Configuration:**
 - Create `.env` file for development (not committed)
@@ -264,6 +263,7 @@ All methods accept UUID parameters for user and document IDs, and verify ownersh
 # .env for development with mocks
 USE_AUTH_MOCKS=true
 USE_DB_MOCKS=true
+# NOTE: Dev secret only for mock JWT generation - DO NOT use in production
 MOCK_JWT_SECRET=dev-secret-key
 ```
 
@@ -288,6 +288,21 @@ MOCK_JWT_SECRET=dev-secret-key
 - Edge cases and boundary conditions
 
 Contract tests ensure that mock providers behave identically to real providers. The same test suite will validate real Supabase integration in Phase 10.
+
+**Mock vs Real Provider Differences:**
+
+Document key behavioral differences between mock and real Supabase providers:
+
+| Feature | Mock Provider | Real Supabase Provider |
+|---------|---------------|------------------------|
+| Email Verification | Simulated (no emails sent) | Real emails sent via configured SMTP |
+| Password Reset | Simulated flow | Real email with reset link |
+| Rate Limiting | Not enforced | Built-in rate limiting active |
+| Concurrent Sessions | Simple in-memory tracking | Database-backed session management |
+| Network Failures | Can simulate delays | Real network conditions |
+| Token Refresh | Deterministic timing | Clock-based expiration |
+| JWKS Validation | Simple signature check | Full JWKS endpoint validation with caching |
+| Database Transactions | In-memory Map operations | PostgreSQL ACID transactions |
 
 **Reference**: Testing section in `designs/backend/AUTH.md`
 
@@ -511,6 +526,31 @@ Contract tests ensure that mock providers behave identically to real providers. 
 **Goal**: Implement core editing experience with live preview.
 
 **Implementation Guide**: This phase implements the editor architecture detailed in `designs/frontend/MARKDOWN_EDITOR.md`. Follow the 8 implementation phases outlined in that document for a structured approach to building the CodeMirror 6 editor with extended markdown support.
+
+**Recommended Implementation Approach:**
+
+For optimal development velocity and reduced risk, implement the editor in stages:
+
+1. **Start with Basic Markdown** (MARKDOWN_EDITOR.md Phases 1-2):
+   - Initialize CodeMirror 6 with standard markdown support
+   - Implement toolbar and basic formatting
+   - Get the core editing experience working first
+   - This unblocks other development work and provides immediate value
+
+2. **Add Extended Syntax Iteratively** (MARKDOWN_EDITOR.md Phases 3-5):
+   - Begin with simple `---` delimiter recognition
+   - Add basic SCOPE/QUILL keyword highlighting
+   - Incrementally add folding and advanced features
+   - This reduces complexity and allows for testing at each stage
+
+3. **Polish and Optimize** (MARKDOWN_EDITOR.md Phases 6-8):
+   - Add auto-completion, mobile optimization, and accessibility features
+   - Complete the extended markdown implementation
+
+**Phase Mapping to MARKDOWN_EDITOR.md:**
+- Phase 6.1 (this phase) encompasses MARKDOWN_EDITOR.md Phases 1-5
+- Additional polish work (Phases 6-8 in MARKDOWN_EDITOR.md) continues within Phase 6 scope
+- Prioritize getting basic markdown working before complex Lezer grammar development
 
 ### 6.1 Markdown Editor
 
