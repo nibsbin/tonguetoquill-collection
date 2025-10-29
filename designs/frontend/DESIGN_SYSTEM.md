@@ -160,7 +160,7 @@ Reduced for performance, rely more on borders
 ## Icons
 
 ### Icon System
-Lucide Svelte for consistent, optimized icons
+shadcn-svelte provides Lucide icons through its component library for consistent, optimized icons
 
 ### Icon Sizes
 - XS: 12px

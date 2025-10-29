@@ -12,6 +12,8 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 
 ### Sidebar Component
 
+**Implementation**: Uses shadcn-svelte's Sheet component for drawer functionality on mobile, with custom layout structure
+
 **Purpose**: Collapsible navigation for document management, user profile, and settings
 
 **States**:
@@ -22,7 +24,7 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 **Structure**:
 
 **Header Section**:
-- Branding: "Tonguetoquill" text logo with feather icon
+- Branding: "Tonguetoquill" text logo with feather icon (from shadcn-svelte's Lucide icons)
 - Collapse toggle: Hamburger menu icon
 - Height: 48px (matches TopMenu)
 
@@ -41,10 +43,10 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 **Collapsed State**:
 - Width: 48px
 - Icons only (no text labels)
-- Tooltips show labels on hover
+- Tooltips show labels on hover (using shadcn-svelte's Tooltip component)
 
 **Mobile Behavior**:
-- Renders as full-screen drawer overlay
+- Renders as full-screen drawer overlay using shadcn-svelte's Sheet component
 - Backdrop dismissal
 - Hamburger menu trigger in TopMenu
 
@@ -56,12 +58,14 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 
 ### TopMenu Component
 
+**Implementation**: Uses shadcn-svelte's Button components for actions and Dropdown Menu for the more actions menu
+
 **Purpose**: Header bar displaying document information and actions
 
 **Structure**:
 
 **Left Section**:
-- Brand icon: Feather/pen icon (20px)
+- Brand icon: Feather/pen icon (20px, from shadcn-svelte's Lucide icons)
 - Filename display: Current document name (e.g., "welcome.md")
 - Unsaved indicator: Asterisk (*) or dot when document has unsaved changes
 - Truncation: Ellipsis for long filenames on mobile
@@ -92,6 +96,8 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 
 ### EditorToolbar Component
 
+**Implementation**: Uses shadcn-svelte's Button components with Lucide icons and Tooltip components for keyboard shortcuts
+
 **Purpose**: Markdown formatting controls
 
 **Formatting Tools**:
@@ -100,7 +106,7 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 - **Lists**: Bullet list, Numbered list
 - **Links**: Insert/edit link
 
-**Button Groups** (separated by dividers):
+**Button Groups** (separated by dividers using shadcn-svelte's Separator component):
 - Group 1: Bold, Italic, Strikethrough
 - Group 2: Code block, Quote
 - Group 3: Bullet list, Numbered list
@@ -113,7 +119,7 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 - Disabled: Reduced opacity
 
 **Keyboard Shortcuts**:
-Buttons show tooltips with keyboard shortcuts (see [DESIGN_SYSTEM.md - Keyboard Shortcuts](./DESIGN_SYSTEM.md#keyboard-shortcuts))
+Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip component (see [DESIGN_SYSTEM.md - Keyboard Shortcuts](./DESIGN_SYSTEM.md#keyboard-shortcuts))
 
 **Mobile Adaptation**:
 - Horizontal scroll if needed for overflow
@@ -213,6 +219,8 @@ For specific typography, see [DESIGN_SYSTEM.md - Typography](./DESIGN_SYSTEM.md#
 
 ## UI Component Library
 
+All UI components are built using [shadcn-svelte](https://www.shadcn-svelte.com/), a component library that provides accessible, customizable components built on Radix UI primitives. The library includes built-in icon support (via Lucide) and toast notifications, eliminating the need for separate icon and notification packages.
+
 ### Button Component
 
 **Variants**: Primary, Secondary, Ghost, Destructive  
@@ -228,6 +236,7 @@ For sizing details, see [DESIGN_SYSTEM.md - Component Sizing](./DESIGN_SYSTEM.md
 - **Destructive**: Dangerous actions (delete, discard)
 
 **Icon Integration**:
+- Icons provided by shadcn-svelte's built-in Lucide icon support
 - Icon can be placed left or right of text
 - Icon-only buttons for compact spaces (must have ARIA label)
 - Icon sizes scale with button size
@@ -242,6 +251,8 @@ For sizing details, see [DESIGN_SYSTEM.md - Component Sizing](./DESIGN_SYSTEM.md
 ---
 
 ### Dialog Component
+
+**Implementation**: Uses shadcn-svelte's Dialog component with built-in accessibility features
 
 **Purpose**: Modal dialogs for confirmations, forms, and alerts
 
@@ -266,7 +277,7 @@ The settings dialog contains user preferences:
 - **Auto-save**: Toggle to enable/disable auto-save (see [DESIGN_SYSTEM.md - Auto-Save](./DESIGN_SYSTEM.md#auto-save-behavior))
 
 **Toggle Switch Component**:
-- Used for boolean settings
+- Uses shadcn-svelte's Switch component
 - Clear on/off states
 - Label describes what the toggle controls
 
@@ -276,8 +287,9 @@ The settings dialog contains user preferences:
 
 **Mobile Adaptation**:
 See [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patterns) for breakpoint-specific behavior:
-- Mobile (<640px): Full-screen or bottom sheet
+- Mobile (<640px): Full-screen or bottom sheet using shadcn-svelte's Drawer component
 - Tablet/Desktop (≥640px): Centered modal with backdrop
+
 **Animation**:
 - See [DESIGN_SYSTEM.md - Transitions & Animations](./DESIGN_SYSTEM.md#transitions--animations) for timing and easing
 - Respect `prefers-reduced-motion` setting
@@ -288,6 +300,8 @@ See [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patte
 
 ### Dropdown Menu Component
 
+**Implementation**: Uses shadcn-svelte's Dropdown Menu component with built-in keyboard navigation and accessibility
+
 **Purpose**: Contextual menus for actions and options
 
 **Structure**:
@@ -296,7 +310,7 @@ See [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patte
 - Dismisses on selection, click outside, or ESC key
 
 **Menu Items**:
-- **Standard**: Icon + label
+- **Standard**: Icon + label (icons from shadcn-svelte's Lucide icon support)
 - **Destructive**: For dangerous actions (uses destructive styling)
 - **Disabled**: Not interactive, reduced opacity
 - **Separator**: Divider between groups
@@ -314,12 +328,14 @@ Menu items can show keyboard shortcuts aligned to the right (e.g., "Save" with "
 
 ### Toast Component
 
+**Implementation**: Uses shadcn-svelte's Sonner toast component with built-in accessibility and stacking
+
 **Purpose**: Temporary notification messages
 
 **Types**: Success, Error, Warning, Info, Classification Message
 
 **Structure**:
-- Icon indicating message type
+- Icon indicating message type (from shadcn-svelte's Lucide icon support)
 - Title (brief, clear)
 - Optional message (additional context)
 - Optional close button (for persistent toasts)
