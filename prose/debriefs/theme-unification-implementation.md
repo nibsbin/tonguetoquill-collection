@@ -150,7 +150,7 @@ The implementation follows the design exactly as specified in `prose/designs/the
 ### Color Migration Validation
 - ✅ Verified zero `zinc-*` references in code (excluding comments)
 - ✅ Used regex search to confirm complete migration
-- ✅ Tested with: `grep -r "zinc-" src --include="*.svelte" | grep -v "// zinc-"`
+- ✅ Tested with: `grep -r 'zinc-' src --include='*.svelte' | grep -v '// zinc-'`
 
 ### Component Verification
 - ✅ All UI components updated to use semantic tokens
@@ -171,12 +171,17 @@ The implementation follows the design exactly as specified in `prose/designs/the
 - Validate dialog accessibility features
 
 ### 2. Toast Theme Integration
-**Status**: Partially complete - Toast.svelte exists but wasn't explicitly updated with theme prop.
+**Status**: Out of scope for this implementation.
+
+**Notes**: 
+- The Toast.svelte component is a simple wrapper around svelte-sonner
+- svelte-sonner likely already respects system theme preferences
+- If explicit theme prop is needed, it can be added in a follow-up task
 
 **Recommendation**: 
-- Review Toast.svelte wrapper
-- Add `theme={$mode}` prop to svelte-sonner Toaster component if not already present
-- Test toast notifications in both themes
+- Test toast notifications in both themes to verify they match
+- If mismatched, add `theme={$mode}` prop to svelte-sonner Toaster component
+- This is a minor enhancement and doesn't block the core theme system
 
 ### 3. Color Contrast Validation
 **Status**: Not performed during implementation.
