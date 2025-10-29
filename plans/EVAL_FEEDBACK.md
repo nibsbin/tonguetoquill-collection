@@ -1,7 +1,5 @@
 # Iterate design docs
 
-Make the following changes to the frontend design docs based on my analysis of your `plans/FRONTEND_DESIGN_EVAL.md`. As a reminder. design docs should be high-level and contain minimal code.
-
 ## 1. Unnecessary Features
 
 1.1: Great point! I removed light and contrast modes from design docs--but ensure I didn't miss anything.
