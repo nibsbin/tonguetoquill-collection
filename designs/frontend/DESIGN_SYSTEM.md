@@ -2,16 +2,15 @@
 
 ## Overview
 
-The TongueToQuill design system provides a consistent visual language across desktop and mobile platforms, maintaining the professional VSCode-inspired aesthetic while ensuring accessibility and mobile-friendliness.
+The Tonguetoquill design system provides a consistent visual language across desktop and mobile platforms, maintaining the professional VSCode-inspired aesthetic while ensuring accessibility and mobile-friendliness.
 
 ## Color Palette
 
 ### Theme Philosophy
-- **Default**: Dark theme (professional, reduced eye strain)
-- **Alternative**: Light theme (accessibility, user preference)
-- **Support**: High contrast mode for Section 508 compliance
+- **Dark Theme Only**: Professional VSCode-inspired aesthetic with reduced eye strain
+- **Accessibility**: Built-in support for high contrast via CSS media queries (`prefers-contrast`)
 
-### Dark Theme
+### Color Scheme
 
 **Background Layers**:
 - Primary: zinc-900 (main background)
@@ -38,26 +37,12 @@ The TongueToQuill design system provides a consistent visual language across des
 
 **Brand**: USAF Blue (#355e93) for accents and primary actions
 
-### Light Theme
+### High Contrast Support
 
-**Background Layers**:
-- Primary: White
-- Secondary: Light gray
-- Tertiary: Medium gray
-- Overlay: White with transparency
-
-**Text Colors**:
-- Primary: Near black
-- Secondary: Dark gray
-- Tertiary: Medium gray
-- Disabled: Light gray
-
-### High Contrast Mode
-
-Activated via user preference or system setting:
-- Minimum 7:1 contrast ratio
-- Pure black/white backgrounds
-- Bold text and borders
+Automatically adapts to system `prefers-contrast: high` media query:
+- Increased contrast ratios (7:1 minimum)
+- Stronger border visibility
+- Enhanced focus indicators (3px vs 2px)
 
 ### Color Usage Guidelines
 
@@ -229,41 +214,242 @@ Base styles for mobile, enhance at larger breakpoints
 ## Accessibility Features
 
 ### Focus Indicators
-- Visible outline: 2px solid
+- Visible outline: 2px solid USAF blue
 - Offset: 2px
-- High contrast: 3px solid
+- High contrast mode: 3px solid (via `prefers-contrast: high`)
 - Never remove focus styles
 
 ### Text Contrast
 - Normal text: 4.5:1 minimum
-- Large text: 3:1 minimum
+- Large text (18px+): 3:1 minimum
 - UI components: 3:1 minimum
-- WCAG AA compliance
+- High contrast mode: 7:1 minimum (via `prefers-contrast: high`)
+- WCAG AA compliance (AAA in high contrast mode)
 
 ### Skip Links
 Hidden by default, visible on focus for keyboard navigation
 
+## Breakpoint Behavior
+
+### Breakpoint System
+- **Mobile**: < 640px - Single column, stacked layouts
+- **sm: 640px** - Mobile landscape, may show dual panes on larger phones  
+- **md: 768px** - Tablet portrait, split layouts start to appear
+- **lg: 1024px** - Desktop, full feature set with sidebar
+- **xl: 1280px** - Large desktop, generous spacing
+- **2xl: 1536px** - Extra large, maximum content width
+
+### Breakpoint Implementation
+- Use **mobile-first** approach with `min-width` media queries
+- At exact breakpoint values (e.g., 640px width), the larger breakpoint's styles apply
+- Example: At exactly 640px width, `sm` breakpoint styles are active
+- Transitions between breakpoints should be instant (no gradual transformations)
+
+### Mobile-First Approach
+Base styles target mobile devices, progressively enhanced at larger breakpoints
+
+## Component Sizing
+
+### Button Sizes
+- Small: 32px height, 12px horizontal padding, 14px font
+- Medium: 40px height, 16px horizontal padding, 16px font  
+- Large: 48px height, 24px horizontal padding, 18px font
+- Icon-only: Square dimensions matching height
+
+### Input Fields
+- Desktop: 40px height, 16px font
+- Mobile: 48px height, 16px font (prevents zoom on focus)
+
+### Interactive Element Sizing
+- Minimum touch target: 44x44px (mobile)
+- Minimum spacing between targets: 8px
+- Desktop interactive elements: Minimum 32px height
+
+## Loading States
+
+### Loading Delay Thresholds
+- Show loading indicator only if operation takes > 300ms
+- Prevents loading flashes for fast operations
+- Use skeleton loaders for initial page loads
+- Use spinners for in-progress operations
+
+### Loading Patterns
+- **Skeleton Loaders**: Use for initial content load (document list, preview)
+- **Spinners**: Use for user-initiated actions (save, delete, create)
+- **Progress Bars**: Use for file operations (upload, download)
+- **Preserve Previous State**: If preview already rendered, keep showing it during updates to avoid flashes
+
+### Component-Specific Loading
+- **Document List**: Skeleton cards during initial load
+- **Preview Pane**: Keep last rendered version during updates
+- **Forms**: Disable inputs and show spinner on submit button
+- **Dialogs**: Spinner in button during async operations
+
+## Classification Banner
+
+### Display Pattern
+Classification level displayed as a **toast notification** that appears:
+- At top-center of the viewport
+- Persists (no auto-dismiss) while document is open
+- Shows current document's classification level
+- Dismissible by user (but reappears on document reload)
+
+### Toast Styling
+- Background: Semantic color based on classification
+  - UNCLASSIFIED: Blue-500 background
+  - CONFIDENTIAL: Yellow-600 background
+  - SECRET: Orange-600 background
+  - TOP SECRET: Red-600 background
+- Border: 2px solid, slightly darker shade
+- Text: White, bold, uppercase
+- Icon: Shield icon matching classification level
+- Position: Top-center, 16px from top edge
+- Z-index: Toast layer (40)
+
+## Keyboard Shortcuts
+
+### Document Editing
+- **Ctrl/Cmd+Z**: Undo
+- **Ctrl/Cmd+Y**: Redo  
+- **Ctrl/Cmd+S**: Save document
+- **Ctrl/Cmd+F**: Find in document
+
+### Text Formatting
+- **Ctrl/Cmd+B**: Bold
+- **Ctrl/Cmd+I**: Italic
+- **Ctrl/Cmd+Shift+X**: Strikethrough
+- **Ctrl/Cmd+K**: Insert link
+
+### Headings
+- **Ctrl/Cmd+1**: Heading 1
+- **Ctrl/Cmd+2**: Heading 2
+- **Ctrl/Cmd+3**: Heading 3
+- **Ctrl/Cmd+4**: Heading 4
+- **Ctrl/Cmd+5**: Heading 5
+- **Ctrl/Cmd+6**: Heading 6
+
+### Display
+Keyboard shortcuts displayed in:
+- Help dialog (accessible via menu or ? key)
+- Tooltips on toolbar buttons (e.g., "Bold (Ctrl+B)")
+- Menu items (when applicable)
+
 ## Theme System
 
-### Dark Mode Toggle
-- Default: Dark theme
-- Toggle: Light theme
-- System: Follow OS preference
-- Persisted to user preferences
-
-### Theme Implementation
+### Implementation
+- Dark theme only (no theme toggle in UI)
 - CSS custom properties for all design tokens
-- Class toggle on root element
-- Smooth transitions between themes
+- Automatic high contrast support via `prefers-contrast` media query
 
 ## Design Tokens
 
-All design values defined as CSS variables for consistency and themability:
-- Colors
-- Spacing
-- Typography
-- Borders
-- Shadows
-- Transitions
+All design values defined as CSS variables for consistency:
+- Colors (backgrounds, text, borders, semantic)
+- Spacing (padding, margins, gaps)
+- Typography (families, sizes, weights, line heights)
+- Borders (radius, widths)
+- Shadows (elevation levels)
+- Transitions (durations, easing functions)
+- Breakpoints (responsive design)
 
 Synced with Tailwind configuration for unified system.
+
+---
+
+## Navigation Patterns
+
+### Desktop Navigation (≥1024px)
+- **Sidebar**: Persistent, collapsible (224px expanded, 48px collapsed)
+- **Top Menu**: Fixed header with document actions
+- **Main Content**: Split editor/preview panes
+
+### Tablet Navigation (768px - 1023px)  
+- **Sidebar**: Drawer overlay (activated by hamburger menu)
+- **Top Menu**: Persistent header, condensed actions
+- **Main Content**: Split editor/preview or tabbed view
+
+### Mobile Navigation (<768px)
+- **Sidebar**: Full-screen drawer overlay
+- **Top Menu**: Sticky header with essential actions only
+- **Main Content**: Tabbed interface (Editor OR Preview, not both)
+- **Navigation Trigger**: Hamburger menu icon in top-left
+
+### Pattern Selection Rules
+- Use **drawer** for sidebar at <1024px (overlay that slides in from left)
+- Use **bottom sheet** for mobile dialogs at <640px (slide up from bottom)
+- Use **modal** for dialogs at ≥640px (centered overlay)
+- Use **tabs** for mobile content switching at <768px
+- Use **split panes** for desktop content at ≥768px
+
+---
+
+## Auto-Save Behavior
+
+### Save Triggers
+- **Manual Save**: Ctrl/Cmd+S keyboard shortcut
+- **Auto-Save**: 7 seconds after last keystroke (when auto-save enabled in settings)
+- **Blur Event**: When editor loses focus (optional, based on user preference)
+
+### Auto-Save Implementation
+- Debounce delay: 7 seconds from last keystroke
+- Only trigger if document has unsaved changes
+- Show save status indicator (saving/saved/unsaved/error)
+- Network request timeout: 30 seconds
+
+### Error Handling
+- Display error message in toast notification
+- Keep local changes in editor (don't discard)
+- Provide retry button in error toast
+- Maintain "unsaved" status indicator
+
+### Conflict Resolution
+- **Strategy**: Last write wins (always overwrite server version)
+- No conflict detection for MVP
+- User changes always take precedence
+- Document timestamp updated on successful save
+
+### User Feedback
+- **Saving**: Spinner icon next to document name
+- **Saved**: Checkmark icon, "Saved" text (brief display)
+- **Unsaved**: Dot indicator, asterisk in document name
+- **Error**: Red error icon, error message in toast
+
+---
+
+## Form Validation Strategy
+
+### Validation Layers
+1. **Client-Side Validation**: Progressive enhancement, immediate feedback
+2. **Server-Side Validation**: Authoritative, security boundary
+
+### Client Validation
+- **Purpose**: Improve UX with immediate feedback
+- **Scope**: Format validation, required fields, basic constraints
+- **Timing**: On blur (field exit), on submit
+- **Display**: Inline error messages below fields
+- **Never Replace**: Server validation (client is untrusted)
+
+### Server Validation  
+- **Purpose**: Enforce business rules, ensure data integrity
+- **Scope**: All validation rules, security checks, database constraints
+- **Response**: Return validation errors in structured format
+- **Display**: Inline errors (field-specific) + error summary (top of form)
+
+### Validation Rules
+- Required fields marked with red asterisk (*)
+- Error messages specific and actionable (e.g., "Email must include @")
+- Invalid state: Red border (2px), red error text, error icon
+- Valid state: Return to normal styling (no explicit green/"valid" state)
+- Preserve user input on error (don't clear fields)
+
+### Error Display Pattern
+- **Inline Errors**: Below each field, red text, 14px, with alert icon
+- **Error Summary**: Top of form (if multiple errors), list all field errors
+- **Toast Notification**: For non-field errors (network, server errors)
+- **Focus Management**: Move focus to first error field on submit
+
+### Progressive Enhancement
+- Forms work without JavaScript (standard POST to server actions)
+- Client validation enhances UX but isn't required
+- Server always validates, regardless of client validation
+- Client mirrors server rules to minimize round-trips

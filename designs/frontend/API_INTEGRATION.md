@@ -2,7 +2,9 @@
 
 ## Overview
 
-TongueToQuill integrates with a RESTful backend API for authentication, document management, and user profiles. The frontend handles API communication, error handling, and state synchronization while maintaining a responsive user experience.
+Tonguetoquill integrates with a RESTful backend API for authentication, document management, and user profiles. The frontend handles API communication, error handling, and state synchronization while maintaining a responsive user experience.
+
+For authentication details, see [designs/backend/AUTH.md](../backend/AUTH.md).
 
 ## API Architecture
 
@@ -10,9 +12,9 @@ TongueToQuill integrates with a RESTful backend API for authentication, document
 
 **API Settings**:
 - Base URL (environment-specific)
-- Timeout configuration (30 seconds default)
-- Retry strategy (3 attempts with exponential backoff)
-- Credentials handling (include cookies)
+- Timeout: 30 seconds (see [DESIGN_SYSTEM.md - Auto-Save](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for save timeout)
+- Retry strategy: Up to 3 attempts with exponential backoff
+- Credentials: Include cookies (for JWT tokens)
 
 **Endpoints**:
 - Authentication: `/auth/*`
@@ -44,55 +46,60 @@ TongueToQuill integrates with a RESTful backend API for authentication, document
 
 ## Authentication Integration
 
+See [designs/backend/AUTH.md](../backend/AUTH.md) for complete authentication architecture and specifications.
+
 ### Login Flow
 
 **Process**:
 1. User submits credentials via form action
-2. Server validates and sets HTTP-only cookie
+2. Server validates and sets HTTP-only cookie with JWT
 3. User redirected to app
 4. Session verified on protected routes
 
 **Token Management**:
-- JWT stored in HTTP-only cookies
-- Automatic refresh before expiration
-- Logout clears session
+- JWT stored in HTTP-only cookies (never accessible to JavaScript)
+- Automatic token refresh before expiration (proactive, ~5 minutes before)
+- Logout clears session cookie
 - Failed refresh redirects to login
 
 ### Protected Routes
 
 **Server-Side Protection**:
-- Verify authentication in server hooks
-- Load user data in layout
-- Redirect if not authenticated
+- Verify authentication in SvelteKit server hooks
+- Load user data in layout server load function
+- Redirect to login if not authenticated
 - Pass user to client via page data
 
 **Client-Side Behavior**:
 - Access user from page data
-- Handle auth errors gracefully
-- Redirect to login when needed
+- Handle auth errors gracefully (show toast, redirect)
+- Redirect to login when session expires
 
 ### Session Management
 
+See [designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refresh specifications.
+
 **Features**:
-- Automatic token refresh
-- Session timeout warnings
-- Ability to extend session
-- Logout on inactivity
+- Automatic token refresh (proactive, before expiration)
+- Session timeout warnings (optional, based on backend config)
+- Logout on inactivity (optional, based on backend config)
 
 ## Document Management
 
 ### Document Service
 
 **Operations**:
-- **List**: Get all user documents
+- **List**: Get all user's documents
 - **Get**: Fetch single document by ID
-- **Create**: Create new document
+- **Create**: Create new blank markdown document
 - **Update**: Modify document content
 - **Delete**: Remove document
 
+**Ownership**: Each document owned by single user (creator). No sharing in MVP.
+
 **Error Handling**:
 - 400: Validation errors
-- 403: Permission denied
+- 403: Permission denied (not document owner)
 - 404: Document not found
 - 500: Server errors
 
@@ -102,7 +109,7 @@ TongueToQuill integrates with a RESTful backend API for authentication, document
 
 **Creating Documents**: Form action or API call, optimistic UI update
 
-**Updating Documents**: Auto-save with debounce, optimistic updates
+**Updating Documents**: Auto-save with debounce (see [DESIGN_SYSTEM.md - Auto-Save](../frontend/DESIGN_SYSTEM.md#auto-save-behavior)), optimistic updates
 
 **Deleting Documents**: Confirmation dialog, optimistic removal, rollback on error
 
@@ -128,13 +135,13 @@ TongueToQuill integrates with a RESTful backend API for authentication, document
 
 ### User Feedback
 
-**Error Toasts**: Brief, actionable error messages
+**Error Toasts**: Brief, actionable error messages (see [UI_COMPONENTS.md - Toast](../frontend/UI_COMPONENTS.md#toast-component))
 
-**Inline Errors**: Next to form fields
+**Inline Errors**: Next to form fields (see [DESIGN_SYSTEM.md - Form Validation](../frontend/DESIGN_SYSTEM.md#form-validation-strategy))
 
 **Error Pages**: For fatal errors with retry/home options
 
-**Loading States**: Indicate pending operations
+**Loading States**: Indicate pending operations (see [DESIGN_SYSTEM.md - Loading States](../frontend/DESIGN_SYSTEM.md#loading-states))
 
 ## Optimistic Updates
 
@@ -144,13 +151,13 @@ TongueToQuill integrates with a RESTful backend API for authentication, document
 1. Update local state immediately
 2. Send request to server
 3. On success: Keep update
-4. On error: Rollback and show error
+4. On error: Rollback and show error toast
 
 **Use Cases**:
-- Document content updates
+- Document content updates (save operations)
 - Document creation
+- Document deletion
 - Preference changes
-- Simple toggles
 
 **Benefits**:
 - Instant feedback

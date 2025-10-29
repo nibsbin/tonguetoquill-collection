@@ -2,35 +2,38 @@
 
 ## Overview
 
-TongueToQuill uses a hybrid state management approach leveraging SvelteKit 5's runes system for reactive local state, stores for global application state, and server-side state management for data persistence.
+Tonguetoquill uses a hybrid state management approach with reactive local state, global stores for application-wide state, and server-side state management for data persistence. The implementation leverages SvelteKit 5's reactive system.
 
-## Svelte 5 Runes
+## Reactive State Patterns
 
-### Reactive State (`$state`)
+### Component-Local State
 
-**Component-Local State**: Primitive values, objects, and arrays that trigger reactivity when modified
+**Purpose**: UI state, form inputs, temporary data within a component
 
-**Deep Reactivity**: Nested object changes automatically trigger updates
+**Characteristics**:
+- Reactive updates when values change
+- Deep reactivity for nested objects
+- Can be organized in classes for related state
 
-**Class-Based State**: Organize related state in classes with methods
+### Derived State
 
-### Derived State (`$derived`)
+**Purpose**: Computed values that auto-update based on dependencies
 
-**Computed Values**: Auto-update when dependencies change
+**Characteristics**:
+- Automatically recomputes when dependencies change
+- Supports filtering, mapping, transformations
+- Performance-optimized (only recalculates when needed)
 
-**Complex Derivations**: Support for filtering, mapping, and transformations
+### Side Effects
 
-**Performance**: Only recompute when dependencies actually change
+**Purpose**: React to state changes with side effects
 
-### Side Effects (`$effect`)
+**Use Cases**:
+- Auto-save after content changes (see [DESIGN_SYSTEM.md - Auto-Save](../frontend/DESIGN_SYSTEM.md#auto-save-behavior))
+- Change tracking for unsaved indicators
+- External synchronization (localStorage, etc.)
 
-**Auto-Save**: Trigger save operations after content changes
-
-**Change Tracking**: Monitor for unsaved changes
-
-**External Sync**: Synchronize with localStorage, WebSocket, etc.
-
-**Cleanup**: Return cleanup function to prevent memory leaks
+**Best Practice**: Always provide cleanup to prevent memory leaks
 
 ## Global Stores
 
@@ -43,11 +46,11 @@ TongueToQuill uses a hybrid state management approach leveraging SvelteKit 5's r
 - Login/logout methods
 
 **Preferences Store**:
-- Theme selection
-- Auto-save setting
-- Line numbers toggle
-- Font size
+- Auto-save setting (enabled/disabled)
+- Font size (optional)
 - Persisted to localStorage
+
+See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for auto-save specifications.
 
 **Document Store**:
 - Document list
@@ -58,9 +61,8 @@ TongueToQuill uses a hybrid state management approach leveraging SvelteKit 5's r
 ### Derived Stores
 
 **Computed from Multiple Stores**:
-- Dark mode (from preferences + system)
 - User permissions (from auth + role)
-- Filtered documents (from documents + search)
+- Active document (from document list + active ID)
 
 ### Readable Stores
 
@@ -84,15 +86,15 @@ TongueToQuill uses a hybrid state management approach leveraging SvelteKit 5's r
 
 ### Form Patterns
 
-**Basic Forms**: Standard HTML submission to server actions
+**Basic Forms**: Standard HTML submission to server actions (works without JavaScript)
 
-**Enhanced Forms**: `use:enhance` directive for better UX
+**Enhanced Forms**: Progressive enhancement with JavaScript for better UX (optimistic updates, loading states, client validation)
 
 **Optimistic Updates**: Update UI immediately, rollback on error
 
-**Loading States**: Show progress during submission
+**Loading States**: Show progress indicators during submission
 
-**Error Handling**: Display validation errors, preserve user input
+**Error Handling**: Display validation errors inline, preserve user input
 
 ## Document State Management
 
@@ -117,41 +119,27 @@ TongueToQuill uses a hybrid state management approach leveraging SvelteKit 5's r
 
 ### Auto-Save Pattern
 
-**Debounced Saves**:
-- Wait for pause in typing
-- Configurable delay
-- Cancel on unmount
+See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for complete auto-save specifications.
 
-**Optimistic Updates**:
-- Mark as saved immediately
-- Rollback on server error
-- Show error state
+**Implementation**:
+- Debounced saves (7 seconds after last keystroke)
+- Cancel pending saves on unmount
+- Optimistic UI updates
+- Error handling and rollback
 
 ## State Persistence
 
 ### LocalStorage Persistence
 
 **User Preferences**:
-- Theme selection
-- Editor settings
-- UI state (sidebar expanded, etc.)
+- Auto-save setting (enabled/disabled)
+- Editor settings (font size, etc.)
+- UI state (sidebar expanded/collapsed)
 
 **Strategy**:
 - Load on mount
 - Save on change
 - Handle storage events for cross-tab sync
-
-### IndexedDB for Large Data
-
-**Use Cases**:
-- Offline document storage
-- Large file caching
-- Binary data (future: images)
-
-**Benefits**:
-- Better performance than localStorage
-- Larger storage capacity
-- Structured data storage
 
 ## Context API
 
@@ -165,29 +153,29 @@ TongueToQuill uses a hybrid state management approach leveraging SvelteKit 5's r
 
 ### Context Usage
 
-**Providing Context**: Use `setContext` in parent component
+**Providing Context**: Parent component provides values to descendant tree
 
-**Consuming Context**: Use `getContext` in child components
+**Consuming Context**: Child components access provided values
 
-**Type Safety**: Define TypeScript interfaces for context
+**Type Safety**: Define TypeScript interfaces for all context values
 
 ## State Patterns Summary
 
-### When to Use Each
+### When to Use Each Pattern
 
-**`$state` Rune**:
-- Component-local state
+**Component-Local State**:
 - UI state (expanded, selected, focused)
 - Form inputs
 - Temporary calculations
+- Data that doesn't need to be shared
 
-**Stores**:
-- Global application state
+**Global Stores**:
+- Application-wide state (auth, preferences, documents)
 - Cross-component communication
 - Persistent state
 - Shared derived state
 
-**Form Actions**:
+**Form Actions** (Server-side):
 - Server-validated data
 - Database operations
 - File uploads
@@ -196,38 +184,38 @@ TongueToQuill uses a hybrid state management approach leveraging SvelteKit 5's r
 **Context API**:
 - Dependency injection
 - Feature-specific state
-- Avoiding prop drilling
-- Component trees
+- Avoiding prop drilling through many levels
+- Component tree configuration
 
-**Page Data**:
-- Initial page data
-- SSR data
+**Page Data** (SSR):
+- Initial page data loaded on server
 - Route-specific data
 - URL-based state
+- SEO-critical data
 
 ## State Best Practices
 
 ### Guidelines
 
-**Keep State Close**: Use component-local state when possible
+**Keep State Close**: Use component-local state when possible, only elevate when needed
 
-**Avoid Over-Storing**: Don't duplicate data in multiple stores
+**Avoid Over-Storing**: Don't duplicate data across multiple stores
 
-**Normalize Data**: Use IDs and lookups for related data
+**Normalize Data**: Use IDs and lookups for related data structures
 
-**Derive Don't Duplicate**: Use `$derived` instead of storing computed values
+**Derive Don't Duplicate**: Compute values from source data rather than storing separately
 
-**Clean Up**: Always clean up effects and subscriptions
+**Clean Up**: Always clean up effects, subscriptions, and listeners
 
 ### Performance
 
-**Minimize Reactivity**: Only make reactive what needs to be
+**Minimize Reactivity**: Only make reactive what actually needs reactivity
 
-**Batch Updates**: Group related state changes
+**Batch Updates**: Group related state changes together
 
-**Debounce Expensive Operations**: Delay re-renders for rapid changes
+**Debounce Expensive Operations**: Delay updates for rapid changes (e.g., auto-save)
 
-**Memoize Derived State**: Prevent unnecessary recalculations
+**Memoize Derived State**: Prevent unnecessary recalculations of computed values
 
 ### Type Safety
 

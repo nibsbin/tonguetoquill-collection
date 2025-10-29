@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains high-level design documentation for the TongueToQuill frontend rewrite using SvelteKit 5. The design maintains the professional VSCode-inspired aesthetic from the legacy implementation while modernizing the architecture, adding mobile support, and ensuring Section 508 compliance.
+This directory contains high-level design documentation for the Tonguetoquill frontend rewrite using SvelteKit 5. The design maintains the professional VSCode-inspired aesthetic from the legacy implementation while modernizing the architecture, adding mobile support, and ensuring Section 508 compliance.
 
 ## Design Documents
 
@@ -18,18 +18,18 @@ High-level overview of application structure, routing strategy, component organi
 ### [UI_COMPONENTS.md](./UI_COMPONENTS.md)
 **Component Specifications**
 
-Component design specifications including layout, editor, and UI components with responsive and accessibility considerations.
+Component behavior specifications including props, states, interactions, and accessibility requirements. References [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual styling.
 
-**Topics**: Layout components (Sidebar, TopMenu), editor components (Toolbar, Editor, Preview), UI library (Button, Dialog, Toast), responsive patterns, touch interactions, animations
+**Topics**: Layout components (Sidebar, TopMenu), editor components (Toolbar, Editor, Preview), UI library (Button, Dialog, Toast, Dropdown), responsive patterns, accessibility
 
 ---
 
 ### [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
-**Visual Design Language**
+**Visual Design Language & Design Tokens**
 
-Visual design system defining colors, typography, spacing, and other design tokens for consistent UI across platforms.
+**Single source of truth** for all visual design decisions: colors, typography, spacing, shadows, animations, breakpoints, and component sizing. All other documents reference this for visual specifications.
 
-**Topics**: Color palette (dark/light/high-contrast), typography system, spacing scale, border radius, shadows, icons, transitions, responsive breakpoints, accessibility features
+**Topics**: Dark theme color palette, typography system, spacing scale, border radius, shadows, icons, transitions, responsive breakpoints, accessibility features, keyboard shortcuts, auto-save behavior, form validation, navigation patterns, loading states, classification banner
 
 ---
 
@@ -54,9 +54,9 @@ State management approach using Svelte 5 runes, global stores, and server-side s
 ### [API_INTEGRATION.md](./API_INTEGRATION.md)
 **Backend Integration**
 
-Backend API integration patterns for authentication, document management, and data synchronization.
+Backend API integration patterns for authentication, document management, and data synchronization. See [designs/backend/AUTH.md](../backend/AUTH.md) for authentication details.
 
-**Topics**: API client architecture, authentication flows, document CRUD, error handling, optimistic updates, real-time updates, type safety, performance optimization
+**Topics**: API client architecture, authentication flows, document CRUD, error handling, optimistic updates, type safety
 
 ---
 
@@ -70,10 +70,9 @@ Backend API integration patterns for authentication, document management, and da
 - Type-safe development with TypeScript
 
 ### 2. Mobile-First Design
-- Responsive layouts at all breakpoints (640px, 768px, 1024px, 1280px)
+- Responsive layouts at all breakpoints (see [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md#breakpoint-behavior))
 - Touch-optimized interactions (44px minimum targets)
 - Adaptive UI patterns (drawer, bottom sheet, tabs)
-- Native-feeling gestures and animations
 - Performance optimization for mobile devices
 
 ### 3. Section 508 Compliance
@@ -85,11 +84,11 @@ Backend API integration patterns for authentication, document management, and da
 - Proper form labels and error messages
 
 ### 4. Professional Aesthetic
-- VSCode-inspired dark theme with zinc-900 palette
+- VSCode-inspired dark theme (see [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md#color-palette))
 - Clean, minimal interface
-- Smooth transitions (300ms standard)
+- Smooth transitions (see [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md#transitions--animations))
 - Consistent spacing and typography
-- Professional document rendering with Quillmark
+- Professional document rendering
 
 ### 5. Performance First
 - Code splitting by route
@@ -129,19 +128,18 @@ The frontend integrates with backend services documented in `designs/backend/`:
 
 ### Document Management (SERVICES.md, SCHEMAS.md)
 - Document CRUD operations
-- Multi-user support with ownership
-- Real-time collaboration (future)
-- Quillmark template rendering
+- Single-user ownership model (no sharing in MVP)
+- Basic document metadata
 
 ## Implementation Guidelines
 
 ### Getting Started
-1. Review ARCHITECTURE.md for project structure
-2. Study UI_COMPONENTS.md for component patterns
-3. Reference DESIGN_SYSTEM.md for styling
-4. Implement ACCESSIBILITY.md requirements
-5. Use STATE_MANAGEMENT.md patterns for state
-6. Follow API_INTEGRATION.md for backend communication
+1. Review [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual design tokens and patterns
+2. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for project structure  
+3. Study [UI_COMPONENTS.md](./UI_COMPONENTS.md) for component behavior
+4. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
+5. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
+6. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
 
 ### Development Workflow
 1. Build components mobile-first
@@ -178,19 +176,59 @@ The frontend integrates with backend services documented in `designs/backend/`:
 ## Key Patterns
 
 ### Responsive Layout
-- **Desktop**: Sidebar (224px/48px) + split editor/preview (50/50)
-- **Tablet**: Drawer sidebar + split view (60/40)
-- **Mobile**: Full-screen drawer + tabbed editor OR preview
+See [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patterns) for detailed breakpoint behavior.
+
+- **Desktop (≥1024px)**: Sidebar (224px/48px) + split editor/preview
+- **Tablet (768px-1023px)**: Drawer sidebar + split or tabbed view
+- **Mobile (<768px)**: Drawer sidebar + tabbed editor OR preview
 
 ### State Management
+See [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) for detailed patterns.
+
 - Component-local: Svelte 5 runes ($state, $derived, $effect)
 - Global: Svelte stores for auth, preferences, documents
 - Server: Form actions for validated operations
 
+### Auto-Save
+See [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md#auto-save-behavior) for complete specification.
+
+- 7-second debounce after last keystroke
+- Manual save via Ctrl/Cmd+S
+- Conflict resolution: last write wins
+
+### Form Validation
+See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-validation-strategy) for complete specification.
+
+- Client-side: Progressive enhancement, immediate feedback
+- Server-side: Authoritative validation
+- Display: Inline errors + error summary
+
 ### Progressive Enhancement
 - Base: Forms work without JavaScript (HTTP POST)
-- Enhanced: Optimistic updates, client validation, loading states
+- Enhanced: Optimistic updates, client validation, loading states  
 - Fallback: Server handles all validation
+
+## MVP Scope
+
+### Included Features
+- Single-user document editing
+- Markdown editor with formatting toolbar
+- Live preview pane
+- Auto-save with 7-second debounce
+- Document list (create, open, delete)
+- User authentication
+- Classification banner (toast notification)
+- Keyboard shortcuts
+- Mobile-responsive layout
+- Section 508 compliance
+
+### Explicitly Excluded from MVP
+- Document templates (blank markdown only)
+- Document sharing/collaboration
+- Version history
+- Offline support
+- Search and filter
+- Quillmark integration (post-MVP)
 
 ## References
 
@@ -208,17 +246,17 @@ The frontend integrates with backend services documented in `designs/backend/`:
 
 ### Backend
 - See `designs/backend/` for API specifications
-- See `designs/legacy/QUILLMARK_INTEGRATION.md` for rendering
+- See `designs/backend/AUTH.md` for authentication details
 
 ## Document Maintenance
 
 When updating documentation:
-1. Keep high-level focus
-2. Avoid implementation details
-3. Update cross-references
-4. Maintain consistency
+1. Keep high-level focus (avoid implementation details)
+2. Update cross-references when moving content
+3. DESIGN_SYSTEM.md is single source of truth for visual design
+4. Maintain consistency across documents
 5. Version significant changes
 
 ---
 
-*Last Updated: October 28, 2025*
+*Last Updated: October 29, 2025*

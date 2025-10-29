@@ -1,53 +1,85 @@
 # Iterate design docs
 
-Make the following changes to the design ndocs based on my analysis of your `plans/BACKEND_DESIGN_EVAL.md`. As a reminder. design docs should be high-level and contain minimal code.
+## 1. Unnecessary Features
 
-## Unnecessary Features
+1.1: Great point! I removed light and contrast modes from design docs--but ensure I didn't miss anything.
 
-**AUTH.md**
-1. We will NEED dual auth support soon; however, we could focus on Supabase for the MVP. We should build the MVP auth on top of the abstraction.
-2. We need to support both eventually. Just add `GET /auth/callback` as a stub for now.
-3. Good point. Remove the unnecessary Docshare schema.
-4. Remove Docshare schema.
+1.2: Agree. Remove the wizard for now.
 
-**SERVICES.md**
-5. Good point. Remove login service placeholder.
+1.3: Agree. Remove this feature from MVP.
 
-## Missing Features
+1.4: Agreed. Remove this feature from MVP.
 
-**AUTH.md**
-1. Good point. Specify the proxied registration route.
-2. Create backend routes for password reset and email verification that send the request to auth provider.
-3. Refresh when ~2 minutes remaining on access token. Also handle 401s as fallback (clock skew, edge cases).
-4. Good point. Document error response format for auth failures.
+1.5: Agree. We will never need this.
 
-**SCHEMAS.md**
-5. Good point. specify the Users table. It should have a UUID, email, and DODID.
-6. Add index specifications for Documents table.
-7. Add On Delete behavior that deletes documents belonging to the user.
-8. Use timestamp with time zones for all time stamps.
+## 2. Missing Features
 
-**SERVICES.md**
-9. Add basic authorization logic.
-10. Add basic error specifications.
-11. Add basic validation rules.
-12. The intent of this function is to list relevant metadata about documents for displaying in a list in the frontend for the user to select. Document contents should only ever be loaded individually. Rework the schema/service for this flow.
+2.1: Good catch. I do not plan on implementing collaborative editing any time soon. Remove all references to this feature.
 
-## Ambiguous Specifications
+2.2: Remove all references to offline support for the MVP.
 
-**AUTH.md**
+2.3: Remove all designs and references for the document version history feature in design documents. Not relevant for MVP.
 
-1. We need to build with both in mind, but specify that we will only develop for Supabase for now.
-2. Specify JWKS endpoint usage and caching strategy.
-3. Do not specify exact configurations. Stay high level.
-4. You may provide more detail about validation of claims but stay high level.
+2.4: For the MVP, we will not offer any templates. Just a blank markdown document. Remove all designs and references regarding markdown templates.
 
-**SCHEMAS.md**
-5. The fields in the Users table will be remain constant for identity, but the fields in UserProfiles are subject to significant change in the future. We could include all the user profile data in a JSONB field within Users.
-6. These limits are arbitrary. Use your discretion for changing the VARCHAR strategy.
-7. Let's cap the maximum size for the content at 0.5 MB
+2.5: No plans to implement this. Remove all designs and references to search & filter functionality.
 
-**SERVICES.md**
-8. You may add more specification to the method signatures, but use minimal code and keep it high level.
-9. Good point. there should be a way to update the name as well.
-10. Good point. Propose a basic strategy for authentication context.
+2.6: Rework the UNCLASSIFIED classification banner design to be a toast message instead.
+
+2.7: We don't need error recovery or data loss prevention for MVP.
+
+2.8: Here are the keyboard shortcuts to display:
+- Ctrl/Cmd+Z: undo
+- Ctrl/Cmd+Y: redo
+- Ctrl/Cmd+B: bold
+- Ctrl/Cmd+I: italic
+- Ctrl/Cmd+Shift+X: strikethrough
+- Ctrl/Cmd+K: insert link
+- Ctrl/Cmd + 1-6: heading levels 1-6
+- Ctrl/Cmd+S: save
+- Ctrl/Cmd+F: find
+
+2.9: Do not worry about mobile gestures for MVP. Remove all designs and references to mobile gestures.
+
+## 3. Poor Organization Choices
+
+3.1: Good points:
+- Make DESIGN_SYSTEM.md the single source of truth for all design-related decisions and design tokens. Remove redundant design info from other docs.
+- UI_COMPONENTS.md should reference DESIGN_SYSTEM.md rather than repeating values
+- Use statements like "See DESIGN_SYSTEM.md for color palette" instead of duplicating values
+
+3.2: Agreed. Focus on Props, states, interactions, and accessibility in UI_COMPONENTS.md and put visual design details in DESIGN_SYSTEM.md. Keep only component-specific styling details in component docs
+
+3.3: Agreed. Replace repeated information with cross-references to follow DRY principles.
+
+3.4: Keep svelte-based design patterns. You may reduce the granularity of constraints by specifying them as high-level requirements instead of exact values.
+
+3.5: Agreed. Establish a consistent UI component documentation system that followed KISS principles.
+
+3.6: Agreed. Remove all future feature designs to keep us laser focused on the MVP.
+
+## 4. Ambiguous Specifications
+
+4.1: Use your discretion to improve the breakpoint behavior design specification.
+
+4.2: Here are more detailed specifications for auto-saving: 
+- When auto-save is enabled, save 7 seconds after last keystroke.
+- Save triggers manually or via debounced auto-save.
+- When there is an error, just display the message for the user. Keep it simple for the MVP.
+- Upon conflict, always overwrite server version.
+
+4.3: Good points. Use your discretion to better specify the form validation strategy.
+
+4.4: Reference [AUTH.md](../designs/backend/AUTH.md) for specific values to follow DRY principles.
+
+4.5: Each document is owned by a single user, the user that created the document. We will not support sharing for the MVP. Remove all designs and references for sharing.
+
+4.6: Specific design choices are described in UI_COMPONENTS.md and DESIGN_SYSTEM.md. If there is ambiguity in the term "VSCode-inspired", reference those documents.
+
+4.7: Use your discretion to better specify navigation patterns.
+
+4.8: The loading page should only be shown if a preview document hasn't already been rendered to Preview. If one exists, just show the last rendered Preview document to avoid flashes. Use your discretion to better specify loading states.
+
+4.9: Ignore
+
+4.10: Ignore; I will design and implement Quillmark integration after initial layout has been implemented.
