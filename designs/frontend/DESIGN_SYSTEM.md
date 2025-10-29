@@ -2,7 +2,7 @@
 
 ## Overview
 
-The TongueToQuill design system provides a consistent visual language across desktop and mobile platforms, maintaining the professional VSCode-inspired aesthetic while ensuring accessibility and mobile-friendliness.
+The Tonguetoquill design system provides a consistent visual language across desktop and mobile platforms, maintaining the professional VSCode-inspired aesthetic while ensuring accessibility and mobile-friendliness.
 
 ## Color Palette
 

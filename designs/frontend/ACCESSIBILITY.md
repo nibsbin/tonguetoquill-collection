@@ -2,7 +2,7 @@
 
 ## Overview
 
-TongueToQuill meets U.S. Section 508 standards and WCAG 2.1 Level AA compliance, ensuring accessibility for users with disabilities across all devices and assistive technologies.
+Tonguetoquill meets U.S. Section 508 standards and WCAG 2.1 Level AA compliance, ensuring accessibility for users with disabilities across all devices and assistive technologies.
 
 ## Section 508 Requirements
 

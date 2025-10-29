@@ -2,7 +2,7 @@
 
 ## Overview
 
-Component specifications for TongueToQuill, adapted for SvelteKit 5 with mobile support and accessibility. Components follow the VSCode-inspired aesthetic while supporting modern responsive design patterns.
+Component specifications for Tonguetoquill, adapted for SvelteKit 5 with mobile support and accessibility. Components follow the VSCode-inspired aesthetic while supporting modern responsive design patterns.
 
 ## Visual Design Language
 

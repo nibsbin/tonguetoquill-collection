@@ -2,7 +2,7 @@
 
 ## Overview
 
-TongueToQuill integrates with a RESTful backend API for authentication, document management, and user profiles. The frontend handles API communication, error handling, and state synchronization while maintaining a responsive user experience.
+Tonguetoquill integrates with a RESTful backend API for authentication, document management, and user profiles. The frontend handles API communication, error handling, and state synchronization while maintaining a responsive user experience.
 
 ## API Architecture
 

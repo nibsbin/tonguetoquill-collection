@@ -2,7 +2,7 @@
 
 ## Overview
 
-TongueToQuill is a professional single-page application built with SvelteKit 5, designed for editing heavily formatted documents like USAF official memos. The architecture follows SvelteKit best practices with server-side rendering, progressive enhancement, and type-safe development.
+Tonguetoquill is a professional single-page application built with SvelteKit 5, designed for editing heavily formatted documents like USAF official memos. The architecture follows SvelteKit best practices with server-side rendering, progressive enhancement, and type-safe development.
 
 ## Technology Stack
 

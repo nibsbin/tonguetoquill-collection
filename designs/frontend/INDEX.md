@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains high-level design documentation for the TongueToQuill frontend rewrite using SvelteKit 5. The design maintains the professional VSCode-inspired aesthetic from the legacy implementation while modernizing the architecture, adding mobile support, and ensuring Section 508 compliance.
+This directory contains high-level design documentation for the Tonguetoquill frontend rewrite using SvelteKit 5. The design maintains the professional VSCode-inspired aesthetic from the legacy implementation while modernizing the architecture, adding mobile support, and ensuring Section 508 compliance.
 
 ## Design Documents
 

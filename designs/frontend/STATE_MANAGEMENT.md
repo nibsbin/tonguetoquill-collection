@@ -2,7 +2,7 @@
 
 ## Overview
 
-TongueToQuill uses a hybrid state management approach leveraging SvelteKit 5's runes system for reactive local state, stores for global application state, and server-side state management for data persistence.
+Tonguetoquill uses a hybrid state management approach leveraging SvelteKit 5's runes system for reactive local state, stores for global application state, and server-side state management for data persistence.
 
 ## Svelte 5 Runes
 

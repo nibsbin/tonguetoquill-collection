@@ -1,5 +1,5 @@
 # Services
-This document outlines the design and architecture of the services used in the TongueToQuill application. It covers the various backend services, their interactions, and how they contribute to the overall functionality of the application.
+This document outlines the design and architecture of the services used in the Tonguetoquill application. It covers the various backend services, their interactions, and how they contribute to the overall functionality of the application.
 
 ## Authentication Context
 Services receive authenticated user context through middleware that extracts and validates the JWT from the request. The authenticated user's ID is passed to service methods for authorization.
