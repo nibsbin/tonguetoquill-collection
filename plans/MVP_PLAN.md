@@ -5,12 +5,17 @@
 This document outlines a phased approach to implementing the Tonguetoquill MVP - a professional markdown document editor with authentication, auto-save, and Section 508 compliance. The plan balances backend and frontend development to enable incremental testing and validation.
 
 **Technology Stack:**
-- **Frontend**: SvelteKit 5, TypeScript, Tailwind CSS 4.0
-- **Backend**: Node.js/Express (or similar), PostgreSQL
-- **Authentication**: Supabase Auth (MVP provider)
-- **Deployment**: Adapter-auto for development, adapter-node for production
+- **Framework**: SvelteKit 5 (full-stack: frontend + backend)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4.0
+- **Database**: PostgreSQL via Supabase (Phase 10)
+- **Authentication**: Mock Provider (Phases 1-9), Supabase Auth (Phase 10+)
+- **Development**: Mock services for rapid AI agent development
+- **Deployment**: Adapter-node for production
 
 **MVP Scope**: Single-user document editing with authentication, markdown editor, live preview, auto-save, and mobile-responsive UI.
+
+**Development Strategy**: Uses **mock providers** for Phases 1-9 to enable fast, parallel AI agent development without external dependencies. Real Supabase integration occurs in Phase 10.
 
 ---
 
@@ -20,106 +25,304 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 
 ### 1.1 Project Initialization
 
-**Backend:**
-- Initialize Node.js project with TypeScript
-- Set up Express server framework
-- Configure PostgreSQL database connection
-- Set up environment variable management (.env files)
-- Configure CORS and security middleware
-- Set up error handling middleware
-
-**Frontend:**
+**SvelteKit 5 Full-Stack Project:**
 - Initialize SvelteKit 5 project with TypeScript
+- Select options: TypeScript strict mode, ESLint, Prettier, Playwright, Vitest
 - Configure Tailwind CSS 4.0
-- Set up project structure with route groups: `(app)`, `(auth)`, `(marketing)`
-- Install core dependencies: Lucide Svelte (icons), Svelte Sonner (toasts)
-- Configure TypeScript strict mode
-- Set up environment variable management
+- Set up TypeScript strict mode
+
+**Project Structure:**
+Organize into logical directories:
+- `src/lib/`: Reusable components, services, stores, utilities
+  - `components/`: Svelte UI components
+  - `services/`: Authentication and document service providers
+  - `stores/`: State management
+  - `utils/`: Helper functions
+- `src/routes/`: Route-based pages and API endpoints
+  - `(app)/`: Authenticated application routes
+  - `(auth)/`: Login, registration pages
+  - `(marketing)/`: Public pages
+  - `api/`: API endpoints (server routes)
+- `src/hooks.server.ts`: Server-side middleware (authentication)
+
+**Core Dependencies:**
+- `lucide-svelte`: Icon library
+- `svelte-sonner`: Toast notifications
+- `marked` or `remark`: Markdown parsing
+- `prismjs`: Syntax highlighting for code blocks
+- `zod`: Schema validation (optional but recommended)
+
+**Environment Configuration:**
+- Create `.env` file for development (not committed)
+- Create `.env.example` template (committed to repo)
+- Configure SvelteKit to load environment variables
+- Use `PUBLIC_` prefix for client-accessible variables
 
 **Development Tools:**
-- Configure ESLint and Prettier for both projects
-- Set up git hooks (pre-commit linting)
-- Create development scripts (dev, build, test)
-- Set up hot reload for both frontend and backend
+- ESLint configuration for SvelteKit and TypeScript
+- Prettier configuration with Svelte plugin
+- Set up git hooks with `husky` (pre-commit linting)
+- Configure VS Code settings for optimal DX (optional)
+
+**Development Scripts:**
+Standard SvelteKit scripts in `package.json`:
+- `dev`: Run development server
+- `build`: Build for production
+- `preview`: Preview production build
+- `test`: Run unit tests
+- `test:e2e`: Run end-to-end tests
+- `check`: Type check and validate
+- `lint`: Run ESLint
+- `format`: Run Prettier
+
+**Environment Configuration:**
+Development environment variables (`.env` file):
+- `USE_AUTH_MOCKS=true`: Enable mock authentication provider
+- `USE_DB_MOCKS=true`: Enable mock document service
+- `NODE_ENV=development`: Development mode
+- `MOCK_JWT_SECRET`: Secret key for mock JWT generation
+- `PUBLIC_APP_NAME`: Application name (client-accessible)
+
+Template file (`.env.example`) committed to repository as reference.
+
+**Environment Configuration:**
+```bash
+# .env for mock development
+USE_AUTH_MOCKS=true
+USE_DB_MOCKS=true
+NODE_ENV=development
+MOCK_JWT_SECRET=dev-secret-key
+```
 
 **Deliverables:**
-- Working development environment for both frontend and backend
-- Basic "Hello World" endpoints and pages
-- Documented setup instructions in README files
+- Single SvelteKit 5 full-stack project initialized
+- Project structure with organized directories (`lib/`, `routes/`)
+- Tailwind CSS 4.0 configured and working
+- TypeScript strict mode enabled
+- ESLint and Prettier configured
+- Git hooks for pre-commit linting
+- Environment variable system configured
+- Development scripts ready (`npm run dev`)
+- Basic "Hello World" page at root route
+- README with setup instructions
+- Mock provider flags configured in `.env`
 
 ---
 
-## Phase 2: Database & Authentication Backend
+## Phase 2: Authentication & Database Contracts with Mock Providers
 
-**Goal**: Implement database schemas and authentication infrastructure.
+**Goal**: Define contracts and implement mock providers for rapid development without external dependencies.
 
-### 2.1 Database Schema
+**Note**: This phase uses **mock providers** to enable fast, parallel AI agent development. Real Supabase integration happens in Phase 10.
 
-**Tasks:**
-- Create PostgreSQL database
-- Implement Users table (id, email, dodid, profile JSONB, timestamps)
-- Implement Documents table (id, owner_id, name, content, content_size_bytes, timestamps)
-- Create indexes (email, dodid, owner_id+created_at)
-- Add constraints (content size ≤ 524,288 bytes)
-- Write database migration scripts
-
-**Reference**: `designs/backend/SCHEMAS.md`
-
-### 2.2 Supabase Authentication Integration
+### 2.1 Authentication Contract Definition
 
 **Tasks:**
-- Set up Supabase project
-- Configure Supabase environment variables (URL, anon key, JWT secret)
-- Implement authentication abstraction layer for future provider support
-- Create authentication middleware for JWT validation
-- Implement JWKS caching (24-hour cache with invalidation)
-- Set up HTTP-only cookie configuration (Secure, SameSite=Strict)
+- Define AuthContract interface (TypeScript) with all authentication methods
+- Define core types: `User`, `Session`, `AuthResult`, `UUID`
+- Define `AuthError` class with proper error codes
+- Define `TokenPayload` interface for JWT structure
+- Document expected behaviors, error types, and edge cases
+- Create contract test suite (runs against mocks now, real providers later)
+- Document mock limitations vs real Supabase behavior
+
+**Type Safety Considerations:**
+- Use `UUID` type alias for all user/session IDs (validates format in strict mode)
+- Use `Record<string, any>` instead of `object` for metadata (more flexible)
+- `getCurrentUser` returns `User | null` (handle missing user gracefully)
+- All timestamps use ISO 8601 strings or Unix timestamps (consistent)
+- Error codes are strongly typed (prevents typos)
+
+**Contract Interface:**
+Define TypeScript interfaces for authentication with proper type safety:
+- `UUID` type for all user and session identifiers
+- `User` interface (id, email, dodid, profile, timestamps)
+- `Session` interface (access_token, refresh_token, expiry, user)
+- `AuthResult` interface (user, session)
+- `AuthContract` interface defining all authentication methods
+- `AuthError` class with strongly-typed error codes
+- `TokenPayload` interface for JWT structure
+
+**Key Methods:**
+- `signUp`: Create new user account
+- `signIn`: Authenticate user and create session
+- `signOut`: Invalidate session
+- `refreshSession`: Refresh expired access token
+- `getCurrentUser`: Retrieve user from access token
+- `resetPassword`: Initiate password reset flow
+- `verifyEmail`: Confirm email verification
+
+**Type Safety Requirements:**
+- All IDs use UUID type instead of plain strings
+- Error codes are strongly typed (prevents typos)
+- Nullable return types where appropriate (e.g., `User | null`)
+- Metadata uses `Record<string, any>` for flexibility
 
 **Reference**: `designs/backend/AUTH.md`
 
-### 2.3 Authentication Routes
+### 2.2 Mock Authentication Provider
+
+**Tasks:**
+- Implement MockAuthProvider implementing the AuthContract interface
+- Use in-memory Map-based storage for users and sessions
+- Generate proper UUIDs using `crypto.randomUUID()`
+- Simulate realistic network delays (100-300ms)
+- Generate JWT-like tokens for testing (simple base64 encoding for MVP)
+- Implement all error cases with proper AuthError instances
+- Session management with realistic expiry times (1 hour access, 7 day refresh)
+
+**Mock Features:**
+- Email format validation
+- Password strength validation (optional for MVP)
+- Duplicate user detection
+- Invalid credentials handling
+- Session expiry simulation
+- Deterministic behavior for testing
+
+**Mock Features:**
+- Email format validation
+- Password strength validation (optional, or defer to Phase 8)
+- Duplicate user detection
+- Invalid credentials handling
+- Session expiry simulation
+- Deterministic behavior for testing
+
+**Reference**: `designs/backend/AUTH.md`
+
+### 2.3 Database Schema Contracts & Mock Service
+
+**Tasks:**
+- Define database schema interfaces (User, Document types)
+- Document table structure matching `designs/backend/SCHEMAS.md`
+- Implement MockDocumentService with in-memory storage
+- Enforce real constraints (content size ≤ 524,288 bytes, name length ≤ 255)
+- Implement realistic validation and error handling
+- Support all CRUD operations with ownership verification
+
+**Document Type Definitions:**
+- `Document` interface (id, owner_id, name, content, content_size_bytes, timestamps)
+- `DocumentMetadata` interface (same as Document but without content field for performance)
+- `DocumentListResult` interface (documents array, pagination info)
+- `DocumentError` class with strongly-typed error codes
+- All IDs use UUID type for consistency
+
+**Validation Rules:**
+- Document name: 1-255 characters, trimmed, no leading/trailing whitespace
+- Content: Max 524,288 bytes (0.5 MB)
+- Ownership verification on all operations
+- Accurate content_size_bytes calculation using UTF-8 byte length
+
+**Mock Document Service Methods:**
+- `createDocument`: Create new document (validate name, content size, generate UUID)
+- `getDocumentMetadata`: Return metadata only (no content field for performance)
+- `getDocumentContent`: Return full document with content
+- `updateDocumentContent`: Update content (validate size, ownership)
+- `updateDocumentName`: Rename document (validate name, ownership)
+- `deleteDocument`: Delete document (verify ownership)
+- `listUserDocuments`: Return paginated list of user's documents (metadata only)
+
+All methods accept UUID parameters for user and document IDs, and verify ownership before operations.
+
+**Mock Storage:**
+- Use Map for in-memory storage
+- Generate realistic timestamps
+- Calculate content_size_bytes accurately
+- Support data export/import for testing scenarios
+
+**Reference**: `designs/backend/SCHEMAS.md`, `designs/backend/SERVICES.md`
+
+### 2.4 Authentication Routes with Mock Backend
 
 **Implement Routes:**
-- `POST /auth/register`: User registration (proxy to Supabase)
+- `POST /auth/register`: User registration (via MockAuthProvider)
 - `POST /auth/login`: User login, set HTTP-only cookies
 - `POST /auth/refresh`: Refresh access tokens
 - `POST /auth/logout`: Clear session cookies
-- `POST /auth/reset-password`: Password reset flow
-- `POST /auth/verify-email`: Email verification
+- `POST /auth/reset-password`: Password reset flow (mock email sending)
+- `POST /auth/verify-email`: Email verification (mock validation)
 - `GET /auth/me`: Get current user information
 - `GET /auth/callback`: OAuth callback stub (future Keycloak)
+
+**Mock Authentication Middleware:**
+- Extract and validate mock JWT tokens
+- Simple signature verification (or just decode for MVP mocks)
+- Attach user context to request
+- Handle expired tokens
 
 **Error Handling:**
 - Implement standard error response format: `{ "error": "error_code", "message": "description" }`
 - Handle common auth errors (401, 403, 400)
+- Realistic error messages matching Supabase error formats
+
+**Environment Configuration:**
+```bash
+# .env for development with mocks
+USE_AUTH_MOCKS=true
+USE_DB_MOCKS=true
+MOCK_JWT_SECRET=dev-secret-key
+```
+
+**Reference**: `designs/backend/AUTH.md`
+
+### 2.5 Contract Testing Framework
+
+**Tasks:**
+- Set up contract test suite using Vitest or Jest
+- Write tests that will run against BOTH mock and real providers
+- Test all authentication flows (signup, login, logout, refresh)
+- Test all error conditions (duplicate email, invalid credentials, etc.)
+- Test edge cases (empty strings, special characters, size limits)
+- Use conditional test execution (skip real provider tests during mock-only development)
+
+**Test Coverage:**
+- Authentication operations (signup, login, logout, session refresh)
+- Document CRUD operations (create, read, update, delete, list)
+- Validation logic (email format, password strength, content size limits)
+- Error handling (proper error codes and messages)
+- Authorization (ownership verification)
+- Edge cases and boundary conditions
+
+Contract tests ensure that mock providers behave identically to real providers.
+
+**Reference**: Testing section in `designs/backend/AUTH.md`
 
 **Deliverables:**
-- Complete authentication system with Supabase
-- JWT validation middleware
-- Protected route decorator/middleware
-- Documented API endpoints
+- Complete AuthContract interface and documentation
+- Fully functional MockAuthProvider
+- MockDocumentService with validation
+- Authentication routes using mock providers
+- Contract test suite (passes with mocks)
+- Environment-based provider switching
+- Documentation of mock vs real behavior differences
 
 ---
 
-## Phase 3: Document Service Backend
+## Phase 3: Document Service Backend (Mock Implementation)
 
-**Goal**: Implement document CRUD operations with authorization.
+**Goal**: Implement document CRUD operations with authorization using mock storage.
 
 ### 3.1 Document Service Implementation
 
 **Core Methods:**
-- `createDocument(userId, name, content)`: Create new document
-- `getDocumentMetadata(userId, documentId)`: Get metadata only (TOAST optimization)
+- `createDocument(userId, name, content)`: Create new document in memory
+- `getDocumentMetadata(userId, documentId)`: Get metadata only
 - `getDocumentContent(userId, documentId)`: Get full document with content
 - `updateDocumentContent(userId, documentId, content)`: Update content
 - `updateDocumentName(userId, documentId, name)`: Rename document
-- `deleteDocument(userId, documentId)`: Delete document
+- `deleteDocument(userId, documentId)`: Delete document from memory
 - `listUserDocuments(userId, limit, offset)`: List user's documents (metadata only)
 
 **Validation:**
 - Document name: 1-255 characters, no leading/trailing whitespace
 - Content: Max 524,288 bytes (0.5 MB)
 - Ownership verification on all operations
+- Realistic timestamp generation
+- Accurate content_size_bytes calculation
+
+**Mock Data Persistence:**
+- In-memory Map storage
+- Optional: Export/import mock data to JSON for testing
+- Simulate realistic delays (50-200ms)
 
 **Reference**: `designs/backend/SERVICES.md`
 
@@ -135,7 +338,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - `DELETE /api/documents/:id`: Delete document
 
 **Authorization:**
-- All routes require authentication
+- All routes require authentication (mock JWT validation)
 - Verify document ownership before any operation
 
 **Error Handling:**
@@ -145,10 +348,10 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - 413: Content too large
 
 **Deliverables:**
-- Complete document service with authorization
+- Complete mock document service with authorization
 - API endpoints for all document operations
 - Unit tests for service methods
-- API integration tests
+- API integration tests (against mocks)
 
 ---
 
@@ -161,18 +364,18 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 **Login Page (`(auth)/login`):**
 - Email and password form
 - Client-side validation (progressive enhancement)
-- Server action for authentication
+- Server action for authentication (calls mock API)
 - Error display (inline + summary)
 - Redirect to app on success
 
 **Registration Flow:**
 - Registration form with email, password, DODID
 - Server-side validation
-- Email verification flow
+- Email verification flow (mock)
 - Success/error handling
 
 **Session Management:**
-- Server hooks for JWT validation
+- Server hooks for JWT validation (mock tokens)
 - Automatic token refresh (proactive, 5 minutes before expiry)
 - Redirect to login on auth failure
 - User context in page data
@@ -217,7 +420,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 **Reference**: `designs/frontend/DESIGN_SYSTEM.md`
 
 **Deliverables:**
-- Working authentication flow (login/logout)
+- Working authentication flow (login/logout) with mocks
 - Application layout with responsive sidebar
 - Design system tokens in Tailwind config
 - Accessibility foundation (focus, contrast, motion preferences)
@@ -245,7 +448,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - Loading/error states
 
 **API Integration:**
-- Fetch documents on app load
+- Fetch documents on app load (from mock API)
 - Optimistic updates for create/delete
 - Error handling with rollback
 - Toast notifications for success/errors
@@ -372,6 +575,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - Manual save via Ctrl/Cmd+S
 - Network timeout: 30 seconds
 - Optimistic UI (assume success, rollback on error)
+- Saves to mock API
 
 **Save Status Indicator:**
 - Saving: Spinner icon + "Saving..."
@@ -595,39 +799,133 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - Download document functionality
 - More actions menu with help/about
 - Classification banner toast
+- Complete MVP feature set using mock providers
 
 ---
 
-## Phase 10: Testing & Deployment
+## Phase 10: Real Supabase Integration, Testing & Deployment
 
-**Goal**: Comprehensive testing and production deployment.
+**Goal**: Integrate real Supabase, comprehensive testing, and production deployment.
 
-### 10.1 Testing
+**Note**: This is where mock providers are replaced with real Supabase integration.
 
-**Unit Tests:**
-- Backend: Service methods, validation, authorization
-- Frontend: Component logic, stores, utilities
+### 10.1 Supabase Setup & Migration
+
+**Supabase Project Setup:**
+- Create Supabase project (cloud or self-hosted)
+- Configure authentication settings
+- Set up email templates (verification, password reset)
+- Configure security policies
+- Obtain production credentials (URL, anon key, service role key)
+
+**Database Migration:**
+- Create PostgreSQL tables matching mock schema:
+  - Users table (id, email, dodid, profile JSONB, timestamps)
+  - Documents table (id, owner_id, name, content, content_size_bytes, timestamps)
+- Create indexes (email, dodid, owner_id+created_at)
+- Add constraints (content size ≤ 524,288 bytes)
+- Configure Row Level Security (RLS) policies
+- Write and test migration scripts
+
+**Reference**: `designs/backend/SCHEMAS.md`
+
+### 10.2 Supabase Provider Implementation
+
+**SupabaseAuthProvider:**
+- Implement AuthContract interface using Supabase client
+- JWT validation using Supabase JWKS
+- JWKS caching (24-hour cache with invalidation)
+- HTTP-only cookie configuration (Secure, SameSite=Strict)
+- Error mapping from Supabase errors to standard format
+
+**SupabaseDocumentService:**
+- Implement all CRUD operations using Supabase client
+- Use Supabase RLS for authorization
+- Optimize TOAST queries for large content fields
+- Transaction support for complex operations
+
+**Authentication Middleware:**
+- Replace mock JWT validation with real Supabase validation
+- JWKS verification
+- Session refresh logic
+- Cookie management
+
+**Reference**: `designs/backend/AUTH.md`, `designs/backend/SERVICES.md`
+
+### 10.3 Provider Switching & Environment Configuration
+
+**Environment Configuration:**
+```bash
+# .env.production
+USE_AUTH_MOCKS=false
+USE_DB_MOCKS=false
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-key
+SUPABASE_JWT_SECRET=your-jwt-secret
+```
+
+**Provider Factory Update:**
+```typescript
+// Update provider factory to use real Supabase
+export const createAuthProvider = () => {
+  if (process.env.USE_AUTH_MOCKS === 'true') {
+    return new MockAuthProvider()
+  }
+  return new SupabaseAuthProvider({
+    url: process.env.SUPABASE_URL!,
+    key: process.env.SUPABASE_ANON_KEY!,
+    jwtSecret: process.env.SUPABASE_JWT_SECRET!
+  })
+}
+```
+
+**Migration Strategy:**
+- Update backend to use real providers
+- Run contract tests against real Supabase (all should pass)
+- Update frontend API URLs if needed
+- No frontend code changes required (API contract unchanged)
+
+### 10.4 Contract Test Validation
+
+**Run Full Contract Test Suite:**
+- Enable integration tests: `RUN_INTEGRATION_TESTS=true`
+- Run all contract tests against SupabaseAuthProvider
+- Run all contract tests against SupabaseDocumentService
+- Verify all tests pass (same behavior as mocks)
+- Fix any discrepancies between mock and real behavior
+
+**Additional Supabase-Specific Tests:**
+- Email verification flow (real emails in test mode)
+- Password reset flow
+- Session expiry and refresh
+- Concurrent access scenarios
+- RLS policy verification
+
+### 10.5 Integration & E2E Testing
 
 **Integration Tests:**
-- API endpoint tests (authentication, documents)
-- Database operations
-- Form actions
+- API endpoint tests with real database
+- Authentication flows end-to-end
+- Document CRUD operations
+- Error handling and edge cases
+- Rate limiting and security
 
 **E2E Tests:**
 - Complete user flows (register, login, create document, edit, save, delete)
-- Authentication flows
+- Authentication flows (login, logout, session refresh)
 - Document management flows
 - Mobile responsiveness
+- Accessibility workflows
 
-**Accessibility Testing:**
-- Automated: axe-core integration
-- Manual: Keyboard navigation, screen reader (NVDA, VoiceOver)
-- Contrast validation tools
-- Mobile accessibility testing
+**Test Data Management:**
+- Seed test database with realistic data
+- Cleanup scripts for test data
+- Isolated test environment
 
 **Reference**: `designs/frontend/ACCESSIBILITY.md`
 
-### 10.2 Performance Optimization
+### 10.6 Performance Optimization
 
 **Frontend:**
 - Bundle size analysis and optimization
@@ -638,50 +936,84 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 
 **Backend:**
 - Query optimization (indexes, TOAST)
-- JWKS caching
-- Rate limiting
+- JWKS caching validation
 - Connection pooling
+- Rate limiting
+- Response compression
+
+**Database:**
+- Index performance analysis
+- Query plan optimization
+- TOAST configuration for large content
+- Connection pool tuning
 
 **Monitoring:**
 - Error tracking (Sentry or similar)
-- Performance monitoring
+- Performance monitoring (Supabase analytics)
 - User analytics (optional)
+- API response time tracking
 
-### 10.3 Production Deployment
+### 10.7 Security Hardening
+
+**Authentication Security:**
+- Verify HTTPS enforcement
+- Secure cookie configuration validation
+- CSRF protection
+- Rate limiting on auth endpoints
+- Password strength requirements
+
+**Database Security:**
+- RLS policy audit
+- SQL injection prevention (parameterized queries)
+- Sensitive data encryption
+- Backup and recovery procedures
+
+**Application Security:**
+- Security headers (CSP, HSTS, X-Frame-Options, etc.)
+- CORS configuration review
+- Input validation and sanitization
+- API endpoint authentication verification
+
+### 10.8 Production Deployment
 
 **Backend Deployment:**
-- Set up production database (PostgreSQL)
-- Configure environment variables (production values)
+- Deploy to production environment (Vercel, Railway, AWS, etc.)
+- Configure production environment variables
 - Set up HTTPS/SSL
 - Configure CORS for production domain
-- Database migration scripts
+- Database migration execution
+- Health check endpoints
 
 **Frontend Deployment:**
-- Build production bundle
-- Configure SvelteKit adapter (adapter-node for self-hosted)
-- Set up production environment variables
-- CDN for static assets (optional)
+- Build production bundle with adapter-node
+- Deploy to hosting platform
+- Configure production environment variables
+- Set up CDN for static assets (optional)
 - Configure SSL/HTTPS
+- Set up custom domain
 
 **Infrastructure:**
 - Containerization (Docker) optional
 - CI/CD pipeline (GitHub Actions)
 - Automated testing in pipeline
 - Deployment automation
+- Rollback procedures
 
-**Security:**
-- Environment variable management (secrets)
-- HTTPS enforcement
-- CSRF protection
-- Rate limiting
-- Security headers (CSP, HSTS, etc.)
+**Post-Deployment:**
+- Smoke testing in production
+- Monitor error rates and performance
+- User acceptance testing
+- Documentation updates
 
 **Deliverables:**
-- Comprehensive test suite
+- Real Supabase integration complete
+- All contract tests passing against real providers
+- Comprehensive test suite (unit, integration, E2E)
 - Production-ready deployment
 - CI/CD pipeline
 - Monitoring and error tracking
-- Documentation (setup, deployment, API)
+- Complete documentation (setup, deployment, API)
+- Security audit complete
 
 ---
 
@@ -690,7 +1022,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 ### Included in MVP
 
 - ✅ Single-user document editing
-- ✅ User authentication (Supabase)
+- ✅ User authentication (Supabase in Phase 10)
 - ✅ Markdown editor with formatting toolbar
 - ✅ Live preview pane
 - ✅ Auto-save with 7-second debounce
@@ -736,6 +1068,8 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - [ ] Works with JavaScript disabled (forms submit, authentication works)
 - [ ] Initial page load < 3 seconds
 - [ ] Supports modern browsers (Chrome, Firefox, Safari, Edge)
+- [ ] Contract tests pass for both mock and real providers
+- [ ] Real Supabase integration complete and tested
 
 ### Quality Requirements
 
@@ -744,25 +1078,26 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - [ ] Manual accessibility testing passed (keyboard, screen reader)
 - [ ] Successful E2E tests for core flows
 - [ ] Documentation complete (README, API docs, deployment guide)
+- [ ] All contract tests pass against real Supabase
 
 ---
 
 ## Timeline Estimate
 
 **Phase 1**: 3-5 days (Foundation)  
-**Phase 2**: 5-7 days (Database & Auth Backend)  
-**Phase 3**: 4-6 days (Document Service)  
+**Phase 2**: 5-7 days (Contracts & Mock Providers)  
+**Phase 3**: 3-5 days (Mock Document Service)  
 **Phase 4**: 5-7 days (Frontend Auth & Layout)  
 **Phase 5**: 3-5 days (Document Management UI)  
 **Phase 6**: 7-10 days (Editor & Preview)  
 **Phase 7**: 4-6 days (Auto-Save)  
 **Phase 8**: 7-10 days (Accessibility & Polish)  
 **Phase 9**: 3-5 days (Additional Features)  
-**Phase 10**: 5-7 days (Testing & Deployment)  
+**Phase 10**: 7-10 days (Supabase Integration, Testing & Deployment)  
 
-**Total Estimated Time**: 46-68 days (9-14 weeks)
+**Total Estimated Time**: 47-70 days (9-14 weeks)
 
-*Note: Timeline assumes single developer working full-time. Adjust for team size and part-time work.*
+*Note: Timeline assumes single developer working full-time. With AI agents working in parallel on independent tasks, overall timeline can be significantly reduced (potentially 6-10 weeks).*
 
 ---
 
@@ -770,8 +1105,11 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 
 ### Technical Risks
 
-**Risk**: Supabase integration complexity  
-**Mitigation**: Start with basic auth, abstract provider layer early
+**Risk**: Mock provider divergence from real Supabase behavior  
+**Mitigation**: Comprehensive contract tests, early validation in Phase 10, strict interface contracts
+
+**Risk**: Mock-to-real provider integration issues in Phase 10  
+**Mitigation**: Abstraction layer designed from start, contract tests ensure compatibility, phased rollout
 
 **Risk**: Performance issues with large documents  
 **Mitigation**: Enforce 0.5 MB limit, optimize TOAST queries, debounce preview
@@ -787,13 +1125,48 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 **Risk**: Accessibility compliance delays  
 **Mitigation**: Build accessibility in from start, test incrementally
 
+**Risk**: Phase 10 integration taking longer than expected  
+**Mitigation**: Well-tested contract interface, comprehensive mock coverage, clear migration path
+
 ### Deployment Risks
 
 **Risk**: Production environment issues  
-**Mitigation**: Test deployment early, use staging environment
+**Mitigation**: Test deployment early, use staging environment, gradual rollout
 
 **Risk**: Database migration failures  
-**Mitigation**: Version control migrations, test migration scripts
+**Mitigation**: Version control migrations, test migration scripts, backup procedures
+
+**Risk**: Supabase setup complexity  
+**Mitigation**: Follow official documentation, use Supabase CLI, start with simple configuration
+
+---
+
+## Development Benefits: Mock-First Approach
+
+### Advantages for AI Agent Development
+
+✅ **Fast Environment Startup**: No Docker/external dependencies required  
+✅ **Parallel Development**: Agents work independently without resource conflicts  
+✅ **Deterministic Testing**: Controlled mock state for reliable tests  
+✅ **No External Dependencies**: No Supabase account, database setup, or API keys needed  
+✅ **Easy Debugging**: Inspect mock state directly, add logging  
+✅ **Cost Effective**: No test database costs during development  
+✅ **Quick Iteration**: Modify mock behavior instantly for testing edge cases  
+✅ **Offline Development**: Work without internet connection  
+
+### When Mocks Are Used
+
+- **Phases 1-9**: All development uses mock providers
+- **Unit Tests**: Always use mocks for isolated testing
+- **Component Tests**: Use mocks for frontend component testing
+- **Local Development**: Developers can use mocks for fast iteration
+
+### When Real Supabase Is Used
+
+- **Phase 10**: Integration and production deployment
+- **Integration Tests**: Validate against real Supabase in CI/CD
+- **Staging Environment**: Pre-production testing with real services
+- **Production**: Final deployment with production Supabase instance
 
 ---
 
@@ -849,7 +1222,8 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Section 508 Standards](https://www.section508.gov/)
 - [Supabase Auth Documentation](https://supabase.com/docs/guides/auth)
+- [Supabase Database Documentation](https://supabase.com/docs/guides/database)
 
 ---
 
-*This MVP plan provides a structured, phased approach to building Tonguetoquill while maintaining high quality standards for accessibility, performance, and user experience.*
+*This MVP plan provides a structured, phased approach to building Tonguetoquill while maintaining high quality standards for accessibility, performance, and user experience. The mock-first strategy enables fast, parallel AI agent development with real integration validation in Phase 10.*
