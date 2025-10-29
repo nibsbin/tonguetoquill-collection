@@ -2,15 +2,134 @@
 @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
 :root {
+	/* Spacing & Layout Tokens */
 	--radius: 0.625rem;
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	/* Light Theme Color Tokens */
+	/* Surface colors */
+	--color-background: #ffffff;
+	--color-foreground: #09090b;
+	--color-surface: #f4f4f5;
+	--color-surface-elevated: #fafafa;
+
+	/* Interactive states */
+	--color-primary: #18181b;
+	--color-primary-foreground: #fafafa;
+	--color-secondary: #f4f4f5;
+	--color-secondary-foreground: #18181b;
+
+	/* Semantic colors */
+	--color-muted: #f4f4f5;
+	--color-muted-foreground: #71717a;
+	--color-accent: #f4f4f5;
+	--color-accent-foreground: #18181b;
+	--color-destructive: #ef4444;
+	--color-destructive-foreground: #fafafa;
+
+	/* UI elements */
+	--color-border: #e4e4e7;
+	--color-border-hover: #d4d4d8;
+	--color-input: #e4e4e7;
+	--color-ring: #18181b;
+
+	/* Editor-specific colors */
+	--color-editor-background: #ffffff;
+	--color-editor-foreground: #09090b;
+	--color-editor-line-active: #f4f4f5;
+	--color-editor-selection: #e4e4e7;
+	--color-editor-cursor: #09090b;
+	--color-editor-gutter-background: #ffffff;
+	--color-editor-gutter-foreground: #71717a;
+
 	/* Design tokens from mock project */
 	font-family: 'Lato', Arial, sans-serif;
+}
+
+/* Dark Theme */
+.dark {
+	/* Surface colors */
+	--color-background: #18181b;
+	--color-foreground: #f4f4f5;
+	--color-surface: #27272a;
+	--color-surface-elevated: #27272a;
+
+	/* Interactive states */
+	--color-primary: #fafafa;
+	--color-primary-foreground: #18181b;
+	--color-secondary: #27272a;
+	--color-secondary-foreground: #fafafa;
+
+	/* Semantic colors */
+	--color-muted: #27272a;
+	--color-muted-foreground: #71717a;
+	--color-accent: #3f3f46;
+	--color-accent-foreground: #f4f4f5;
+	--color-destructive: #ef4444;
+	--color-destructive-foreground: #fafafa;
+
+	/* UI elements */
+	--color-border: #3f3f46;
+	--color-border-hover: #52525b;
+	--color-input: #27272a;
+	--color-ring: #d4d4d8;
+
+	/* Editor-specific colors */
+	--color-editor-background: #18181b;
+	--color-editor-foreground: #f4f4f5;
+	--color-editor-line-active: #27272a;
+	--color-editor-selection: #3f3f46;
+	--color-editor-cursor: #f4f4f5;
+	--color-editor-gutter-background: #18181b;
+	--color-editor-gutter-foreground: #71717a;
+}
+
+/* Tailwind CSS Integration */
+@theme inline {
+	/* Surface colors */
+	--color-background: var(--color-background);
+	--color-foreground: var(--color-foreground);
+	--color-surface: var(--color-surface);
+	--color-surface-elevated: var(--color-surface-elevated);
+
+	/* Interactive states */
+	--color-primary: var(--color-primary);
+	--color-primary-foreground: var(--color-primary-foreground);
+	--color-secondary: var(--color-secondary);
+	--color-secondary-foreground: var(--color-secondary-foreground);
+
+	/* Semantic colors */
+	--color-muted: var(--color-muted);
+	--color-muted-foreground: var(--color-muted-foreground);
+	--color-accent: var(--color-accent);
+	--color-accent-foreground: var(--color-accent-foreground);
+	--color-destructive: var(--color-destructive);
+	--color-destructive-foreground: var(--color-destructive-foreground);
+
+	/* UI elements */
+	--color-border: var(--color-border);
+	--color-border-hover: var(--color-border-hover);
+	--color-input: var(--color-input);
+	--color-ring: var(--color-ring);
+
+	/* Editor-specific colors */
+	--color-editor-background: var(--color-editor-background);
+	--color-editor-foreground: var(--color-editor-foreground);
+	--color-editor-line-active: var(--color-editor-line-active);
+	--color-editor-selection: var(--color-editor-selection);
+	--color-editor-cursor: var(--color-editor-cursor);
+	--color-editor-gutter-background: var(--color-editor-gutter-background);
+	--color-editor-gutter-foreground: var(--color-editor-gutter-foreground);
 }
 
 body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
 /* Screen reader only utility */

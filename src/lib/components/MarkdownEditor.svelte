@@ -4,6 +4,7 @@
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+	import { createEditorTheme } from '$lib/utils/editor-theme';
 
 	interface Props {
 		value: string;
@@ -209,7 +210,6 @@
 	}
 	
 	onMount(() => {
-		const styles = getComputedStyle(document.documentElement);
 		const extensions = [
 			markdown(),
 			history(),
@@ -247,38 +247,7 @@
 				}
 			}),
 			EditorView.lineWrapping,
-			EditorView.theme({
-				'&': {
-					height: '100%',
-					fontSize: '14px',
-					backgroundColor: '#18181b' // zinc-900
-				},
-				'.cm-scroller': {
-					overflow: 'auto',
-					fontFamily: 'ui-monospace, monospace'
-				},
-				'.cm-content': {
-					padding: '16px 0',
-					color: '#f4f4f5' // zinc-100
-				},
-				'.cm-line': {
-					padding: '0 16px'
-				},
-				'.cm-cursor': {
-					borderLeftColor: '#f4f4f5'
-				},
-				'.cm-activeLine': {
-					backgroundColor: '#27272a' // zinc-800
-				},
-				'.cm-selectionBackground, .cm-focused .cm-selectionBackground': {
-					backgroundColor: '#3f3f46' // zinc-700
-				},
-				'.cm-gutters': {
-					backgroundColor: '#18181b', // match editor background (zinc-900)
-					color: '#71717a', // zinc-500
-					border: 'none'
-				}
-			})
+			createEditorTheme()
 		];
 
 		// Conditionally add line numbers
@@ -358,38 +327,7 @@
 					}
 				}),
 				EditorView.lineWrapping,
-				EditorView.theme({
-					'&': {
-						height: '100%',
-						fontSize: '14px',
-						backgroundColor: '#18181b' // zinc-900
-					},
-					'.cm-scroller': {
-						overflow: 'auto',
-						fontFamily: 'ui-monospace, monospace'
-					},
-					'.cm-content': {
-						padding: '16px 0',
-						color: '#f4f4f5' // zinc-100
-					},
-					'.cm-line': {
-						padding: '0 16px'
-					},
-					'.cm-cursor': {
-						borderLeftColor: '#f4f4f5'
-					},
-					'.cm-activeLine': {
-						backgroundColor: '#27272a' // zinc-800
-					},
-					'.cm-selectionBackground, .cm-focused .cm-selectionBackground': {
-						backgroundColor: '#3f3f46' // zinc-700
-					},
-					'.cm-gutters': {
-						backgroundColor: '#18181b', // match editor background (zinc-900)
-						color: '#71717a', // zinc-500
-						border: 'none'
-					}
-				})
+				createEditorTheme()
 			];
 
 			// Conditionally add line numbers
@@ -411,4 +349,4 @@
 </script>
 
 <!-- Editor -->
-<div class="h-full overflow-hidden bg-zinc-900" bind:this={editorElement}></div>
+<div class="h-full overflow-hidden bg-editor-background" bind:this={editorElement}></div>

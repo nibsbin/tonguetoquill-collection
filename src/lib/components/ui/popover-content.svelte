@@ -25,7 +25,7 @@
 	{align}
 	{sideOffset}
 	class={cn(
-		'z-50 w-72 rounded-md border border-zinc-700 bg-zinc-800 p-4 text-zinc-100 shadow-md outline-none',
+		'z-50 w-72 rounded-md border border-border bg-surface-elevated p-4 text-foreground shadow-md outline-none',
 		className
 	)}
 	{...restProps}

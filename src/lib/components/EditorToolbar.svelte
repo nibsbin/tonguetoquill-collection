@@ -22,12 +22,12 @@
 	let { onFormat, isDirty = false, onManualSave }: EditorToolbarProps = $props();
 </script>
 
-<div class="flex h-12 items-center justify-between gap-1 border-b border-zinc-700 bg-zinc-800 px-2">
+<div class="flex h-12 items-center justify-between gap-1 border-b border-border bg-surface-elevated px-2">
 	<div class="flex items-center gap-1">
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('bold')}
 			title="Bold (Ctrl+B)"
 		>
@@ -39,7 +39,7 @@
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('italic')}
 			title="Italic (Ctrl+I)"
 		>
@@ -51,7 +51,7 @@
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('strikethrough')}
 			title="Strikethrough"
 		>
@@ -60,12 +60,12 @@
 			{/snippet}
 		</Button>
 
-		<Separator orientation="vertical" class="mx-1 h-5 bg-zinc-700" />
+		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
 
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('code')}
 			title="Code"
 		>
@@ -77,7 +77,7 @@
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('quote')}
 			title="Quote"
 		>
@@ -86,12 +86,12 @@
 			{/snippet}
 		</Button>
 
-		<Separator orientation="vertical" class="mx-1 h-5 bg-zinc-700" />
+		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
 
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('bulletList')}
 			title="Bullet List"
 		>
@@ -103,7 +103,7 @@
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('numberedList')}
 			title="Numbered List"
 		>
@@ -112,12 +112,12 @@
 			{/snippet}
 		</Button>
 
-		<Separator orientation="vertical" class="mx-1 h-5 bg-zinc-700" />
+		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
 
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('link')}
 			title="Link"
 		>
@@ -133,7 +133,7 @@
 			<Button
 				variant="ghost"
 				size="sm"
-				class="h-7 gap-1 px-2 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100 {isDirty
+				class="h-7 gap-1 px-2 text-muted-foreground hover:bg-accent hover:text-foreground {isDirty
 					? 'text-blue-400'
 					: ''}"
 				onclick={onManualSave}

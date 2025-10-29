@@ -35,11 +35,11 @@
 	}
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+<div class="flex min-h-screen items-center justify-center bg-surface px-4">
 	<div class="w-full max-w-md space-y-8">
 		<div class="text-center">
-			<h1 class="text-3xl font-bold text-zinc-900">Welcome to Tonguetoquill</h1>
-			<p class="mt-2 text-sm text-zinc-600">Sign in to your account</p>
+			<h1 class="text-3xl font-bold text-foreground">Welcome to Tonguetoquill</h1>
+			<p class="mt-2 text-sm text-muted-foreground">Sign in to your account</p>
 		</div>
 
 		<form onsubmit={handleLogin} class="mt-8 space-y-6">
@@ -51,7 +51,7 @@
 
 			<div class="space-y-4">
 				<div>
-					<label for="email" class="block text-sm font-medium text-zinc-700">Email address</label>
+					<label for="email" class="block text-sm font-medium text-muted-foreground">Email address</label>
 					<input
 						id="email"
 						name="email"
@@ -59,13 +59,13 @@
 						autocomplete="email"
 						required
 						bind:value={email}
-						class="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+						class="mt-1 block w-full rounded-md border border-input px-3 py-2 text-foreground placeholder-muted-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 						placeholder="you@example.com"
 					/>
 				</div>
 
 				<div>
-					<label for="password" class="block text-sm font-medium text-zinc-700">Password</label>
+					<label for="password" class="block text-sm font-medium text-muted-foreground">Password</label>
 					<input
 						id="password"
 						name="password"
@@ -73,7 +73,7 @@
 						autocomplete="current-password"
 						required
 						bind:value={password}
-						class="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+						class="mt-1 block w-full rounded-md border border-input px-3 py-2 text-foreground placeholder-muted-foreground focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
 						placeholder="••••••••"
 					/>
 				</div>
@@ -83,14 +83,14 @@
 				<button
 					type="submit"
 					disabled={loading}
-					class="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:bg-zinc-400"
+					class="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:bg-muted"
 				>
 					{loading ? 'Signing in...' : 'Sign in'}
 				</button>
 			</div>
 
 			<div class="text-center text-sm">
-				<span class="text-zinc-600">Don't have an account?</span>
+				<span class="text-muted-foreground">Don't have an account?</span>
 				<a href="/register" class="font-medium text-blue-600 hover:text-blue-500"> Sign up </a>
 			</div>
 		</form>

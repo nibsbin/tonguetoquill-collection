@@ -44,8 +44,8 @@
 	}
 </script>
 
-<aside class="flex h-full w-56 flex-col border-r border-zinc-200 bg-white">
-	<div class="border-b border-zinc-200 p-4">
+<aside class="flex h-full w-56 flex-col border-r border-border bg-background">
+	<div class="border-b border-border p-4">
 		<button
 			onclick={handleCreateDocument}
 			class="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
@@ -56,7 +56,7 @@
 
 	<div class="flex-1 overflow-y-auto">
 		{#if documentStore.isLoading}
-			<div class="p-4 text-center text-sm text-zinc-500">Loading...</div>
+			<div class="p-4 text-center text-sm text-muted-foreground">Loading...</div>
 		{:else if documentStore.error}
 			<div class="p-4 text-center">
 				<p class="mb-2 text-sm text-red-600">{documentStore.error}</p>
@@ -68,7 +68,7 @@
 				</button>
 			</div>
 		{:else if documentStore.documents.length === 0}
-			<div class="p-4 text-center text-sm text-zinc-500">
+			<div class="p-4 text-center text-sm text-muted-foreground">
 				<p class="mb-2">No documents yet</p>
 				<p class="text-xs">Create your first document to get started</p>
 			</div>
@@ -78,15 +78,15 @@
 					<li class="group relative">
 						<button
 							onclick={() => handleSelectDocument(document.id)}
-							class="flex w-full flex-col gap-1 px-4 py-2 text-left transition-colors hover:bg-zinc-100 focus:bg-zinc-100 focus:outline-none {documentStore.activeDocumentId ===
+							class="flex w-full flex-col gap-1 px-4 py-2 text-left transition-colors hover:bg-accent focus:bg-accent focus:outline-none {documentStore.activeDocumentId ===
 							document.id
 								? 'bg-blue-50 text-blue-900'
-								: 'text-zinc-900'}"
+								: 'text-foreground'}"
 						>
 							<div class="flex items-start justify-between gap-2">
 								<span class="flex-1 truncate text-sm font-medium">{document.name}</span>
 							</div>
-							<span class="text-xs text-zinc-500">{formatDate(document.created_at)}</span>
+							<span class="text-xs text-muted-foreground">{formatDate(document.created_at)}</span>
 						</button>
 						<button
 							onclick={(e) => {
@@ -120,7 +120,7 @@
 				showDeleteDialog = false;
 				documentToDelete = null;
 			}}
-			class="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+			class="rounded-lg border border-input px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-surface focus:ring-2 focus:ring-blue-500 focus:outline-none"
 		>
 			Cancel
 		</button>
