@@ -1,4 +1,4 @@
-# Tonguetoquill MVP Implementation Plan
+# Tonguetoquill MVP Implementation Plan (Revised)
 
 ## Overview
 
@@ -11,7 +11,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 - **Database**: PostgreSQL via Supabase (Phase 10)
 - **Authentication**: Mock Provider (Phases 1-9), Supabase Auth (Phase 10+)
 - **Development**: Mock services for rapid AI agent development
-- **Deployment**: Adapter-node for production
+- **Deployment**: Vercel (adapter-auto)
 
 **MVP Scope**: Single-user document editing with authentication, markdown editor, live preview, auto-save, and mobile-responsive UI.
 
@@ -83,15 +83,6 @@ Development environment variables (`.env` file):
 - `PUBLIC_APP_NAME`: Application name (client-accessible)
 
 Template file (`.env.example`) committed to repository as reference.
-
-**Environment Configuration:**
-```bash
-# .env for mock development
-USE_AUTH_MOCKS=true
-USE_DB_MOCKS=true
-NODE_ENV=development
-MOCK_JWT_SECRET=dev-secret-key
-```
 
 **Deliverables:**
 - Single SvelteKit 5 full-stack project initialized
@@ -166,21 +157,35 @@ Define TypeScript interfaces for authentication with proper type safety:
 - Use in-memory Map-based storage for users and sessions
 - Generate proper UUIDs using `crypto.randomUUID()`
 - Simulate realistic network delays (100-300ms)
-- Generate JWT-like tokens for testing (simple base64 encoding for MVP)
+- Generate JWT-like tokens for testing
 - Implement all error cases with proper AuthError instances
 - Session management with realistic expiry times (1 hour access, 7 day refresh)
+
+**Mock JWT Token Structure:**
+Mock tokens must match Supabase JWT format for seamless Phase 10 migration:
+
+```typescript
+interface MockTokenPayload {
+  sub: UUID;              // user ID (subject)
+  email: string;          // user email
+  exp: number;            // expiry timestamp (Unix epoch)
+  iat: number;            // issued at timestamp (Unix epoch)
+  role: 'authenticated';  // user role (always 'authenticated' for MVP)
+  aud: 'authenticated';   // audience claim
+}
+```
+
+**Token Generation Strategy:**
+- Use simple base64 encoding for MVP (not cryptographically secure)
+- Format: `header.payload.signature` (standard JWT structure)
+- Header: `{"alg":"HS256","typ":"JWT"}` (base64 encoded)
+- Payload: MockTokenPayload (base64 encoded)
+- Signature: HMAC-SHA256 of header.payload with MOCK_JWT_SECRET
+- Store signature validation logic for middleware
 
 **Mock Features:**
 - Email format validation
 - Password strength validation (optional for MVP)
-- Duplicate user detection
-- Invalid credentials handling
-- Session expiry simulation
-- Deterministic behavior for testing
-
-**Mock Features:**
-- Email format validation
-- Password strength validation (optional, or defer to Phase 8)
 - Duplicate user detection
 - Invalid credentials handling
 - Session expiry simulation
@@ -243,10 +248,11 @@ All methods accept UUID parameters for user and document IDs, and verify ownersh
 - `GET /auth/callback`: OAuth callback stub (future Keycloak)
 
 **Mock Authentication Middleware:**
-- Extract and validate mock JWT tokens
-- Simple signature verification (or just decode for MVP mocks)
+- Extract and validate mock JWT tokens from cookies
+- Verify signature using MOCK_JWT_SECRET
+- Check token expiry (reject if exp < current time)
 - Attach user context to request
-- Handle expired tokens
+- Handle expired tokens with proper error responses
 
 **Error Handling:**
 - Implement standard error response format: `{ "error": "error_code", "message": "description" }`
@@ -266,7 +272,7 @@ MOCK_JWT_SECRET=dev-secret-key
 ### 2.5 Contract Testing Framework
 
 **Tasks:**
-- Set up contract test suite using Vitest or Jest
+- Set up contract test suite using Vitest
 - Write tests that will run against BOTH mock and real providers
 - Test all authentication flows (signup, login, logout, refresh)
 - Test all error conditions (duplicate email, invalid credentials, etc.)
@@ -281,13 +287,13 @@ MOCK_JWT_SECRET=dev-secret-key
 - Authorization (ownership verification)
 - Edge cases and boundary conditions
 
-Contract tests ensure that mock providers behave identically to real providers.
+Contract tests ensure that mock providers behave identically to real providers. The same test suite will validate real Supabase integration in Phase 10.
 
 **Reference**: Testing section in `designs/backend/AUTH.md`
 
 **Deliverables:**
 - Complete AuthContract interface and documentation
-- Fully functional MockAuthProvider
+- Fully functional MockAuthProvider with JWT token generation
 - MockDocumentService with validation
 - Authentication routes using mock providers
 - Contract test suite (passes with mocks)
@@ -477,11 +483,26 @@ Contract tests ensure that mock providers behave identically to real providers.
 
 **Reference**: `designs/frontend/UI_COMPONENTS.md`
 
+### 5.3 Basic E2E Tests
+
+**Test Coverage:**
+- User can create a new document
+- Document appears in sidebar list
+- User can delete a document with confirmation
+- Error handling when API fails
+
+**Testing Strategy:**
+- Use Playwright for E2E tests
+- Run against mock API (no Supabase dependency)
+- Focus on critical user flows only
+- Keep test suite lightweight for fast iteration
+
 **Deliverables:**
 - Document list in sidebar with navigation
 - Create and delete document functionality
 - Confirmation dialogs
 - Optimistic updates with error handling
+- Basic E2E tests for document CRUD
 
 ---
 
@@ -570,6 +591,21 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 
 **Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Navigation Patterns
 
+### 6.4 Editor E2E Tests
+
+**Test Coverage:**
+- User can type markdown in editor
+- Toolbar formatting buttons work (bold, italic, etc.)
+- Keyboard shortcuts apply formatting
+- Preview updates after typing (debounced)
+- Editor content persists when switching documents
+
+**Testing Strategy:**
+- Test core editing interactions
+- Verify toolbar functionality
+- Keep tests focused on user-facing behavior
+- Skip low-level CodeMirror internals
+
 **Deliverables:**
 - CodeMirror 6 markdown editor with custom language mode
 - Extended markdown syntax highlighting (SCOPE/QUILL blocks)
@@ -577,6 +613,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Formatting toolbar with keyboard shortcuts
 - Live preview with debounced updates
 - Responsive layout (split/tabbed views)
+- E2E tests for editor interactions
 
 ---
 
@@ -627,11 +664,26 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 
 **Reference**: `designs/frontend/STATE_MANAGEMENT.md`, `designs/frontend/API_INTEGRATION.md`
 
+### 7.3 Auto-Save E2E Tests
+
+**Test Coverage:**
+- Auto-save triggers after 7 seconds of inactivity
+- Save status indicator updates correctly
+- Manual save (Ctrl+S) works immediately
+- Unsaved changes preserved on navigation
+- Error handling when save fails
+
+**Testing Strategy:**
+- Use timer mocking for debounce testing
+- Verify save indicator states
+- Test error recovery flow
+
 **Deliverables:**
 - Auto-save with 7-second debounce
 - Save status indicators
 - Settings toggle for auto-save
 - Error handling with retry
+- E2E tests for auto-save flows
 
 ---
 
@@ -820,9 +872,9 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 
 ---
 
-## Phase 10: Real Supabase Integration, Testing & Deployment
+## Phase 10: Supabase Integration & Contract Validation
 
-**Goal**: Integrate real Supabase, comprehensive testing, and production deployment.
+**Goal**: Replace mock providers with real Supabase integration and validate with contract tests.
 
 **Note**: This is where mock providers are replaced with real Supabase integration.
 
@@ -919,30 +971,51 @@ export const createAuthProvider = () => {
 - Concurrent access scenarios
 - RLS policy verification
 
-### 10.5 Integration & E2E Testing
+### 10.5 Integration Testing
 
 **Integration Tests:**
 - API endpoint tests with real database
 - Authentication flows end-to-end
 - Document CRUD operations
 - Error handling and edge cases
-- Rate limiting and security
-
-**E2E Tests:**
-- Complete user flows (register, login, create document, edit, save, delete)
-- Authentication flows (login, logout, session refresh)
-- Document management flows
-- Mobile responsiveness
-- Accessibility workflows
 
 **Test Data Management:**
 - Seed test database with realistic data
 - Cleanup scripts for test data
 - Isolated test environment
 
+**Deliverables:**
+- Real Supabase integration complete
+- All contract tests passing against real providers
+- SupabaseAuthProvider fully functional
+- SupabaseDocumentService fully functional
+- Integration test suite passing
+- Documentation for Supabase setup
+
+---
+
+## Phase 11: Testing, Deployment & Production Launch
+
+**Goal**: Comprehensive testing, production deployment to Vercel, and launch preparation.
+
+### 11.1 End-to-End Testing
+
+**E2E Test Suite:**
+- Complete user flows (register, login, create document, edit, save, delete)
+- Authentication flows (login, logout, session refresh)
+- Document management flows
+- Mobile responsiveness
+- Accessibility workflows
+
+**Test Execution:**
+- Run against real Supabase (staging environment)
+- Cross-browser testing (Chrome, Firefox, Safari, Edge)
+- Mobile device testing (iOS, Android)
+- Performance validation
+
 **Reference**: `designs/frontend/ACCESSIBILITY.md`
 
-### 10.6 Performance Optimization
+### 11.2 Performance Optimization
 
 **Frontend:**
 - Bundle size analysis and optimization
@@ -970,67 +1043,90 @@ export const createAuthProvider = () => {
 - User analytics (optional)
 - API response time tracking
 
-### 10.7 Security Hardening
+### 11.3 Vercel Deployment
 
-**Authentication Security:**
-- Verify HTTPS enforcement
-- Secure cookie configuration validation
-- CSRF protection
-- Rate limiting on auth endpoints
-- Password strength requirements
+**Project Configuration:**
+- Configure SvelteKit adapter-auto (detects Vercel automatically)
+- Set up Vercel project linked to Git repository
+- Configure build settings:
+  - Build Command: `npm run build`
+  - Output Directory: `.svelte-kit/vercel` (auto-detected)
+  - Install Command: `npm install`
+  - Node.js Version: 20.x or later
 
-**Database Security:**
-- RLS policy audit
-- SQL injection prevention (parameterized queries)
-- Sensitive data encryption
-- Backup and recovery procedures
+**Environment Variables:**
+Configure in Vercel dashboard:
+- `SUPABASE_URL`: Production Supabase project URL
+- `SUPABASE_ANON_KEY`: Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key (sensitive)
+- `SUPABASE_JWT_SECRET`: JWT secret for token validation
+- `PUBLIC_APP_NAME`: Application name (client-accessible)
+- `USE_AUTH_MOCKS=false`: Disable mocks in production
+- `USE_DB_MOCKS=false`: Disable mocks in production
 
-**Application Security:**
-- Security headers (CSP, HSTS, X-Frame-Options, etc.)
-- CORS configuration review
-- Input validation and sanitization
-- API endpoint authentication verification
+**Deployment Configuration:**
+- Production branch: `main` (auto-deploy)
+- Preview deployments: All pull requests
+- Custom domain configuration (optional)
+- HTTPS/SSL: Automatic via Vercel
+- CDN: Automatic edge network
 
-### 10.8 Production Deployment
+**Vercel-Specific Features:**
+- Edge Functions: Automatic serverless functions
+- ISR (Incremental Static Regeneration): For static pages
+- Analytics: Built-in Web Vitals tracking
+- Logs: Access via Vercel dashboard
 
-**Backend Deployment:**
-- Deploy to production environment (Vercel, Railway, AWS, etc.)
-- Configure production environment variables
-- Set up HTTPS/SSL
-- Configure CORS for production domain
-- Database migration execution
-- Health check endpoints
+**Reference**: [Vercel SvelteKit Deployment](https://vercel.com/docs/frameworks/sveltekit)
 
-**Frontend Deployment:**
-- Build production bundle with adapter-node
-- Deploy to hosting platform
-- Configure production environment variables
-- Set up CDN for static assets (optional)
-- Configure SSL/HTTPS
-- Set up custom domain
+### 11.4 Database Migration & Seeding
 
-**Infrastructure:**
-- Containerization (Docker) optional
-- CI/CD pipeline (GitHub Actions)
-- Automated testing in pipeline
-- Deployment automation
-- Rollback procedures
+**Production Database Setup:**
+- Run migration scripts in production Supabase
+- Verify all tables, indexes, and constraints
+- Configure RLS policies
+- Set up backup schedule
+- Test rollback procedures
 
-**Post-Deployment:**
+**Seed Data (Optional):**
+- Create sample documents for demo
+- Test user accounts for UAT
+- Documentation for seeding process
+
+### 11.5 Launch Preparation
+
+**Pre-Launch Checklist:**
+- [ ] All E2E tests passing
+- [ ] Accessibility audit complete
+- [ ] Performance benchmarks met
+- [ ] Security headers configured
+- [ ] Error tracking enabled
+- [ ] Monitoring dashboards set up
+- [ ] Database backups configured
+- [ ] Deployment documentation complete
+- [ ] Rollback plan documented
+- [ ] User documentation ready
+
+**Post-Deployment Validation:**
 - Smoke testing in production
 - Monitor error rates and performance
-- User acceptance testing
-- Documentation updates
+- Verify authentication flows
+- Test document operations
+- Validate mobile responsiveness
+
+**Launch:**
+- Deploy to production via Vercel
+- Monitor initial traffic and errors
+- Gather user feedback
+- Address critical issues immediately
 
 **Deliverables:**
-- Real Supabase integration complete
-- All contract tests passing against real providers
-- Comprehensive test suite (unit, integration, E2E)
-- Production-ready deployment
-- CI/CD pipeline
-- Monitoring and error tracking
-- Complete documentation (setup, deployment, API)
-- Security audit complete
+- Comprehensive E2E test suite
+- Production deployment to Vercel
+- Performance optimizations complete
+- Monitoring and error tracking active
+- Complete documentation (setup, deployment, user guide)
+- Launched MVP in production
 
 ---
 
@@ -1087,6 +1183,7 @@ export const createAuthProvider = () => {
 - [ ] Supports modern browsers (Chrome, Firefox, Safari, Edge)
 - [ ] Contract tests pass for both mock and real providers
 - [ ] Real Supabase integration complete and tested
+- [ ] Deployed to Vercel production
 
 ### Quality Requirements
 
@@ -1099,22 +1196,23 @@ export const createAuthProvider = () => {
 
 ---
 
-## Timeline Estimate
+## Timeline Estimate (Revised)
 
 **Phase 1**: 3-5 days (Foundation)  
 **Phase 2**: 5-7 days (Contracts & Mock Providers)  
 **Phase 3**: 3-5 days (Mock Document Service)  
 **Phase 4**: 5-7 days (Frontend Auth & Layout)  
-**Phase 5**: 3-5 days (Document Management UI)  
-**Phase 6**: 7-10 days (Editor & Preview)  
-**Phase 7**: 4-6 days (Auto-Save)  
+**Phase 5**: 3-5 days (Document Management UI + E2E tests)  
+**Phase 6**: 7-10 days (Editor & Preview + E2E tests)  
+**Phase 7**: 4-6 days (Auto-Save + E2E tests)  
 **Phase 8**: 7-10 days (Accessibility & Polish)  
 **Phase 9**: 3-5 days (Additional Features)  
-**Phase 10**: 7-10 days (Supabase Integration, Testing & Deployment)  
+**Phase 10**: 7-10 days (Supabase Integration & Validation)  
+**Phase 11**: 5-7 days (Testing & Vercel Deployment)  
 
-**Total Estimated Time**: 47-70 days (9-14 weeks)
+**Total Estimated Time**: 52-77 days (10-15 weeks)
 
-*Note: Timeline assumes single developer working full-time. With AI agents working in parallel on independent tasks, overall timeline can be significantly reduced (potentially 6-10 weeks).*
+*Note: Timeline assumes single developer working full-time. With AI agents working in parallel on independent tasks, overall timeline can be significantly reduced (potentially 7-12 weeks).*
 
 ---
 
@@ -1147,8 +1245,8 @@ export const createAuthProvider = () => {
 
 ### Deployment Risks
 
-**Risk**: Production environment issues  
-**Mitigation**: Test deployment early, use staging environment, gradual rollout
+**Risk**: Vercel deployment issues  
+**Mitigation**: Test deployment to Vercel preview early, use staging environment, gradual rollout
 
 **Risk**: Database migration failures  
 **Mitigation**: Version control migrations, test migration scripts, backup procedures
@@ -1189,23 +1287,23 @@ export const createAuthProvider = () => {
 
 ## Post-MVP Roadmap
 
-### Phase 11: Quillmark Integration
+### Phase 12: Quillmark Integration
 - Integrate Quillmark for formatted document output
 - USAF memo templates
 - Document export to PDF/DOCX
 
-### Phase 12: Collaboration Features
+### Phase 13: Collaboration Features
 - Document sharing (read-only, edit permissions)
 - Real-time collaborative editing
 - Comment threads
 
-### Phase 13: Advanced Features
+### Phase 14: Advanced Features
 - Document version history
 - Search and filtering
 - Document templates library
 - Tags and categories
 
-### Phase 14: Enterprise Features
+### Phase 15: Enterprise Features
 - Keycloak authentication provider
 - SSO/SAML integration
 - Advanced user management
@@ -1240,7 +1338,32 @@ export const createAuthProvider = () => {
 - [Section 508 Standards](https://www.section508.gov/)
 - [Supabase Auth Documentation](https://supabase.com/docs/guides/auth)
 - [Supabase Database Documentation](https://supabase.com/docs/guides/database)
+- [Vercel SvelteKit Deployment](https://vercel.com/docs/frameworks/sveltekit)
 
 ---
 
-*This MVP plan provides a structured, phased approach to building Tonguetoquill while maintaining high quality standards for accessibility, performance, and user experience. The mock-first strategy enables fast, parallel AI agent development with real integration validation in Phase 10.*
+## Key Changes from Original Plan
+
+### Phase Restructuring
+
+1. **Split Phase 10** into two distinct phases:
+   - **Phase 10**: Focus on Supabase integration and contract validation
+   - **Phase 11**: Focus on comprehensive testing and Vercel deployment
+
+2. **Incremental E2E Testing**: Added lightweight E2E tests in Phases 5, 6, and 7 to catch issues early without slowing iteration speed
+
+### Technical Specifications
+
+3. **JWT Mock Token Structure**: Added detailed `MockTokenPayload` interface specification to ensure Phase 10 migration is seamless
+
+4. **Vercel Deployment Details**: Specified Vercel as deployment platform with configuration details (adapter-auto, environment variables, build settings)
+
+### Development Philosophy
+
+5. **Accept Technical Debt**: Plan acknowledges that accessibility, security, and mobile testing are backloaded to prioritize fast iteration with AI coding tools
+
+6. **Contract-First Approach**: Emphasized contract testing framework to ensure mock-to-real provider compatibility
+
+---
+
+*This revised MVP plan incorporates feedback to enable fast, AI-agent-driven development while maintaining a clear path to production deployment on Vercel. The mock-first strategy with contract validation ensures seamless Supabase integration in Phase 10.*
