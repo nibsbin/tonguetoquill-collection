@@ -6,6 +6,8 @@ Component behavior specifications for Tonguetoquill, defining props, states, int
 
 Components support mobile-responsive layouts and Section 508 accessibility compliance.
 
+**Phase 6.5 Status**: UI components have been reworked to match `prose/legacy/mock_project` visual design. For feature parity recovery, see `prose/plans/REPAIR.md`.
+
 ## Component Library: shadcn-svelte
 
 Tonguetoquill uses **shadcn-svelte** as the foundational component library:
@@ -373,6 +375,8 @@ Button layout with separators between groups:
   - Height: 24px (h-6)
   - Padding horizontal: 12px (px-3)
 
+**Current Status (Post-Phase 6.5)**: ⚠️ Mode toggle tabs not implemented. See `prose/plans/REPAIR.md` Phase R5 for recovery plan.
+
 **Keyboard Shortcuts**:
 Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip component (see [DESIGN_SYSTEM.md - Keyboard Shortcuts](./DESIGN_SYSTEM.md#keyboard-shortcuts))
 
@@ -410,12 +414,14 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 
 - Syntax highlighting for markdown and metadata blocks
 - Code folding for YAML frontmatter and inline metadata
-- Line numbers gutter (optional via settings)
+- Line numbers gutter (optional via settings) - ⚠️ Not implemented, see REPAIR.md Phase R3
 - Auto-indent on Enter
 - Tab key inserts spaces (2 or 4 spaces)
 - Undo/redo support
 - Auto-completion for SCOPE/QUILL keywords
-- Auto-save integration (see [DESIGN_SYSTEM.md - Auto-Save](./DESIGN_SYSTEM.md#auto-save-behavior))
+- Auto-save integration (see [DESIGN_SYSTEM.md - Auto-Save](./DESIGN_SYSTEM.md#auto-save-behavior)) - ⚠️ Not implemented, see REPAIR.md Phase R1
+
+**Current Status (Post-Phase 6.5)**: Basic CodeMirror editor with markdown syntax highlighting and formatting commands. Auto-save and line numbers not yet integrated.
 
 **Cursor & Selection**:
 
