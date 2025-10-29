@@ -725,6 +725,56 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 
 ---
 
+## Phase 6.5: UI Alignment & Theming
+
+**Goal**: Align UI implementation with the desired layout and theming demonstrated in `designs/legacy/mock_project`.
+
+**Note**: This mini-phase ensures the visual design and user experience matches the reference implementation before proceeding with auto-save and advanced features.
+
+### 6.5.1 UI Rework Implementation
+
+**Reference Plan**: See `plans/UI_REWORK.md` for complete implementation strategy and detailed tasks.
+
+**Objectives:**
+
+- Update design tokens (colors, typography, spacing) to match mock project
+- Rework Sidebar component structure and behavior
+- Update TopMenu to simplified layout
+- Refine Editor Toolbar styling and button layout
+- Adjust Editor and Preview styling for proper theming
+- Implement Settings popover with preference toggles
+- Verify responsive behavior at all breakpoints
+- Polish interactions and animations
+
+**Key Changes:**
+
+**Design Tokens:**
+- Color palette: zinc-900 background, zinc-800 surfaces, zinc-700 borders
+- Typography: Lato for UI, monospace for editor, Crimson Text for preview
+- Sidebar width: 48px collapsed, 224px expanded (reduced from 256px)
+- Component heights: 48px for top menu and toolbar
+
+**Visual Updates:**
+- Sidebar: Add logo, reorganize header, update footer with Profile + Settings
+- Top Menu: Simplify to document name + Download + More menu
+- Toolbar: Icon-only buttons with mode toggle tabs
+- Preview: White background with professional typography
+- Settings: Popover with toggle switches for preferences
+
+**Deliverables:**
+
+- Updated Tailwind config and CSS variables
+- Reworked Sidebar, TopMenu, EditorToolbar components
+- Updated editor and preview styling
+- Settings popover implementation
+- Responsive layouts verified at all breakpoints
+- Visual match with mock project confirmed
+- No regressions in functionality or accessibility
+
+**Reference**: `plans/UI_REWORK.md`, `designs/legacy/mock_project/`
+
+---
+
 ## Phase 7: Auto-Save & Document Persistence
 
 **Goal**: Implement auto-save functionality and document state management.
@@ -807,6 +857,8 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ## Phase 8: Accessibility & Polish
 
 **Goal**: Ensure Section 508 compliance and polish user experience.
+
+**Note**: This phase builds on the UI updates from Phase 6.5 to ensure all accessibility requirements are met.
 
 ### 8.1 Section 508 Compliance
 
@@ -933,6 +985,8 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 ## Phase 9: Additional Features & Settings
 
 **Goal**: Implement remaining MVP features and user preferences.
+
+**Note**: Settings implementation from Phase 6.5 is enhanced here with additional preferences.
 
 ### 9.1 Settings Dialog
 
