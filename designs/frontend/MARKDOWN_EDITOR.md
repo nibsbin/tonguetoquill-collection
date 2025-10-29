@@ -666,29 +666,35 @@ Post-MVP theme switching:
 
 ## Dependencies
 
-**Core Libraries:**
-- `@codemirror/state`: State management primitives
-- `@codemirror/view`: View layer and DOM handling
-- `@codemirror/commands`: Common editing commands
-- `@codemirror/language`: Language support infrastructure
-- `@codemirror/autocomplete`: Auto-completion system
-- `@codemirror/search`: Find and replace functionality
-- `@codemirror/lint`: Linting infrastructure (future use)
+### Core (Required)
+Essential CodeMirror 6 packages for basic editor functionality:
+- `@codemirror/state`: State management primitives (required for all CodeMirror functionality)
+- `@codemirror/view`: View layer and DOM handling (required for rendering)
+- `@codemirror/commands`: Common editing commands (undo/redo, indentation, etc.)
+- `@codemirror/language`: Language support infrastructure (required for syntax highlighting)
 
-**Language Support:**
-- `@codemirror/lang-markdown`: Base markdown language mode
-- `@codemirror/lang-yaml`: YAML syntax support
-- `@lezer/generator`: Parser generator (development)
-- `@lezer/markdown`: Markdown parser base
+### Language Support (Required)
+Packages for markdown and extended syntax support:
+- `@codemirror/lang-markdown`: Base markdown language mode (standard markdown highlighting)
+- `@codemirror/lang-yaml`: YAML syntax support (for metadata blocks)
+- `@lezer/markdown`: Markdown parser base (required for custom grammar)
+- `@lezer/generator`: Parser generator (development dependency for building custom Lezer grammar)
 
-**Extensions:**
-- `@codemirror/legacy-modes`: Fallback mode support
-- `@uiw/codemirror-themes`: Theme inspiration (optional)
+### Feature Extensions (Required)
+Additional functionality for complete editor experience:
+- `@codemirror/autocomplete`: Auto-completion system (SCOPE/QUILL suggestions)
+- `@codemirror/search`: Find and replace functionality (Ctrl/Cmd+F)
 
-**Build Tools:**
-- Lezer grammar build tooling
+### Optional Extensions
+Can be added later or omitted from MVP:
+- `@codemirror/lint`: Linting infrastructure (future: YAML validation, scope name conflict detection)
+- `@codemirror/legacy-modes`: Fallback mode support (only if custom Lezer grammar fails)
+- `@uiw/codemirror-themes`: Theme inspiration reference (for custom theme development)
+
+### Build Tools
+Development and build dependencies:
 - TypeScript for type safety
-- Vite for bundling
+- Vite for bundling (already part of SvelteKit)
 
 ## Future Enhancements
 
