@@ -86,15 +86,15 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 
 ### Form Patterns
 
-**Basic Forms**: Standard HTML submission to server actions
+**Basic Forms**: Standard HTML submission to server actions (works without JavaScript)
 
-**Enhanced Forms**: `use:enhance` directive for better UX
+**Enhanced Forms**: Progressive enhancement with JavaScript for better UX (optimistic updates, loading states, client validation)
 
 **Optimistic Updates**: Update UI immediately, rollback on error
 
-**Loading States**: Show progress during submission
+**Loading States**: Show progress indicators during submission
 
-**Error Handling**: Display validation errors, preserve user input
+**Error Handling**: Display validation errors inline, preserve user input
 
 ## Document State Management
 
