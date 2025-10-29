@@ -10,37 +10,41 @@ The Tonguetoquill design system provides a consistent visual language across des
 
 - **Dark Theme Only**: Professional VSCode-inspired aesthetic with reduced eye strain
 - **Accessibility**: Built-in support for high contrast via CSS media queries (`prefers-contrast`)
+- **Reference**: Color values aligned with `designs/legacy/mock_project`
 
 ### Color Scheme
 
 **Background Layers**:
 
-- Primary: zinc-900 (main background)
-- Secondary: zinc-800 (elevated surfaces)
-- Tertiary: zinc-700 (active/hover states)
+- Primary: zinc-900 (#18181b) - main background
+- Secondary: zinc-800 (#27272a) - elevated surfaces (sidebar, top menu, toolbar)
+- Tertiary: zinc-700 (#3f3f46) - active/hover states, borders
 - Overlay: zinc-900 with transparency (modals/drawers)
 
 **Text Colors**:
 
-- Primary: zinc-100 (main text)
-- Secondary: zinc-300 (secondary text)
-- Tertiary: zinc-400 (muted text)
-- Disabled: zinc-500 (disabled state)
+- Primary: zinc-100 (#f4f4f5) - main text, hover state
+- Secondary: zinc-300 (#d4d4d8) - secondary text, labels
+- Tertiary: zinc-400 (#a1a1aa) - muted text, inactive icons
+- Disabled: zinc-500 (#71717a) - disabled state, placeholder text
 
 **Interactive Colors**:
 
-- Default: zinc-400 (default state)
-- Hover: zinc-100 (hover state)
-- Active: zinc-700 background (active state)
+- Default: zinc-400 - default state for icons and secondary text
+- Hover: zinc-100 - hover state for text and icons
+- Active: zinc-700 background - active/selected state
+- Hover Background: zinc-700 - hover state for interactive elements
 
 **Semantic Colors**:
 
 - Success: Green tones
-- Error: Red tones
+- Error: Red tones (#d4183d for destructive actions)
 - Warning: Yellow tones
 - Info: Blue tones
 
-**Brand**: USAF Blue (#355e93) for accents and primary actions
+**Brand**: USAF Blue (#355e93) for accents and primary actions (preserved from legacy)
+
+**Preview Section**: White background (#ffffff) for professional document rendering (not dark theme)
 
 ### High Contrast Support
 
@@ -61,9 +65,20 @@ Automatically adapts to system `prefers-contrast: high` media query:
 
 ### Font Families
 
-**UI Font**: System stack for native appearance and performance
+**UI Font**: Lato with fallback stack for native appearance
+- Primary: 'Lato', Arial, sans-serif
+- Weights: 400 (normal), 500 (medium), 700 (bold), 900 (black)
+- Import from Google Fonts
+
 **Editor Font**: Monospace stack for code editing
-**Preview Font**: Serif stack for professional document rendering
+- Stack: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace
+
+**Preview Font**: Crimson Text with serif fallback for professional document rendering
+- Primary: 'Crimson Text', Georgia, 'Times New Roman', serif
+- Weights: 400 (normal), 600 (semibold), 700 (bold)
+- Import from Google Fonts
+
+**Reference**: Font choices match `designs/legacy/mock_project/styles/globals.css`
 
 ### Type Scale
 
@@ -118,10 +133,15 @@ Automatically adapts to system `prefers-contrast: high` media query:
 
 **Component Heights**:
 
-- Top bar: 48px
-- Toolbar: 40px
-- Sidebar expanded: 224px
-- Sidebar collapsed: 48px
+- Top bar: 48px (matches mock project)
+- Toolbar: 48px (matches mock project)
+- Sidebar expanded: 224px (matches mock project)
+- Sidebar collapsed: 48px (matches mock project)
+- Small buttons: 28px (h-7, icon-only toolbar buttons)
+- Medium buttons: 32px (h-8)
+- Standard buttons: 40px
+
+**Reference**: Component dimensions match `designs/legacy/mock_project`
 
 **Padding Standards**:
 
@@ -146,9 +166,11 @@ Use mobile-first approach with increasing spacing at larger breakpoints
 
 - Small: 4px
 - Medium: 8px
-- Large: 12px
-- XL: 16px
+- Large: 10px (base radius, `--radius: 0.625rem`)
+- XL: 14px (base + 4px)
 - Full: 9999px (circular/pill)
+
+**Reference**: Base radius value (10px / 0.625rem) matches `designs/legacy/mock_project`
 
 ### Usage
 
