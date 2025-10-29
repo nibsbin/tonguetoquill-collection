@@ -1,6 +1,6 @@
 # Services
 
-This document outlines the design and architecture of the services used in the TongueToQuill application. It covers the various backend services, their interactions, and how they contribute to the overall functionality of the application.
+This document outlines the design and architecture of the services used in the Tonguetoquill application. It covers the various backend services, their interactions, and how they contribute to the overall functionality of the application.
 
 ## Authentication Context
 
