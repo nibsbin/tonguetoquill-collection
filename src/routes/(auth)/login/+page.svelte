@@ -22,7 +22,7 @@
 			});
 
 			if (response.ok) {
-				goto('/app');
+				goto('/');
 			} else {
 				const data = await response.json();
 				error = data.message || 'Login failed';

@@ -1,15 +1,17 @@
 /**
  * Document store for managing document list and active document
- * Uses Svelte 5 runes for reactive state management
+ * Supports both authenticated (API) and guest (LocalStorage) modes
  */
 
 import type { DocumentMetadata } from '$lib/services/documents/types';
+import { localStorageDocumentService } from '$lib/services/documents/localstorage-service';
 
 interface DocumentsState {
 	documents: DocumentMetadata[];
 	activeDocumentId: string | null;
 	isLoading: boolean;
 	error: string | null;
+	isGuest: boolean;
 }
 
 class DocumentStore {
@@ -17,7 +19,8 @@ class DocumentStore {
 		documents: [],
 		activeDocumentId: null,
 		isLoading: false,
-		error: null
+		error: null,
+		isGuest: true // Default to guest mode
 	});
 
 	// Getters
@@ -35,6 +38,10 @@ class DocumentStore {
 
 	get error() {
 		return this.state.error;
+	}
+
+	get isGuest() {
+		return this.state.isGuest;
 	}
 
 	get activeDocument() {
@@ -58,6 +65,10 @@ class DocumentStore {
 		this.state.error = error;
 	}
 
+	setGuestMode(isGuest: boolean) {
+		this.state.isGuest = isGuest;
+	}
+
 	addDocument(document: DocumentMetadata) {
 		this.state.documents = [document, ...this.state.documents];
 	}
@@ -75,20 +86,27 @@ class DocumentStore {
 		}
 	}
 
-	// API methods
+	// API methods - support both guest (LocalStorage) and authenticated (API) modes
 	async fetchDocuments() {
 		this.setLoading(true);
 		this.setError(null);
 
 		try {
-			const response = await fetch('/api/documents');
+			if (this.state.isGuest) {
+				// Guest mode: use LocalStorage
+				const documents = await localStorageDocumentService.listUserDocuments();
+				this.setDocuments(documents);
+			} else {
+				// Authenticated mode: use API
+				const response = await fetch('/api/documents');
 
-			if (!response.ok) {
-				throw new Error('Failed to fetch documents');
+				if (!response.ok) {
+					throw new Error('Failed to fetch documents');
+				}
+
+				const data = await response.json();
+				this.setDocuments(data.documents || []);
 			}
-
-			const data = await response.json();
-			this.setDocuments(data.documents || []);
 		} catch (err) {
 			this.setError(err instanceof Error ? err.message : 'Failed to fetch documents');
 			throw err;
@@ -99,14 +117,24 @@ class DocumentStore {
 
 	async fetchDocument(id: string): Promise<{ id: string; content: string; name: string }> {
 		try {
-			const response = await fetch(`/api/documents/${id}`);
+			if (this.state.isGuest) {
+				// Guest mode: use LocalStorage
+				const doc = await localStorageDocumentService.getDocumentContent(id);
+				if (!doc) {
+					throw new Error('Document not found');
+				}
+				return doc;
+			} else {
+				// Authenticated mode: use API
+				const response = await fetch(`/api/documents/${id}`);
 
-			if (!response.ok) {
-				throw new Error('Failed to fetch document');
+				if (!response.ok) {
+					throw new Error('Failed to fetch document');
+				}
+
+				const data = await response.json();
+				return data.document;
 			}
-
-			const data = await response.json();
-			return data.document;
 		} catch (err) {
 			this.setError(err instanceof Error ? err.message : 'Failed to fetch document');
 			throw err;
@@ -114,7 +142,20 @@ class DocumentStore {
 	}
 
 	async createDocument(name: string = 'Untitled Document', content: string = '') {
-		// Optimistic update
+		if (this.state.isGuest) {
+			// Guest mode: use LocalStorage
+			try {
+				const metadata = await localStorageDocumentService.createDocument(name, content);
+				this.addDocument(metadata);
+				this.setActiveDocumentId(metadata.id);
+				return metadata;
+			} catch (err) {
+				this.setError(err instanceof Error ? err.message : 'Failed to create document');
+				throw err;
+			}
+		}
+
+		// Authenticated mode: use API with optimistic update
 		const tempId = `temp-${Date.now()}`;
 		const tempDoc: DocumentMetadata = {
 			id: tempId,
@@ -155,7 +196,19 @@ class DocumentStore {
 	}
 
 	async deleteDocument(id: string) {
-		// Optimistic update
+		if (this.state.isGuest) {
+			// Guest mode: use LocalStorage
+			try {
+				await localStorageDocumentService.deleteDocument(id);
+				this.removeDocument(id);
+			} catch (err) {
+				this.setError(err instanceof Error ? err.message : 'Failed to delete document');
+				throw err;
+			}
+			return;
+		}
+
+		// Authenticated mode: optimistic update
 		const documentToDelete = this.state.documents.find((doc) => doc.id === id);
 		if (!documentToDelete) {
 			throw new Error('Document not found');
