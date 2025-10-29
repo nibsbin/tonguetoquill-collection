@@ -128,31 +128,40 @@ Buttons show tooltips with keyboard shortcuts (see [DESIGN_SYSTEM.md - Keyboard 
 
 **Purpose**: Text input area for markdown editing
 
+**Implementation**: CodeMirror 6 with custom extensions. See [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for complete editor architecture, custom language mode for extended markdown syntax, folding, and accessibility features.
+
 **Structure**:
-- Full-height text area
+- Full-height editor area
 - Monospace font (see [DESIGN_SYSTEM.md - Typography](./DESIGN_SYSTEM.md#typography))
 - Padding: 16px all sides
+- Line numbers gutter
+- Code folding gutter
 
 **Cursor & Selection**:
 - Visible cursor with branded color
 - Text selection highlighting
-- Active line subtle background (optional)
+- Active line subtle background
 
 **Features**:
+- Syntax highlighting for markdown and metadata blocks
+- Code folding for YAML frontmatter and inline metadata
 - Auto-indent on Enter
-- Tab key inserts spaces (e.g., 2 or 4 spaces)
+- Tab key inserts spaces (2 or 4 spaces)
 - Undo/redo support
+- Auto-completion for SCOPE/QUILL keywords
 - Auto-save integration (see [DESIGN_SYSTEM.md - Auto-Save](./DESIGN_SYSTEM.md#auto-save-behavior))
 
 **Mobile Optimization**:
 - 16px minimum font size (prevents zoom on focus)
 - Virtual keyboard handling
 - Touch-friendly text selection
+- 44px minimum touch targets for fold indicators
 - Auto-save on blur (if enabled)
 
 **Accessibility**: 
 - Labeled editor region with ARIA role
 - Keyboard shortcuts work as expected (see [DESIGN_SYSTEM.md - Keyboard Shortcuts](./DESIGN_SYSTEM.md#keyboard-shortcuts))
+- Screen reader support
 - Status announcements for save operations
 
 ---
