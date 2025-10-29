@@ -285,26 +285,10 @@ Base styles target mobile devices, progressively enhanced at larger breakpoints
 - **Forms**: Disable inputs and show spinner on submit button
 - **Dialogs**: Spinner in button during async operations
 
-## Classification Banner
+## Classification Message
 
 ### Display Pattern
-Classification level displayed as a **toast notification** that appears:
-- At top-center of the viewport
-- Persists (no auto-dismiss) while document is open
-- Shows current document's classification level
-- Dismissible by user (but reappears on document reload)
-
-### Toast Styling
-- Background: Semantic color based on classification
-  - UNCLASSIFIED: Blue-500 background
-  - CONFIDENTIAL: Yellow-600 background
-  - SECRET: Orange-600 background
-  - TOP SECRET: Red-600 background
-- Border: 2px solid, slightly darker shade
-- Text: White, bold, uppercase
-- Icon: Shield icon matching classification level
-- Position: Top-center, 16px from top edge
-- Z-index: Toast layer (40)
+Classification level displayed as a **toast notification** on page load based on deployment environment. For now, only "UNRESTRICTED" is shown in development and staging.
 
 ## Keyboard Shortcuts
 

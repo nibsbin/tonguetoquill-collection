@@ -29,7 +29,7 @@ Component behavior specifications including props, states, interactions, and acc
 
 **Single source of truth** for all visual design decisions: colors, typography, spacing, shadows, animations, breakpoints, and component sizing. All other documents reference this for visual specifications.
 
-**Topics**: Dark theme color palette, typography system, spacing scale, border radius, shadows, icons, transitions, responsive breakpoints, accessibility features, keyboard shortcuts, auto-save behavior, form validation, navigation patterns, loading states, classification banner
+**Topics**: Dark theme color palette, typography system, spacing scale, border radius, shadows, icons, transitions, responsive breakpoints, accessibility features, keyboard shortcuts, auto-save behavior, form validation, navigation patterns, loading states, classification message
 
 ---
 
@@ -229,7 +229,7 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 - Auto-save with 7-second debounce
 - Document list (create, open, delete)
 - User authentication
-- Classification banner (toast notification)
+- Classification message (toast notification)
 - Keyboard shortcuts
 - Mobile-responsive layout
 - Section 508 compliance

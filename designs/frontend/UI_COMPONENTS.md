@@ -316,7 +316,7 @@ Menu items can show keyboard shortcuts aligned to the right (e.g., "Save" with "
 
 **Purpose**: Temporary notification messages
 
-**Types**: Success, Error, Warning, Info, Classification Banner
+**Types**: Success, Error, Warning, Info, Classification Message
 
 **Structure**:
 - Icon indicating message type
@@ -329,11 +329,11 @@ Menu items can show keyboard shortcuts aligned to the right (e.g., "Save" with "
 - **Error**: Failed operations, validation errors
 - **Warning**: Important notices, potential issues
 - **Info**: General information
-- **Classification Banner**: Special persistent toast for document classification (see [DESIGN_SYSTEM.md - Classification Banner](./DESIGN_SYSTEM.md#classification-banner))
+- **Classification Message**: Special persistent toast for document classification (see [DESIGN_SYSTEM.md - Classification Message](./DESIGN_SYSTEM.md#classification-message))
 
 **Behavior**:
 - Auto-dismiss timing: 5 seconds (success/info), 7 seconds (warning/error)
-- Classification banner: Persistent (no auto-dismiss)
+- Classification message: Persistent (no auto-dismiss)
 - Manual dismiss: Close button
 - Pause auto-dismiss on hover
 - Multiple toasts stack vertically
@@ -341,7 +341,7 @@ Menu items can show keyboard shortcuts aligned to the right (e.g., "Save" with "
 **Positioning**:
 - Desktop: Top-right corner
 - Mobile: Bottom or top-center
-- Classification banner: Always top-center
+- Classification message: Always top-center
 
 **Accessibility**: Status/alert roles, ARIA live regions, screen reader announcements
 
