@@ -3,12 +3,14 @@
 	import { onMount } from 'svelte';
 	import { Toaster } from 'svelte-sonner';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import TopMenu from '$lib/components/TopMenu.svelte';
 	import DocumentEditor from '$lib/components/DocumentEditor.svelte';
 
 	let user = $state<{ email: string; id: string } | null>(null);
 	let loading = $state(true);
+	let autoSave = new AutoSave();
 
 	onMount(async () => {
 		try {
@@ -68,6 +70,8 @@
 			<TopMenu
 				fileName={documentStore.activeDocument?.name || 'Untitled'}
 				onDownload={handleDownload}
+				saveStatus={autoSave.saveState.status}
+				saveError={autoSave.saveState.errorMessage}
 			/>
 
 			<!-- Editor and Preview Area -->
@@ -82,7 +86,7 @@
 						</div>
 					</div>
 				{:else}
-					<DocumentEditor documentId={documentStore.activeDocumentId} />
+					<DocumentEditor documentId={documentStore.activeDocumentId} {autoSave} />
 				{/if}
 			</div>
 		</div>

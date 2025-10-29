@@ -1,22 +1,29 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { toast } from 'svelte-sonner';
+	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import EditorToolbar from './EditorToolbar.svelte';
 	import MarkdownEditor from './MarkdownEditor.svelte';
 	import MarkdownPreview from './MarkdownPreview.svelte';
 
 	interface Props {
 		documentId: string;
+		autoSave: AutoSave;
 	}
 
-	let { documentId }: Props = $props();
+	let { documentId, autoSave }: Props = $props();
 
 	let content = $state('');
+	let initialContent = $state('');
 	let loading = $state(true);
 	let debouncedContent = $state('');
 	let debounceTimer: number | undefined;
 	let editorRef = $state<MarkdownEditor | null>(null);
+	let autoSaveEnabled = $state(true);
+
+	// Track dirty state (unsaved changes)
+	let isDirty = $derived(content !== initialContent);
 
 	// Debounce preview updates
 	function updateDebouncedContent(newContent: string) {
@@ -29,6 +36,9 @@
 		debounceTimer = window.setTimeout(() => {
 			debouncedContent = newContent;
 		}, 50);
+
+		// Trigger auto-save
+		autoSave.scheduleSave(documentId, newContent, autoSaveEnabled);
 	}
 
 	function handleFormat(type: string) {
@@ -38,25 +48,56 @@
 		}
 	}
 
+	// Manual save handler (Ctrl+S)
+	async function handleManualSave() {
+		if (!isDirty) return;
+
+		try {
+			await autoSave.saveNow(documentId, content);
+			initialContent = content;
+			toast.success('Document saved');
+		} catch {
+			toast.error('Failed to save document');
+		}
+	}
+
 	onMount(async () => {
+		// Load auto-save setting from localStorage
+		const savedAutoSave = localStorage.getItem('auto-save');
+		if (savedAutoSave !== null) {
+			autoSaveEnabled = savedAutoSave === 'true';
+		}
+
+		// Listen for storage events (when settings change)
+		const handleStorageChange = (e: StorageEvent) => {
+			if (e.key === 'auto-save' && e.newValue !== null) {
+				autoSaveEnabled = e.newValue === 'true';
+			}
+		};
+		window.addEventListener('storage', handleStorageChange);
+
 		try {
 			const doc = await documentStore.fetchDocument(documentId);
 			content = doc.content;
+			initialContent = doc.content;
 			debouncedContent = doc.content;
 		} catch {
 			toast.error('Failed to load document');
 		} finally {
 			loading = false;
 		}
+
+		return () => {
+			window.removeEventListener('storage', handleStorageChange);
+		};
 	});
 
-	// Cleanup debounce timer
-	$effect(() => {
-		return () => {
-			if (debounceTimer) {
-				clearTimeout(debounceTimer);
-			}
-		};
+	// Cleanup debounce timer and auto-save
+	onDestroy(() => {
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+		}
+		autoSave.cancelPendingSave();
 	});
 </script>
 
@@ -68,8 +109,8 @@
 	<div class="flex h-full flex-1">
 		<!-- Editor Section -->
 		<div class="flex flex-1 flex-col border-r border-zinc-700">
-			<EditorToolbar onFormat={handleFormat} />
-			<MarkdownEditor bind:this={editorRef} value={content} onChange={updateDebouncedContent} />
+			<EditorToolbar onFormat={handleFormat} isDirty={isDirty} onManualSave={handleManualSave} />
+			<MarkdownEditor bind:this={editorRef} value={content} onChange={updateDebouncedContent} onSave={handleManualSave} />
 		</div>
 
 		<!-- Preview Section (Desktop) -->

@@ -8,9 +8,10 @@
 	interface Props {
 		value: string;
 		onChange: (value: string) => void;
+		onSave?: () => void;
 	}
 
-	let { value, onChange }: Props = $props();
+	let { value, onChange, onSave }: Props = $props();
 
 	let editorElement: HTMLDivElement;
 	let editorView: EditorView | null = null;
@@ -226,6 +227,16 @@
 						key: 'Mod-i',
 						run: () => {
 							handleItalic();
+							return true;
+						}
+					},
+					{
+						key: 'Mod-s',
+						preventDefault: true,
+						run: () => {
+							if (onSave) {
+								onSave();
+							}
 							return true;
 						}
 					}

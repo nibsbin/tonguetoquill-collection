@@ -7,7 +7,10 @@
 		Shield,
 		Upload,
 		ExternalLink,
-		Keyboard
+		Keyboard,
+		Check,
+		Loader2,
+		AlertCircle
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import DropdownMenu from '$lib/components/ui/dropdown-menu.svelte';
@@ -15,13 +18,16 @@
 	import DropdownMenuContent from '$lib/components/ui/dropdown-menu-content.svelte';
 	import DropdownMenuItem from '$lib/components/ui/dropdown-menu-item.svelte';
 	import DropdownMenuSeparator from '$lib/components/ui/dropdown-menu-separator.svelte';
+	import type { SaveStatus } from '$lib/utils/auto-save.svelte';
 
 	type TopMenuProps = {
 		fileName: string;
 		onDownload: () => void;
+		saveStatus?: SaveStatus;
+		saveError?: string;
 	};
 
-	let { fileName, onDownload }: TopMenuProps = $props();
+	let { fileName, onDownload, saveStatus = 'idle', saveError }: TopMenuProps = $props();
 
 	function handleKeyboardShortcuts() {
 		// TODO: Open keyboard shortcuts dialog
@@ -44,6 +50,24 @@
 <div class="flex h-12 items-center justify-between border-b border-zinc-700 bg-zinc-800 px-4">
 	<div class="flex items-center gap-2">
 		<span class="text-zinc-300">{fileName}</span>
+		
+		<!-- Save Status Indicator -->
+		{#if saveStatus === 'saving'}
+			<div class="flex items-center gap-1 text-xs text-zinc-400">
+				<Loader2 class="h-3 w-3 animate-spin" />
+				<span>Saving...</span>
+			</div>
+		{:else if saveStatus === 'saved'}
+			<div class="flex items-center gap-1 text-xs text-green-400">
+				<Check class="h-3 w-3" />
+				<span>Saved</span>
+			</div>
+		{:else if saveStatus === 'error'}
+			<div class="flex items-center gap-1 text-xs text-red-400" title={saveError}>
+				<AlertCircle class="h-3 w-3" />
+				<span>Error</span>
+			</div>
+		{/if}
 	</div>
 
 	<div class="flex items-center gap-2">

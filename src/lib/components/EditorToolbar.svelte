@@ -1,13 +1,15 @@
 <script lang="ts">
-	import { Bold, Italic, Strikethrough, Code, List, ListOrdered, Quote, Link } from 'lucide-svelte';
+	import { Bold, Italic, Strikethrough, Code, List, ListOrdered, Quote, Link, Save } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
 
 	type EditorToolbarProps = {
 		onFormat: (type: string) => void;
+		isDirty?: boolean;
+		onManualSave?: () => void;
 	};
 
-	let { onFormat }: EditorToolbarProps = $props();
+	let { onFormat, isDirty = false, onManualSave }: EditorToolbarProps = $props();
 </script>
 
 <div class="flex h-12 items-center justify-between gap-1 border-b border-zinc-700 bg-zinc-800 px-2">
@@ -17,7 +19,7 @@
 			size="sm"
 			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
 			onclick={() => onFormat('bold')}
-			title="Bold"
+			title="Bold (Ctrl+B)"
 		>
 			{#snippet children()}
 				<Bold class="h-4 w-4" />
@@ -29,7 +31,7 @@
 			size="sm"
 			class="h-7 w-7 p-0 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100"
 			onclick={() => onFormat('italic')}
-			title="Italic"
+			title="Italic (Ctrl+I)"
 		>
 			{#snippet children()}
 				<Italic class="h-4 w-4" />
@@ -114,4 +116,25 @@
 			{/snippet}
 		</Button>
 	</div>
+
+	<!-- Manual Save Button (right side) -->
+	{#if onManualSave}
+		<div class="flex items-center gap-1">
+			<Button
+				variant="ghost"
+				size="sm"
+				class="h-7 gap-1 px-2 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-100 {isDirty ? 'text-blue-400' : ''}"
+				onclick={onManualSave}
+				title="Save (Ctrl+S)"
+				disabled={!isDirty}
+			>
+				{#snippet children()}
+					<Save class="h-4 w-4" />
+					{#if isDirty}
+						<span class="text-xs">*</span>
+					{/if}
+				{/snippet}
+			</Button>
+		</div>
+	{/if}
 </div>
