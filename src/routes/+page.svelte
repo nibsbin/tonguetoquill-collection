@@ -1,16 +1,24 @@
 <script lang="ts">
 	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { onMount } from 'svelte';
-	import { Toaster } from 'svelte-sonner';
+	import { Toaster, toast } from 'svelte-sonner';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import TopMenu from '$lib/components/TopMenu.svelte';
 	import DocumentEditor from '$lib/components/DocumentEditor.svelte';
 
 	let user = $state<{ email: string; id: string } | null>(null);
 	let loading = $state(true);
+	let autoSave = new AutoSave();
 
 	onMount(async () => {
+		// Show classification message
+		toast.info('This system is not authorized for controlled information.', {
+			duration: 10000,
+			position: 'top-center'
+		});
+
 		try {
 			const response = await fetch('/api/auth/me');
 			if (response.ok) {
@@ -58,6 +66,14 @@
 		<p class="text-zinc-400">Loading...</p>
 	</div>
 {:else}
+	<!-- Skip to main content link (for accessibility) -->
+	<a
+		href="#main-content"
+		class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+	>
+		Skip to main content
+	</a>
+
 	<div class="flex h-screen bg-zinc-900">
 		<!-- Sidebar -->
 		<Sidebar {user} />
@@ -68,10 +84,12 @@
 			<TopMenu
 				fileName={documentStore.activeDocument?.name || 'Untitled'}
 				onDownload={handleDownload}
+				saveStatus={autoSave.saveState.status}
+				saveError={autoSave.saveState.errorMessage}
 			/>
 
 			<!-- Editor and Preview Area -->
-			<div class="flex flex-1 overflow-hidden">
+			<div id="main-content" class="flex flex-1 overflow-hidden" role="main" aria-label="Document editor">
 				{#if !documentStore.activeDocumentId}
 					<div class="flex h-full flex-1 items-center justify-center">
 						<div class="text-center">
@@ -82,7 +100,7 @@
 						</div>
 					</div>
 				{:else}
-					<DocumentEditor documentId={documentStore.activeDocumentId} />
+					<DocumentEditor documentId={documentStore.activeDocumentId} {autoSave} />
 				{/if}
 			</div>
 		</div>

@@ -10,6 +10,7 @@
 	import Sheet from '$lib/components/ui/sheet.svelte';
 	import SheetTrigger from '$lib/components/ui/sheet-trigger.svelte';
 	import SheetContent from '$lib/components/ui/sheet-content.svelte';
+	import Dialog from '$lib/components/Dialog.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { onMount } from 'svelte';
 
@@ -25,6 +26,8 @@
 	let popoverOpen = $state(false);
 	let mobileSheetOpen = $state(false);
 	let isMobile = $state(false);
+	let deleteDialogOpen = $state(false);
+	let documentToDelete = $state<string | null>(null);
 
 	onMount(() => {
 		// Check if sidebar should be expanded from localStorage
@@ -82,7 +85,22 @@
 			// Can't delete the last file
 			return;
 		}
-		documentStore.deleteDocument(fileId);
+		// Show confirmation dialog
+		documentToDelete = fileId;
+		deleteDialogOpen = true;
+	}
+
+	function confirmDelete() {
+		if (documentToDelete) {
+			documentStore.deleteDocument(documentToDelete);
+			documentToDelete = null;
+		}
+		deleteDialogOpen = false;
+	}
+
+	function cancelDelete() {
+		documentToDelete = null;
+		deleteDialogOpen = false;
 	}
 
 	function handleAutoSaveChange(value: boolean) {
@@ -104,6 +122,7 @@
 			size="icon"
 			class="flex-shrink-0 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
 			onclick={handleToggle}
+			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 		>
 			{#snippet children()}
 				<Menu class="h-5 w-5" />
@@ -134,6 +153,7 @@
 				variant="ghost"
 				class="w-full justify-start text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
 				onclick={handleNewFile}
+				aria-label="Create new document"
 			>
 				{#snippet children()}
 					<Plus class="mr-2 h-4 w-4 flex-shrink-0" />
@@ -175,6 +195,7 @@
 								e.stopPropagation();
 								handleDeleteFile(doc.id);
 							}}
+							aria-label="Delete {doc.name}"
 						>
 							{#snippet children()}
 								<Trash2 class="h-4 w-4" />
@@ -194,6 +215,7 @@
 				variant="ghost"
 				class="w-full justify-start text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
 				title={user.email}
+				aria-label="User profile: {user.email}"
 			>
 				{#snippet children()}
 					<User class="mr-2 h-5 w-5 flex-shrink-0" />
@@ -214,6 +236,7 @@
 						<Button
 							variant="ghost"
 							class="w-full justify-start text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+							aria-label="Settings"
 						>
 							{#snippet children()}
 								<Settings class="mr-2 h-5 w-5 flex-shrink-0" />
@@ -304,3 +327,36 @@
 		{@render sidebarContent()}
 	</div>
 {/if}
+
+<!-- Delete Confirmation Dialog -->
+<Dialog 
+	open={deleteDialogOpen} 
+	title="Delete Document" 
+	description="Are you sure you want to delete this document? This action cannot be undone."
+	onClose={cancelDelete}
+>
+	{#snippet children()}
+		<div class="flex justify-end gap-2">
+			<Button
+				variant="ghost"
+				size="sm"
+				class="text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+				onclick={cancelDelete}
+			>
+				{#snippet children()}
+					Cancel
+				{/snippet}
+			</Button>
+			<Button
+				variant="default"
+				size="sm"
+				class="bg-red-600 text-white hover:bg-red-700"
+				onclick={confirmDelete}
+			>
+				{#snippet children()}
+					Delete
+				{/snippet}
+			</Button>
+		</div>
+	{/snippet}
+</Dialog>
