@@ -1,11 +1,8 @@
 # Schemas
-
 This document outlines the database schemas used in the backend of the application. Each schema represents a different entity and its relationships with other entities.
 
 ## Users
-
 The Users table stores core identity information and flexible profile data.
-
 ```sql
 CREATE TABLE Users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -36,15 +33,14 @@ The `profile` field stores flexible user profile data that may evolve over time:
 ```
 
 ## Documents
-
-Documents table stores document metadata separately from content for efficient listing.
-
+The Documents table stores all document data including content.
 ```sql
 CREATE TABLE Documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     owner_id UUID NOT NULL REFERENCES Users(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
-    content_size_bytes INTEGER NOT NULL DEFAULT 0,
+    content TEXT NOT NULL,
+    content_size_bytes INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     
@@ -54,24 +50,11 @@ CREATE TABLE Documents (
 
 -- Index for listing user's documents
 CREATE INDEX idx_documents_owner_created ON Documents(owner_id, created_at DESC);
-
--- Index for owner lookups
-CREATE INDEX idx_documents_owner ON Documents(owner_id);
-```
-
-## DocumentContent
-
-Document content stored separately to optimize metadata queries.
-
-```sql
-CREATE TABLE DocumentContent (
-    document_id UUID PRIMARY KEY REFERENCES Documents(id) ON DELETE CASCADE,
-    content TEXT NOT NULL
-);
 ```
 
 **Design Rationale:**
-- Document listing queries fetch only metadata (id, name, dates, size) without loading content
-- Content loaded individually only when user opens a specific document
-- Improves performance for document list views in frontend
-
+- PostgreSQL's TOAST (The Oversized-Attribute Storage Technique) automatically stores large TEXT values out-of-line
+- When queries select only metadata fields (id, name, dates, size), PostgreSQL skips loading the TOASTed content
+- Content is only fetched when explicitly selected, providing the same performance benefits as manual table splitting
+- Single table design simplifies queries, ensures atomic updates, and reduces complexity
+- At 0.5MB limit, TOAST provides optimal performance without manual optimization
