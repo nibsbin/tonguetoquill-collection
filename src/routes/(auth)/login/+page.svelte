@@ -22,7 +22,7 @@
 			});
 
 			if (response.ok) {
-				goto('/app');
+				goto('/');
 			} else {
 				const data = await response.json();
 				error = data.message || 'Login failed';
@@ -91,7 +91,7 @@
 
 			<div class="text-center text-sm">
 				<span class="text-zinc-600">Don't have an account?</span>
-				<a href="/auth/register" class="font-medium text-blue-600 hover:text-blue-500"> Sign up </a>
+				<a href="/register" class="font-medium text-blue-600 hover:text-blue-500"> Sign up </a>
 			</div>
 		</form>
 	</div>

@@ -23,7 +23,7 @@
 			});
 
 			if (response.ok) {
-				goto('/app');
+				goto('/');
 			} else {
 				const data = await response.json();
 				error = data.message || 'Registration failed';
@@ -106,7 +106,7 @@
 
 			<div class="text-center text-sm">
 				<span class="text-zinc-600">Already have an account?</span>
-				<a href="/auth/login" class="font-medium text-blue-600 hover:text-blue-500"> Sign in </a>
+				<a href="/login" class="font-medium text-blue-600 hover:text-blue-500"> Sign in </a>
 			</div>
 		</form>
 	</div>
