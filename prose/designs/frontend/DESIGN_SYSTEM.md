@@ -17,8 +17,9 @@ The Tonguetoquill design system provides a consistent visual language across des
 **Background Layers**:
 
 - Primary: zinc-900 (#18181b) - main background
-- Secondary: zinc-800 (#27272a) - elevated surfaces (sidebar, top menu, toolbar)
-- Tertiary: zinc-700 (#3f3f46) - active/hover states, borders
+- Secondary: zinc-800 (#27272a) - elevated surfaces (top menu, toolbar)
+- Sidebar Background: zinc-900 (#18181b) - sidebar uses same color as main background for unified appearance
+- Tertiary: zinc-700 (#3f3f46) - active/hover states, borders, dividers
 - Overlay: zinc-900 with transparency (modals/drawers)
 
 **Text Colors**:

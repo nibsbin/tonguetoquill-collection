@@ -56,6 +56,12 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 - Desktop Collapsed: 48px width, icons only
 - Mobile: Full-screen drawer overlay (see [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patterns))
 
+**Visual Design**:
+
+- Background: zinc-900 (matches main background for unified appearance)
+- Right border: 1px solid zinc-700 (tertiary color used for dividers)
+- Creates subtle separation between sidebar and main content
+
 **Structure**:
 
 **Header Section (Height: 48px)**:
@@ -67,14 +73,17 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
   - Smooth 300ms opacity transition
 - Background: zinc-900
 
-**Logo Section (Height: 48px)**:
+**Logo Section (Height: 44px)**:
 
 - Logo image centered below header
-- Height: 32px (h-8)
+- Height: 28px (h-7) - slightly reduced from 32px to align divider with editor toolbar
 - Always visible regardless of collapse state
 - Background: zinc-900
+- Size reduction maintains proportions while allowing divider alignment with toolbar bottom border
 
-**Separator**: zinc-700 border
+**Separator**: 
+- zinc-700 border
+- Positioned to align with the bottom border of the editor toolbar (96px from top: 48px header + 48px toolbar)
 
 **Content Section (Scrollable)**:
 
@@ -142,7 +151,7 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Reference**: Visual design matches `prose/legacymock_project/components/TopMenu.tsx`
 
-**Structure (Height: 48px, Background: zinc-800, Border-bottom: zinc-700)**:
+**Structure (Height: 48px, Background: zinc-900, Border-bottom: zinc-700)**:
 
 **Left Section**:
 
