@@ -43,17 +43,22 @@ Tonguetoquill is a professional single-page application built with SvelteKit 5, 
 
 ## State Management
 
-### Reactive State (Svelte 5 Runes)
+See [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) for detailed state management patterns.
 
-- **$state**: Component-local reactive variables
-- **$derived**: Auto-computed values from dependencies
-- **$effect**: Side effects on reactive changes
+### Reactive State Pattern
+
+Component-local reactive state for:
+- UI state (expanded/collapsed, selected items)
+- Form inputs and validation
+- Temporary calculations
+
+SvelteKit 5 provides reactive primitives for component state, derived values, and side effects.
 
 ### Global Stores
 
-For application-wide state:
+Application-wide state for:
 - Authentication status
-- User preferences
+- User preferences  
 - Document management
 
 ### Form State
@@ -125,20 +130,21 @@ Handle server-side:
 
 ### Responsive Design
 
+See [DESIGN_SYSTEM.md - Breakpoint Behavior](./DESIGN_SYSTEM.md#breakpoint-behavior) for complete responsive specifications.
+
 Breakpoints: 640px (mobile), 768px (tablet), 1024px (desktop), 1280px+ (large)
 
 ### Adaptive Layouts
 
 - **Desktop**: Sidebar + split editor/preview
-- **Tablet**: Drawer sidebar + collapsible preview
+- **Tablet**: Drawer sidebar + collapsible preview  
 - **Mobile**: Full-screen drawer + tabbed editor/preview
 
 ### Mobile Features
 
-- Touch-optimized controls (44px min)
-- Swipe gestures for navigation
-- Bottom sheet patterns
-- Native share integration
+- Touch-optimized controls (44px minimum targets)
+- Bottom sheet patterns for mobile dialogs
+- Native share integration (where available)
 
 ## Security Architecture
 

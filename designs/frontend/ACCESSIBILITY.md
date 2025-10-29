@@ -95,11 +95,11 @@ Tonguetoquill meets U.S. Section 508 standards and WCAG 2.1 Level AA compliance,
 - Visible focus indicators
 
 **Input Modalities (2.5)**:
-- Single-pointer alternatives for gestures
+- Touch targets minimum 44x44px with 8px spacing
+- Pointer-based interactions supported (no gesture-only functionality)
 - Click completes on release (cancellable)
 - Visible labels match accessible names
 - No motion-only actuation
-- Touch targets minimum 44x44px with 8px spacing
 
 ### Understandable
 
