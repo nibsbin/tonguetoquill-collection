@@ -62,8 +62,8 @@
 </script>
 
 {#if loading}
-	<div class="flex min-h-screen items-center justify-center bg-zinc-900">
-		<p class="text-zinc-400">Loading...</p>
+	<div class="flex min-h-screen items-center justify-center bg-background">
+		<p class="text-muted-foreground">Loading...</p>
 	</div>
 {:else}
 	<!-- Skip to main content link (for accessibility) -->
@@ -74,7 +74,7 @@
 		Skip to main content
 	</a>
 
-	<div class="flex h-screen bg-zinc-900">
+	<div class="flex h-screen bg-background">
 		<!-- Sidebar -->
 		<Sidebar {user} />
 
@@ -98,8 +98,8 @@
 				{#if !documentStore.activeDocumentId}
 					<div class="flex h-full flex-1 items-center justify-center">
 						<div class="text-center">
-							<h2 class="text-xl font-semibold text-zinc-300">No Document Selected</h2>
-							<p class="mt-2 text-sm text-zinc-500">
+							<h2 class="text-xl font-semibold text-foreground/80">No Document Selected</h2>
+							<p class="mt-2 text-sm text-muted-foreground">
 								Select a document from the sidebar or create a new one
 							</p>
 						</div>

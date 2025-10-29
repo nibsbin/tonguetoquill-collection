@@ -156,26 +156,26 @@
 </script>
 
 {#if loading}
-	<div class="flex h-full items-center justify-center bg-zinc-900">
-		<p class="text-zinc-400">Loading document...</p>
+	<div class="flex h-full items-center justify-center bg-background">
+		<p class="text-muted-foreground">Loading document...</p>
 	</div>
 {:else}
 	<div class="flex h-full flex-1 flex-col">
 		<!-- Mobile Tab Switcher (< 768px) -->
 		{#if isMobile}
-			<div class="flex border-b border-zinc-700 bg-zinc-800">
+			<div class="flex border-b border-border bg-surface-elevated">
 				<button
 					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'editor'
-						? 'bg-zinc-700 text-zinc-100'
-						: 'text-zinc-400 hover:text-zinc-300'}"
+						? 'bg-accent text-foreground'
+						: 'text-muted-foreground hover:text-foreground/80'}"
 					onclick={() => (mobileView = 'editor')}
 				>
 					Editor
 				</button>
 				<button
 					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'preview'
-						? 'bg-zinc-700 text-zinc-100'
-						: 'text-zinc-400 hover:text-zinc-300'}"
+						? 'bg-accent text-foreground'
+						: 'text-muted-foreground hover:text-foreground/80'}"
 					onclick={() => (mobileView = 'preview')}
 				>
 					Preview
@@ -187,7 +187,7 @@
 		<div class="flex flex-1 overflow-hidden">
 			<!-- Editor Section -->
 			<div
-				class="flex flex-1 flex-col border-r border-zinc-700 {isMobile && mobileView !== 'editor'
+				class="flex flex-1 flex-col border-r border-border {isMobile && mobileView !== 'editor'
 					? 'hidden'
 					: ''}"
 			>

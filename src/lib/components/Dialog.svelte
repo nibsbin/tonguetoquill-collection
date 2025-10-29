@@ -45,12 +45,12 @@
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.stopPropagation()}
 		>
-			<h2 id="dialog-title" class="mb-2 text-xl font-semibold text-zinc-900">
+			<h2 id="dialog-title" class="mb-2 text-xl font-semibold text-foreground">
 				{title}
 			</h2>
 
 			{#if description}
-				<p class="mb-4 text-sm text-zinc-600">
+				<p class="mb-4 text-sm text-muted-foreground">
 					{description}
 				</p>
 			{/if}
