@@ -1,5 +1,5 @@
 ---
-name: Programmer Agent
+name: Programmer
 description: A specialized agent that translates design documents and plans into code.
 ---
 
