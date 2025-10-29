@@ -489,7 +489,7 @@ Per [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md):
 
 Coordinate with MarkdownPreview component:
 
-- Debounced preview rendering (300-500ms)
+- Debounced preview rendering (50-300ms)
 - Editor emits content change events
 - Preview subscribes and debounces updates
 - Preserve scroll position during updates

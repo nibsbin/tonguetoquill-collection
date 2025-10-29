@@ -41,9 +41,7 @@
 	}
 </script>
 
-<div
-	class="flex h-12 items-center justify-between border-b border-zinc-700 bg-zinc-800 px-4"
->
+<div class="flex h-12 items-center justify-between border-b border-zinc-700 bg-zinc-800 px-4">
 	<div class="flex items-center gap-2">
 		<span class="text-zinc-300">{fileName}</span>
 	</div>
@@ -79,10 +77,7 @@
 						</Button>
 					{/snippet}
 				</DropdownMenuTrigger>
-				<DropdownMenuContent
-					align="end"
-					class="w-56 border-zinc-700 bg-zinc-800 text-zinc-100"
-				>
+				<DropdownMenuContent align="end" class="w-56 border-zinc-700 bg-zinc-800 text-zinc-100">
 					{#snippet children()}
 						<DropdownMenuItem
 							class="text-zinc-300 focus:bg-zinc-700 focus:text-zinc-100"

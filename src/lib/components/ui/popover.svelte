@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Popover as PopoverPrimitive } from 'bits-ui';
-	
+
 	type PopoverProps = {
 		open?: boolean;
 		onOpenChange?: (open: boolean) => void;

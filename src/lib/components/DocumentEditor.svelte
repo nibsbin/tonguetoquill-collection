@@ -28,7 +28,7 @@
 
 		debounceTimer = window.setTimeout(() => {
 			debouncedContent = newContent;
-		}, 300);
+		}, 50);
 	}
 
 	function handleFormat(type: string) {

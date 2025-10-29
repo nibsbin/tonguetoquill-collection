@@ -111,7 +111,7 @@
 		</Button>
 
 		<span
-			class="pointer-events-none absolute left-0 right-0 text-center whitespace-nowrap text-zinc-100 transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center whitespace-nowrap text-zinc-100 transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
 			style="font-family: 'Lato', Arial, sans-serif; font-weight: 700; font-size: 1.2rem;"
@@ -198,7 +198,7 @@
 				{#snippet children()}
 					<User class="mr-2 h-5 w-5 flex-shrink-0" />
 					{#if isExpanded}
-						<span class="animate-in fade-in transition-opacity duration-300 truncate">
+						<span class="animate-in fade-in truncate transition-opacity duration-300">
 							{user.email}
 						</span>
 					{/if}
@@ -278,7 +278,7 @@
 						<Button
 							variant="ghost"
 							size="icon"
-							class="fixed left-2 top-2 z-40 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 lg:hidden"
+							class="fixed top-2 left-2 z-40 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 lg:hidden"
 						>
 							{#snippet children()}
 								<Menu class="h-5 w-5" />
@@ -286,7 +286,7 @@
 						</Button>
 					{/snippet}
 				</SheetTrigger>
-				<SheetContent side="left" class="flex w-56 flex-col bg-zinc-900 text-zinc-100 p-0">
+				<SheetContent side="left" class="flex w-56 flex-col bg-zinc-900 p-0 text-zinc-100">
 					{#snippet children()}
 						{@render sidebarContent()}
 					{/snippet}
