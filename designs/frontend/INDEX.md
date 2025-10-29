@@ -7,6 +7,7 @@ This directory contains high-level design documentation for the Tonguetoquill fr
 ## Design Documents
 
 ### [ARCHITECTURE.md](./ARCHITECTURE.md)
+
 **SvelteKit 5 Application Architecture**
 
 High-level overview of application structure, routing strategy, component organization, and deployment considerations.
@@ -16,6 +17,7 @@ High-level overview of application structure, routing strategy, component organi
 ---
 
 ### [UI_COMPONENTS.md](./UI_COMPONENTS.md)
+
 **Component Specifications**
 
 Component behavior specifications including props, states, interactions, and accessibility requirements. References [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual styling.
@@ -25,6 +27,7 @@ Component behavior specifications including props, states, interactions, and acc
 ---
 
 ### [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
+
 **Visual Design Language & Design Tokens**
 
 **Single source of truth** for all visual design decisions: colors, typography, spacing, shadows, animations, breakpoints, and component sizing. All other documents reference this for visual specifications.
@@ -34,6 +37,7 @@ Component behavior specifications including props, states, interactions, and acc
 ---
 
 ### [ACCESSIBILITY.md](./ACCESSIBILITY.md)
+
 **Section 508 & WCAG 2.1 Level AA Compliance**
 
 Accessibility requirements and implementation strategies for Section 508 compliance and WCAG 2.1 Level AA.
@@ -43,6 +47,7 @@ Accessibility requirements and implementation strategies for Section 508 complia
 ---
 
 ### [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md)
+
 **State Management Patterns**
 
 State management approach using Svelte 5 runes, global stores, and server-side state.
@@ -52,6 +57,7 @@ State management approach using Svelte 5 runes, global stores, and server-side s
 ---
 
 ### [API_INTEGRATION.md](./API_INTEGRATION.md)
+
 **Backend Integration**
 
 Backend API integration patterns for authentication, document management, and data synchronization. See [designs/backend/AUTH.md](../backend/AUTH.md) for authentication details.
@@ -61,6 +67,7 @@ Backend API integration patterns for authentication, document management, and da
 ---
 
 ### [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md)
+
 **CodeMirror 6 Markdown Editor**
 
 CodeMirror 6 integration with custom language mode for Quillmark's extended markdown syntax. Covers syntax highlighting, code folding, and intelligent editing features for inline metadata blocks.
@@ -72,6 +79,7 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 ## Design Principles
 
 ### 1. SvelteKit 5 Best Practices
+
 - Leverage Svelte 5 runes for reactive state
 - Use file-based routing with route groups
 - Implement progressive enhancement
@@ -79,12 +87,14 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 - Type-safe development with TypeScript
 
 ### 2. Mobile-First Design
+
 - Responsive layouts at all breakpoints (see [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md#breakpoint-behavior))
 - Touch-optimized interactions (44px minimum targets)
 - Adaptive UI patterns (drawer, bottom sheet, tabs)
 - Performance optimization for mobile devices
 
 ### 3. Section 508 Compliance
+
 - Keyboard accessibility for all functionality
 - Screen reader support with semantic HTML and ARIA
 - Sufficient color contrast (4.5:1 minimum)
@@ -93,6 +103,7 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 - Proper form labels and error messages
 
 ### 4. Professional Aesthetic
+
 - VSCode-inspired dark theme (see [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md#color-palette))
 - Clean, minimal interface
 - Smooth transitions (see [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md#transitions--animations))
@@ -100,6 +111,7 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 - Professional document rendering
 
 ### 5. Performance First
+
 - Code splitting by route
 - Lazy loading for heavy components
 - Debounced preview updates
@@ -111,6 +123,7 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 The new design maintains visual compatibility with the legacy React implementation while modernizing the technical foundation:
 
 ### Preserved Elements
+
 - **Color Palette**: Zinc-900 dark theme with USAF blue (#355e93)
 - **Layout**: Collapsible sidebar, split editor/preview, top menu
 - **Typography**: System fonts for UI, monospace for editor, serif for preview
@@ -118,6 +131,7 @@ The new design maintains visual compatibility with the legacy React implementati
 - **Components**: Sidebar, TopMenu, EditorToolbar, MarkdownEditor, MarkdownPreview
 
 ### Modernized Elements
+
 - **Framework**: React → SvelteKit 5
 - **State**: React hooks → Svelte 5 runes + stores
 - **Routing**: Client-only → File-based with SSR
@@ -130,12 +144,14 @@ The new design maintains visual compatibility with the legacy React implementati
 The frontend integrates with backend services documented in `designs/backend/`:
 
 ### Authentication (AUTH.md)
+
 - JWT-based authentication (Keycloak or Supabase)
 - HTTP-only cookies for token storage
 - Automatic token refresh
 - Protected route handling
 
 ### Document Management (SERVICES.md, SCHEMAS.md)
+
 - Document CRUD operations
 - Single-user ownership model (no sharing in MVP)
 - Basic document metadata
@@ -143,15 +159,17 @@ The frontend integrates with backend services documented in `designs/backend/`:
 ## Implementation Guidelines
 
 ### Getting Started
+
 1. Review [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual design tokens and patterns
-2. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for project structure  
+2. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for project structure
 3. Study [UI_COMPONENTS.md](./UI_COMPONENTS.md) for component behavior
 4. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
 5. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
 6. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
-6. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
+7. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
 
 ### Development Workflow
+
 1. Build components mobile-first
 2. Test keyboard navigation early
 3. Verify color contrast regularly
@@ -160,6 +178,7 @@ The frontend integrates with backend services documented in `designs/backend/`:
 6. Monitor bundle sizes
 
 ### Quality Checklist
+
 - [ ] TypeScript strict mode passing
 - [ ] All components keyboard accessible
 - [ ] Color contrast meets WCAG AA (4.5:1)
@@ -188,6 +207,7 @@ The frontend integrates with backend services documented in `designs/backend/`:
 ## Key Patterns
 
 ### Responsive Layout
+
 See [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patterns) for detailed breakpoint behavior.
 
 - **Desktop (≥1024px)**: Sidebar (224px/48px) + split editor/preview
@@ -195,6 +215,7 @@ See [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patte
 - **Mobile (<768px)**: Drawer sidebar + tabbed editor OR preview
 
 ### State Management
+
 See [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) for detailed patterns.
 
 - Component-local: Svelte 5 runes ($state, $derived, $effect)
@@ -202,6 +223,7 @@ See [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) for detailed patterns.
 - Server: Form actions for validated operations
 
 ### Auto-Save
+
 See [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md#auto-save-behavior) for complete specification.
 
 - 7-second debounce after last keystroke
@@ -209,6 +231,7 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md#auto-save-behavio
 - Conflict resolution: last write wins
 
 ### Form Validation
+
 See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-validation-strategy) for complete specification.
 
 - Client-side: Progressive enhancement, immediate feedback
@@ -216,13 +239,15 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 - Display: Inline errors + error summary
 
 ### Progressive Enhancement
+
 - Base: Forms work without JavaScript (HTTP POST)
-- Enhanced: Optimistic updates, client validation, loading states  
+- Enhanced: Optimistic updates, client validation, loading states
 - Fallback: Server handles all validation
 
 ## MVP Scope
 
 ### Included Features
+
 - Single-user document editing
 - Markdown editor with formatting toolbar
 - Live preview pane
@@ -235,6 +260,7 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 - Section 508 compliance
 
 ### Explicitly Excluded from MVP
+
 - Document templates (blank markdown only)
 - Document sharing/collaboration
 - Version history
@@ -245,24 +271,29 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 ## References
 
 ### SvelteKit
+
 - [SvelteKit Documentation](https://kit.svelte.dev/)
 - [Svelte 5 Runes](https://svelte.dev/docs/svelte/what-are-runes)
 
 ### Design
+
 - [Tailwind CSS](https://tailwindcss.com/)
 - [shadcn-svelte](https://www.shadcn-svelte.com/)
 
 ### Accessibility
+
 - [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [Section 508](https://www.section508.gov/)
 
 ### Backend
+
 - See `designs/backend/` for API specifications
 - See `designs/backend/AUTH.md` for authentication details
 
 ## Document Maintenance
 
 When updating documentation:
+
 1. Keep high-level focus (avoid implementation details)
 2. Update cross-references when moving content
 3. DESIGN_SYSTEM.md is single source of truth for visual design
@@ -271,4 +302,4 @@ When updating documentation:
 
 ---
 
-*Last Updated: October 29, 2025*
+_Last Updated: October 29, 2025_

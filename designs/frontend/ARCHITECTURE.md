@@ -48,6 +48,7 @@ See [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) for detailed state management p
 ### Reactive State Pattern
 
 Component-local reactive state for:
+
 - UI state (expanded/collapsed, selected items)
 - Form inputs and validation
 - Temporary calculations
@@ -57,13 +58,15 @@ SvelteKit 5 provides reactive primitives for component state, derived values, an
 ### Global Stores
 
 Application-wide state for:
+
 - Authentication status
-- User preferences  
+- User preferences
 - Document management
 
 ### Form State
 
 Server-side validation with progressive enhancement:
+
 - Works without JavaScript (standard form submission)
 - Enhanced with JavaScript (optimistic updates, client validation)
 
@@ -72,6 +75,7 @@ Server-side validation with progressive enhancement:
 ### API Routes
 
 RESTful endpoints for:
+
 - Document operations
 - User management
 - Settings
@@ -79,6 +83,7 @@ RESTful endpoints for:
 ### Form Actions
 
 Handle server-side:
+
 - Form validation
 - Database operations
 - File handling
@@ -137,7 +142,7 @@ Breakpoints: 640px (mobile), 768px (tablet), 1024px (desktop), 1280px+ (large)
 ### Adaptive Layouts
 
 - **Desktop**: Sidebar + split editor/preview
-- **Tablet**: Drawer sidebar + collapsible preview  
+- **Tablet**: Drawer sidebar + collapsible preview
 - **Mobile**: Full-screen drawer + tabbed editor/preview
 
 ### Mobile Features

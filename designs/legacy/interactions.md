@@ -3,17 +3,20 @@
 ## Core Interaction Principles
 
 ### 1. Real-Time Feedback
+
 - All text input updates preview immediately
 - No save button required (auto-update on keystroke)
 - Formatting applies instantly with cursor preservation
 
 ### 2. Visual Feedback
+
 - Hover states on all interactive elements
 - Active states for selected items
 - Smooth transitions for state changes (300ms duration)
 - Toast notifications for user actions
 
 ### 3. Keyboard-First
+
 - All actions accessible via mouse or keyboard
 - Text selection and formatting keyboard-friendly
 - Tab navigation follows logical flow
@@ -26,6 +29,7 @@
 ### 1. First-Time User Experience
 
 #### Initial State
+
 ```
 User opens application
 ├─ Sidebar expanded (showing brand name)
@@ -36,6 +40,7 @@ User opens application
 ```
 
 #### Exploration Path
+
 1. User reads welcome content in preview
 2. Tries clicking text in editor
 3. Sees cursor appear, realizes it's editable
@@ -46,6 +51,7 @@ User opens application
 ### 2. Creating and Editing Documents
 
 #### New Document Flow
+
 ```
 User clicks [+ New File]
 ├─ New file created with name "untitled-{n}.md"
@@ -58,6 +64,7 @@ User clicks [+ New File]
 ```
 
 #### Editing Flow
+
 ```
 User types in editor
 ├─ On every keystroke:
@@ -68,6 +75,7 @@ User types in editor
 ```
 
 #### Formatting Flow
+
 ```
 User wants to make text bold
 ├─ Option A: Select text, click [B] button
@@ -86,6 +94,7 @@ User wants to make text bold
 ### 3. File Management
 
 #### Switching Files
+
 ```
 User wants to switch documents
 ├─ Ensures sidebar is expanded (clicks hamburger if needed)
@@ -101,6 +110,7 @@ User wants to switch documents
 ```
 
 #### Deleting Files
+
 ```
 User wants to delete a file
 ├─ Hovers over file in sidebar
@@ -119,6 +129,7 @@ User wants to delete a file
 ### 4. Exporting & Sharing
 
 #### Download Flow
+
 ```
 User clicks [Download]
 ├─ Browser download triggered
@@ -128,6 +139,7 @@ User clicks [Download]
 ```
 
 #### Share Flow
+
 ```
 User clicks meatball menu [...] → Share
 ├─ App checks for Web Share API
@@ -144,6 +156,7 @@ User clicks meatball menu [...] → Share
 ### 5. Settings Management
 
 #### Opening Settings
+
 ```
 User clicks [⚙️ Settings] in sidebar
 ├─ Popover opens to the right
@@ -153,6 +166,7 @@ User clicks [⚙️ Settings] in sidebar
 ```
 
 #### Changing Settings
+
 ```
 User toggles "Dark Theme"
 ├─ Switch animates (off → on or vice versa)
@@ -171,6 +185,7 @@ User toggles "Dark Theme"
 ### Button States
 
 #### Default State
+
 ```css
 Colors: text-zinc-400, transparent background
 Cursor: pointer
@@ -178,6 +193,7 @@ Opacity: 100%
 ```
 
 #### Hover State
+
 ```css
 Colors: text-zinc-100, bg-zinc-700 or bg-zinc-800
 Transition: 300ms color, background
@@ -185,10 +201,12 @@ Cursor: pointer
 ```
 
 #### Active/Pressed State
+
 - Same as hover (no distinct press state)
 - Relies on visual feedback from action result
 
 #### Focus State
+
 ```css
 Outline: ring color (zinc-439 dark, zinc-708 light)
 Outline width: 2px
@@ -196,12 +214,14 @@ Outline offset: 2px
 ```
 
 #### Disabled State
+
 - Not currently implemented
 - Future: text-zinc-600, cursor-not-allowed
 
 ### File Item States
 
 #### Inactive File
+
 ```css
 Text: zinc-400
 Background: transparent
@@ -210,6 +230,7 @@ Transition: 300ms
 ```
 
 #### Active File
+
 ```css
 Text: zinc-100
 Background: zinc-700
@@ -217,6 +238,7 @@ No hover effect (already highlighted)
 ```
 
 #### Delete Button on File Item
+
 ```css
 Default: opacity-0
 Hover (on parent): opacity-100
@@ -227,6 +249,7 @@ Colors: text-zinc-500, hover:text-red-400
 ### Sidebar States
 
 #### Collapsed
+
 ```css
 Width: 48px
 Content opacity: 0 (except hamburger)
@@ -235,12 +258,14 @@ Transition: 300ms width, opacity
 ```
 
 #### Expanding (transition)
+
 ```css
 Width: 48px → 224px (over 300ms)
 Content: fades in with animate-in
 ```
 
 #### Expanded
+
 ```css
 Width: 224px
 Content opacity: 100%
@@ -250,18 +275,21 @@ Icons: left-aligned with text
 ### Toggle/Switch States
 
 #### Off
+
 ```css
 Background: switch-background (zinc-400 equivalent)
 Thumb: left position, bg-white
 ```
 
 #### On
+
 ```css
 Background: primary (zinc-100 in dark mode)
 Thumb: right position, bg-white
 ```
 
 #### Transition
+
 ```css
 Duration: 200ms (via shadcn default)
 Easing: ease-in-out
@@ -275,11 +303,13 @@ Animates: background-color, transform
 ### 1. Hover Animations
 
 #### Button Hover
+
 - **Duration**: Instant (no delay)
 - **Properties**: Color and background-color
 - **Easing**: Default CSS transition
 
 #### File Item Hover
+
 - **Triggered by**: Mouse enter file row
 - **Effects**:
   - Text color brightens
@@ -290,6 +320,7 @@ Animates: background-color, transform
 ### 2. Click Feedback
 
 #### Toolbar Formatting Button
+
 ```
 User clicks [B]
 ├─ No visual change to button (instant action)
@@ -299,6 +330,7 @@ User clicks [B]
 ```
 
 #### File Selection
+
 ```
 User clicks file name
 ├─ Instant background color change
@@ -310,6 +342,7 @@ User clicks file name
 ### 3. Sidebar Toggle Animation
 
 #### Collapse Animation
+
 ```
 User clicks hamburger menu (when expanded)
 ├─ Width: 224px → 48px (300ms ease-in-out)
@@ -320,6 +353,7 @@ User clicks hamburger menu (when expanded)
 ```
 
 #### Expand Animation
+
 ```
 User clicks hamburger menu (when collapsed)
 ├─ Width: 48px → 224px (300ms ease-in-out)
@@ -332,6 +366,7 @@ User clicks hamburger menu (when collapsed)
 ### 4. Toast Notifications
 
 #### Appearance
+
 ```
 Toast triggered
 ├─ Slide in from bottom-right (via Sonner default)
@@ -341,6 +376,7 @@ Toast triggered
 ```
 
 #### Dismissal
+
 ```
 After 3-5 seconds
 ├─ Fade out animation (~200ms)
@@ -349,6 +385,7 @@ After 3-5 seconds
 ```
 
 #### Manual Dismissal
+
 ```
 User clicks close icon
 ├─ Immediate fade out
@@ -358,6 +395,7 @@ User clicks close icon
 ### 5. Popover Animations
 
 #### Opening
+
 ```
 User clicks Settings button
 ├─ Popover fades in (~150ms, shadcn default)
@@ -367,6 +405,7 @@ User clicks Settings button
 ```
 
 #### Closing
+
 ```
 User clicks outside or presses Esc
 ├─ Fade out (~150ms)
@@ -377,6 +416,7 @@ User clicks outside or presses Esc
 ### 6. Dropdown Menu Animations
 
 #### Opening
+
 ```
 User clicks meatball menu
 ├─ Menu fades in (~150ms)
@@ -386,6 +426,7 @@ User clicks meatball menu
 ```
 
 #### Hover on Item
+
 ```
 User hovers menu item
 ├─ Background: transparent → zinc-700 (instant)
@@ -400,11 +441,13 @@ User hovers menu item
 ### Current Implementation
 
 #### Text Editing
+
 - **Standard shortcuts**: Ctrl+C, Ctrl+V, Ctrl+Z, etc. (native browser)
 - **Selection**: Shift + Arrow keys
 - **Navigation**: Arrow keys move cursor
 
 #### Tab Navigation
+
 ```
 Tab Order:
 1. Sidebar hamburger menu
@@ -420,16 +463,19 @@ Tab Order:
 ```
 
 #### Esc Key
+
 - Closes open popover (Settings)
 - Closes open dropdown menu
 
 #### Enter/Space on Buttons
+
 - Triggers button action
 - Same as click
 
 ### Future Keyboard Shortcuts
 
 #### Proposed (Not Implemented)
+
 ```
 Ctrl/Cmd + B         → Bold
 Ctrl/Cmd + I         → Italic
@@ -446,6 +492,7 @@ Ctrl/Cmd + Shift + P → Command Palette (future)
 ## Error States & Edge Cases
 
 ### Deletion Protection
+
 ```
 User tries to delete last file
 ├─ Action blocked
@@ -454,6 +501,7 @@ User tries to delete last file
 ```
 
 ### Share Failure
+
 ```
 Native share API fails
 ├─ Fallback to clipboard copy
@@ -462,6 +510,7 @@ Native share API fails
 ```
 
 ### Empty Content
+
 ```
 Editor is empty
 ├─ Preview shows: "*Preview will appear here...*"
@@ -470,6 +519,7 @@ Editor is empty
 ```
 
 ### Very Long Filename
+
 ```
 Filename exceeds TopMenu width
 ├─ Text truncates with ellipsis (CSS truncate)
@@ -478,6 +528,7 @@ Filename exceeds TopMenu width
 ```
 
 ### Very Long File List
+
 ```
 File list exceeds sidebar height
 ├─ Scrollbar appears in file list section
@@ -490,12 +541,15 @@ File list exceeds sidebar height
 ## Loading States
 
 ### Current Implementation
+
 - **No loading states**: App is instant (client-side only)
 - State changes are synchronous
 - No async operations currently
 
 ### Future Considerations
+
 If persistence/sync added:
+
 - Loading spinner for file operations
 - Skeleton screens for file list
 - "Saving..." indicator for auto-save
@@ -506,29 +560,35 @@ If persistence/sync added:
 ## Accessibility Interactions
 
 ### Screen Reader Announcements
+
 **Current**: Limited (relies on native browser behavior)
 
 **Future Improvements**:
+
 - Announce file creation/deletion
 - Announce file switches
 - Announce formatting application
 - Live region for preview updates
 
 ### Focus Management
+
 - Focus remains in editor after formatting
 - Focus trapped in popovers when open
 - Focus returns to trigger button when popover closes
 
 ### Keyboard Navigation
+
 - All interactive elements keyboard accessible
 - Tab order is logical
 - No keyboard traps
 - Skip links not implemented (single-page app)
 
 ### ARIA Labels
+
 **Current**: Minimal (relies on title attributes)
 
 **Future**:
+
 - aria-label for icon-only buttons when sidebar collapsed
 - aria-current for active file
 - aria-expanded for sidebar state
@@ -539,18 +599,21 @@ If persistence/sync added:
 ## Performance Interactions
 
 ### Typing Performance
+
 - Preview updates on every keystroke
 - React-markdown re-renders efficiently
 - No noticeable lag up to ~10,000 characters
 - Future: Debounce preview updates for very large documents
 
 ### Sidebar Toggle Performance
+
 - CSS transition on width property
 - No JavaScript animation
 - 60fps smooth animation
 - No layout thrashing
 
 ### File Switching Performance
+
 - Instant (synchronous state update)
 - No loading delay
 - Content swap is immediate
@@ -560,19 +623,23 @@ If persistence/sync added:
 ## Touch Interactions (Future)
 
 ### Mobile Considerations
+
 Currently desktop-focused. Future touch interactions:
 
 #### Tap Targets
+
 - Minimum 44x44px for all buttons
 - Increased spacing for fat-finger friendliness
 
 #### Gestures
+
 - Swipe right: Open sidebar
 - Swipe left: Close sidebar
 - Pinch zoom: Adjust preview text size
 - Pull to refresh: Reload file list (if synced)
 
 #### Mobile Layout
+
 - Single-pane view (toggle between editor/preview)
 - Floating action button for new file
 - Bottom sheet for file list

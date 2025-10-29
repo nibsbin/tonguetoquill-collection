@@ -7,7 +7,9 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 ## Documentation Structure
 
 ### [01-overview.md](./01-overview.md)
+
 **Project Overview & Architecture**
+
 - Introduction and design philosophy
 - Application architecture and component hierarchy
 - Key features and capabilities
@@ -16,7 +18,9 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 - Browser requirements
 
 ### [02-design-system.md](./02-design-system.md)
+
 **Design System & Visual Language**
+
 - Complete color palette (light and dark themes)
 - Typography specifications (fonts, sizes, weights)
 - Spacing system and layout measurements
@@ -26,7 +30,9 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 - Design tokens reference
 
 ### [03-components.md](./03-components.md)
+
 **Component Specifications**
+
 - Detailed specs for each component:
   - Sidebar (collapsible navigation)
   - TopMenu (header bar)
@@ -37,7 +43,9 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 - Toast notification system
 
 ### [04-layout.md](./04-layout.md)
+
 **Layout Architecture**
+
 - Overall layout structure and breakdown
 - Detailed specifications for each section:
   - Root container
@@ -50,7 +58,9 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 - Spacing and gutters
 
 ### [05-interactions.md](./05-interactions.md)
+
 **Interaction Patterns & User Flows**
+
 - Core interaction principles
 - Complete user flows:
   - First-time user experience
@@ -65,7 +75,9 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 - Accessibility interactions
 
 ### [06-state-management.md](./06-state-management.md)
+
 **State Management & Data Flow**
+
 - State architecture and flow patterns
 - Application state specifications:
   - Files state
@@ -82,12 +94,14 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 ## Using These Documents
 
 ### For Designers
+
 - Reference color palette and typography in **02-design-system.md**
 - Understand component structure in **03-components.md**
 - Review interaction patterns in **05-interactions.md**
 - Ensure consistency with established design system
 
 ### For Developers
+
 - Understand architecture in **01-overview.md**
 - Reference component specs in **03-components.md**
 - Follow layout guidelines in **04-layout.md**
@@ -95,12 +109,14 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 - Follow interaction patterns in **05-interactions.md**
 
 ### For Product Managers
+
 - Review features and capabilities in **01-overview.md**
 - Understand user flows in **05-interactions.md**
 - Plan future features based on documented future considerations
 - Ensure feature requests align with design principles
 
 ### For QA/Testing
+
 - Test against interaction specifications in **05-interactions.md**
 - Verify component states per **03-components.md**
 - Check edge cases documented in **05-interactions.md**
@@ -109,23 +125,29 @@ This directory contains comprehensive design documentation for the Tonguetoquill
 ## Design Principles Summary
 
 ### 1. Developer-First Design
+
 Interface inspired by VSCode with familiar patterns that developers recognize and appreciate.
 
 ### 2. Minimal Distraction
+
 Clean, focused interface that prioritizes content creation over UI chrome.
 
 ### 3. Real-Time Feedback
+
 Live preview updates as you type, with instant visual feedback for all actions.
 
 ### 4. Professional Aesthetic
+
 Dark-themed interface with carefully chosen color palette emphasizing readability and focus.
 
 ### 5. Smooth Interactions
+
 300ms transitions, fade animations, and responsive hover states create a polished experience.
 
 ## Key Color Reference
 
 ### Dark Theme (Current)
+
 ```css
 Background:        zinc-900 (#18181b)
 Secondary BG:      zinc-800 (#27272a)
@@ -137,6 +159,7 @@ Primary Blue:      #355e93 (brand color, future use)
 ```
 
 ### Light Theme (Future)
+
 ```css
 Background:        #ffffff
 Primary Blue:      #355e93 (brand accent)
@@ -146,11 +169,13 @@ Grays:             Various (to be specified)
 ## Typography Reference
 
 ### Fonts
+
 - **UI Font**: Lato (weights: 100, 300, 400, 700, 900)
 - **Editor Font**: System monospace
 - **Preview Font**: Crimson Text (400, 600, 700)
 
 ### Key Sizes
+
 - Base: 16px
 - Brand Title: 1.2rem (19.2px)
 - Small: 0.875rem (14px)
@@ -159,12 +184,14 @@ Grays:             Various (to be specified)
 ## Layout Measurements
 
 ### Heights
+
 - TopMenu: 48px (h-12)
 - Toolbar: 40px (h-10)
 - Sidebar (collapsed): 48px (w-12)
 - Sidebar (expanded): 224px (w-56)
 
 ### Spacing Scale
+
 - Base: 0.25rem (4px)
 - Standard: 0.5rem (8px)
 - Comfortable: 1rem (16px)
@@ -173,6 +200,7 @@ Grays:             Various (to be specified)
 ## Implementation Status
 
 ### ✅ Implemented
+
 - Complete dark theme
 - File management (create, switch, delete)
 - Real-time markdown editing and preview
@@ -183,11 +211,13 @@ Grays:             Various (to be specified)
 - Settings UI (non-functional toggles)
 
 ### 🚧 Partial Implementation
+
 - Editor mode toggle (UI only, wizard mode not implemented)
 - Settings toggles (visual only, no actual functionality)
 - Light theme (defined in CSS, no toggle implementation)
 
 ### 📋 Planned
+
 - Actual settings functionality (auto-save, theme toggle, line numbers)
 - Wizard/WYSIWYG editor mode
 - File persistence (localStorage/cloud)
@@ -211,6 +241,7 @@ When updating these design documents:
 ## Version History
 
 ### v1.0 - Initial Documentation (Current)
+
 - Complete documentation of existing application
 - 6 comprehensive design documents
 - Covers all implemented features
@@ -220,6 +251,7 @@ When updating these design documents:
 ## Contact & Feedback
 
 For questions about the design system or to propose changes:
+
 - Review the relevant document first
 - Consider the design principles
 - Ensure consistency with existing patterns
@@ -228,6 +260,7 @@ For questions about the design system or to propose changes:
 ## External Resources
 
 ### Tools & Libraries Used
+
 - [Tailwind CSS v4.0](https://tailwindcss.com/) - Utility-first CSS framework
 - [shadcn/ui](https://ui.shadcn.com/) - Component library
 - [Lucide React](https://lucide.dev/) - Icon library
@@ -236,14 +269,16 @@ For questions about the design system or to propose changes:
 - [Sonner](https://sonner.emilkowal.ski/) - Toast notifications
 
 ### Design Inspiration
+
 - [Visual Studio Code](https://code.visualstudio.com/) - Layout and navigation patterns
 - [GitHub](https://github.com/) - Markdown preview styling
 - [Notion](https://notion.so/) - Editor interactions
 
 ### Typography Resources
+
 - [Google Fonts - Lato](https://fonts.google.com/specimen/Lato)
 - [Google Fonts - Crimson Text](https://fonts.google.com/specimen/Crimson+Text)
 
 ---
 
-*Last Updated: October 27, 2025*
+_Last Updated: October 27, 2025_

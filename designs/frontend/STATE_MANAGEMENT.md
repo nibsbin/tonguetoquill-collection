@@ -11,6 +11,7 @@ Tonguetoquill uses a hybrid state management approach with reactive local state,
 **Purpose**: UI state, form inputs, temporary data within a component
 
 **Characteristics**:
+
 - Reactive updates when values change
 - Deep reactivity for nested objects
 - Can be organized in classes for related state
@@ -20,6 +21,7 @@ Tonguetoquill uses a hybrid state management approach with reactive local state,
 **Purpose**: Computed values that auto-update based on dependencies
 
 **Characteristics**:
+
 - Automatically recomputes when dependencies change
 - Supports filtering, mapping, transformations
 - Performance-optimized (only recalculates when needed)
@@ -29,6 +31,7 @@ Tonguetoquill uses a hybrid state management approach with reactive local state,
 **Purpose**: React to state changes with side effects
 
 **Use Cases**:
+
 - Auto-save after content changes (see [DESIGN_SYSTEM.md - Auto-Save](../frontend/DESIGN_SYSTEM.md#auto-save-behavior))
 - Change tracking for unsaved indicators
 - External synchronization (localStorage, etc.)
@@ -40,12 +43,14 @@ Tonguetoquill uses a hybrid state management approach with reactive local state,
 ### Writable Stores
 
 **Authentication Store**:
+
 - User information
 - Authentication status
 - Loading state
 - Login/logout methods
 
 **Preferences Store**:
+
 - Auto-save setting (enabled/disabled)
 - Font size (optional)
 - Persisted to localStorage
@@ -53,6 +58,7 @@ Tonguetoquill uses a hybrid state management approach with reactive local state,
 See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for auto-save specifications.
 
 **Document Store**:
+
 - Document list
 - Active document ID
 - Loading/error states
@@ -61,6 +67,7 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 ### Derived Stores
 
 **Computed from Multiple Stores**:
+
 - User permissions (from auth + role)
 - Active document (from document list + active ID)
 
@@ -73,12 +80,14 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 ### SvelteKit Form Actions
 
 **Server-Side Handling**:
+
 - Form validation on server
 - Database operations
 - Return success/failure responses
 - Type-safe form data
 
 **Progressive Enhancement**:
+
 - Works without JavaScript (standard POST)
 - Enhanced with JavaScript (optimistic updates, loading states)
 - Client-side validation as enhancement
@@ -101,11 +110,13 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 ### Document Store Pattern
 
 **State Structure**:
+
 - Documents array
 - Active document ID
 - Loading/error states
 
 **Operations**:
+
 - Load documents from server
 - Set active document
 - Update document content
@@ -113,6 +124,7 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 - Add/remove documents
 
 **Derived Data**:
+
 - Active document
 - Unsaved changes indicator
 - Document count
@@ -122,6 +134,7 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for complete auto-save specifications.
 
 **Implementation**:
+
 - Debounced saves (7 seconds after last keystroke)
 - Cancel pending saves on unmount
 - Optimistic UI updates
@@ -132,11 +145,13 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 ### LocalStorage Persistence
 
 **User Preferences**:
+
 - Auto-save setting (enabled/disabled)
 - Editor settings (font size, etc.)
 - UI state (sidebar expanded/collapsed)
 
 **Strategy**:
+
 - Load on mount
 - Save on change
 - Handle storage events for cross-tab sync
@@ -146,6 +161,7 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 ### Provider Pattern
 
 **Use For**:
+
 - Dependency injection
 - Avoiding prop drilling
 - Component trees
@@ -164,30 +180,35 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 ### When to Use Each Pattern
 
 **Component-Local State**:
+
 - UI state (expanded, selected, focused)
 - Form inputs
 - Temporary calculations
 - Data that doesn't need to be shared
 
 **Global Stores**:
+
 - Application-wide state (auth, preferences, documents)
 - Cross-component communication
 - Persistent state
 - Shared derived state
 
 **Form Actions** (Server-side):
+
 - Server-validated data
 - Database operations
 - File uploads
 - Authentication flows
 
 **Context API**:
+
 - Dependency injection
 - Feature-specific state
 - Avoiding prop drilling through many levels
 - Component tree configuration
 
 **Page Data** (SSR):
+
 - Initial page data loaded on server
 - Route-specific data
 - URL-based state
