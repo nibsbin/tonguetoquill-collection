@@ -9,7 +9,7 @@
 
 1. **Login should be optional** - Users should be able to access the app without requiring authentication
 2. **`/app` should be the home route** - The application should be accessible at `/` (root path)
-3. **Understanding route groups** - Clarify that `(auth)` results in `/login` not `/auth/login` (route groups don't appear in URL)
+3. **Understanding route groups** - Clarify that `(auth)` results in `/login` not `/auth/login` (route groups don't appear in URL). Remove the parentheses to ensure routes are prefixed with `auth/`.
 
 ## Current State Analysis
 
@@ -121,9 +121,9 @@ src/routes/
 - Guest users can explore and create documents (localStorage only)
 - Authenticated users get full functionality with server persistence
 
-**Auth Routes `(auth)`**: Login/register flows at `/login` and `/register`
+**Auth Routes `auth`**: Login/register flows at `auth/login` and `auth/register`
 
-- Route group syntax `(auth)` means these routes don't include "auth" in URL
+- Route group syntax `auth` means these routes include "auth" in URL
 - After authentication, redirect back to `/` (or original destination)
 
 **Note**: Route groups use parentheses `(groupname)` to organize routes without affecting the URL path.
