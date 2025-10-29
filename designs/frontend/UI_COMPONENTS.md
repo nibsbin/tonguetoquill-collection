@@ -46,6 +46,8 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Purpose**: Collapsible navigation for document management, user profile, and settings
 
+**Reference**: Visual design matches `designs/legacy/mock_project/components/Sidebar.tsx`
+
 **States**:
 
 - Desktop Expanded: 224px width, full content visible
@@ -54,30 +56,69 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Structure**:
 
-**Header Section**:
+**Header Section (Height: 48px)**:
 
-- Branding: "Tonguetoquill" text logo with `designs/frontend/visuals/logo.svg`
-- Collapse toggle: Hamburger menu icon
-- Height: 48px (matches TopMenu)
+- Hamburger menu button: Left-aligned, toggles sidebar collapse/expand
+- Title: "Tonguetoquill" text centered (Lato font, 700 weight, 1.2rem size)
+  - Visible when expanded (opacity: 100%)
+  - Hidden when collapsed (opacity: 0%, pointer-events: none)
+  - Smooth 300ms opacity transition
+- Background: zinc-900
 
-**Document List Section**:
+**Logo Section (Height: 48px)**:
 
-- "New Document" button: Full-width, left-aligned with plus (+) icon
-- Document items: Full-width, left-aligned with document icon + filename
-- Selected state: Highlighted background with left border accent
-- Filename: Truncates with ellipsis if too long
-- Vertical scroll for overflow
+- Logo image centered below header
+- Height: 32px (h-8)
+- Always visible regardless of collapse state
+- Background: zinc-900
 
-**Footer Section**:
+**Separator**: zinc-700 border
 
-- Position: Sticky bottom, always visible
-- Profile button: User icon + "Profile" label
-- Settings button: Gear icon + "Settings" label
+**Content Section (Scrollable)**:
+
+- **"New File" button**:
+  - Full-width, left-aligned
+  - Plus icon (16px, h-4 w-4) + "New File" text (when expanded)
+  - Ghost variant: transparent background, zinc-300 text
+  - Hover: zinc-800 background, zinc-100 text
+  - Padding: 8px (p-2)
+
+- **File List** (when expanded):
+  - Separator above list (zinc-700)
+  - File items in group containers:
+    - Group hover reveals delete button
+    - Active state: zinc-700 background
+    - Hover state: zinc-800 background
+    - File button:
+      - FileText icon (16px, h-4 w-4) + filename (truncated)
+      - Active: zinc-100 text
+      - Inactive: zinc-400 text, hover to zinc-100
+    - Delete button (right side):
+      - Trash icon (16px, h-4 w-4)
+      - Invisible by default (opacity: 0)
+      - Visible on group hover (opacity: 100)
+      - Text: zinc-500, hover to red-400
+
+**Footer Section (Sticky Bottom)**:
+
+- Border top: zinc-700
+- Padding: 8px (p-2)
+- **Profile Button**:
+  - User icon (20px, h-5 w-5) + "Profile" text (when expanded)
+  - Ghost variant: zinc-400 text
+  - Hover: zinc-800 background, zinc-100 text
+  
+- **Settings Button**:
+  - Settings icon (20px, h-5 w-5) + "Settings" text (when expanded)
+  - Ghost variant: zinc-400 text
+  - Hover: zinc-800 background, zinc-100 text
+  - Opens settings popover on click
 
 **Collapsed State**:
 
 - Width: 48px
 - Icons only (no text labels)
+- Text fades out smoothly (300ms transition)
 - Tooltips show labels on hover (using shadcn-svelte's Tooltip component)
 
 **Mobile Behavior**:
@@ -88,7 +129,7 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Accessibility**: Navigation landmark, ARIA labels, keyboard navigation, focus trap in drawer mode
 
-**Visual Reference**: See `visuals/sidebar_expanded.png` and `visuals/settings.png`
+**Visual Reference**: See `designs/legacy/mock_project/components/Sidebar.tsx`
 
 ---
 
@@ -98,37 +139,61 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Purpose**: Header bar displaying document information and actions
 
-**Structure**:
+**Reference**: Visual design matches `designs/legacy/mock_project/components/TopMenu.tsx`
+
+**Structure (Height: 48px, Background: zinc-800, Border-bottom: zinc-700)**:
 
 **Left Section**:
 
-- Brand icon: Feather/pen icon (20px, from shadcn-svelte's Lucide icons)
 - Filename display: Current document name (e.g., "welcome.md")
-- Unsaved indicator: Asterisk (\*) or dot when document has unsaved changes
-- Truncation: Ellipsis for long filenames on mobile
+  - Text color: zinc-300
+  - No icon prefix
+  - Truncation: Ellipsis for long filenames on mobile
 
-**Right Section - Action Buttons**:
+**Right Section**:
 
-- Download button: Download icon with optional label
-- More actions button: Three-dot vertical menu icon (kebab menu)
+- **Download Button**:
+  - Bordered group (border: zinc-600, rounded padding: 2px)
+  - Download icon (16px, h-4 w-4) + "Download" text
+  - Ghost button style: zinc-300 text
+  - Hover: zinc-700 background, zinc-100 text
+  - Height: 28px (h-7)
+  - Small size variant
 
-**More Actions Menu Items**:
+- **More Actions Button** (Meatball/Kebab Menu):
+  - MoreVertical icon (16px, h-4 w-4, three vertical dots)
+  - Ghost button style: zinc-300 text
+  - Hover: zinc-700 background, zinc-100 text
+  - Height: 32px (h-8), Width: 32px (w-8)
+  - Icon-only, no padding
 
-- Keyboard Shortcuts: Opens keyboard shortcuts dialog (see [DESIGN_SYSTEM.md - Keyboard Shortcuts](./DESIGN_SYSTEM.md#keyboard-shortcuts))
-- About: Application information
-- Terms of Use: Legal terms
-- Privacy Policy: Privacy information
+**More Actions Menu Items** (Background: zinc-800, Border: zinc-700):
+
+- **Share**: Share2 icon + "Share" text
+- **Import File**: Upload icon + "Import File" text
+- Separator (zinc-700)
+- **Document Info**: FileText icon + "Document Info" text
+- **Keyboard Shortcuts**: Keyboard icon + "Keyboard Shortcuts" text
+- Separator (zinc-700)
+- **About Us**: Info icon + "About Us" text + ExternalLink icon (right)
+- **Terms of Use**: FileText icon + "Terms of Use" text + ExternalLink icon (right)
+- **Privacy Policy**: Shield icon + "Privacy Policy" text + ExternalLink icon (right)
+
+Menu Item Styling:
+- Text: zinc-300
+- Hover: zinc-700 background, zinc-100 text
+- Icon size: 16px (h-4 w-4)
+- External link icon: 12px (h-3 w-3) on the right (ml-auto)
 
 **Mobile Adaptation**:
 
 - Filename truncates with ellipsis
-- Download label may hide (icon only)
-- Minimum 48px height for touch targets
-- Menu items have 48px minimum height
+- Download button may condense (icon only on very small screens)
+- Menu items have 48px minimum height for touch targets
 
-**Accessibility**: Banner landmark, visible labels or ARIA labels, save status announced to screen readers
+**Accessibility**: Banner landmark, visible labels or ARIA labels, keyboard navigation for menu
 
-**Visual Reference**: See `visuals/more_actions.png`
+**Visual Reference**: See `designs/legacy/mock_project/components/TopMenu.tsx`
 
 ---
 
@@ -252,30 +317,63 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 ### EditorToolbar Component
 
-**Implementation**: Uses shadcn-svelte's Button components with Lucide icons and Tooltip components for keyboard shortcuts
+**Implementation**: Uses shadcn-svelte's Button components with Lucide icons, Separator component, and Tabs component
 
-**Purpose**: Markdown formatting controls
+**Purpose**: Markdown formatting controls and mode selection
 
-**Formatting Tools**:
+**Reference**: Visual design matches `designs/legacy/mock_project/components/EditorToolbar.tsx`
 
-- **Text**: Bold, Italic, Strikethrough
-- **Blocks**: Code block, Quote
-- **Lists**: Bullet list, Numbered list
-- **Links**: Insert/edit link
+**Structure (Height: 48px, Background: zinc-800, Border-bottom: zinc-700)**:
 
-**Button Groups** (separated by dividers using shadcn-svelte's Separator component):
+**Left Section - Formatting Tools**:
 
-- Group 1: Bold, Italic, Strikethrough
-- Group 2: Code block, Quote
-- Group 3: Bullet list, Numbered list
-- Group 4: Link
+Button layout with separators between groups:
 
-**Button States**:
+- **Group 1**: Bold, Italic, Strikethrough
+  - Bold icon (16px, h-4 w-4)
+  - Italic icon (16px, h-4 w-4)
+  - Strikethrough icon (16px, h-4 w-4)
+  
+- Separator (vertical, height: 20px, zinc-700)
 
-- Default: Transparent background
-- Hover: Highlighted background
-- Active: Highlighted when formatting is applied at cursor position
-- Disabled: Reduced opacity
+- **Group 2**: Code, Quote
+  - Code icon (16px, h-4 w-4)
+  - Quote icon (16px, h-4 w-4)
+  
+- Separator (vertical, height: 20px, zinc-700)
+
+- **Group 3**: Lists
+  - List icon (16px, h-4 w-4) - Bullet list
+  - ListOrdered icon (16px, h-4 w-4) - Numbered list
+  
+- Separator (vertical, height: 20px, zinc-700)
+
+- **Group 4**: Link
+  - Link icon (16px, h-4 w-4)
+
+**Button Styling**:
+- Size: 28px square (h-7 w-7)
+- Ghost variant: transparent background
+- Padding: 0
+- Icon color: zinc-400 default
+- Hover: zinc-700 background, zinc-100 text
+- Tooltips: Show formatting name on hover
+
+**Right Section - Mode Toggle**:
+
+- Spacer: flex-1 to push mode toggle to the right
+- **Tabs Component**:
+  - Height: 28px (h-7)
+  - Background: zinc-900
+  - Padding: 2px (p-0.5)
+  - Tab triggers:
+    - "Markdown" tab
+    - "Wizard" tab
+  - Active state: zinc-700 background, zinc-100 text
+  - Inactive state: transparent background, zinc-400 text
+  - Font size: 0.75rem (text-xs)
+  - Height: 24px (h-6)
+  - Padding horizontal: 12px (px-3)
 
 **Keyboard Shortcuts**:
 Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip component (see [DESIGN_SYSTEM.md - Keyboard Shortcuts](./DESIGN_SYSTEM.md#keyboard-shortcuts))
@@ -283,10 +381,12 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 **Mobile Adaptation**:
 
 - Horizontal scroll if needed for overflow
-- 44px minimum touch targets (buttons scale from 32px on desktop)
+- 44px minimum touch targets (buttons scale up on mobile)
 - May condense to most-used tools on very small screens
 
 **Accessibility**: Toolbar role, button labels (text + ARIA), keyboard shortcuts announced in tooltips
+
+**Visual Reference**: See `designs/legacy/mock_project/components/EditorToolbar.tsx`
 
 ---
 
@@ -296,36 +396,40 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 
 **Implementation**: CodeMirror 6 with custom extensions. See [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for complete editor architecture, custom language mode for extended markdown syntax, folding, and accessibility features.
 
+**Reference**: Visual design matches `designs/legacy/mock_project/components/MarkdownEditor.tsx`
+
 **Structure**:
 
 - Full-height editor area
+- Background: zinc-900
+- Text color: zinc-100
 - Monospace font (see [DESIGN_SYSTEM.md - Typography](./DESIGN_SYSTEM.md#typography))
 - Padding: 16px all sides
-- Line numbers gutter
-- Code folding gutter
+- Placeholder text: "Start typing your markdown here..." (zinc-500 color)
+- Spell check: disabled (spellCheck={false})
 
-**Cursor & Selection**:
-
-- Visible cursor with branded color
-- Text selection highlighting
-- Active line subtle background
-
-**Features**:
+**Editor Features** (via CodeMirror 6):
 
 - Syntax highlighting for markdown and metadata blocks
 - Code folding for YAML frontmatter and inline metadata
+- Line numbers gutter (optional via settings)
 - Auto-indent on Enter
 - Tab key inserts spaces (2 or 4 spaces)
 - Undo/redo support
 - Auto-completion for SCOPE/QUILL keywords
 - Auto-save integration (see [DESIGN_SYSTEM.md - Auto-Save](./DESIGN_SYSTEM.md#auto-save-behavior))
 
+**Cursor & Selection**:
+
+- Visible cursor with branded color
+- Text selection highlighting
+- Active line subtle background (optional)
+
 **Mobile Optimization**:
 
 - 16px minimum font size (prevents zoom on focus)
 - Virtual keyboard handling
 - Touch-friendly text selection
-- 44px minimum touch targets for fold indicators
 - Auto-save on blur (if enabled)
 
 **Accessibility**:
@@ -335,22 +439,30 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 - Screen reader support
 - Status announcements for save operations
 
+**Visual Reference**: See `designs/legacy/mock_project/components/MarkdownEditor.tsx`
+
 ---
 
 ### MarkdownPreview Component
 
 **Purpose**: Rendered markdown output display
 
+**Reference**: Visual design matches `designs/legacy/mock_project/components/MarkdownPreview.tsx`
+
 **Structure**:
 
-- White background for professional document appearance
+- Background: white (#ffffff) - contrasts with dark theme editor
 - Full height in split-view layout
-- Generous padding (40px horizontal, 48px vertical on desktop; 16px on mobile)
-- Max width: 800px for optimal readability, centered
+- Padding: 24px all sides
+- Max width: none (full container width, max-w-none)
+- Overflow: auto (scrollable)
 
 **Document Styling**:
-Renders standard markdown with professional typography:
+Renders standard markdown with professional typography using prose classes:
 
+- Prose variant: prose-slate
+- Max width: none (prose-slate-max-w-none to fill container)
+- Crimson Text font for body text (serif)
 - Headings with hierarchy
 - Paragraphs with appropriate spacing
 - Lists (bullet and numbered)
@@ -458,6 +570,72 @@ The settings dialog contains user preferences:
 - Uses shadcn-svelte's Switch component
 - Clear on/off states
 - Label describes what the toggle controls
+
+---
+
+### Popover Component
+
+**Implementation**: Uses shadcn-svelte's Popover component for floating panels
+
+**Purpose**: Display contextual information or settings without full modal behavior
+
+**Reference**: Settings popover matches `designs/legacy/mock_project/components/Sidebar.tsx`
+
+**Settings Popover Structure**:
+
+Triggered from Settings button in Sidebar footer:
+
+- **Trigger**: Settings gear icon button
+- **Placement**: Side "right", align "end"
+- **Width**: 256px (w-64)
+- **Background**: zinc-800
+- **Border**: zinc-700
+- **Text**: zinc-100
+- **Padding**: 0 (p-0)
+
+**Content Section** (Padding: 16px, p-4):
+
+- **Heading**: "Settings" (h3, margin-bottom: 16px, mb-4)
+- **Settings Options** (spacing: 16px between, space-y-4):
+  
+  1. **Auto-save Toggle**:
+     - Label: "Auto-save" (id: "auto-save", zinc-300 text)
+     - Switch component aligned right
+     - Flex layout with justify-between
+  
+  2. **Dark Theme Toggle**:
+     - Label: "Dark Theme" (id: "dark-theme", zinc-300 text)
+     - Switch component aligned right
+     - For MVP: May be disabled/hidden since only dark theme supported
+  
+  3. **Line Numbers Toggle**:
+     - Label: "Line Numbers" (id: "line-numbers", zinc-300 text)
+     - Switch component aligned right
+     - Controls CodeMirror line number gutter visibility
+
+**Switch Component Styling**:
+- Uses shadcn-svelte's Switch component
+- Clear visual on/off states
+- Accessible keyboard interaction (Space to toggle)
+- Associated with label via htmlFor/id
+
+**Behavior**:
+- Opens on Settings button click
+- Closes on outside click, ESC key, or selecting trigger again
+- Settings changes apply immediately
+- Persist to localStorage
+
+**Mobile Adaptation**:
+- May use Drawer (sheet) component instead of Popover on mobile
+- Full-width on small screens
+
+**Accessibility**: 
+- Proper labeling for all switches
+- Keyboard navigation between switches
+- ESC to dismiss
+- Focus management
+
+**Visual Reference**: See `designs/legacy/mock_project/components/Sidebar.tsx` (lines 147-194)
 
 **Backdrop**:
 
