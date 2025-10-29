@@ -43,11 +43,11 @@ Tonguetoquill uses a hybrid state management approach leveraging SvelteKit 5's r
 - Login/logout methods
 
 **Preferences Store**:
-- Theme selection
-- Auto-save setting
-- Line numbers toggle
-- Font size
+- Auto-save setting (enabled/disabled)
+- Font size (optional)
 - Persisted to localStorage
+
+See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for auto-save specifications.
 
 **Document Store**:
 - Document list
@@ -58,9 +58,8 @@ Tonguetoquill uses a hybrid state management approach leveraging SvelteKit 5's r
 ### Derived Stores
 
 **Computed from Multiple Stores**:
-- Dark mode (from preferences + system)
 - User permissions (from auth + role)
-- Filtered documents (from documents + search)
+- Active document (from document list + active ID)
 
 ### Readable Stores
 
@@ -117,41 +116,27 @@ Tonguetoquill uses a hybrid state management approach leveraging SvelteKit 5's r
 
 ### Auto-Save Pattern
 
-**Debounced Saves**:
-- Wait for pause in typing
-- Configurable delay
-- Cancel on unmount
+See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for complete auto-save specifications.
 
-**Optimistic Updates**:
-- Mark as saved immediately
-- Rollback on server error
-- Show error state
+**Implementation**:
+- Debounced saves (7 seconds after last keystroke)
+- Cancel pending saves on unmount
+- Optimistic UI updates
+- Error handling and rollback
 
 ## State Persistence
 
 ### LocalStorage Persistence
 
 **User Preferences**:
-- Theme selection
-- Editor settings
-- UI state (sidebar expanded, etc.)
+- Auto-save setting (enabled/disabled)
+- Editor settings (font size, etc.)
+- UI state (sidebar expanded/collapsed)
 
 **Strategy**:
 - Load on mount
 - Save on change
 - Handle storage events for cross-tab sync
-
-### IndexedDB for Large Data
-
-**Use Cases**:
-- Offline document storage
-- Large file caching
-- Binary data (future: images)
-
-**Benefits**:
-- Better performance than localStorage
-- Larger storage capacity
-- Structured data storage
 
 ## Context API
 
