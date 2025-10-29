@@ -13,6 +13,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 ### Visual Design & Theming
 
 **Color Palette:**
+
 - Background: `zinc-900` (main background, `#18181b`)
 - Elevated surfaces: `zinc-800` (sidebar, top menu, toolbar, `#27272a`)
 - Borders: `zinc-700` (`#3f3f46`)
@@ -24,6 +25,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - Selected state: `zinc-700` background
 
 **Typography:**
+
 - UI Font: `'Lato', Arial, sans-serif` (sans-serif stack)
 - Editor Font: Monospace stack for code editing
 - Preview Font: `'Crimson Text'` (serif stack) for professional document rendering
@@ -31,6 +33,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - Weight variations: 400 (normal), 500 (medium), 700 (bold)
 
 **Design Tokens:**
+
 - Border radius: 10px (`--radius: 0.625rem`)
 - Transitions: 300ms for state changes
 - Spacing: 4px base unit
@@ -39,6 +42,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 ### Layout Structure
 
 **Application Layout:**
+
 ```
 ┌─────────────┬────────────────────────────────────────┐
 │   Sidebar   │            Top Menu                    │
@@ -55,6 +59,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 ```
 
 **Sidebar Layout:**
+
 - Header: Hamburger menu button + "Tonguetoquill" title (centered when expanded)
 - Logo: Centered below header
 - Separator
@@ -62,12 +67,14 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - Footer (sticky bottom): Profile button + Settings button
 
 **Sidebar States:**
+
 - Collapsed: 48px width (icons only, tooltips on hover)
 - Expanded: 224px width (icons + text labels)
 - Mobile: Full-screen drawer overlay (Sheet component)
 - Transition: 300ms smooth animation
 
 **Top Menu:**
+
 - Height: 48px
 - Left: Document name display
 - Right: Download button (bordered group) + More actions menu (meatball menu)
@@ -75,6 +82,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - Border bottom: `zinc-700`
 
 **Editor Toolbar:**
+
 - Height: 48px
 - Left: Formatting buttons (Bold, Italic, Strikethrough, Code, Quote, Lists, Link)
 - Separators between button groups
@@ -83,6 +91,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - Background: `zinc-800`
 
 **Editor Section:**
+
 - Background: `zinc-900`
 - Font: Monospace
 - Color: `zinc-100`
@@ -90,6 +99,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - Placeholder text in `zinc-500`
 
 **Preview Section:**
+
 - Background: `white` (not dark theme)
 - Prose styling with proper typography
 - Max width: none (full container)
@@ -99,12 +109,14 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 ### Component Patterns
 
 **Buttons:**
+
 - Ghost variant: Transparent background, hover to `zinc-700`
 - Icon size: 16px (h-4 w-4) or 20px (h-5 w-5)
 - Text color: `zinc-400` default, `zinc-100` on hover
 - Height variants: Small (28px, h-7), Medium (32px, h-8), Standard (40px)
 
 **File List Items:**
+
 - Group structure with hover state
 - Left: File icon (16px) + filename (truncate with ellipsis)
 - Right: Delete button (visible on group hover)
@@ -112,6 +124,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - Text: `zinc-100` when active, `zinc-400` when inactive
 
 **Settings Popover:**
+
 - Trigger: Settings gear icon in sidebar footer
 - Content: White text on `zinc-800` background
 - Border: `zinc-700`
@@ -120,6 +133,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - Align: "end"
 
 **Dropdown Menu (More Actions):**
+
 - Trigger: Meatball (three vertical dots) icon
 - Content: Menu items with icons + text
 - Hover state: `zinc-700` background
@@ -128,6 +142,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - External link indicator for items that open new tabs
 
 **Toast Notifications:**
+
 - Uses Sonner library
 - Appears top-right or bottom-right
 - Auto-dismiss timing
@@ -136,6 +151,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 ### Interactive Behaviors
 
 **Sidebar Toggle:**
+
 - Smooth 300ms transition
 - Icons fade in/out during transition
 - Text labels appear/disappear
@@ -143,18 +159,21 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - State persists in localStorage
 
 **File Operations:**
+
 - New file: Immediate creation with default name
 - Select file: Change active state, load content
 - Delete file: Show confirmation (only if not last file)
 - Toast notification on success/error
 
 **Formatting Toolbar:**
+
 - Icon-only buttons for space efficiency
 - Tooltips show keyboard shortcuts
 - Apply formatting to selected text or at cursor
 - Visual feedback on button click
 
 **Mode Toggle (Markdown/Wizard):**
+
 - Tab-based selection
 - Active tab: `zinc-700` background, `zinc-100` text
 - Inactive tab: Transparent background, `zinc-400` text
@@ -167,6 +186,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 **Objective:** Update design tokens to match mock project exactly
 
 **Tasks:**
+
 1. Update color palette in Tailwind config and CSS variables
    - Ensure zinc-900, zinc-800, zinc-700 match mock values
    - Update text colors to zinc-100, zinc-300, zinc-400
@@ -196,6 +216,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 **Objective:** Match sidebar structure and behavior to mock project
 
 **Tasks:**
+
 1. Update sidebar header
    - Position hamburger menu on left
    - Add "Tonguetoquill" text (centered, fades on collapse)
@@ -230,6 +251,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 **Objective:** Simplify top menu to match mock project
 
 **Tasks:**
+
 1. Update layout
    - Left: Document name only (no icon)
    - Right: Download button + More menu
@@ -256,6 +278,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 **Objective:** Match toolbar structure and styling
 
 **Tasks:**
+
 1. Update button layout
    - Icon-only buttons (28px square)
    - Proper separators between groups
@@ -280,6 +303,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 **Objective:** Match editor and preview appearance
 
 **Tasks:**
+
 1. Update editor styling
    - Background: `zinc-900`
    - Text: `zinc-100`
@@ -306,6 +330,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 **Objective:** Add settings popover matching mock design
 
 **Tasks:**
+
 1. Create settings popover
    - Trigger from Settings button in sidebar
    - Side placement: right
@@ -329,6 +354,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 **Objective:** Ensure mobile/tablet behavior matches design system
 
 **Tasks:**
+
 1. Mobile layout (< 768px)
    - Sidebar as full-screen drawer
    - Tabbed editor/preview (not split)
@@ -349,6 +375,7 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 **Objective:** Final polish to match mock project feel
 
 **Tasks:**
+
 1. Animation refinement
    - Ensure all transitions are 300ms
    - Smooth fade-in/fade-out effects
@@ -376,12 +403,14 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 ## Success Criteria
 
 ### Visual Match
+
 - [ ] Color palette matches mock project exactly
 - [ ] Typography (fonts, sizes, weights) matches
 - [ ] Spacing and sizing matches
 - [ ] Component styling matches
 
 ### Functional Match
+
 - [ ] Sidebar collapse/expand behavior matches
 - [ ] File list interactions match
 - [ ] Settings popover behavior matches
@@ -389,17 +418,20 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 - [ ] Mode toggle works as expected
 
 ### Responsive Behavior
+
 - [ ] Mobile layout matches design system
 - [ ] Tablet layout matches design system
 - [ ] Desktop layout matches mock project
 
 ### Accessibility
+
 - [ ] All WCAG AA requirements met
 - [ ] Keyboard navigation complete
 - [ ] Screen reader compatible
 - [ ] Focus indicators visible
 
 ### Quality
+
 - [ ] No regressions in existing functionality
 - [ ] Performance maintained or improved
 - [ ] Code quality maintained

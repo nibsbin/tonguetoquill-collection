@@ -670,7 +670,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 
 **Performance:**
 
-- Debounced preview updates (300-500ms delay)
+- Debounced preview updates (50 delay)
 - Preserve scroll position during updates
 - Show previous render to avoid flashes (per DESIGN_SYSTEM.md loading states)
 
@@ -749,12 +749,14 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 **Key Changes:**
 
 **Design Tokens:**
+
 - Color palette: zinc-900 background, zinc-800 surfaces, zinc-700 borders
 - Typography: Lato for UI, monospace for editor, Crimson Text for preview
 - Sidebar width: 48px collapsed, 224px expanded (reduced from 256px)
 - Component heights: 48px for top menu and toolbar
 
 **Visual Updates:**
+
 - Sidebar: Add logo, reorganize header, update footer with Profile + Settings
 - Top Menu: Simplify to document name + Download + More menu
 - Toolbar: Icon-only buttons with mode toggle tabs

@@ -107,7 +107,6 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
   - User icon (20px, h-5 w-5) + "Profile" text (when expanded)
   - Ghost variant: zinc-400 text
   - Hover: zinc-800 background, zinc-100 text
-  
 - **Settings Button**:
   - Settings icon (20px, h-5 w-5) + "Settings" text (when expanded)
   - Ghost variant: zinc-400 text
@@ -180,6 +179,7 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 - **Privacy Policy**: Shield icon + "Privacy Policy" text + ExternalLink icon (right)
 
 Menu Item Styling:
+
 - Text: zinc-300
 - Hover: zinc-700 background, zinc-100 text
 - Icon size: 16px (h-4 w-4)
@@ -333,25 +333,23 @@ Button layout with separators between groups:
   - Bold icon (16px, h-4 w-4)
   - Italic icon (16px, h-4 w-4)
   - Strikethrough icon (16px, h-4 w-4)
-  
 - Separator (vertical, height: 20px, zinc-700)
 
 - **Group 2**: Code, Quote
   - Code icon (16px, h-4 w-4)
   - Quote icon (16px, h-4 w-4)
-  
 - Separator (vertical, height: 20px, zinc-700)
 
 - **Group 3**: Lists
   - List icon (16px, h-4 w-4) - Bullet list
   - ListOrdered icon (16px, h-4 w-4) - Numbered list
-  
 - Separator (vertical, height: 20px, zinc-700)
 
 - **Group 4**: Link
   - Link icon (16px, h-4 w-4)
 
 **Button Styling**:
+
 - Size: 28px square (h-7 w-7)
 - Ghost variant: transparent background
 - Padding: 0
@@ -597,39 +595,40 @@ Triggered from Settings button in Sidebar footer:
 
 - **Heading**: "Settings" (h3, margin-bottom: 16px, mb-4)
 - **Settings Options** (spacing: 16px between, space-y-4):
-  
   1. **Auto-save Toggle**:
      - Label: "Auto-save" (id: "auto-save", zinc-300 text)
      - Switch component aligned right
      - Flex layout with justify-between
-  
   2. **Dark Theme Toggle**:
      - Label: "Dark Theme" (id: "dark-theme", zinc-300 text)
      - Switch component aligned right
      - For MVP: May be disabled/hidden since only dark theme supported
-  
   3. **Line Numbers Toggle**:
      - Label: "Line Numbers" (id: "line-numbers", zinc-300 text)
      - Switch component aligned right
      - Controls CodeMirror line number gutter visibility
 
 **Switch Component Styling**:
+
 - Uses shadcn-svelte's Switch component
 - Clear visual on/off states
 - Accessible keyboard interaction (Space to toggle)
 - Associated with label via htmlFor/id
 
 **Behavior**:
+
 - Opens on Settings button click
 - Closes on outside click, ESC key, or selecting trigger again
 - Settings changes apply immediately
 - Persist to localStorage
 
 **Mobile Adaptation**:
+
 - May use Drawer (sheet) component instead of Popover on mobile
 - Full-width on small screens
 
-**Accessibility**: 
+**Accessibility**:
+
 - Proper labeling for all switches
 - Keyboard navigation between switches
 - ESC to dismiss

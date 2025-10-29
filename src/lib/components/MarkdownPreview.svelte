@@ -16,8 +16,8 @@
 	let html = $derived(marked.parse(markdown));
 </script>
 
-<div class="h-full overflow-auto bg-white p-8">
-	<div class="prose prose-zinc mx-auto max-w-3xl">
+<div class="h-full overflow-auto bg-white p-6">
+	<div class="prose mx-auto">
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html html}
 	</div>
@@ -29,6 +29,7 @@
 		color: #18181b;
 		font-size: 1rem;
 		line-height: 1.75;
+		font-family: 'Crimson Text', Georgia, serif;
 	}
 
 	:global(.prose h1) {

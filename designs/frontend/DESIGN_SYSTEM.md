@@ -66,14 +66,17 @@ Automatically adapts to system `prefers-contrast: high` media query:
 ### Font Families
 
 **UI Font**: Lato with fallback stack for native appearance
+
 - Primary: 'Lato', Arial, sans-serif
 - Weights: 400 (normal), 500 (medium), 700 (bold), 900 (black)
 - Import from Google Fonts
 
 **Editor Font**: Monospace stack for code editing
+
 - Stack: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Monaco, 'Courier New', monospace
 
 **Preview Font**: Crimson Text with serif fallback for professional document rendering
+
 - Primary: 'Crimson Text', Georgia, 'Times New Roman', serif
 - Weights: 400 (normal), 600 (semibold), 700 (bold)
 - Import from Google Fonts
