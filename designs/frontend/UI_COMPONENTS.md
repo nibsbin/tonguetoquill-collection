@@ -6,6 +6,36 @@ Component behavior specifications for Tonguetoquill, defining props, states, int
 
 Components support mobile-responsive layouts and Section 508 accessibility compliance.
 
+## Component Library: shadcn-svelte
+
+Tonguetoquill uses **shadcn-svelte** as the foundational component library:
+
+**Why shadcn-svelte**:
+
+- Battle-tested, accessible components (WCAG 2.1 AA compliance)
+- Built with Svelte 5 and Tailwind CSS
+- Includes Lucide icons and Sonner toast notifications
+- Highly customizable and composable
+- Source code included in project (not external dependency)
+
+**Core Components Used**:
+
+- **Sonner** - Toast notifications (replaces custom toast implementation)
+- **Dialog** - Modal dialogs and confirmations
+- **Sheet** - Mobile drawer/sidebar
+- **Button** - Consistent button styling across app
+- **Tooltip** - Contextual help and collapsed sidebar labels
+- **Dropdown Menu** - More actions menu in TopMenu
+- **Card** - Document list items and containers
+
+**Custom Components**:
+Custom components are only created when shadcn-svelte doesn't provide the specific functionality needed:
+
+- **MarkdownEditor** - CodeMirror 6 integration
+- **MarkdownPreview** - Rendered markdown output
+- **DocumentEditor** - Container managing editor/preview state
+- **DocumentList** - Document sidebar (uses shadcn Card components)
+
 ## Layout Components
 
 ## Layout Components
