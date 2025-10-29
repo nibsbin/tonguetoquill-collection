@@ -66,7 +66,7 @@ Tokens will be stored in HTTP-only cookies with the following security attribute
 All protected API endpoints will validate tokens by:
 - Verifying JWT signature using the provider's JWKS (JSON Web Key Set) endpoint
 - Checking token expiration timestamp
-- Validating required claims (user ID, email, roles)
+- Validating required claims (user ID, roles)
 
 **JWKS Endpoint:**
 - Provider's public keys retrieved from `/.well-known/jwks.json`
@@ -76,9 +76,9 @@ All protected API endpoints will validate tokens by:
 
 **Required JWT Claims:**
 - `sub`: Subject (user ID) - UUID format
-- `email`: User's email address
 - `exp`: Token expiration timestamp
 - `iat`: Issued at timestamp
+- `iss`: Issuer - verifies token is from correct auth provider
 
 ## Deployment Configurations
 
