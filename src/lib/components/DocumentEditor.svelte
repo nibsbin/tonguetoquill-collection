@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
-	import { toastStore } from '$lib/stores/toast.svelte';
+	import { toast } from 'svelte-sonner';
+	import EditorToolbar from './EditorToolbar.svelte';
 	import MarkdownEditor from './MarkdownEditor.svelte';
 	import MarkdownPreview from './MarkdownPreview.svelte';
 
@@ -13,9 +14,9 @@
 
 	let content = $state('');
 	let loading = $state(true);
-	let showPreview = $state(true);
 	let debouncedContent = $state('');
 	let debounceTimer: number | undefined;
+	let editorRef = $state<MarkdownEditor | null>(null);
 
 	// Debounce preview updates
 	function updateDebouncedContent(newContent: string) {
@@ -30,13 +31,20 @@
 		}, 300);
 	}
 
+	function handleFormat(type: string) {
+		// Forward formatting command to editor
+		if (editorRef && typeof editorRef.handleFormat === 'function') {
+			editorRef.handleFormat(type);
+		}
+	}
+
 	onMount(async () => {
 		try {
 			const doc = await documentStore.fetchDocument(documentId);
 			content = doc.content;
 			debouncedContent = doc.content;
 		} catch {
-			toastStore.error('Failed to load document');
+			toast.error('Failed to load document');
 		} finally {
 			loading = false;
 		}
@@ -53,22 +61,21 @@
 </script>
 
 {#if loading}
-	<div class="flex h-full items-center justify-center bg-zinc-50">
-		<p class="text-zinc-600">Loading document...</p>
+	<div class="flex h-full items-center justify-center bg-zinc-900">
+		<p class="text-zinc-400">Loading document...</p>
 	</div>
 {:else}
-	<div class="flex h-full">
-		<!-- Editor Pane -->
-		<div class="flex-1 border-r border-zinc-200">
-			<MarkdownEditor value={content} onChange={updateDebouncedContent} />
+	<div class="flex h-full flex-1">
+		<!-- Editor Section -->
+		<div class="flex flex-1 flex-col border-r border-zinc-700">
+			<EditorToolbar onFormat={handleFormat} />
+			<MarkdownEditor bind:this={editorRef} value={content} onChange={updateDebouncedContent} />
 		</div>
 
-		<!-- Preview Pane (Desktop) -->
-		{#if showPreview}
-			<div class="hidden flex-1 lg:block">
-				<MarkdownPreview markdown={debouncedContent} />
-			</div>
-		{/if}
+		<!-- Preview Section (Desktop) -->
+		<div class="hidden flex-1 overflow-auto lg:block">
+			<MarkdownPreview markdown={debouncedContent} />
+		</div>
 
 		<!-- TODO: Mobile tabs for editor/preview toggle -->
 	</div>
