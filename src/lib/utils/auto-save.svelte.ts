@@ -74,7 +74,7 @@ export class AutoSave {
 			if (documentStore.isGuest) {
 				// Guest mode: save to LocalStorage
 				await localStorageDocumentService.updateDocumentContent(documentId, content);
-				
+
 				// Update document store metadata
 				const contentSizeBytes = new Blob([content]).size;
 				documentStore.updateDocument(documentId, {
@@ -94,7 +94,7 @@ export class AutoSave {
 				}
 
 				const data = await response.json();
-				
+
 				// Update document store metadata
 				documentStore.updateDocument(documentId, {
 					content_size_bytes: data.document.content_size_bytes,
@@ -103,7 +103,7 @@ export class AutoSave {
 			}
 
 			this.state.status = 'saved';
-			
+
 			// Auto-hide saved status after 3 seconds
 			setTimeout(() => {
 				if (this.state.status === 'saved') {

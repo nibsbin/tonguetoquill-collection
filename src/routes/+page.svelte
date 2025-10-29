@@ -69,7 +69,7 @@
 	<!-- Skip to main content link (for accessibility) -->
 	<a
 		href="#main-content"
-		class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+		class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
 	>
 		Skip to main content
 	</a>
@@ -89,7 +89,12 @@
 			/>
 
 			<!-- Editor and Preview Area -->
-			<div id="main-content" class="flex flex-1 overflow-hidden" role="main" aria-label="Document editor">
+			<div
+				id="main-content"
+				class="flex flex-1 overflow-hidden"
+				role="main"
+				aria-label="Document editor"
+			>
 				{#if !documentStore.activeDocumentId}
 					<div class="flex h-full flex-1 items-center justify-center">
 						<div class="text-center">

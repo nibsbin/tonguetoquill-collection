@@ -40,7 +40,7 @@
 				});
 			}
 		}
-		
+
 		// Update previous document ID
 		if (documentId !== previousDocumentId) {
 			previousDocumentId = documentId;
@@ -165,14 +165,18 @@
 		{#if isMobile}
 			<div class="flex border-b border-zinc-700 bg-zinc-800">
 				<button
-					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'editor' ? 'bg-zinc-700 text-zinc-100' : 'text-zinc-400 hover:text-zinc-300'}"
-					onclick={() => mobileView = 'editor'}
+					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'editor'
+						? 'bg-zinc-700 text-zinc-100'
+						: 'text-zinc-400 hover:text-zinc-300'}"
+					onclick={() => (mobileView = 'editor')}
 				>
 					Editor
 				</button>
 				<button
-					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'preview' ? 'bg-zinc-700 text-zinc-100' : 'text-zinc-400 hover:text-zinc-300'}"
-					onclick={() => mobileView = 'preview'}
+					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'preview'
+						? 'bg-zinc-700 text-zinc-100'
+						: 'text-zinc-400 hover:text-zinc-300'}"
+					onclick={() => (mobileView = 'preview')}
 				>
 					Preview
 				</button>
@@ -182,19 +186,29 @@
 		<!-- Content Area -->
 		<div class="flex flex-1 overflow-hidden">
 			<!-- Editor Section -->
-			<div class="flex flex-1 flex-col border-r border-zinc-700 {isMobile && mobileView !== 'editor' ? 'hidden' : ''}">
-				<EditorToolbar onFormat={handleFormat} isDirty={isDirty} onManualSave={handleManualSave} />
-				<MarkdownEditor 
-					bind:this={editorRef} 
-					value={content} 
-					onChange={updateDebouncedContent} 
+			<div
+				class="flex flex-1 flex-col border-r border-zinc-700 {isMobile && mobileView !== 'editor'
+					? 'hidden'
+					: ''}"
+			>
+				<EditorToolbar onFormat={handleFormat} {isDirty} onManualSave={handleManualSave} />
+				<MarkdownEditor
+					bind:this={editorRef}
+					value={content}
+					onChange={updateDebouncedContent}
 					onSave={handleManualSave}
 					{showLineNumbers}
 				/>
 			</div>
 
 			<!-- Preview Section (Desktop: always visible, Mobile: toggled) -->
-			<div class="flex-1 overflow-auto {isMobile ? (mobileView === 'preview' ? '' : 'hidden') : 'hidden lg:block'}">
+			<div
+				class="flex-1 overflow-auto {isMobile
+					? mobileView === 'preview'
+						? ''
+						: 'hidden'
+					: 'hidden lg:block'}"
+			>
 				<MarkdownPreview markdown={debouncedContent} />
 			</div>
 		</div>

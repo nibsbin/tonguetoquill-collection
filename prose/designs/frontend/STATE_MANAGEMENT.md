@@ -234,25 +234,26 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 **Current Status (Post-Phase 6.5)**: ⚠️ Auto-save logic not implemented. See `prose/plans/REPAIR.md` Phase R1 for recovery plan.
 
 **Required Implementation**:
+
 ```typescript
 // DocumentEditor component needs:
 let saveTimer: number | undefined;
 let isDirty = $state(false);
 
 function autoSave(content: string) {
-  if (!autoSaveEnabled) return;
-  
-  if (saveTimer) clearTimeout(saveTimer);
-  
-  saveTimer = window.setTimeout(async () => {
-    try {
-      await documentStore.updateDocumentContent(documentId, content);
-      isDirty = false;
-      // Update save status indicator
-    } catch (err) {
-      // Show error toast
-    }
-  }, 7000); // 7 second debounce
+	if (!autoSaveEnabled) return;
+
+	if (saveTimer) clearTimeout(saveTimer);
+
+	saveTimer = window.setTimeout(async () => {
+		try {
+			await documentStore.updateDocumentContent(documentId, content);
+			isDirty = false;
+			// Update save status indicator
+		} catch (err) {
+			// Show error toast
+		}
+	}, 7000); // 7 second debounce
 }
 ```
 

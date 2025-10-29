@@ -23,6 +23,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
 **Objective**: Restore auto-save functionality with 7-second debounce and save status indicator.
 
 **Implementation**:
+
 - Created `AutoSave` class in `src/lib/utils/auto-save.svelte.ts`
   - 7-second debounce timer
   - Save status tracking (idle, saving, saved, error)
@@ -49,6 +50,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
   - Visual indicator in toolbar (dirty state asterisk)
 
 **Files Modified**:
+
 - `src/lib/utils/auto-save.svelte.ts` (new)
 - `src/lib/components/DocumentEditor.svelte`
 - `src/lib/components/TopMenu.svelte`
@@ -61,6 +63,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
 **Objective**: Fix content persistence to localStorage/API and implement dirty state tracking.
 
 **Implementation**:
+
 - Content persistence working correctly
   - Guest mode: Updates localStorage via `localStorageDocumentService`
   - Authenticated mode: Updates via API `/api/documents/:id/content`
@@ -82,6 +85,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
   - Rollback not implemented (not required for MVP)
 
 **Files Modified**:
+
 - `src/lib/components/DocumentEditor.svelte`
 - `src/lib/utils/auto-save.svelte.ts`
 
@@ -90,6 +94,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
 **Objective**: Connect settings toggles to application behavior.
 
 **Implementation**:
+
 - Auto-save toggle controls save logic
   - Read from localStorage on mount
   - Passed to `AutoSave.scheduleSave()` method
@@ -106,6 +111,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
   - Smooth UX for setting changes
 
 **Files Modified**:
+
 - `src/lib/components/DocumentEditor.svelte`
 - `src/lib/components/MarkdownEditor.svelte`
 
@@ -114,6 +120,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
 **Objective**: Complete mobile responsiveness with editor/preview toggle.
 
 **Implementation**:
+
 - Mobile tab switcher (< 768px)
   - Tabs for "Editor" and "Preview"
   - Active tab highlighting
@@ -131,6 +138,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
   - Proper cleanup of event listeners
 
 **Files Modified**:
+
 - `src/lib/components/DocumentEditor.svelte`
 
 #### Phase R5: Additional Features ✅
@@ -138,6 +146,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
 **Objective**: Implement missing UI features and polish.
 
 **Implementation**:
+
 - Delete confirmation dialog
   - Shows before deleting documents
   - Prevents accidental deletions
@@ -151,6 +160,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
   - Top-center positioning
 
 **Files Modified**:
+
 - `src/lib/components/Sidebar.svelte`
 - `src/routes/+page.svelte`
 
@@ -159,6 +169,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
 **Objective**: Address accessibility gaps to meet Section 508 compliance.
 
 **Implementation**:
+
 - Skip to main content link
   - Added to top of page
   - Hidden until focused
@@ -179,6 +190,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
   - Proper semantic HTML structure
 
 **Files Modified**:
+
 - `src/routes/+page.svelte`
 - `src/app.css`
 - `src/lib/components/Sidebar.svelte`
@@ -192,6 +204,7 @@ This debrief documents the implementation of Phase 6.6 from the MVP_PLAN.md, whi
 **Reason for Deferral**: Time constraints and need to prioritize functional delivery.
 
 **Remaining Tasks**:
+
 - [ ] E2E test suite for all flows
 - [ ] Update design documents to reflect implementation
 - [ ] Performance validation
@@ -205,12 +218,14 @@ These tasks should be completed as part of Phase 8 or Phase 11 of the MVP plan.
 **Decision**: Created dedicated `AutoSave` class with state management.
 
 **Rationale**:
+
 - Separates concerns (saves vs UI)
 - Reusable across components
 - Centralized save state tracking
 - Easy to test in isolation
 
 **Alternative Considered**: Inline save logic in DocumentEditor
+
 - Rejected: Would make component too complex
 
 ### 2. Line Numbers Implementation
@@ -218,12 +233,14 @@ These tasks should be completed as part of Phase 8 or Phase 11 of the MVP plan.
 **Decision**: Recreate CodeMirror editor when line numbers setting changes.
 
 **Rationale**:
+
 - CodeMirror 6 reconfiguration API is complex
 - Editor recreation is fast enough for UX
 - Simpler implementation for MVP
 - Can optimize later if needed
 
 **Alternative Considered**: Use CodeMirror reconfigure API
+
 - Rejected: Adds complexity for minimal benefit in MVP
 
 ### 3. Mobile Tab Switcher
@@ -231,12 +248,14 @@ These tasks should be completed as part of Phase 8 or Phase 11 of the MVP plan.
 **Decision**: Simple state-based tab switching with conditional rendering.
 
 **Rationale**:
+
 - Clean, maintainable code
 - No external tab component needed
 - Full control over styling
 - Works well with existing layout
 
 **Alternative Considered**: Use shadcn-svelte Tabs component
+
 - Rejected: Overkill for simple use case
 
 ### 4. Delete Confirmation
@@ -244,6 +263,7 @@ These tasks should be completed as part of Phase 8 or Phase 11 of the MVP plan.
 **Decision**: Use existing Dialog component from Phase 6.5.
 
 **Rationale**:
+
 - Already styled and accessible
 - Consistent with app design
 - No new dependencies
@@ -253,6 +273,7 @@ These tasks should be completed as part of Phase 8 or Phase 11 of the MVP plan.
 **Decision**: Use Svelte derived state comparing content to initialContent.
 
 **Rationale**:
+
 - Reactive and efficient
 - Minimal code
 - Works well with auto-save flow
@@ -463,6 +484,7 @@ From REPAIR.md success criteria:
 Phase 6.6 successfully restored all critical functionality removed during the Phase 6.5 UI rework. The implementation followed the REPAIR.md plan closely, with only minor deviations. All high and medium priority features are complete and working.
 
 **Key Achievements**:
+
 - ✅ Auto-save with 7-second debounce
 - ✅ Document persistence to localStorage and API
 - ✅ Settings integration (auto-save, line numbers)
@@ -472,6 +494,7 @@ Phase 6.6 successfully restored all critical functionality removed during the Ph
 - ✅ Accessibility improvements (skip link, ARIA labels)
 
 **Outstanding Work** (deferred to Phase 8/11):
+
 - E2E test suite
 - Design document updates
 - Screen reader testing

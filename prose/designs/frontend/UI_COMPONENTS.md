@@ -81,7 +81,8 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 - Background: zinc-900
 - Size reduction maintains proportions while allowing divider alignment with toolbar bottom border
 
-**Separator**: 
+**Separator**:
+
 - zinc-700 border
 - Positioned to align with the bottom border of the editor toolbar (96px from top: 48px header + 48px toolbar)
 

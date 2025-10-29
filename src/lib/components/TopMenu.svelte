@@ -47,10 +47,10 @@
 	}
 </script>
 
-<div class="flex h-12 items-center justify-between border-b border-zinc-700 bg-zinc-800 px-4">
+<div class="flex h-12 items-center justify-between border-b border-zinc-700 bg-zinc-900 px-4">
 	<div class="flex items-center gap-2">
 		<span class="text-zinc-300">{fileName}</span>
-		
+
 		<!-- Save Status Indicator -->
 		{#if saveStatus === 'saving'}
 			<div class="flex items-center gap-1 text-xs text-zinc-400">
