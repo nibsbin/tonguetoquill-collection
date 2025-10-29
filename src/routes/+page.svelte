@@ -66,6 +66,14 @@
 		<p class="text-zinc-400">Loading...</p>
 	</div>
 {:else}
+	<!-- Skip to main content link (for accessibility) -->
+	<a
+		href="#main-content"
+		class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+	>
+		Skip to main content
+	</a>
+
 	<div class="flex h-screen bg-zinc-900">
 		<!-- Sidebar -->
 		<Sidebar {user} />
@@ -81,7 +89,7 @@
 			/>
 
 			<!-- Editor and Preview Area -->
-			<div class="flex flex-1 overflow-hidden">
+			<div id="main-content" class="flex flex-1 overflow-hidden" role="main" aria-label="Document editor">
 				{#if !documentStore.activeDocumentId}
 					<div class="flex h-full flex-1 items-center justify-center">
 						<div class="text-center">

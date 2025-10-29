@@ -77,6 +77,7 @@
 				size="sm"
 				class="h-7 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100"
 				onclick={onDownload}
+				aria-label="Download document"
 			>
 				{#snippet children()}
 					<Download class="mr-1 h-4 w-4" />
@@ -94,6 +95,7 @@
 							variant="ghost"
 							size="sm"
 							class="h-8 w-8 p-0 text-zinc-300 hover:bg-zinc-700 hover:text-zinc-100"
+							aria-label="More options"
 						>
 							{#snippet children()}
 								<MoreVertical class="h-4 w-4" />

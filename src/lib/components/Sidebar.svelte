@@ -122,6 +122,7 @@
 			size="icon"
 			class="flex-shrink-0 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
 			onclick={handleToggle}
+			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 		>
 			{#snippet children()}
 				<Menu class="h-5 w-5" />
@@ -152,6 +153,7 @@
 				variant="ghost"
 				class="w-full justify-start text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
 				onclick={handleNewFile}
+				aria-label="Create new document"
 			>
 				{#snippet children()}
 					<Plus class="mr-2 h-4 w-4 flex-shrink-0" />
@@ -193,6 +195,7 @@
 								e.stopPropagation();
 								handleDeleteFile(doc.id);
 							}}
+							aria-label="Delete {doc.name}"
 						>
 							{#snippet children()}
 								<Trash2 class="h-4 w-4" />
@@ -212,6 +215,7 @@
 				variant="ghost"
 				class="w-full justify-start text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
 				title={user.email}
+				aria-label="User profile: {user.email}"
 			>
 				{#snippet children()}
 					<User class="mr-2 h-5 w-5 flex-shrink-0" />
@@ -232,6 +236,7 @@
 						<Button
 							variant="ghost"
 							class="w-full justify-start text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+							aria-label="Settings"
 						>
 							{#snippet children()}
 								<Settings class="mr-2 h-5 w-5 flex-shrink-0" />
