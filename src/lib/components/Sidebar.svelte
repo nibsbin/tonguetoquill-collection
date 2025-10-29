@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, FileText, Plus, Settings, Trash2, User, Sun, Moon, Monitor } from 'lucide-svelte';
+	import { Menu, FileText, Plus, Settings, Trash2, User } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
 	import Popover from '$lib/components/ui/popover.svelte';
@@ -17,7 +17,6 @@
 	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
 	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
-	import { mode, setMode } from 'mode-watcher';
 	import { onMount } from 'svelte';
 
 	type SidebarProps = {
@@ -34,8 +33,17 @@
 	let isMobile = $state(false);
 	let deleteDialogOpen = $state(false);
 	let documentToDelete = $state<string | null>(null);
+	let isDarkMode = $state(true);
 
 	onMount(() => {
+		// Load dark mode preference from localStorage
+		const savedDarkMode = localStorage.getItem('dark-mode');
+		if (savedDarkMode !== null) {
+			isDarkMode = savedDarkMode === 'true';
+		}
+		// Apply dark mode class to document
+		updateDarkMode(isDarkMode);
+
 		// Check if sidebar should be expanded from localStorage
 		const savedExpanded = localStorage.getItem('sidebar-expanded');
 		if (savedExpanded !== null) {
@@ -117,6 +125,20 @@
 	function handleLineNumbersChange(value: boolean) {
 		lineNumbers = value;
 		localStorage.setItem('line-numbers', value.toString());
+	}
+
+	function updateDarkMode(dark: boolean) {
+		if (dark) {
+			document.documentElement.classList.add('dark');
+		} else {
+			document.documentElement.classList.remove('dark');
+		}
+	}
+
+	function handleDarkModeChange(value: boolean) {
+		isDarkMode = value;
+		localStorage.setItem('dark-mode', value.toString());
+		updateDarkMode(value);
 	}
 </script>
 
@@ -263,48 +285,17 @@
 							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
 							<div class="space-y-4">
-								<!-- Theme Selection -->
-								<div class="space-y-2">
-									<Label class="text-sm font-medium">
+								<div class="flex items-center justify-between">
+									<Label for="dark-mode" class="text-foreground/80">
 										{#snippet children()}
-											Theme
+											Dark Mode
 										{/snippet}
 									</Label>
-									<div class="grid grid-cols-3 gap-2">
-										<Button
-											variant={$mode === 'light' ? 'default' : 'outline'}
-											size="sm"
-											class="h-9 w-full"
-											onclick={() => setMode('light')}
-										>
-											{#snippet children()}
-												<Sun class="mr-1 h-4 w-4" />
-												Light
-											{/snippet}
-										</Button>
-										<Button
-											variant={$mode === 'dark' ? 'default' : 'outline'}
-											size="sm"
-											class="h-9 w-full"
-											onclick={() => setMode('dark')}
-										>
-											{#snippet children()}
-												<Moon class="mr-1 h-4 w-4" />
-												Dark
-											{/snippet}
-										</Button>
-										<Button
-											variant={$mode === 'system' ? 'default' : 'outline'}
-											size="sm"
-											class="h-9 w-full"
-											onclick={() => setMode('system')}
-										>
-											{#snippet children()}
-												<Monitor class="mr-1 h-4 w-4" />
-												System
-											{/snippet}
-										</Button>
-									</div>
+									<Switch
+										id="dark-mode"
+										bind:checked={isDarkMode}
+										onCheckedChange={handleDarkModeChange}
+									/>
 								</div>
 
 								<Separator class="my-3 bg-border" />
