@@ -23,7 +23,7 @@
 			});
 
 			if (response.ok) {
-				goto('/');
+				goto('/app');
 			} else {
 				const data = await response.json();
 				error = data.message || 'Registration failed';

@@ -12,6 +12,9 @@
 			if (response.ok) {
 				const data = await response.json();
 				user = data.user;
+				// Redirect authenticated users to the app
+				window.location.href = '/app';
+				return;
 			}
 			// Don't redirect if not authenticated - allow guest mode
 		} catch {
