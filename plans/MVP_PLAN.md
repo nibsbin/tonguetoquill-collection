@@ -15,7 +15,7 @@ This document outlines a phased approach to implementing the Tonguetoquill MVP -
 
 **MVP Scope**: Single-user document editing with authentication, markdown editor, live preview, auto-save, and mobile-responsive UI.
 
-**Development Strategy**: Uses **mock providers** for Phases 1-9 to enable fast, parallel AI agent development without external dependencies. Real Supabase integration occurs in Phase 10.
+**Development Strategy**: Uses **mock providers** for Phases 1-9 to enable parallel development without external dependencies. Real Supabase integration occurs in Phase 10.
 
 ---
 
@@ -843,21 +843,31 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 
 **Reference**: `designs/frontend/UI_COMPONENTS.md`
 
-### 9.3 Classification Message
+### 9.3 Classification Banner
 
-**Message Display:**
-- Toast notification on app load
-- Message: "This system is not authorized for controlled information."
+**Toast Notification Pattern:**
+- Persistent toast at top-center
+- Shows document classification level
+- Color-coded by classification (Blue, Yellow, Orange, Red)
+- Shield icon
+- Dismissible but reappears on reload
+- Z-index: 40 (toast layer)
 
+**Implementation:**
+- Use Svelte Sonner toast library
+- Custom styling per DESIGN_SYSTEM.md
+- Trigger on document load
+- Persist across navigation (until dismissed)
 
-**References**
-See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
+**Note**: For MVP, classification level can be hardcoded or document metadata field. Full classification system is post-MVP.
+
+**Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Classification Banner
 
 **Deliverables:**
 - Settings dialog with auto-save toggle
 - Download document functionality
 - More actions menu with help/about
-- Classification message toast
+- Classification banner toast
 - Complete MVP feature set using mock providers
 
 ---
@@ -1135,7 +1145,7 @@ Configure in Vercel dashboard:
 - ✅ Keyboard shortcuts
 - ✅ Settings (auto-save toggle)
 - ✅ Download document
-- ✅ Classification message (basic implementation)
+- ✅ Classification banner (basic implementation)
 
 ### Explicitly Excluded from MVP
 
@@ -1147,7 +1157,7 @@ Configure in Vercel dashboard:
 - ❌ Quillmark integration (post-MVP)
 - ❌ Keycloak authentication (architecture supports, not implemented)
 - ❌ User profile editing (basic profile display only)
-- ❌ Full classification system (basic message only)
+- ❌ Full classification system (basic banner only)
 
 ---
 
@@ -1183,26 +1193,6 @@ Configure in Vercel dashboard:
 - [ ] Successful E2E tests for core flows
 - [ ] Documentation complete (README, API docs, deployment guide)
 - [ ] All contract tests pass against real Supabase
-
----
-
-## Timeline Estimate (Revised)
-
-**Phase 1**: 3-5 days (Foundation)  
-**Phase 2**: 5-7 days (Contracts & Mock Providers)  
-**Phase 3**: 3-5 days (Mock Document Service)  
-**Phase 4**: 5-7 days (Frontend Auth & Layout)  
-**Phase 5**: 3-5 days (Document Management UI + E2E tests)  
-**Phase 6**: 7-10 days (Editor & Preview + E2E tests)  
-**Phase 7**: 4-6 days (Auto-Save + E2E tests)  
-**Phase 8**: 7-10 days (Accessibility & Polish)  
-**Phase 9**: 3-5 days (Additional Features)  
-**Phase 10**: 7-10 days (Supabase Integration & Validation)  
-**Phase 11**: 5-7 days (Testing & Vercel Deployment)  
-
-**Total Estimated Time**: 52-77 days (10-15 weeks)
-
-*Note: Timeline assumes single developer working full-time. With AI agents working in parallel on independent tasks, overall timeline can be significantly reduced (potentially 7-12 weeks).*
 
 ---
 
@@ -1272,8 +1262,6 @@ Configure in Vercel dashboard:
 - **Integration Tests**: Validate against real Supabase in CI/CD
 - **Staging Environment**: Pre-production testing with real services
 - **Production**: Final deployment with production Supabase instance
-
----
 
 ## Post-MVP Roadmap
 
