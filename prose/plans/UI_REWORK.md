@@ -2,11 +2,11 @@
 
 ## Overview
 
-This document outlines a plan to rework the current UI implementation to align with the desired UI layout and theming demonstrated in `designs/legacy/mock_project`. The mock project serves as the reference implementation, showcasing the target user experience, visual design, and component structure.
+This document outlines a plan to rework the current UI implementation to align with the desired UI layout and theming demonstrated in `prose/legacymock_project`. The mock project serves as the reference implementation, showcasing the target user experience, visual design, and component structure.
 
 ## Background
 
-The `designs/legacy/mock_project` contains a minimal React frontend that demonstrates the desired UI layout and theming for Tonguetoquill. While our target implementation uses SvelteKit 5 instead of React, the visual design, component structure, and user interactions from the mock project should be preserved.
+The `prose/legacymock_project` contains a minimal React frontend that demonstrates the desired UI layout and theming for Tonguetoquill. While our target implementation uses SvelteKit 5 instead of React, the visual design, component structure, and user interactions from the mock project should be preserved.
 
 ## Key Design Elements from Mock Project
 
@@ -481,8 +481,8 @@ The `designs/legacy/mock_project` contains a minimal React frontend that demonst
 
 ## References
 
-- **Mock Project**: `designs/legacy/mock_project/`
-- **Design System**: `designs/frontend/DESIGN_SYSTEM.md`
-- **UI Components**: `designs/frontend/UI_COMPONENTS.md`
-- **Architecture**: `designs/frontend/ARCHITECTURE.md`
-- **MVP Plan**: `plans/MVP_PLAN.md`
+- **Mock Project**: `prose/legacymock_project/`
+- **Design System**: `prose/designs/frontend/DESIGN_SYSTEM.md`
+- **UI Components**: `prose/designs/frontend/UI_COMPONENTS.md`
+- **Architecture**: `prose/designs/frontend/ARCHITECTURE.md`
+- **MVP Plan**: `prose/plans/MVP_PLAN.md`

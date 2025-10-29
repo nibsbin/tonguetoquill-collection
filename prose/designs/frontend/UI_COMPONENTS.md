@@ -46,7 +46,7 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Purpose**: Collapsible navigation for document management, user profile, and settings
 
-**Reference**: Visual design matches `designs/legacy/mock_project/components/Sidebar.tsx`
+**Reference**: Visual design matches `prose/legacymock_project/components/Sidebar.tsx`
 
 **States**:
 
@@ -128,7 +128,7 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Accessibility**: Navigation landmark, ARIA labels, keyboard navigation, focus trap in drawer mode
 
-**Visual Reference**: See `designs/legacy/mock_project/components/Sidebar.tsx`
+**Visual Reference**: See `prose/legacymock_project/components/Sidebar.tsx`
 
 ---
 
@@ -138,7 +138,7 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Purpose**: Header bar displaying document information and actions
 
-**Reference**: Visual design matches `designs/legacy/mock_project/components/TopMenu.tsx`
+**Reference**: Visual design matches `prose/legacymock_project/components/TopMenu.tsx`
 
 **Structure (Height: 48px, Background: zinc-800, Border-bottom: zinc-700)**:
 
@@ -193,7 +193,7 @@ Menu Item Styling:
 
 **Accessibility**: Banner landmark, visible labels or ARIA labels, keyboard navigation for menu
 
-**Visual Reference**: See `designs/legacy/mock_project/components/TopMenu.tsx`
+**Visual Reference**: See `prose/legacymock_project/components/TopMenu.tsx`
 
 ---
 
@@ -321,7 +321,7 @@ Menu Item Styling:
 
 **Purpose**: Markdown formatting controls and mode selection
 
-**Reference**: Visual design matches `designs/legacy/mock_project/components/EditorToolbar.tsx`
+**Reference**: Visual design matches `prose/legacymock_project/components/EditorToolbar.tsx`
 
 **Structure (Height: 48px, Background: zinc-800, Border-bottom: zinc-700)**:
 
@@ -384,7 +384,7 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 
 **Accessibility**: Toolbar role, button labels (text + ARIA), keyboard shortcuts announced in tooltips
 
-**Visual Reference**: See `designs/legacy/mock_project/components/EditorToolbar.tsx`
+**Visual Reference**: See `prose/legacymock_project/components/EditorToolbar.tsx`
 
 ---
 
@@ -394,7 +394,7 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 
 **Implementation**: CodeMirror 6 with custom extensions. See [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for complete editor architecture, custom language mode for extended markdown syntax, folding, and accessibility features.
 
-**Reference**: Visual design matches `designs/legacy/mock_project/components/MarkdownEditor.tsx`
+**Reference**: Visual design matches `prose/legacymock_project/components/MarkdownEditor.tsx`
 
 **Structure**:
 
@@ -437,7 +437,7 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 - Screen reader support
 - Status announcements for save operations
 
-**Visual Reference**: See `designs/legacy/mock_project/components/MarkdownEditor.tsx`
+**Visual Reference**: See `prose/legacymock_project/components/MarkdownEditor.tsx`
 
 ---
 
@@ -445,7 +445,7 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 
 **Purpose**: Rendered markdown output display
 
-**Reference**: Visual design matches `designs/legacy/mock_project/components/MarkdownPreview.tsx`
+**Reference**: Visual design matches `prose/legacymock_project/components/MarkdownPreview.tsx`
 
 **Structure**:
 
@@ -577,7 +577,7 @@ The settings dialog contains user preferences:
 
 **Purpose**: Display contextual information or settings without full modal behavior
 
-**Reference**: Settings popover matches `designs/legacy/mock_project/components/Sidebar.tsx`
+**Reference**: Settings popover matches `prose/legacymock_project/components/Sidebar.tsx`
 
 **Settings Popover Structure**:
 
@@ -634,7 +634,7 @@ Triggered from Settings button in Sidebar footer:
 - ESC to dismiss
 - Focus management
 
-**Visual Reference**: See `designs/legacy/mock_project/components/Sidebar.tsx` (lines 147-194)
+**Visual Reference**: See `prose/legacymock_project/components/Sidebar.tsx` (lines 147-194)
 
 **Backdrop**:
 

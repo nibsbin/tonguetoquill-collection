@@ -18,7 +18,7 @@ Tonguetoquill uses CodeMirror 6 for its markdown editing experience, with custom
 
 ### Quillmark Extended Syntax
 
-The editor supports Quillmark's Extended YAML Metadata Standard as defined in [designs/quillmark/PARSE.md](../quillmark/PARSE.md):
+The editor supports Quillmark's Extended YAML Metadata Standard as defined in [prose/designs/quillmark/PARSE.md](../quillmark/PARSE.md):
 
 **Global Frontmatter:**
 
@@ -836,11 +836,11 @@ Development and build dependencies:
 
 ### Related Design Documents
 
-- [designs/quillmark/PARSE.md](../quillmark/PARSE.md): Extended markdown specification
-- [designs/frontend/UI_COMPONENTS.md](./UI_COMPONENTS.md): Editor component specs
-- [designs/frontend/DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md): Visual design tokens
-- [designs/frontend/STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md): State patterns
-- [designs/frontend/ACCESSIBILITY.md](./ACCESSIBILITY.md): Section 508 compliance
+- [prose/designs/quillmark/PARSE.md](../quillmark/PARSE.md): Extended markdown specification
+- [prose/designs/frontend/UI_COMPONENTS.md](./UI_COMPONENTS.md): Editor component specs
+- [prose/designs/frontend/DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md): Visual design tokens
+- [prose/designs/frontend/STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md): State patterns
+- [prose/designs/frontend/ACCESSIBILITY.md](./ACCESSIBILITY.md): Section 508 compliance
 
 ### External Resources
 

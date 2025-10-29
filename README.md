@@ -134,12 +134,12 @@ You can preview the production build with `npm run preview`.
 
 ## Deployment
 
-This project is configured to deploy to Vercel using the SvelteKit adapter-auto. See `plans/MVP_PLAN.md` Phase 11 for deployment instructions.
+This project is configured to deploy to Vercel using the SvelteKit adapter-auto. See `prose/plans/MVP_PLAN.md` Phase 11 for deployment instructions.
 
 ## Documentation
 
-- `plans/MVP_PLAN.md` - Detailed MVP implementation plan
-- `designs/` - Technical design documents
+- `prose/plans/MVP_PLAN.md` - Detailed MVP implementation plan
+- `prose/designs/` - Technical design documents
   - `backend/` - Backend architecture and schemas
   - `frontend/` - Frontend architecture and components
   - `quillmark/` - Quillmark integration (post-MVP)

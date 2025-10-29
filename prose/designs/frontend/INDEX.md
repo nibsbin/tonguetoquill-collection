@@ -60,7 +60,7 @@ State management approach using Svelte 5 runes, global stores, and server-side s
 
 **Backend Integration**
 
-Backend API integration patterns for authentication, document management, and data synchronization. See [designs/backend/AUTH.md](../backend/AUTH.md) for authentication details.
+Backend API integration patterns for authentication, document management, and data synchronization. See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for authentication details.
 
 **Topics**: API client architecture, authentication flows, document CRUD, error handling, optimistic updates, type safety
 
@@ -141,7 +141,7 @@ The new design maintains visual compatibility with the legacy React implementati
 
 ## Backend Integration
 
-The frontend integrates with backend services documented in `designs/backend/`:
+The frontend integrates with backend services documented in `prose/designs/backend/`:
 
 ### Authentication (AUTH.md)
 
@@ -287,8 +287,8 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 
 ### Backend
 
-- See `designs/backend/` for API specifications
-- See `designs/backend/AUTH.md` for authentication details
+- See `prose/designs/backend/` for API specifications
+- See `prose/designs/backend/AUTH.md` for authentication details
 
 ## Document Maintenance
 

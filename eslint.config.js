@@ -11,7 +11,7 @@ import svelteConfig from './svelte.config.js';
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
 export default defineConfig(
-	globalIgnores(['designs/legacy/mock_project/**']),
+	globalIgnores(['prose/legacymock_project/**']),
 	includeIgnoreFile(gitignorePath),
 	js.configs.recommended,
 	...ts.configs.recommended,

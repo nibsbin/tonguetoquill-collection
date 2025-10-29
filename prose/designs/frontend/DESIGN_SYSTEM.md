@@ -10,7 +10,7 @@ The Tonguetoquill design system provides a consistent visual language across des
 
 - **Dark Theme Only**: Professional VSCode-inspired aesthetic with reduced eye strain
 - **Accessibility**: Built-in support for high contrast via CSS media queries (`prefers-contrast`)
-- **Reference**: Color values aligned with `designs/legacy/mock_project`
+- **Reference**: Color values aligned with `prose/legacymock_project`
 
 ### Color Scheme
 
@@ -81,7 +81,7 @@ Automatically adapts to system `prefers-contrast: high` media query:
 - Weights: 400 (normal), 600 (semibold), 700 (bold)
 - Import from Google Fonts
 
-**Reference**: Font choices match `designs/legacy/mock_project/styles/globals.css`
+**Reference**: Font choices match `prose/legacymock_project/styles/globals.css`
 
 ### Type Scale
 
@@ -144,7 +144,7 @@ Automatically adapts to system `prefers-contrast: high` media query:
 - Medium buttons: 32px (h-8)
 - Standard buttons: 40px
 
-**Reference**: Component dimensions match `designs/legacy/mock_project`
+**Reference**: Component dimensions match `prose/legacymock_project`
 
 **Padding Standards**:
 
@@ -173,7 +173,7 @@ Use mobile-first approach with increasing spacing at larger breakpoints
 - XL: 14px (base + 4px)
 - Full: 9999px (circular/pill)
 
-**Reference**: Base radius value (10px / 0.625rem) matches `designs/legacy/mock_project`
+**Reference**: Base radius value (10px / 0.625rem) matches `prose/legacymock_project`
 
 ### Usage
 

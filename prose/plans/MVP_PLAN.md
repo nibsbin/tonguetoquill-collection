@@ -51,7 +51,7 @@ Organize into logical directories:
 **Core Dependencies:**
 
 - `shadcn-svelte`: Component library with built-in Lucide icons and Sonner toast notifications
-- CodeMirror 6 packages (see `designs/frontend/MARKDOWN_EDITOR.md` - Dependencies section)
+- CodeMirror 6 packages (see `prose/designs/frontend/MARKDOWN_EDITOR.md` - Dependencies section)
 - `zod`: Schema validation for runtime validation, form schemas, and type-safe environment variables
 
 **Environment Configuration:**
@@ -161,7 +161,7 @@ Define TypeScript interfaces for authentication with proper type safety:
 - Nullable return types where appropriate (e.g., `User | null`)
 - Metadata uses `Record<string, any>` for flexibility
 
-**Reference**: `designs/backend/AUTH.md`
+**Reference**: `prose/designs/backend/AUTH.md`
 
 ### 2.2 Mock Authentication Provider
 
@@ -207,14 +207,14 @@ interface MockTokenPayload {
 - Session expiry simulation
 - Deterministic behavior for testing
 
-**Reference**: `designs/backend/AUTH.md`
+**Reference**: `prose/designs/backend/AUTH.md`
 
 ### 2.3 Database Schema Contracts & Mock Service
 
 **Tasks:**
 
 - Define database schema interfaces (User, Document types)
-- Document table structure matching `designs/backend/SCHEMAS.md`
+- Document table structure matching `prose/designs/backend/SCHEMAS.md`
 - Implement MockDocumentService with in-memory storage
 - Enforce real constraints (content size ≤ 524,288 bytes, name length ≤ 255)
 - Implement realistic validation and error handling
@@ -254,7 +254,7 @@ All methods accept UUID parameters for user and document IDs, and verify ownersh
 - Calculate content_size_bytes accurately
 - Support data export/import for testing scenarios
 
-**Reference**: `designs/backend/SCHEMAS.md`, `designs/backend/SERVICES.md`
+**Reference**: `prose/designs/backend/SCHEMAS.md`, `prose/designs/backend/SERVICES.md`
 
 ### 2.4 Authentication Routes with Mock Backend
 
@@ -293,7 +293,7 @@ USE_DB_MOCKS=true
 MOCK_JWT_SECRET=dev-secret-key
 ```
 
-**Reference**: `designs/backend/AUTH.md`
+**Reference**: `prose/designs/backend/AUTH.md`
 
 ### 2.5 Contract Testing Framework
 
@@ -332,7 +332,7 @@ Document key behavioral differences between mock and real Supabase providers:
 | JWKS Validation       | Simple signature check     | Full JWKS endpoint validation with caching |
 | Database Transactions | In-memory Map operations   | PostgreSQL ACID transactions               |
 
-**Reference**: Testing section in `designs/backend/AUTH.md`
+**Reference**: Testing section in `prose/designs/backend/AUTH.md`
 
 **Deliverables:**
 
@@ -376,7 +376,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - Optional: Export/import mock data to JSON for testing
 - Simulate realistic delays (50-200ms)
 
-**Reference**: `designs/backend/SERVICES.md`
+**Reference**: `prose/designs/backend/SERVICES.md`
 
 ### 3.2 Document API Routes
 
@@ -439,7 +439,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - Redirect to login on auth failure
 - User context in page data
 
-**Reference**: `designs/backend/AUTH.md`, `designs/frontend/API_INTEGRATION.md`
+**Reference**: `prose/designs/backend/AUTH.md`, `prose/designs/frontend/API_INTEGRATION.md`
 
 ### 4.2 Application Layout
 
@@ -462,7 +462,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - Preferences store (sidebar state, auto-save setting)
 - LocalStorage persistence for preferences
 
-**Reference**: `designs/frontend/UI_COMPONENTS.md`, `designs/frontend/ARCHITECTURE.md`
+**Reference**: `prose/designs/frontend/UI_COMPONENTS.md`, `prose/designs/frontend/ARCHITECTURE.md`
 
 ### 4.3 Design System Foundation
 
@@ -481,7 +481,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - `prefers-contrast` and `prefers-reduced-motion` support
 - Skip to main content link
 
-**Reference**: `designs/frontend/DESIGN_SYSTEM.md`
+**Reference**: `prose/designs/frontend/DESIGN_SYSTEM.md`
 
 **Deliverables:**
 
@@ -521,7 +521,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - Error handling with rollback
 - Toast notifications for success/errors
 
-**Reference**: `designs/frontend/STATE_MANAGEMENT.md`, `designs/frontend/API_INTEGRATION.md`
+**Reference**: `prose/designs/frontend/STATE_MANAGEMENT.md`, `prose/designs/frontend/API_INTEGRATION.md`
 
 ### 5.2 Document Creation & Deletion
 
@@ -547,7 +547,7 @@ Document key behavioral differences between mock and real Supabase providers:
 - Focus trap and keyboard handling (ESC to close)
 - Mobile adaptation (bottom sheet < 640px)
 
-**Reference**: `designs/frontend/UI_COMPONENTS.md`
+**Reference**: `prose/designs/frontend/UI_COMPONENTS.md`
 
 ### 5.3 Basic E2E Tests
 
@@ -579,7 +579,7 @@ Document key behavioral differences between mock and real Supabase providers:
 
 **Goal**: Implement core editing experience with live preview.
 
-**Implementation Guide**: This phase implements the editor architecture detailed in `designs/frontend/MARKDOWN_EDITOR.md`. Follow the 8 implementation phases outlined in that document for a structured approach to building the CodeMirror 6 editor with extended markdown support.
+**Implementation Guide**: This phase implements the editor architecture detailed in `prose/designs/frontend/MARKDOWN_EDITOR.md`. Follow the 8 implementation phases outlined in that document for a structured approach to building the CodeMirror 6 editor with extended markdown support.
 
 **Recommended Implementation Approach:**
 
@@ -611,7 +611,7 @@ For optimal development velocity and reduced risk, implement the editor in stage
 
 **Editor Implementation:**
 
-Implement CodeMirror 6 editor with extended markdown support. See `designs/frontend/MARKDOWN_EDITOR.md` for complete architecture, including:
+Implement CodeMirror 6 editor with extended markdown support. See `prose/designs/frontend/MARKDOWN_EDITOR.md` for complete architecture, including:
 
 - Custom Lezer grammar for SCOPE/QUILL metadata blocks
 - Horizontal rule disambiguation algorithm
@@ -648,7 +648,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Ctrl/Cmd+Shift+]: Unfold block
 - Additional shortcuts per DESIGN_SYSTEM.md
 
-**Reference**: `designs/frontend/MARKDOWN_EDITOR.md`, `designs/frontend/UI_COMPONENTS.md`, `designs/frontend/DESIGN_SYSTEM.md`
+**Reference**: `prose/designs/frontend/MARKDOWN_EDITOR.md`, `prose/designs/frontend/UI_COMPONENTS.md`, `prose/designs/frontend/DESIGN_SYSTEM.md`
 
 ### 6.2 Live Preview
 
@@ -674,7 +674,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Preserve scroll position during updates
 - Show previous render to avoid flashes (per DESIGN_SYSTEM.md loading states)
 
-**Reference**: `designs/frontend/MARKDOWN_EDITOR.md`, `designs/frontend/UI_COMPONENTS.md`, `designs/frontend/DESIGN_SYSTEM.md`
+**Reference**: `prose/designs/frontend/MARKDOWN_EDITOR.md`, `prose/designs/frontend/UI_COMPONENTS.md`, `prose/designs/frontend/DESIGN_SYSTEM.md`
 
 ### 6.3 Responsive Layout
 
@@ -694,7 +694,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Tab bar for switching
 - Full-screen drawer sidebar
 
-**Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Navigation Patterns
+**Reference**: `prose/designs/frontend/DESIGN_SYSTEM.md` - Navigation Patterns
 
 ### 6.4 Editor E2E Tests
 
@@ -727,13 +727,13 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 
 ## Phase 6.5: UI Alignment & Theming
 
-**Goal**: Align UI implementation with the desired layout and theming demonstrated in `designs/legacy/mock_project`.
+**Goal**: Align UI implementation with the desired layout and theming demonstrated in `prose/legacymock_project`.
 
 **Note**: This mini-phase ensures the visual design and user experience matches the reference implementation before proceeding with auto-save and advanced features.
 
 ### 6.5.1 UI Rework Implementation
 
-**Reference Plan**: See `plans/UI_REWORK.md` for complete implementation strategy and detailed tasks.
+**Reference Plan**: See `prose/plans/UI_REWORK.md` for complete implementation strategy and detailed tasks.
 
 **Objectives:**
 
@@ -773,7 +773,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Visual match with mock project confirmed
 - No regressions in functionality or accessibility
 
-**Reference**: `plans/UI_REWORK.md`, `designs/legacy/mock_project/`
+**Reference**: `prose/plans/UI_REWORK.md`, `prose/legacymock_project/`
 
 ---
 
@@ -805,7 +805,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Persist preference to localStorage
 - Default: Auto-save enabled
 
-**Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Auto-Save Behavior
+**Reference**: `prose/designs/frontend/DESIGN_SYSTEM.md` - Auto-Save Behavior
 
 ### 7.2 Document State Management
 
@@ -828,7 +828,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Provide retry button
 - Maintain unsaved status
 
-**Reference**: `designs/frontend/STATE_MANAGEMENT.md`, `designs/frontend/API_INTEGRATION.md`
+**Reference**: `prose/designs/frontend/STATE_MANAGEMENT.md`, `prose/designs/frontend/API_INTEGRATION.md`
 
 ### 7.3 Auto-Save E2E Tests
 
@@ -893,7 +893,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - 8px minimum spacing between targets
 - Increased button sizes on mobile (48px height inputs)
 
-**Reference**: `designs/frontend/ACCESSIBILITY.md`, `designs/frontend/DESIGN_SYSTEM.md`
+**Reference**: `prose/designs/frontend/ACCESSIBILITY.md`, `prose/designs/frontend/DESIGN_SYSTEM.md`
 
 ### 8.2 Form Validation & Error Handling
 
@@ -918,7 +918,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Toast notifications for non-field errors
 - Focus first error field on submit
 
-**Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Form Validation
+**Reference**: `prose/designs/frontend/DESIGN_SYSTEM.md` - Form Validation
 
 ### 8.3 Mobile Optimization
 
@@ -943,7 +943,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Optimized bundle sizes
 - Fast initial page load (SSR)
 
-**Reference**: `designs/frontend/ARCHITECTURE.md`, `designs/frontend/DESIGN_SYSTEM.md`
+**Reference**: `prose/designs/frontend/ARCHITECTURE.md`, `prose/designs/frontend/DESIGN_SYSTEM.md`
 
 ### 8.4 Polish & UX Enhancements
 
@@ -972,7 +972,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Accessible via "?" key or menu
 - Keyboard shortcuts in tooltips
 
-**Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Loading States, Transitions
+**Reference**: `prose/designs/frontend/DESIGN_SYSTEM.md` - Loading States, Transitions
 
 **Deliverables:**
 
@@ -1011,7 +1011,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Sync with global preferences store
 - Load on app initialization
 
-**Reference**: `designs/frontend/UI_COMPONENTS.md` - Dialog Component
+**Reference**: `prose/designs/frontend/UI_COMPONENTS.md` - Dialog Component
 
 ### 9.2 Document Actions
 
@@ -1035,7 +1035,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Arrow key navigation
 - Dismiss on selection, outside click, or ESC
 
-**Reference**: `designs/frontend/UI_COMPONENTS.md`
+**Reference**: `prose/designs/frontend/UI_COMPONENTS.md`
 
 ### 9.3 Classification Message
 
@@ -1045,7 +1045,7 @@ Implement CodeMirror 6 editor with extended markdown support. See `designs/front
 - Message: "This system is not authorized for controlled information."
 
 **References**
-See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
+See `prose/designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 
 **Deliverables:**
 
@@ -1083,7 +1083,7 @@ See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 - Configure Row Level Security (RLS) policies
 - Write and test migration scripts
 
-**Reference**: `designs/backend/SCHEMAS.md`
+**Reference**: `prose/designs/backend/SCHEMAS.md`
 
 ### 10.2 Supabase Provider Implementation
 
@@ -1109,7 +1109,7 @@ See `designs/frontend/DESIGN_SYSTEM.md` - Classification Message
 - Session refresh logic
 - Cookie management
 
-**Reference**: `designs/backend/AUTH.md`, `designs/backend/SERVICES.md`
+**Reference**: `prose/designs/backend/AUTH.md`, `prose/designs/backend/SERVICES.md`
 
 ### 10.3 Provider Switching & Environment Configuration
 
@@ -1213,7 +1213,7 @@ export const createAuthProvider = () => {
 - Mobile device testing (iOS, Android)
 - Performance validation
 
-**Reference**: `designs/frontend/ACCESSIBILITY.md`
+**Reference**: `prose/designs/frontend/ACCESSIBILITY.md`
 
 ### 11.2 Performance Optimization
 
@@ -1515,19 +1515,19 @@ Configure in Vercel dashboard:
 
 **Backend:**
 
-- `designs/backend/AUTH.md`: Authentication architecture
-- `designs/backend/SCHEMAS.md`: Database schemas
-- `designs/backend/SERVICES.md`: Service layer specifications
+- `prose/designs/backend/AUTH.md`: Authentication architecture
+- `prose/designs/backend/SCHEMAS.md`: Database schemas
+- `prose/designs/backend/SERVICES.md`: Service layer specifications
 
 **Frontend:**
 
-- `designs/frontend/INDEX.md`: Frontend documentation overview
-- `designs/frontend/ARCHITECTURE.md`: SvelteKit architecture
-- `designs/frontend/API_INTEGRATION.md`: Backend integration patterns
-- `designs/frontend/DESIGN_SYSTEM.md`: Design tokens and visual specifications
-- `designs/frontend/STATE_MANAGEMENT.md`: State management patterns
-- `designs/frontend/UI_COMPONENTS.md`: Component specifications
-- `designs/frontend/ACCESSIBILITY.md`: Section 508 compliance requirements
+- `prose/designs/frontend/INDEX.md`: Frontend documentation overview
+- `prose/designs/frontend/ARCHITECTURE.md`: SvelteKit architecture
+- `prose/designs/frontend/API_INTEGRATION.md`: Backend integration patterns
+- `prose/designs/frontend/DESIGN_SYSTEM.md`: Design tokens and visual specifications
+- `prose/designs/frontend/STATE_MANAGEMENT.md`: State management patterns
+- `prose/designs/frontend/UI_COMPONENTS.md`: Component specifications
+- `prose/designs/frontend/ACCESSIBILITY.md`: Section 508 compliance requirements
 
 ### External Resources
 
