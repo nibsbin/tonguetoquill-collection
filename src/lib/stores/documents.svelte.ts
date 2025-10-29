@@ -97,6 +97,22 @@ class DocumentStore {
 		}
 	}
 
+	async fetchDocument(id: string): Promise<{ id: string; content: string; name: string }> {
+		try {
+			const response = await fetch(`/api/documents/${id}`);
+
+			if (!response.ok) {
+				throw new Error('Failed to fetch document');
+			}
+
+			const data = await response.json();
+			return data.document;
+		} catch (err) {
+			this.setError(err instanceof Error ? err.message : 'Failed to fetch document');
+			throw err;
+		}
+	}
+
 	async createDocument(name: string = 'Untitled Document', content: string = '') {
 		// Optimistic update
 		const tempId = `temp-${Date.now()}`;

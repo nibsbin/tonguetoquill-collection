@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import DocumentList from '$lib/components/DocumentList.svelte';
+	import DocumentEditor from '$lib/components/DocumentEditor.svelte';
 	import Toast from '$lib/components/Toast.svelte';
 
 	let user = $state<{ email: string; id: string } | null>(null);
@@ -65,7 +66,7 @@
 			<DocumentList />
 
 			<!-- Main Content Area -->
-			<main class="flex-1 overflow-auto bg-zinc-50 p-8">
+			<main class="flex-1 overflow-hidden bg-zinc-50">
 				{#if !documentStore.activeDocumentId}
 					<div class="flex h-full items-center justify-center">
 						<div class="text-center">
@@ -76,18 +77,7 @@
 						</div>
 					</div>
 				{:else}
-					<div class="mx-auto max-w-4xl">
-						<h2 class="text-2xl font-bold text-zinc-900">Document Editor</h2>
-						<p class="mt-2 text-sm text-zinc-600">
-							Editor and preview will be implemented in Phase 6
-						</p>
-						<div class="mt-6 rounded-lg border border-zinc-200 bg-white p-6">
-							<p class="text-sm text-zinc-600">Document ID: {documentStore.activeDocumentId}</p>
-							<p class="text-sm text-zinc-600">
-								Document Name: {documentStore.activeDocument?.name || 'Unknown'}
-							</p>
-						</div>
-					</div>
+					<DocumentEditor documentId={documentStore.activeDocumentId} />
 				{/if}
 			</main>
 		</div>

@@ -41,7 +41,9 @@
 	>
 		<div
 			class="w-full max-w-md rounded-lg bg-white p-6 shadow-xl"
+			role="document"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<h2 id="dialog-title" class="mb-2 text-xl font-semibold text-zinc-900">
 				{title}

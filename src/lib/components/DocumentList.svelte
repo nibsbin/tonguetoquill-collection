@@ -75,28 +75,28 @@
 		{:else}
 			<ul class="py-2">
 				{#each documentStore.documents as document (document.id)}
-					<li>
+					<li class="group relative">
 						<button
 							onclick={() => handleSelectDocument(document.id)}
-							class="group relative flex w-full flex-col gap-1 px-4 py-2 text-left transition-colors hover:bg-zinc-100 focus:bg-zinc-100 focus:outline-none {documentStore.activeDocumentId ===
+							class="flex w-full flex-col gap-1 px-4 py-2 text-left transition-colors hover:bg-zinc-100 focus:bg-zinc-100 focus:outline-none {documentStore.activeDocumentId ===
 							document.id
 								? 'bg-blue-50 text-blue-900'
 								: 'text-zinc-900'}"
 						>
 							<div class="flex items-start justify-between gap-2">
 								<span class="flex-1 truncate text-sm font-medium">{document.name}</span>
-								<button
-									onclick={(e) => {
-										e.stopPropagation();
-										confirmDelete(document.id);
-									}}
-									class="opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600 focus:opacity-100 focus:outline-none"
-									aria-label="Delete document"
-								>
-									<span class="text-lg leading-none" aria-hidden="true">×</span>
-								</button>
 							</div>
 							<span class="text-xs text-zinc-500">{formatDate(document.created_at)}</span>
+						</button>
+						<button
+							onclick={(e) => {
+								e.stopPropagation();
+								confirmDelete(document.id);
+							}}
+							class="absolute top-2 right-4 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600 focus:opacity-100 focus:outline-none"
+							aria-label="Delete document"
+						>
+							<span class="text-lg leading-none" aria-hidden="true">×</span>
 						</button>
 					</li>
 				{/each}
