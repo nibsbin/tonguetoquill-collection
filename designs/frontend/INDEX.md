@@ -179,7 +179,9 @@ The frontend integrates with backend services documented in `designs/backend/`:
 
 **UI**: Lucide Svelte (icons), Svelte Sonner (toasts)
 
-**Document Rendering**: Quillmark, markdown with remark-gfm
+**Editor**: CodeMirror 6 with custom language mode (see [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md))
+
+**Document Rendering**: Quillmark for preview rendering
 
 **Authentication**: JWT tokens, HTTP-only cookies, Keycloak or Supabase
 
