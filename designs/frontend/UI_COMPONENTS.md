@@ -24,7 +24,7 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 **Structure**:
 
 **Header Section**:
-- Branding: "Tonguetoquill" text logo with either `designs/frontend/visuals/logo.svg`
+- Branding: "Tonguetoquill" text logo with `designs/frontend/visuals/logo.svg`
 - Collapse toggle: Hamburger menu icon
 - Height: 48px (matches TopMenu)
 

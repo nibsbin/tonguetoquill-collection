@@ -17,7 +17,7 @@ Tonguetoquill is a modern, VSCode-inspired markdown editor web application that 
 - **Primary Brand Color**: Blue (#355e93) - Used for accents and interactive elements
 - **Base Theme**: Dark mode as default (zinc-900 background)
 - **Typography**: Lato for UI elements, monospace for code/markdown editing
-- **Logo**: Quillmark brand logo (displayed in top menu)
+- **Logo**: Quillmark brand logo (displayed in top menu); logo.svg in `designs/frontend/visuals/logo.svg`
 
 ## Application Architecture
 
@@ -25,7 +25,7 @@ Tonguetoquill is a modern, VSCode-inspired markdown editor web application that 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                       TopMenu                            │
-│  [Logo] [Filename]              [Download] [More Menu]  │
+│  [Logo] [Docname]              [Download] [More Menu]  │
 ├──────┬──────────────────────────┬────────────────────────┤
 │      │    EditorToolbar         │                        │
 │      │  [Format Tools] [Mode]   │                        │
