@@ -44,10 +44,31 @@ Tonguetoquill uses a hybrid state management approach with reactive local state,
 
 **Authentication Store**:
 
-- User information
-- Authentication status
+- User information (null for guest mode)
+- Authentication status (guest vs authenticated)
 - Loading state
 - Login/logout methods
+
+**Store Structure**:
+
+```typescript
+{
+  user: User | null,           // null = guest mode
+  isAuthenticated: boolean,     // false for guests
+  isGuest: boolean,             // true when user is null
+  loading: boolean,
+  login: (credentials) => Promise<void>,
+  logout: () => Promise<void>,
+  checkAuth: () => Promise<void>
+}
+```
+
+**Guest Mode Handling**:
+
+- `isGuest` computed from `user === null`
+- Guest mode is the default state on app load
+- Authentication check runs in background but doesn't block app
+- Components can conditionally render based on `isGuest`
 
 **Preferences Store**:
 
@@ -59,10 +80,49 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 
 **Document Store**:
 
-- Document list
+- Document list (from server for authenticated, localStorage for guests)
 - Active document ID
 - Loading/error states
 - CRUD operations
+
+**Store Structure**:
+
+```typescript
+{
+  documents: DocumentMetadata[],
+  activeDocumentId: string | null,
+  loading: boolean,
+  error: string | null,
+
+  // Operations
+  createDocument: (name, content) => Promise<Document>,
+  getDocument: (id) => Promise<Document>,
+  updateDocument: (id, updates) => Promise<Document>,
+  deleteDocument: (id) => Promise<void>,
+  listDocuments: () => Promise<DocumentMetadata[]>,
+
+  // Guest mode specific
+  isLocalStorageMode: boolean,      // true for guests
+  migrateLocalDocuments: () => Promise<void>  // after login
+}
+```
+
+**Dual Storage Strategy**:
+
+- **Guest Mode**: Documents stored in browser localStorage
+  - Key: `tonguetoquill_docs_${documentId}`
+  - Metadata list: `tonguetoquill_docs_list`
+  - Limited to browser storage limits (~5-10MB)
+- **Authenticated Mode**: Documents stored on server via API
+  - Full CRUD through REST endpoints
+  - No localStorage usage (except for offline cache)
+
+**Migration on Login**:
+
+- On first login, offer to import localStorage documents
+- User can choose which documents to import
+- Clear localStorage after successful migration
+- Handle conflicts if document names already exist
 
 ### Derived Stores
 

@@ -15,17 +15,55 @@ Tonguetoquill is a professional single-page application built with SvelteKit 5, 
 
 ## Routing Architecture
 
-### Route Groups
+### Route Groups and URL Structure
 
-**Protected Routes `(app)`**: Require authentication, redirect to login if not authenticated
-**Auth Routes `(auth)`**: Login/logout flows, redirect to app if already authenticated
-**Marketing Routes `(marketing)`**: Public pages accessible without authentication
+**Important**: Route groups use parentheses `(groupname)` to organize routes **without affecting the URL path**.
+
+Example:
+
+- `src/routes/(auth)/login/+page.svelte` → URL is `/login` (not `/auth/login`)
+- `src/routes/(auth)/register/+page.svelte` → URL is `/register` (not `/auth/register`)
+
+The parentheses create a folder for organization but are removed from the final URL.
+
+### Main Routes
+
+**Root Route `/`**: Main application accessible without authentication (guest mode)
+
+- Guest users can explore the app and create documents (stored in browser localStorage only)
+- Authenticated users get full functionality with server persistence
+- Shows login/register prompts for features requiring authentication
+- Login/register buttons visible in header for guests
+
+**Auth Routes**:
+
+- `/login` - Login page (from `(auth)/login/+page.svelte`)
+- `/register` - Registration page (from `(auth)/register/+page.svelte`)
+- After authentication, redirect back to `/` with full features unlocked
+
+### Guest Mode vs Authenticated Mode
+
+**Guest Mode** (No Authentication Required):
+
+- Access to app interface at `/`
+- Can create and edit documents
+- Documents stored in browser localStorage only
+- "Sign in to save your work" banner displayed
+- Limited to browser-local functionality
+
+**Authenticated Mode** (After Login):
+
+- Full document CRUD with server persistence
+- Documents synced to user account
+- Option to import localStorage documents on first login
+- Access to all features without restrictions
 
 ### Data Loading Strategy
 
 - **Universal Load**: Runs on both server and client for public data
 - **Server Load**: Server-only for session data and protected resources
-- Protected routes load user context in layout, handle redirects automatically
+- **Optional Authentication**: Root route checks for auth but doesn't require it
+- **Progressive Enhancement**: Guest experience works without server, auth adds features
 
 ## Component Architecture
 

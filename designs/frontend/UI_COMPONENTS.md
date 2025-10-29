@@ -102,6 +102,122 @@ Components support mobile-responsive layouts and Section 508 accessibility compl
 
 ---
 
+## Authentication State Components
+
+### GuestModeBanner Component
+
+**Implementation**: Custom notification banner using Tailwind CSS
+
+**Purpose**: Inform guest users that their work is stored locally and prompt them to sign in for server persistence
+
+**Display Conditions**:
+
+- Shown when user is not authenticated (guest mode)
+- Displayed at top of main content area, below header
+- Dismissible with option to "Don't show again" (stored in localStorage)
+
+**Content**:
+
+- Icon: Information icon (from Lucide)
+- Message: "You're working in guest mode. Your documents are saved locally in this browser."
+- Actions:
+  - Primary: "Sign in to sync" button (navigates to `/login`)
+  - Secondary: "Dismiss" button (hides banner for session)
+  - Tertiary: "Don't show again" link (hides permanently)
+
+**States**:
+
+- Visible: Full banner with message and actions
+- Dismissed: Hidden (can reappear on new session unless permanently dismissed)
+
+**Mobile Adaptation**:
+
+- Stacks buttons vertically on mobile
+- Smaller text size
+- Collapsible to save space
+
+**Accessibility**:
+
+- ARIA role="alert" for screen reader announcement
+- Clear dismissal options
+- Keyboard navigable buttons
+
+### HeaderAuthSection Component
+
+**Implementation**: Custom component with conditional rendering based on auth state
+
+**Purpose**: Display authentication status and actions in the header
+
+**Guest State** (Not Authenticated):
+
+- Shows: "Sign In" button (primary) and "Register" link (secondary)
+- Sign In button: Navigates to `/login`
+- Register link: Navigates to `/register`
+- Both styled according to [DESIGN_SYSTEM.md - Buttons](./DESIGN_SYSTEM.md#buttons)
+
+**Authenticated State**:
+
+- Shows: User email/name and "Logout" button
+- User email: Displayed in subdued color (zinc-600)
+- Logout button: Secondary style, opens logout confirmation or immediately logs out
+- Logout action: Clears session and returns to `/` in guest mode
+
+**Mobile Adaptation**:
+
+- Guest: May show icons only with tooltips
+- Authenticated: User email may hide, showing only avatar/icon
+- Logout accessible via menu on mobile
+
+**Accessibility**:
+
+- Clear labels for all actions
+- Logout confirmation dialog if needed
+- Proper focus management on modal
+
+### FeatureGate Component
+
+**Implementation**: Wrapper component that conditionally renders content based on auth state
+
+**Purpose**: Restrict certain features to authenticated users with graceful prompts
+
+**Usage**:
+
+```svelte
+<FeatureGate feature="document_sync">
+	<DocumentSyncButton />
+</FeatureGate>
+```
+
+**Behavior**:
+
+- **If Authenticated**: Renders child content normally
+- **If Guest**: Shows login prompt overlay/modal instead of feature
+  - Prompt message: "Sign in to access [feature name]"
+  - Primary action: "Sign In" (navigates to `/login` with return URL)
+  - Secondary action: "Cancel" or "Learn More"
+
+**Gated Features** (examples):
+
+- Server document sync
+- Document sharing
+- Export to certain formats
+- Advanced settings
+
+**Modal/Overlay Style**:
+
+- Uses shadcn-svelte Dialog component
+- Centered on screen with backdrop
+- Clear explanation of why authentication is needed
+- Option to create account if they don't have one
+
+**Accessibility**:
+
+- Focus trap in modal
+- ESC key to close
+- Screen reader friendly explanation
+
+---
+
 ## Editor Components
 
 ### EditorToolbar Component
