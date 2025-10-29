@@ -60,6 +60,15 @@ Backend API integration patterns for authentication, document management, and da
 
 ---
 
+### [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md)
+**CodeMirror 6 Markdown Editor**
+
+CodeMirror 6 integration with custom language mode for Quillmark's extended markdown syntax. Covers syntax highlighting, code folding, and intelligent editing features for inline metadata blocks.
+
+**Topics**: CodeMirror 6 architecture, custom language mode, extended markdown syntax (SCOPE/QUILL), folding strategy, syntax highlighting, auto-completion, accessibility, mobile optimization, performance
+
+---
+
 ## Design Principles
 
 ### 1. SvelteKit 5 Best Practices
@@ -137,8 +146,9 @@ The frontend integrates with backend services documented in `designs/backend/`:
 1. Review [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual design tokens and patterns
 2. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for project structure  
 3. Study [UI_COMPONENTS.md](./UI_COMPONENTS.md) for component behavior
-4. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
-5. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
+4. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
+5. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
+6. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
 6. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
 
 ### Development Workflow
@@ -169,7 +179,9 @@ The frontend integrates with backend services documented in `designs/backend/`:
 
 **UI**: Lucide Svelte (icons), Svelte Sonner (toasts)
 
-**Document Rendering**: Quillmark, markdown with remark-gfm
+**Editor**: CodeMirror 6 with custom language mode (see [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md))
+
+**Document Rendering**: Quillmark for preview rendering
 
 **Authentication**: JWT tokens, HTTP-only cookies, Keycloak or Supabase
 

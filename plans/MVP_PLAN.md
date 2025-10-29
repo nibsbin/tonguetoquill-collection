@@ -48,8 +48,7 @@ Organize into logical directories:
 **Core Dependencies:**
 - `lucide-svelte`: Icon library
 - `svelte-sonner`: Toast notifications
-- `marked` or `remark`: Markdown parsing
-- `prismjs`: Syntax highlighting for code blocks
+- CodeMirror 6 packages (see `designs/frontend/MARKDOWN_EDITOR.md` - Dependencies section)
 - `zod`: Schema validation (optional but recommended)
 
 **Environment Configuration:**
@@ -490,14 +489,27 @@ Contract tests ensure that mock providers behave identically to real providers.
 
 **Goal**: Implement core editing experience with live preview.
 
+**Implementation Guide**: This phase implements the editor architecture detailed in `designs/frontend/MARKDOWN_EDITOR.md`. Follow the 8 implementation phases outlined in that document for a structured approach to building the CodeMirror 6 editor with extended markdown support.
+
 ### 6.1 Markdown Editor
 
-**Editor Component:**
-- Full-height textarea with monospace font
-- Syntax highlighting (optional for MVP, can be post-MVP)
-- Auto-indent on Enter
-- Tab key inserts spaces (2 or 4)
-- Undo/redo support (browser default)
+**Editor Implementation:**
+
+Implement CodeMirror 6 editor with extended markdown support. See `designs/frontend/MARKDOWN_EDITOR.md` for complete architecture, including:
+- Custom Lezer grammar for SCOPE/QUILL metadata blocks
+- Horizontal rule disambiguation algorithm
+- Folding strategy and implementation
+- Syntax highlighting theme
+- Auto-completion configuration
+- Accessibility features
+
+**Key Features:**
+- CodeMirror 6 with custom language mode for extended markdown
+- Syntax highlighting for standard markdown and metadata blocks (SCOPE/QUILL)
+- Code folding for YAML frontmatter and inline metadata blocks
+- Line numbers and active line highlighting
+- Auto-indent and smart indentation
+- Undo/redo with transaction history
 
 **Toolbar:**
 - Formatting buttons: Bold, Italic, Strikethrough
@@ -512,9 +524,11 @@ Contract tests ensure that mock providers behave identically to real providers.
 - Ctrl/Cmd+B: Bold
 - Ctrl/Cmd+I: Italic
 - Ctrl/Cmd+S: Save (manual trigger)
+- Ctrl/Cmd+Shift+[: Fold block
+- Ctrl/Cmd+Shift+]: Unfold block
 - Additional shortcuts per DESIGN_SYSTEM.md
 
-**Reference**: `designs/frontend/UI_COMPONENTS.md`, `designs/frontend/DESIGN_SYSTEM.md`
+**Reference**: `designs/frontend/MARKDOWN_EDITOR.md`, `designs/frontend/UI_COMPONENTS.md`, `designs/frontend/DESIGN_SYSTEM.md`
 
 ### 6.2 Live Preview
 
@@ -526,17 +540,18 @@ Contract tests ensure that mock providers behave identically to real providers.
 - Debounced rendering (updates after user stops typing)
 
 **Markdown Rendering:**
-- Use markdown library (e.g., marked, remark)
+- Parse extended markdown with metadata blocks (SCOPE/QUILL)
 - Support GitHub Flavored Markdown (tables, strikethrough)
-- Syntax highlighting for code blocks (e.g., Prism.js)
+- Syntax highlighting for code blocks
 - Responsive images and tables
+- Proper handling of inline metadata blocks per PARSE.md
 
 **Performance:**
 - Debounced preview updates (300-500ms delay)
 - Preserve scroll position during updates
 - Show previous render to avoid flashes (per DESIGN_SYSTEM.md loading states)
 
-**Reference**: `designs/frontend/UI_COMPONENTS.md`, `designs/frontend/DESIGN_SYSTEM.md`
+**Reference**: `designs/frontend/MARKDOWN_EDITOR.md`, `designs/frontend/UI_COMPONENTS.md`, `designs/frontend/DESIGN_SYSTEM.md`
 
 ### 6.3 Responsive Layout
 
@@ -556,10 +571,12 @@ Contract tests ensure that mock providers behave identically to real providers.
 **Reference**: `designs/frontend/DESIGN_SYSTEM.md` - Navigation Patterns
 
 **Deliverables:**
-- Fully functional markdown editor with toolbar
+- CodeMirror 6 markdown editor with custom language mode
+- Extended markdown syntax highlighting (SCOPE/QUILL blocks)
+- Code folding for metadata blocks
+- Formatting toolbar with keyboard shortcuts
 - Live preview with debounced updates
 - Responsive layout (split/tabbed views)
-- Keyboard shortcuts for formatting
 
 ---
 
