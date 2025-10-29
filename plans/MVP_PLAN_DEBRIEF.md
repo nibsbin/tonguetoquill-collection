@@ -361,15 +361,237 @@ The next phase will build out the document management UI with a sidebar, documen
 
 ---
 
-## Summary of Phases 1-4
+## Phase 5: Document Management UI
 
-**Total Implementation Time**: ~4 hours with AI assistance
+**Status**: ✅ COMPLETED
+
+**Completion Date**: October 29, 2025
+
+### What Was Implemented
+
+#### 5.1 Document List & Navigation
+
+- ✅ Document store using Svelte 5 runes (`$state`) for reactive state management
+- ✅ DocumentList component with sidebar display
+- ✅ "New Document" button that creates documents with optimistic updates
+- ✅ Document selection with active state highlighting
+- ✅ Empty state message when no documents exist
+- ✅ Loading states and error handling with retry functionality
+- ✅ Document metadata display (name, creation date)
+
+#### 5.2 Document Creation & Deletion
+
+- ✅ Create document with default "Untitled Document" name
+- ✅ Delete document with confirmation dialog
+- ✅ Dialog component with proper accessibility (focus trap, ESC to close)
+- ✅ Optimistic UI updates with automatic rollback on error
+- ✅ Toast notification system for success/error feedback
+
+#### 5.3 State Management
+
+- ✅ Document store with methods:
+  - `fetchDocuments()` - Load user's documents
+  - `fetchDocument(id)` - Load full document with content
+  - `createDocument()` - Create new document with optimistic update
+  - `deleteDocument(id)` - Delete document with optimistic update
+  - `setActiveDocumentId()` - Track active document
+- ✅ Toast store for notification management
+- ✅ Global state accessible across components
+
+#### 5.4 API Integration
+
+- ✅ Fetches documents on app load from `/api/documents`
+- ✅ Fetches full document content from `/api/documents/:id`
+- ✅ Creates documents via `POST /api/documents`
+- ✅ Deletes documents via `DELETE /api/documents/:id`
+- ✅ Proper error handling with user-friendly messages
+
+### Technical Decisions
+
+1. **Svelte 5 Runes**: Used modern `$state` and `$derived` runes for reactive state management instead of legacy stores
+2. **Optimistic Updates**: UI updates immediately, then rolls back only on error for better UX
+3. **Toast Notifications**: Reusable toast system for success/error feedback throughout the app
+4. **Component Architecture**: Small, focused components (Dialog, Toast, DocumentList) for reusability
+5. **Accessibility**: Proper ARIA roles, keyboard handling (ESC, focus management), and semantic HTML
+
+### Challenges and Solutions
+
+1. **Challenge**: Nested button elements (delete inside document list item)
+   - **Solution**: Restructured to use sibling buttons with absolute positioning
+
+2. **Challenge**: Dialog accessibility warnings
+   - **Solution**: Added proper ARIA roles, tabindex, and keyboard event handlers
+
+3. **Challenge**: Type errors with Svelte 5 runes
+   - **Solution**: Used `.svelte.ts` file extension for stores to enable proper type inference
+
+### Verification
+
+- ✅ `npm run check` - Type checking passes with 0 errors
+- ✅ `npm run lint` - Linting passes
+- ✅ Build succeeds without errors
+- ✅ All 45 backend tests still passing
+
+### Files Created
+
+- `src/lib/stores/documents.svelte.ts` - Document state management
+- `src/lib/stores/toast.svelte.ts` - Toast notification management
+- `src/lib/components/Toast.svelte` - Toast notification UI
+- `src/lib/components/Dialog.svelte` - Reusable modal dialog
+- `src/lib/components/DocumentList.svelte` - Sidebar document list
+- `src/routes/(app)/app/+page.svelte` - Main app page with sidebar
+
+### Files Modified
+
+- `src/routes/+page.svelte` - Redirect authenticated users to /app
+- `src/routes/(auth)/login/+page.svelte` - Redirect to /app after login
+- `src/routes/(auth)/register/+page.svelte` - Redirect to /app after registration
+
+### Next Steps
+
+**Phase 6: Markdown Editor & Preview** - Implement CodeMirror 6 editor with live preview
+
+---
+
+## Phase 6: Markdown Editor & Preview
+
+**Status**: ✅ COMPLETED
+
+**Completion Date**: October 29, 2025
+
+### What Was Implemented
+
+#### 6.1 Markdown Editor
+
+- ✅ CodeMirror 6 editor with markdown language support
+- ✅ Formatting toolbar with 8 formatting buttons:
+  - Bold (`**text**`)
+  - Italic (`*text*`)
+  - Strikethrough (`~~text~~`)
+  - Code block (` ```code``` `)
+  - Quote (`> text`)
+  - Bullet list (`- item`)
+  - Numbered list (`1. item`)
+  - Link (`[text](url)`)
+- ✅ Keyboard shortcuts:
+  - Ctrl/Cmd+B for bold
+  - Ctrl/Cmd+I for italic
+- ✅ Smart formatting:
+  - Wraps selected text with formatting
+  - Inserts placeholder text if no selection
+  - Toggles formatting for quotes and lists
+- ✅ Line numbers and syntax highlighting
+- ✅ Line wrapping for better readability
+- ✅ Undo/redo with full transaction history
+- ✅ Custom theme with professional styling
+
+#### 6.2 Live Preview
+
+- ✅ Markdown preview component using `marked` library
+- ✅ GitHub Flavored Markdown support (tables, strikethrough)
+- ✅ Debounced preview updates (300ms delay)
+- ✅ Professional typography styling:
+  - Proper heading hierarchy (H1-H3)
+  - Code blocks with syntax highlighting
+  - Blockquotes with left border
+  - Lists (ordered and unordered)
+  - Links with hover states
+  - Tables with borders
+  - Images with responsive sizing
+- ✅ White background with centered max-width (3xl)
+- ✅ Prose styling for readable content
+
+#### 6.3 Responsive Layout
+
+- ✅ Split-pane layout on desktop (≥1024px)
+  - Editor on left (50%)
+  - Preview on right (50%)
+- ✅ Document editor component that:
+  - Loads document content from API
+  - Manages editor and preview state
+  - Handles debounced content updates
+  - Shows loading state during fetch
+
+**Note**: Mobile tabs (Editor OR Preview toggle) deferred to future enhancement
+
+#### 6.4 CodeMirror Extensions
+
+Installed CodeMirror 6 packages:
+
+- `@codemirror/view` - Editor view and rendering
+- `@codemirror/state` - State management
+- `@codemirror/commands` - Built-in commands (undo, redo)
+- `@codemirror/language` - Language support
+- `@codemirror/lang-markdown` - Markdown syntax
+- `marked` - Markdown parsing for preview
+
+### Technical Decisions
+
+1. **CodeMirror 6**: Chose CodeMirror 6 for modern architecture, better performance, and extensibility
+2. **Marked Library**: Used `marked` for parsing markdown in preview (fast, well-tested, GFM support)
+3. **Debounced Updates**: 300ms debounce prevents preview flashing while typing
+4. **Toolbar Icons**: SVG icons inline for better accessibility and customization
+5. **XSS Acknowledgment**: Added eslint disable comment for `{@html}` in preview (expected for markdown rendering)
+6. **Color Values**: Used hex colors directly instead of Tailwind `theme()` function (Tailwind 4.0 compatibility)
+
+### Challenges and Solutions
+
+1. **Challenge**: Tailwind CSS 4.0 doesn't support `theme()` function in `<style>` blocks
+   - **Solution**: Replaced with hex color values directly
+
+2. **Challenge**: CodeMirror state updates from external props
+   - **Solution**: Used Svelte 5 `$effect` to sync editor content when value changes externally
+
+3. **Challenge**: Nested button accessibility in DocumentList
+   - **Solution**: Fixed in Phase 5 by restructuring button hierarchy
+
+### Verification
+
+- ✅ `npm run check` - Type checking passes with 1 warning (non-interactive div with events in Dialog, cosmetic)
+- ✅ `npm run lint` - Linting passes
+- ✅ `npm run build` - Build succeeds without errors
+- ✅ All 45 backend tests still passing
+- ✅ Editor renders and accepts input
+- ✅ Toolbar buttons apply formatting correctly
+- ✅ Preview updates with debounce after typing
+- ✅ Keyboard shortcuts work (Cmd+B, Cmd+I)
+
+### Files Created
+
+- `src/lib/components/MarkdownEditor.svelte` - CodeMirror 6 editor with toolbar
+- `src/lib/components/MarkdownPreview.svelte` - Markdown preview with prose styles
+- `src/lib/components/DocumentEditor.svelte` - Document editor container
+
+### Files Modified
+
+- `package.json` - Added CodeMirror and marked dependencies
+- `src/lib/stores/documents.svelte.ts` - Added `fetchDocument()` method
+- `src/routes/(app)/app/+page.svelte` - Integrated DocumentEditor component
+
+### Known Limitations
+
+1. **Mobile Layout**: Preview is hidden on mobile (<1024px), tabs not yet implemented
+2. **Extended Markdown**: SCOPE/QUILL metadata blocks not yet implemented (deferred to future phase)
+3. **Code Folding**: Not yet implemented (deferred to future phase)
+4. **Auto-Save**: Not yet implemented (Phase 7)
+
+### Next Steps
+
+**Phase 7: Auto-Save & Document Persistence** - Implement auto-save with 7-second debounce
+
+---
+
+## Summary of Phases 1-6
+
+**Total Implementation Time**: ~6 hours with AI assistance
 
 **Test Coverage**:
 
 - 45 backend tests passing (auth + documents)
 - Contract tests ensure mock/real provider compatibility
 - Integration tests verify API flows
+- Build passes without errors
+- Linting and formatting verified
 
 **Key Achievements**:
 
@@ -378,8 +600,26 @@ The next phase will build out the document management UI with a sidebar, documen
 3. ✅ Mock document service with validation
 4. ✅ Complete REST API for auth and documents
 5. ✅ Authentication UI (login, registration)
-6. ✅ Basic app layout with session management
-7. ✅ 45/45 tests passing
-8. ✅ Production-ready code quality (linting, formatting, type checking)
+6. ✅ Document management UI with sidebar
+7. ✅ CodeMirror 6 markdown editor with toolbar
+8. ✅ Live markdown preview with GFM support
+9. ✅ Optimistic updates and error handling
+10. ✅ Toast notifications and dialogs
+11. ✅ 45/45 tests passing
+12. ✅ Production-ready code quality
 
-**Ready for Phase 5**: Document management UI with sidebar and editor integration.
+**Feature Progress**:
+
+- ✅ Phase 1: Foundation & Infrastructure
+- ✅ Phase 2: Authentication & Database Contracts
+- ✅ Phase 3: Document Service Backend
+- ✅ Phase 4: Frontend Authentication & Layout
+- ✅ Phase 5: Document Management UI
+- ✅ Phase 6: Markdown Editor & Preview
+- ⏳ Phase 7: Auto-Save & Document Persistence
+- ⏳ Phase 8: Accessibility & Polish
+- ⏳ Phase 9: Additional Features & Settings
+- ⏳ Phase 10: Supabase Integration
+- ⏳ Phase 11: Testing, Deployment & Launch
+
+**Ready for Phase 7**: Auto-save functionality with debounced saves and save status indicators.

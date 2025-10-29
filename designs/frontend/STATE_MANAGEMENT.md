@@ -107,6 +107,35 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 }
 ```
 
+**LocalStorage Document Service**:
+
+Implemented in `src/lib/services/documents/localstorage-service.ts`, provides the same interface as the API-based service but stores documents in browser localStorage.
+
+```typescript
+interface LocalStorageDocumentService {
+	createDocument(name, content): Promise<DocumentMetadata>;
+	getDocumentContent(id): Promise<{ id; content; name }>;
+	getDocumentMetadata(id): Promise<DocumentMetadata>;
+	updateDocumentContent(id, content): Promise<void>;
+	updateDocumentName(id, name): Promise<void>;
+	deleteDocument(id): Promise<void>;
+	listUserDocuments(): Promise<DocumentMetadata[]>;
+
+	// Helper methods
+	getAllDocumentsWithContent(): StoredDocument[]; // for migration
+	clear(): void; // clear all guest docs
+	getStorageInfo(): { used; max; percentUsed }; // storage quota
+}
+```
+
+**Storage Details**:
+
+- Key: `tonguetoquill_guest_documents`
+- Format: JSON array of documents with metadata and content
+- Size limit: 5MB (configurable)
+- Quota checking before each save operation
+- Error handling for quota exceeded
+
 **Dual Storage Strategy**:
 
 - **Guest Mode**: Documents stored in browser localStorage
