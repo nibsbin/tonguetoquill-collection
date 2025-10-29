@@ -2,7 +2,9 @@
 
 ## Overview
 
-Tonguetoquill uses a hybrid state management approach with reactive local state, global stores for application-wide state, and server-side state management for data persistence. The implementation leverages SvelteKit 5's reactive system.
+Tonguetoquill uses a hybrid state management approach with reactive local state, global stores for application-wide state, and server-side state management for data persistence. The implementation leverages SvelteKit 5's reactive system with `$state` runes.
+
+**Note**: This document reflects the design goals and specifications. For current implementation status post-Phase 6.5, see `prose/plans/REPAIR.md`.
 
 ## Reactive State Patterns
 
@@ -228,6 +230,31 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 - Cancel pending saves on unmount
 - Optimistic UI updates
 - Error handling and rollback
+
+**Current Status (Post-Phase 6.5)**: ⚠️ Auto-save logic not implemented. See `prose/plans/REPAIR.md` Phase R1 for recovery plan.
+
+**Required Implementation**:
+```typescript
+// DocumentEditor component needs:
+let saveTimer: number | undefined;
+let isDirty = $state(false);
+
+function autoSave(content: string) {
+  if (!autoSaveEnabled) return;
+  
+  if (saveTimer) clearTimeout(saveTimer);
+  
+  saveTimer = window.setTimeout(async () => {
+    try {
+      await documentStore.updateDocumentContent(documentId, content);
+      isDirty = false;
+      // Update save status indicator
+    } catch (err) {
+      // Show error toast
+    }
+  }, 7000); // 7 second debounce
+}
+```
 
 ## State Persistence
 

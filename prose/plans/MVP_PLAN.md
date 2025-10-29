@@ -773,13 +773,135 @@ Implement CodeMirror 6 editor with extended markdown support. See `prose/designs
 - Visual match with mock project confirmed
 - No regressions in functionality or accessibility
 
-**Reference**: `prose/plans/UI_REWORK.md`, `prose/legacymock_project/`
+**Reference**: `prose/plans/UI_REWORK.md`, `prose/legacy/mock_project/`
+
+---
+
+## Phase 6.6: Technical Debt Repair - Feature Parity Recovery
+
+**Goal**: Recover feature parity after Phase 6.5 UI rework by implementing missing functionality and fixing regressions.
+
+**Note**: Phase 6.5 successfully updated visual design and theming but removed or left incomplete several critical features. This phase restores full functionality while maintaining the improved UI.
+
+### 6.6.1 Critical Functionality Restoration
+
+**Reference Plan**: See `prose/plans/REPAIR.md` for complete analysis, detailed tasks, and implementation guidance.
+
+**Identified Regressions**:
+
+1. **Auto-Save Missing** (HIGH PRIORITY):
+   - 7-second debounce auto-save removed
+   - No save status indicator
+   - Manual save (Ctrl+S) not implemented
+   - Auto-save setting toggle exists but non-functional
+
+2. **Content Not Persisting** (HIGH PRIORITY):
+   - Document edits not saved to store or backend
+   - All changes lost on document switch or refresh
+   - Guest mode localStorage not updated
+   - Authenticated mode API calls missing
+
+3. **Settings Not Applied** (MEDIUM PRIORITY):
+   - Auto-save toggle stored but not consumed
+   - Line numbers toggle stored but editor not configured
+   - User preferences ignored by application
+
+4. **Mobile Editor/Preview Toggle Missing** (MEDIUM PRIORITY):
+   - Preview hidden on mobile with no way to view
+   - Tabbed interface not implemented
+   - TODO comment left in code
+
+5. **Delete Confirmation Missing** (MEDIUM PRIORITY):
+   - No confirmation dialog before deletion
+   - Risk of accidental data loss
+
+6. **Additional Gaps**:
+   - Mode toggle (Markdown/Wizard) UI missing from toolbar
+   - Keyboard shortcuts incomplete (no Ctrl+S)
+   - Classification message not displayed
+   - Some accessibility features missing
+
+**Recovery Phases** (from REPAIR.md):
+
+**Phase R1: Auto-Save Implementation** (8 hours):
+- Implement 7-second debounce auto-save
+- Add save status indicator to TopMenu
+- Implement manual save (Ctrl+S)
+- Wire auto-save toggle to functionality
+- Test guest and authenticated save flows
+
+**Phase R2: Document Persistence** (8 hours):
+- Fix content persistence to localStorage/API
+- Implement dirty state tracking
+- Add unsaved changes warning on document switch
+- Robust error handling and rollback
+- Test data integrity
+
+**Phase R3: Settings Integration** (4 hours):
+- Connect auto-save toggle to save logic
+- Add line numbers extension to CodeMirror
+- Read and apply settings from localStorage
+- Immediate updates without reload
+
+**Phase R4: Mobile Enhancements** (6 hours):
+- Implement mobile tab switcher (Editor/Preview)
+- Conditional rendering for mobile vs desktop
+- Touch optimization
+- Test at all breakpoints
+
+**Phase R5: Additional Features** (6 hours):
+- Add mode toggle tabs to EditorToolbar (UI stub)
+- Implement delete confirmation dialog
+- Add keyboard shortcuts to tooltips
+- Display classification message toast
+
+**Phase R6: Accessibility Fixes** (6 hours):
+- Add skip to main content link
+- ARIA labels audit and fixes
+- Keyboard shortcuts help dialog
+- Screen reader testing
+
+**Phase R7: Testing and Documentation** (8 hours):
+- E2E test suite for all flows
+- Update design documents
+- Code quality improvements
+- Performance validation
+
+**Deliverables**:
+
+- ✅ Auto-save with 7-second debounce and status indicator
+- ✅ Content persists correctly to localStorage and API
+- ✅ Unsaved changes warning prevents data loss
+- ✅ Settings toggles control application behavior
+- ✅ Mobile editor/preview toggle functional
+- ✅ Delete confirmation dialog implemented
+- ✅ Complete keyboard shortcuts (including Ctrl+S)
+- ✅ Classification message toast on load
+- ✅ Section 508 accessibility compliance maintained
+- ✅ Updated documentation reflects current state
+- ✅ All E2E tests passing
+
+**Success Criteria**:
+
+- [ ] No data loss on document switching or refresh
+- [ ] Auto-save triggers after 7 seconds of inactivity
+- [ ] Settings toggles immediately affect behavior
+- [ ] Mobile users can toggle between editor and preview
+- [ ] All critical user flows tested and working
+- [ ] Accessibility requirements met (keyboard nav, screen reader)
+- [ ] Design documents accurately reflect implementation
+
+**Timeline**: ~46 hours (1 week full-time development)
+
+**Reference**: `prose/plans/REPAIR.md` - Complete technical debt analysis and recovery plan
 
 ---
 
 ## Phase 7: Auto-Save & Document Persistence
 
 **Goal**: Implement auto-save functionality and document state management.
+
+**Note**: This phase was originally planned after Phase 6. However, Phase 6.5 UI rework removed auto-save functionality. This work is now incorporated into **Phase 6.6** (Technical Debt Repair). See `prose/plans/REPAIR.md` Phases R1 and R2 for updated implementation plan.
 
 ### 7.1 Auto-Save Implementation
 
