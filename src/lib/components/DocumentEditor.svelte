@@ -21,9 +21,30 @@
 	let debounceTimer: number | undefined;
 	let editorRef = $state<MarkdownEditor | null>(null);
 	let autoSaveEnabled = $state(true);
+	let showLineNumbers = $state(true);
+	let previousDocumentId = $state<string | null>(null);
 
 	// Track dirty state (unsaved changes)
 	let isDirty = $derived(content !== initialContent);
+
+	// Watch for document changes and handle unsaved changes
+	$effect(() => {
+		if (previousDocumentId !== null && previousDocumentId !== documentId && isDirty) {
+			// Document is switching with unsaved changes
+			// Auto-save the current document before switching
+			if (autoSaveEnabled) {
+				autoSave.saveNow(previousDocumentId, content).catch(() => {
+					// Ignore errors during auto-save on switch
+				});
+			}
+		}
+		
+		// Update previous document ID
+		if (documentId !== previousDocumentId) {
+			previousDocumentId = documentId;
+			loadDocument();
+		}
+	});
 
 	// Debounce preview updates
 	function updateDebouncedContent(newContent: string) {
@@ -40,6 +61,14 @@
 		// Trigger auto-save
 		autoSave.scheduleSave(documentId, newContent, autoSaveEnabled);
 	}
+
+	// Watch for successful auto-save to update initialContent
+	$effect(() => {
+		if (autoSave.saveState.status === 'saved' && isDirty) {
+			// Update initialContent to mark as saved
+			initialContent = content;
+		}
+	});
 
 	function handleFormat(type: string) {
 		// Forward formatting command to editor
@@ -61,11 +90,34 @@
 		}
 	}
 
-	onMount(async () => {
+	// Load document content
+	async function loadDocument() {
+		loading = true;
+		try {
+			const doc = await documentStore.fetchDocument(documentId);
+			content = doc.content;
+			initialContent = doc.content;
+			debouncedContent = doc.content;
+			// Reset auto-save state when loading new document
+			autoSave.reset();
+		} catch {
+			toast.error('Failed to load document');
+		} finally {
+			loading = false;
+		}
+	}
+
+	onMount(() => {
 		// Load auto-save setting from localStorage
 		const savedAutoSave = localStorage.getItem('auto-save');
 		if (savedAutoSave !== null) {
 			autoSaveEnabled = savedAutoSave === 'true';
+		}
+
+		// Load line numbers setting from localStorage
+		const savedLineNumbers = localStorage.getItem('line-numbers');
+		if (savedLineNumbers !== null) {
+			showLineNumbers = savedLineNumbers === 'true';
 		}
 
 		// Listen for storage events (when settings change)
@@ -73,19 +125,11 @@
 			if (e.key === 'auto-save' && e.newValue !== null) {
 				autoSaveEnabled = e.newValue === 'true';
 			}
+			if (e.key === 'line-numbers' && e.newValue !== null) {
+				showLineNumbers = e.newValue === 'true';
+			}
 		};
 		window.addEventListener('storage', handleStorageChange);
-
-		try {
-			const doc = await documentStore.fetchDocument(documentId);
-			content = doc.content;
-			initialContent = doc.content;
-			debouncedContent = doc.content;
-		} catch {
-			toast.error('Failed to load document');
-		} finally {
-			loading = false;
-		}
 
 		return () => {
 			window.removeEventListener('storage', handleStorageChange);
@@ -110,7 +154,13 @@
 		<!-- Editor Section -->
 		<div class="flex flex-1 flex-col border-r border-zinc-700">
 			<EditorToolbar onFormat={handleFormat} isDirty={isDirty} onManualSave={handleManualSave} />
-			<MarkdownEditor bind:this={editorRef} value={content} onChange={updateDebouncedContent} onSave={handleManualSave} />
+			<MarkdownEditor 
+				bind:this={editorRef} 
+				value={content} 
+				onChange={updateDebouncedContent} 
+				onSave={handleManualSave}
+				{showLineNumbers}
+			/>
 		</div>
 
 		<!-- Preview Section (Desktop) -->

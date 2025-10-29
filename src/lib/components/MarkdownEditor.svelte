@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { EditorView, keymap } from '@codemirror/view';
+	import { EditorView, keymap, lineNumbers } from '@codemirror/view';
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
@@ -9,9 +9,10 @@
 		value: string;
 		onChange: (value: string) => void;
 		onSave?: () => void;
+		showLineNumbers?: boolean;
 	}
 
-	let { value, onChange, onSave }: Props = $props();
+	let { value, onChange, onSave, showLineNumbers = true }: Props = $props();
 
 	let editorElement: HTMLDivElement;
 	let editorView: EditorView | null = null;
@@ -208,9 +209,118 @@
 	}
 
 	onMount(() => {
+		const extensions = [
+			markdown(),
+			history(),
+			keymap.of([
+				...defaultKeymap,
+				...historyKeymap,
+				{
+					key: 'Mod-b',
+					run: () => {
+						handleBold();
+						return true;
+					}
+				},
+				{
+					key: 'Mod-i',
+					run: () => {
+						handleItalic();
+						return true;
+					}
+				},
+				{
+					key: 'Mod-s',
+					preventDefault: true,
+					run: () => {
+						if (onSave) {
+							onSave();
+						}
+						return true;
+					}
+				}
+			]),
+			EditorView.updateListener.of((update) => {
+				if (update.docChanged) {
+					onChange(update.state.doc.toString());
+				}
+			}),
+			EditorView.lineWrapping,
+			EditorView.theme({
+				'&': {
+					height: '100%',
+					fontSize: '14px',
+					backgroundColor: '#18181b' // zinc-900
+				},
+				'.cm-scroller': {
+					overflow: 'auto',
+					fontFamily: 'ui-monospace, monospace'
+				},
+				'.cm-content': {
+					padding: '16px 0',
+					color: '#f4f4f5' // zinc-100
+				},
+				'.cm-line': {
+					padding: '0 16px'
+				},
+				'.cm-cursor': {
+					borderLeftColor: '#f4f4f5'
+				},
+				'.cm-activeLine': {
+					backgroundColor: '#27272a' // zinc-800
+				},
+				'.cm-selectionBackground, .cm-focused .cm-selectionBackground': {
+					backgroundColor: '#3f3f46' // zinc-700
+				},
+				'.cm-gutters': {
+					backgroundColor: '#27272a', // zinc-800
+					color: '#71717a', // zinc-500
+					border: 'none'
+				}
+			})
+		];
+
+		// Conditionally add line numbers
+		if (showLineNumbers) {
+			extensions.push(lineNumbers());
+		}
+
 		const startState = EditorState.create({
 			doc: value,
-			extensions: [
+			extensions
+		});
+
+		editorView = new EditorView({
+			state: startState,
+			parent: editorElement
+		});
+	});
+
+	onDestroy(() => {
+		editorView?.destroy();
+	});
+
+	// Update editor when value changes externally
+	$effect(() => {
+		if (editorView && editorView.state.doc.toString() !== value) {
+			editorView.dispatch({
+				changes: {
+					from: 0,
+					to: editorView.state.doc.length,
+					insert: value
+				}
+			});
+		}
+	});
+
+	// Recreate editor when showLineNumbers changes
+	$effect(() => {
+		// Only recreate if editor already exists (not initial mount)
+		if (editorView && editorElement) {
+			const currentValue = editorView.state.doc.toString();
+			editorView.destroy();
+
+			const extensions = [
 				markdown(),
 				history(),
 				keymap.of([
@@ -272,30 +382,28 @@
 					},
 					'.cm-selectionBackground, .cm-focused .cm-selectionBackground': {
 						backgroundColor: '#3f3f46' // zinc-700
+					},
+					'.cm-gutters': {
+						backgroundColor: '#27272a', // zinc-800
+						color: '#71717a', // zinc-500
+						border: 'none'
 					}
 				})
-			]
-		});
+			];
 
-		editorView = new EditorView({
-			state: startState,
-			parent: editorElement
-		});
-	});
+			// Conditionally add line numbers
+			if (showLineNumbers) {
+				extensions.push(lineNumbers());
+			}
 
-	onDestroy(() => {
-		editorView?.destroy();
-	});
+			const startState = EditorState.create({
+				doc: currentValue,
+				extensions
+			});
 
-	// Update editor when value changes externally
-	$effect(() => {
-		if (editorView && editorView.state.doc.toString() !== value) {
-			editorView.dispatch({
-				changes: {
-					from: 0,
-					to: editorView.state.doc.length,
-					insert: value
-				}
+			editorView = new EditorView({
+				state: startState,
+				parent: editorElement
 			});
 		}
 	});
