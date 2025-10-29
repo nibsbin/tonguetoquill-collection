@@ -10,7 +10,12 @@
 	import Sheet from '$lib/components/ui/sheet.svelte';
 	import SheetTrigger from '$lib/components/ui/sheet-trigger.svelte';
 	import SheetContent from '$lib/components/ui/sheet-content.svelte';
-	import Dialog from '$lib/components/Dialog.svelte';
+	import { Root as Dialog, Portal, Close } from '$lib/components/ui/dialog.svelte';
+	import DialogContent from '$lib/components/ui/dialog-content.svelte';
+	import DialogHeader from '$lib/components/ui/dialog-header.svelte';
+	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
+	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
+	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { onMount } from 'svelte';
 
@@ -329,34 +334,49 @@
 {/if}
 
 <!-- Delete Confirmation Dialog -->
-<Dialog
-	open={deleteDialogOpen}
-	title="Delete Document"
-	description="Are you sure you want to delete this document? This action cannot be undone."
-	onClose={cancelDelete}
->
+<Dialog bind:open={deleteDialogOpen}>
 	{#snippet children()}
-		<div class="flex justify-end gap-2">
-			<Button
-				variant="ghost"
-				size="sm"
-				class="text-muted-foreground hover:bg-accent hover:text-foreground"
-				onclick={cancelDelete}
-			>
-				{#snippet children()}
-					Cancel
-				{/snippet}
-			</Button>
-			<Button
-				variant="default"
-				size="sm"
-				class="bg-red-600 text-white hover:bg-red-700"
-				onclick={confirmDelete}
-			>
-				{#snippet children()}
-					Delete
-				{/snippet}
-			</Button>
-		</div>
+		<DialogContent>
+			{#snippet children()}
+				<DialogHeader>
+					{#snippet children()}
+						<DialogTitle>
+							{#snippet children()}
+								Delete Document
+							{/snippet}
+						</DialogTitle>
+						<DialogDescription>
+							{#snippet children()}
+								Are you sure you want to delete this document? This action cannot be undone.
+							{/snippet}
+						</DialogDescription>
+					{/snippet}
+				</DialogHeader>
+				<DialogFooter>
+					{#snippet children()}
+						<Button
+							variant="ghost"
+							size="sm"
+							class="text-muted-foreground hover:bg-accent hover:text-foreground"
+							onclick={cancelDelete}
+						>
+							{#snippet children()}
+								Cancel
+							{/snippet}
+						</Button>
+						<Button
+							variant="default"
+							size="sm"
+							class="bg-red-600 text-white hover:bg-red-700"
+							onclick={confirmDelete}
+						>
+							{#snippet children()}
+								Delete
+							{/snippet}
+						</Button>
+					{/snippet}
+				</DialogFooter>
+			{/snippet}
+		</DialogContent>
 	{/snippet}
 </Dialog>
