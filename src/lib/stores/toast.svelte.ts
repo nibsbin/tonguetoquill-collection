@@ -1,63 +1,23 @@
 /**
- * Toast notification store using Svelte 5 runes
+ * Toast notification using svelte-sonner
  */
 
-export type ToastType = 'success' | 'error' | 'info' | 'warning';
+import { toast as sonner } from 'svelte-sonner';
 
-export interface Toast {
-	id: string;
-	message: string;
-	type: ToastType;
-	duration?: number;
-}
+export const toastStore = {
+	success(message: string) {
+		sonner.success(message);
+	},
 
-class ToastStore {
-	private state = $state<{ toasts: Toast[] }>({
-		toasts: []
-	});
+	error(message: string) {
+		sonner.error(message);
+	},
 
-	get toasts() {
-		return this.state.toasts;
+	info(message: string) {
+		sonner.info(message);
+	},
+
+	warning(message: string) {
+		sonner.warning(message);
 	}
-
-	show(message: string, type: ToastType = 'info', duration: number = 5000) {
-		const id = `toast-${Date.now()}-${Math.random()}`;
-		const toast: Toast = { id, message, type, duration };
-
-		this.state.toasts = [...this.state.toasts, toast];
-
-		if (duration > 0) {
-			setTimeout(() => {
-				this.dismiss(id);
-			}, duration);
-		}
-
-		return id;
-	}
-
-	success(message: string, duration?: number) {
-		return this.show(message, 'success', duration);
-	}
-
-	error(message: string, duration?: number) {
-		return this.show(message, 'error', duration);
-	}
-
-	info(message: string, duration?: number) {
-		return this.show(message, 'info', duration);
-	}
-
-	warning(message: string, duration?: number) {
-		return this.show(message, 'warning', duration);
-	}
-
-	dismiss(id: string) {
-		this.state.toasts = this.state.toasts.filter((toast) => toast.id !== id);
-	}
-
-	clear() {
-		this.state.toasts = [];
-	}
-}
-
-export const toastStore = new ToastStore();
+};
