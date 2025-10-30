@@ -76,6 +76,16 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 
 ---
 
+### [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md)
+
+**UX Improvements 2025**
+
+Specifications for UX enhancements including Document Info dialog, keyboard shortcuts removal, and minimal markdown toolbar redesign.
+
+**Topics**: Document Info dialog (metadata and statistics display), keyboard shortcuts removal (rely on semantic HTML and CodeMirror), minimal markdown toolbar (streamlined formatting buttons), accessibility improvements
+
+---
+
 ## Design Principles
 
 ### 1. SvelteKit 5 Best Practices
