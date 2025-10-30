@@ -144,11 +144,13 @@
 
 {#snippet sidebarContent()}
 	<!-- Hamburger Menu and Title -->
-	<div class="relative flex h-12 items-center px-2">
+	<div
+		class="relative flex items-center {isExpanded ? 'h-12 px-2' : 'justify-center py-2'}"
+	>
 		<Button
 			variant="ghost"
 			size="icon"
-			class="flex-shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
+			class="h-8 w-8 flex-shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
 			onclick={handleToggle}
 			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 		>
@@ -168,23 +170,27 @@
 	</div>
 
 	<!-- Logo centered below -->
-	<div class="relative flex h-11 items-center justify-center overflow-hidden">
+	<div
+		class="relative flex items-center justify-center overflow-hidden {isExpanded ? 'h-11' : 'py-2'}"
+	>
 		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-7 flex-shrink-0" />
 	</div>
 
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div class="flex-1 overflow-hidden px-2">
-		<div class="p-2">
+	<div
+		class="flex-1 overflow-hidden {isExpanded ? 'px-2' : ''}"
+	>
+		<div class="{isExpanded ? 'p-2' : 'flex flex-col items-center py-2'}">
 			<Button
 				variant="ghost"
-				class="h-9 w-full justify-start px-4 py-2 text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="w-full {isExpanded ? 'h-9 justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
 				{#snippet children()}
-					<Plus class="mr-2 h-4 w-4 flex-shrink-0" />
+					<Plus class="{isExpanded ? 'mr-2' : ''} h-4 w-4 flex-shrink-0" />
 					{#if isExpanded}
 						<span class="animate-in fade-in transition-opacity duration-300">New File</span>
 					{/if}
@@ -255,17 +261,19 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="space-y-1 border-t border-border px-2 pb-1">
+	<div
+		class="border-t border-border {isExpanded ? 'space-y-1 px-2 pb-1' : 'flex flex-col items-center gap-0 py-2'}"
+	>
 		<!-- User Profile Button -->
 		{#if user}
 			<Button
 				variant="ghost"
-				class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="{isExpanded ? 'h-9 w-full justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
 				{#snippet children()}
-					<User class="mr-2 h-5 w-5 flex-shrink-0" />
+					<User class="{isExpanded ? 'mr-2' : ''} h-5 w-5 flex-shrink-0" />
 					{#if isExpanded}
 						<span class="animate-in fade-in truncate transition-opacity duration-300">
 							{user.email}
@@ -278,15 +286,16 @@
 		<!-- Settings Gear Button -->
 		<Popover bind:open={popoverOpen}>
 			{#snippet children()}
-				<PopoverTrigger>
-					{#snippet children()}
+				<PopoverTrigger asChild>
+					{#snippet children({ builder })}
 						<Button
 							variant="ghost"
-							class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+							class="{isExpanded ? 'h-9 w-full justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							aria-label="Settings"
+							{...builder}
 						>
 							{#snippet children()}
-								<Settings class="mr-2 h-5 w-5 flex-shrink-0" />
+								<Settings class="{isExpanded ? 'mr-2' : ''} h-5 w-5 flex-shrink-0" />
 								{#if isExpanded}
 									<span class="animate-in fade-in transition-opacity duration-300">Settings</span>
 								{/if}
