@@ -60,12 +60,17 @@
 	:global(.sidebar-button-slot) {
 		/* Square in collapsed state, expands horizontally when sidebar expands */
 		height: var(--sidebar-slot-height);
-		/* Flexbox for centering button */
+		/* Flexbox for alignment */
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		/* Consistent padding */
-		padding: var(--sidebar-padding);
+		justify-content: flex-start;
+		/* Fixed left padding to keep button visually centered in collapsed state */
+		padding-left: var(--sidebar-button-spacing);
+		/* Top/bottom padding */
+		padding-top: var(--sidebar-padding);
+		padding-bottom: var(--sidebar-padding);
+		/* Right padding matches left for symmetry */
+		padding-right: var(--sidebar-button-spacing);
 		/* Prevent shrinking */
 		flex-shrink: 0;
 	}
@@ -81,8 +86,8 @@
 		justify-content: center;
 		/* Prevent shrinking */
 		flex-shrink: 0;
-		/* Smooth transitions */
-		transition: all 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
+		/* Smooth transitions - only transition width, not position */
+		transition: width 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
 	}
 
 	/* Layer 2: Button Element (with label, expands horizontally) */
