@@ -6,9 +6,9 @@
 		Code,
 		List,
 		ListOrdered,
-		Quote,
 		Link,
-		Save
+		Save,
+		ChevronDown
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
@@ -26,30 +26,48 @@
 	class="flex min-h-11 items-center justify-between gap-1 border-b border-border bg-surface-elevated px-2"
 >
 	<div class="flex items-center gap-1">
+		<!-- Frontmatter Toggle Button (stub) -->
+		<Button
+			variant="ghost"
+			size="sm"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			onclick={() => onFormat('toggleFrontmatter')}
+			title="Toggle Frontmatter"
+		>
+			{#snippet children()}
+				<ChevronDown class="h-4 w-4" />
+			{/snippet}
+		</Button>
+
+		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
+
+		<!-- Bold -->
 		<Button
 			variant="ghost"
 			size="sm"
 			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('bold')}
-			title="Bold (Ctrl+B)"
+			title="Bold"
 		>
 			{#snippet children()}
 				<Bold class="h-4 w-4" />
 			{/snippet}
 		</Button>
 
+		<!-- Italic -->
 		<Button
 			variant="ghost"
 			size="sm"
 			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('italic')}
-			title="Italic (Ctrl+I)"
+			title="Italic"
 		>
 			{#snippet children()}
 				<Italic class="h-4 w-4" />
 			{/snippet}
 		</Button>
 
+		<!-- Strikethrough -->
 		<Button
 			variant="ghost"
 			size="sm"
@@ -62,46 +80,35 @@
 			{/snippet}
 		</Button>
 
-		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
-
+		<!-- Code (inline) -->
 		<Button
 			variant="ghost"
 			size="sm"
 			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('code')}
-			title="Code"
+			title="Inline Code"
 		>
 			{#snippet children()}
 				<Code class="h-4 w-4" />
 			{/snippet}
 		</Button>
 
+		<!-- Hyperlink -->
 		<Button
 			variant="ghost"
 			size="sm"
 			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
-			onclick={() => onFormat('quote')}
-			title="Quote"
+			onclick={() => onFormat('link')}
+			title="Hyperlink"
 		>
 			{#snippet children()}
-				<Quote class="h-4 w-4" />
+				<Link class="h-4 w-4" />
 			{/snippet}
 		</Button>
 
 		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
 
-		<Button
-			variant="ghost"
-			size="sm"
-			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
-			onclick={() => onFormat('bulletList')}
-			title="Bullet List"
-		>
-			{#snippet children()}
-				<List class="h-4 w-4" />
-			{/snippet}
-		</Button>
-
+		<!-- Numbered List -->
 		<Button
 			variant="ghost"
 			size="sm"
@@ -114,17 +121,16 @@
 			{/snippet}
 		</Button>
 
-		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
-
+		<!-- Bullet List -->
 		<Button
 			variant="ghost"
 			size="sm"
 			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
-			onclick={() => onFormat('link')}
-			title="Link"
+			onclick={() => onFormat('bulletList')}
+			title="Bullet List"
 		>
 			{#snippet children()}
-				<Link class="h-4 w-4" />
+				<List class="h-4 w-4" />
 			{/snippet}
 		</Button>
 	</div>
@@ -139,7 +145,7 @@
 					? 'text-blue-400'
 					: ''}"
 				onclick={onManualSave}
-				title="Save (Ctrl+S)"
+				title="Save"
 				disabled={!isDirty}
 			>
 				{#snippet children()}

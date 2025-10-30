@@ -1,10 +1,128 @@
-# UX Improvements 2025 - Implementation Plan
+# UX Improvements 2025 - Implementation Debrief
 
 ## Overview
 
-This plan outlines the implementation steps for UX improvements including a Document Info dialog, keyboard shortcuts removal, and minimal markdown toolbar redesign.
+This document records the implementation of UX improvements including a Document Info dialog, keyboard shortcuts removal, and minimal markdown toolbar redesign.
 
 **Design Reference**: [UX_IMPROVEMENTS_2025.md](../designs/frontend/UX_IMPROVEMENTS_2025.md)
+
+**Status**: ✅ **COMPLETED** - All phases successfully implemented
+
+**Implementation Date**: October 30, 2025
+
+## Implementation Summary
+
+All four phases were successfully completed following the implementation plan:
+
+1. ✅ **Phase 2: Remove Keyboard Shortcuts Menu Item** - Removed "Keyboard Shortcuts" menu item and handler from TopMenu.svelte
+2. ✅ **Phase 3: Update Toolbar Tooltips** - Removed keyboard hints from Bold, Italic, and Save button tooltips
+3. ✅ **Phase 4: Minimal Markdown Toolbar Redesign** - Redesigned toolbar with new button layout and inline code functionality
+4. ✅ **Phase 1: Document Info Dialog** - Created and integrated DocumentInfoDialog component with real-time statistics
+
+## Files Modified
+
+- `src/lib/components/TopMenu.svelte` - Removed keyboard shortcuts menu item and handler, added Document Info callback prop
+- `src/lib/components/EditorToolbar.svelte` - Redesigned toolbar layout, updated tooltips, added frontmatter toggle button
+- `src/lib/components/MarkdownEditor.svelte` - Changed code block to inline code, added frontmatter toggle stub
+- `src/lib/components/DocumentEditor.svelte` - Added content change callback
+- `src/routes/+page.svelte` - Integrated DocumentInfoDialog component
+
+## Files Created
+
+- `src/lib/components/DocumentInfoDialog.svelte` - New dialog component for displaying document metadata and statistics
+
+## Implementation Notes
+
+### Successes
+
+1. **Dialog Integration**: The DocumentInfoDialog component was successfully created using the bits-ui Dialog primitives (Root, Portal) with shadcn-svelte styled components
+2. **Positioning**: Dialog correctly positions on the right side on desktop (>1024px) using custom Tailwind classes
+3. **Statistics Calculation**: Real-time statistics (characters, words, lines) correctly update based on editor content
+4. **Date Formatting**: Used `toLocaleString` with options for proper date/time formatting
+5. **Toolbar Redesign**: Successfully reordered buttons and added frontmatter toggle stub
+6. **Inline Code**: Code button now wraps selection with backticks instead of creating code blocks
+7. **Clean Removal**: Keyboard shortcuts menu item and Quote button cleanly removed without side effects
+
+### Challenges Encountered
+
+1. **Dialog Import Path**: Initial attempt to import Dialog components as `* as Dialog from '$lib/components/ui/dialog'` failed. Solution: Import individual components (Root, Portal, DialogContent, etc.) directly from their .svelte files
+2. **Content Propagation**: Needed to thread content through the component hierarchy (DocumentEditor → +page.svelte → DocumentInfoDialog) to enable real-time statistics
+
+### Deviations from Plan
+
+None. Implementation followed the plan exactly as specified.
+
+## Testing Results
+
+All manual testing completed successfully:
+
+### Document Info Dialog
+- ✅ Opens from More Actions menu
+- ✅ Displays correct document name
+- ✅ Formats created/modified dates correctly
+- ✅ Calculates statistics accurately (tested with sample text: 61 chars, 10 words, 1 line)
+- ✅ Dismisses via X button
+- ✅ Positions correctly on desktop (right side over preview area)
+- ✅ Dialog is accessible and properly labeled
+
+### Keyboard Shortcuts Removal
+- ✅ "Keyboard Shortcuts" menu item removed
+- ✅ No console errors
+- ✅ Remaining menu items display correctly
+- ✅ CodeMirror shortcuts still work (Ctrl+B, Ctrl+I, Ctrl+S)
+
+### Minimal Toolbar
+- ✅ Frontmatter toggle button appears and logs to console
+- ✅ Bold, Italic, Strikethrough buttons work correctly
+- ✅ Inline code button wraps with backticks (tested: `` `text` ``)
+- ✅ Hyperlink button works correctly
+- ✅ Numbered list button works correctly
+- ✅ Bullet list button works correctly
+- ✅ Quote button removed
+- ✅ Code block button removed (replaced with inline code)
+- ✅ Separators positioned correctly (2 total)
+- ✅ Manual save button remains on right side
+- ✅ All tooltips display without keyboard hints
+
+## Build and Lint Status
+
+- ✅ Build: Successful
+- ⚠️ Lint: 4 markdown files have formatting issues (pre-existing, unrelated to implementation)
+
+## Screenshots
+
+Toolbar redesign showing new button layout:
+![Toolbar](https://github.com/user-attachments/assets/18a124c1-3bc6-4449-b204-070a17f166f3)
+
+More Actions menu without Keyboard Shortcuts:
+![Menu](https://github.com/user-attachments/assets/8a28a441-a1b2-4ceb-95eb-d6a490a28421)
+
+Document Info dialog with statistics:
+![Dialog](https://github.com/user-attachments/assets/61a38595-6f8b-4160-8fbd-bdb368b5f269)
+
+## Accessibility
+
+- ✅ Dialog has proper `role="dialog"` attribute
+- ✅ Dialog title properly labeled
+- ✅ Close button has `aria-label="Close dialog"`
+- ✅ Statistics presented as a list with `role="list"`
+- ✅ Focus management working (close button receives focus on open)
+
+## Future Enhancements
+
+1. **Frontmatter Folding**: The toggle button is currently a stub logging to console. Future implementation should integrate with CodeMirror's `foldGutter` extension
+2. **Mobile Dialog Positioning**: Currently uses default centering on mobile. Consider testing and optimizing for various mobile viewports
+3. **Code Block Re-addition**: May want to add code block functionality back as part of a "More Formatting" dropdown in the future
+
+## Lessons Learned
+
+1. **Component Import Patterns**: When using shadcn-svelte/bits-ui components, import individual exports rather than namespace imports
+2. **State Lifting**: When child components need to share state with siblings, lifting state to the nearest common parent is the cleanest approach
+3. **Incremental Implementation**: Following the phased approach (simplest to most complex) allowed for early wins and reduced risk
+
+---
+
+**Original Implementation Plan**: See sections below for detailed specifications that were followed during implementation.
 
 ## Prerequisites
 
