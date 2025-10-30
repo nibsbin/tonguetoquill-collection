@@ -17,6 +17,65 @@
 
 	let editorElement: HTMLDivElement;
 	let editorView: EditorView | null = null;
+	let isDarkTheme = $state(false);
+
+	// Extract editor creation logic to follow DRY principles
+	function createEditor(content: string) {
+		const extensions = [
+			markdown(),
+			history(),
+			keymap.of([
+				...defaultKeymap,
+				...historyKeymap,
+				{
+					key: 'Mod-b',
+					run: () => {
+						handleBold();
+						return true;
+					}
+				},
+				{
+					key: 'Mod-i',
+					run: () => {
+						handleItalic();
+						return true;
+					}
+				},
+				{
+					key: 'Mod-s',
+					preventDefault: true,
+					run: () => {
+						if (onSave) {
+							onSave();
+						}
+						return true;
+					}
+				}
+			]),
+			EditorView.updateListener.of((update) => {
+				if (update.docChanged) {
+					onChange(update.state.doc.toString());
+				}
+			}),
+			EditorView.lineWrapping,
+			createEditorTheme()
+		];
+
+		// Conditionally add line numbers
+		if (showLineNumbers) {
+			extensions.push(lineNumbers());
+		}
+
+		const startState = EditorState.create({
+			doc: content,
+			extensions
+		});
+
+		return new EditorView({
+			state: startState,
+			parent: editorElement
+		});
+	}
 
 	function applyFormatting(prefix: string, suffix: string = prefix) {
 		if (!editorView) return;
@@ -210,60 +269,32 @@
 	}
 	
 	onMount(() => {
-		const extensions = [
-			markdown(),
-			history(),
-			keymap.of([
-				...defaultKeymap,
-				...historyKeymap,
-				{
-					key: 'Mod-b',
-					run: () => {
-						handleBold();
-						return true;
-					}
-				},
-				{
-					key: 'Mod-i',
-					run: () => {
-						handleItalic();
-						return true;
-					}
-				},
-				{
-					key: 'Mod-s',
-					preventDefault: true,
-					run: () => {
-						if (onSave) {
-							onSave();
-						}
-						return true;
+		// Detect initial theme
+		isDarkTheme = document.documentElement.classList.contains('dark');
+
+		// Create initial editor
+		editorView = createEditor(value);
+
+		// Watch for theme changes via MutationObserver
+		const observer = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (mutation.attributeName === 'class') {
+					const newIsDarkTheme = document.documentElement.classList.contains('dark');
+					if (isDarkTheme !== newIsDarkTheme) {
+						isDarkTheme = newIsDarkTheme;
 					}
 				}
-			]),
-			EditorView.updateListener.of((update) => {
-				if (update.docChanged) {
-					onChange(update.state.doc.toString());
-				}
-			}),
-			EditorView.lineWrapping,
-			createEditorTheme()
-		];
-
-		// Conditionally add line numbers
-		if (showLineNumbers) {
-			extensions.push(lineNumbers());
-		}
-
-		const startState = EditorState.create({
-			doc: value,
-			extensions
+			});
 		});
 
-		editorView = new EditorView({
-			state: startState,
-			parent: editorElement
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['class']
 		});
+
+		return () => {
+			observer.disconnect();
+		};
 	});
 
 	onDestroy(() => {
@@ -283,67 +314,17 @@
 		}
 	});
 
-	// Recreate editor when showLineNumbers changes
+	// Recreate editor when showLineNumbers or theme changes
 	$effect(() => {
+		// Track both showLineNumbers and isDarkTheme for reactivity
+		showLineNumbers;
+		isDarkTheme;
+
 		// Only recreate if editor already exists (not initial mount)
 		if (editorView && editorElement) {
 			const currentValue = editorView.state.doc.toString();
 			editorView.destroy();
-
-			const extensions = [
-				markdown(),
-				history(),
-				keymap.of([
-					...defaultKeymap,
-					...historyKeymap,
-					{
-						key: 'Mod-b',
-						run: () => {
-							handleBold();
-							return true;
-						}
-					},
-					{
-						key: 'Mod-i',
-						run: () => {
-							handleItalic();
-							return true;
-						}
-					},
-					{
-						key: 'Mod-s',
-						preventDefault: true,
-						run: () => {
-							if (onSave) {
-								onSave();
-							}
-							return true;
-						}
-					}
-				]),
-				EditorView.updateListener.of((update) => {
-					if (update.docChanged) {
-						onChange(update.state.doc.toString());
-					}
-				}),
-				EditorView.lineWrapping,
-				createEditorTheme()
-			];
-
-			// Conditionally add line numbers
-			if (showLineNumbers) {
-				extensions.push(lineNumbers());
-			}
-
-			const startState = EditorState.create({
-				doc: currentValue,
-				extensions
-			});
-
-			editorView = new EditorView({
-				state: startState,
-				parent: editorElement
-			});
+			editorView = createEditor(currentValue);
 		}
 	});
 </script>
