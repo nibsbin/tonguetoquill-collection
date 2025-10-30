@@ -203,18 +203,18 @@
 				<div class="space-y-px overflow-x-hidden overflow-y-auto" style="max-height: calc(100vh - 300px);">
 					{#each documentStore.documents as doc (doc.id)}
 						<div
-							class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 transition-transform {doc.id === documentStore.activeDocumentId ? 'bg-accent active:scale-100' : 'hover:bg-accent/50 active:scale-[0.985]'}"
+							class="group flex h-8 items-center gap-1 rounded pr-2 transition-transform {doc.id === documentStore.activeDocumentId ? 'bg-accent active:scale-100' : 'hover:bg-accent/50 active:scale-[0.985]'}"
 						>
 							<Button
 								variant="ghost"
-								class="flex-1 overflow-hidden justify-start text-xs transition-colors hover:bg-transparent {doc.id ===
+								class="flex-1 overflow-hidden justify-start p-2 text-xs transition-colors hover:bg-transparent {doc.id ===
 								documentStore.activeDocumentId
 									? 'font-medium text-foreground'
 									: 'text-muted-foreground hover:text-foreground'}"
 								onclick={() => handleFileSelect(doc.id)}
 							>
 								{#snippet children()}
-									<FileText class="mr-2 h-4 w-4 shrink-0" />
+									<FileText class="sidebar-icon h-5 w-5" />
 									<span class="truncate transition-opacity duration-300">
 										{doc.name}
 									</span>
@@ -223,7 +223,7 @@
 							<Button
 								variant="ghost"
 								size="icon"
-								class="h-8 w-8 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
+								class="h-5 w-5 shrink-0 p-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
 								onclick={(e) => {
 									e.stopPropagation();
 									handleDeleteFile(doc.id);
@@ -231,7 +231,7 @@
 								aria-label="Delete {doc.name}"
 							>
 								{#snippet children()}
-									<Trash2 class="h-4 w-4" />
+									<Trash2 class="h-5 w-5" />
 								{/snippet}
 							</Button>
 						</div>
