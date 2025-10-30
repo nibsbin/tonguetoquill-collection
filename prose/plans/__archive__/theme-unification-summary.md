@@ -5,12 +5,14 @@
 This document provides a high-level overview of the theme unification project for tonguetoquill-web.
 
 ### Related Documents
+
 - **Design Document**: [`prose/designs/theme-system-design.md`](../designs/theme-system-design.md) - Architecture and technical approach
 - **Implementation Plan**: [`prose/plans/theme-unification-plan.md`](./theme-unification-plan.md) - Step-by-step implementation guide
 
 ## Problem Statement
 
 Currently, tonguetoquill-web has:
+
 - **Hardcoded colors**: Zinc palette colors (zinc-900, zinc-800, etc.) scattered throughout components
 - **Inconsistent theming**: CodeMirror editor uses inline hex values, components use Tailwind classes
 - **No theme switching**: Cannot easily toggle between light/dark modes
@@ -20,6 +22,7 @@ Currently, tonguetoquill-web has:
 ## Solution Overview
 
 Create a centralized theme system using CSS custom properties that:
+
 1. **Defines semantic color tokens** (e.g., `--color-background`, `--color-foreground`)
 2. **Supports light and dark themes** with a simple class toggle
 3. **Integrates with Tailwind CSS** via `@theme inline` directive
@@ -29,18 +32,23 @@ Create a centralized theme system using CSS custom properties that:
 ## Key Design Decisions
 
 ### 1. CSS Custom Properties as Foundation
+
 **Why**: Native browser support, runtime theme switching, accessible from both CSS and JavaScript
 
 ### 2. Semantic Token Naming
+
 **Why**: `--color-background` is more maintainable than `--color-zinc-900`, allows changing actual colors without renaming
 
 ### 3. Keep svelte-sonner for Toasts
+
 **Why**: Already well-integrated, excellent UX, just needs theme token updates
 
 ### 4. Replace Dialog with shadcn-svelte
+
 **Why**: Better accessibility, focus management, keyboard navigation, and consistency with other UI components
 
 ### 5. Use mode-watcher for Theme Management
+
 **Why**: Already a dependency, handles system preferences, localStorage persistence, and provides Svelte stores
 
 ## Architecture Diagram
@@ -71,6 +79,7 @@ Create a centralized theme system using CSS custom properties that:
 ## Token Structure Preview
 
 ### Color Tokens (Semantic)
+
 ```css
 /* Surface colors */
 --color-background
@@ -99,11 +108,13 @@ Create a centralized theme system using CSS custom properties that:
 ### Usage Examples
 
 **Tailwind CSS**:
+
 ```html
-<div class="bg-background text-foreground border-border">
+<div class="border-border bg-background text-foreground"></div>
 ```
 
 **CodeMirror**:
+
 ```typescript
 import { createEditorTheme } from '$lib/utils/editor-theme';
 
@@ -112,16 +123,16 @@ const theme = createEditorTheme(); // Reads CSS variables
 
 ## Implementation Phases (Summary)
 
-| Phase | What | Duration | Priority |
-|-------|------|----------|----------|
-| 1 | Define CSS custom properties | 2-3h | Critical |
-| 2 | Tailwind integration | 1-2h | Critical |
-| 3 | CodeMirror theme utils | 2-3h | Critical |
-| 4 | Theme switching setup | 1-2h | High |
-| 5 | Migrate components | 4-6h | High |
-| 6 | Install shadcn Dialog | 2-3h | Medium |
-| 7 | Add theme toggle UI | 1-2h | Medium |
-| 8 | Optional enhancements | 2-4h | Low |
+| Phase | What                         | Duration | Priority |
+| ----- | ---------------------------- | -------- | -------- |
+| 1     | Define CSS custom properties | 2-3h     | Critical |
+| 2     | Tailwind integration         | 1-2h     | Critical |
+| 3     | CodeMirror theme utils       | 2-3h     | Critical |
+| 4     | Theme switching setup        | 1-2h     | High     |
+| 5     | Migrate components           | 4-6h     | High     |
+| 6     | Install shadcn Dialog        | 2-3h     | Medium   |
+| 7     | Add theme toggle UI          | 1-2h     | Medium   |
+| 8     | Optional enhancements        | 2-4h     | Low      |
 
 **Total**: 15-25 hours  
 **MVP**: Phases 1-6 (13-19 hours)
@@ -129,31 +140,35 @@ const theme = createEditorTheme(); // Reads CSS variables
 ## Component Changes Summary
 
 ### To Replace
+
 - ❌ `Dialog.svelte` → ✅ shadcn-svelte Dialog
 
 ### To Keep (with token updates)
+
 - ✅ `Toast.svelte` (svelte-sonner wrapper)
 - ✅ All other custom components (domain-specific)
 
 ### To Update
+
 - 📝 All 28 `.svelte` files using `zinc-*` colors
 - 📝 MarkdownEditor.svelte (remove inline hex colors)
 - 📝 All shadcn-svelte UI components (use semantic tokens)
 
 ## Migration Mapping
 
-| Old Class | New Class | Context |
-|-----------|-----------|---------|
-| `bg-zinc-900` | `bg-background` | Dark backgrounds |
-| `bg-zinc-800` | `bg-surface-elevated` | Elevated surfaces |
-| `bg-zinc-700` | `bg-accent` | Hover states |
-| `text-zinc-100` | `text-foreground` | Primary text (dark) |
-| `text-zinc-400` | `text-muted-foreground` | Secondary text |
-| `border-zinc-700` | `border-border` | Borders |
+| Old Class         | New Class               | Context             |
+| ----------------- | ----------------------- | ------------------- |
+| `bg-zinc-900`     | `bg-background`         | Dark backgrounds    |
+| `bg-zinc-800`     | `bg-surface-elevated`   | Elevated surfaces   |
+| `bg-zinc-700`     | `bg-accent`             | Hover states        |
+| `text-zinc-100`   | `text-foreground`       | Primary text (dark) |
+| `text-zinc-400`   | `text-muted-foreground` | Secondary text      |
+| `border-zinc-700` | `border-border`         | Borders             |
 
 ## Testing Strategy
 
 ### For Each Component
+
 1. ✅ Visual check in light mode
 2. ✅ Visual check in dark mode
 3. ✅ Toggle theme while viewing
@@ -161,6 +176,7 @@ const theme = createEditorTheme(); // Reads CSS variables
 5. ✅ Color contrast (WCAG AA)
 
 ### Critical Tests
+
 - [ ] Editor colors update on theme change
 - [ ] No hardcoded colors remain (`grep -r "zinc-" src`)
 - [ ] Theme preference persists
@@ -170,18 +186,21 @@ const theme = createEditorTheme(); // Reads CSS variables
 ## Benefits
 
 ### For Developers
+
 - 🎯 **Single source of truth** for colors
 - 🔧 **Easy maintenance** - update one variable, not 50+ files
 - 🎨 **Theme iterations** quick and safe
 - 📖 **Better code readability** with semantic names
 
 ### For Users
+
 - 🌓 **Light/dark mode** support
 - ♿ **Better accessibility** with consistent contrast ratios
 - 💾 **Persistent preferences** across sessions
 - 🎭 **Consistent design** throughout the app
 
 ### For the Project
+
 - 📊 **Maintainable codebase** easier to onboard new developers
 - 🚀 **Extensible system** ready for new themes
 - ✅ **Standards compliance** WCAG 2.1 AA
@@ -189,12 +208,12 @@ const theme = createEditorTheme(); // Reads CSS variables
 
 ## Risk Mitigation
 
-| Risk | Mitigation |
-|------|------------|
-| Visual regressions | Manual testing after each component |
-| Breaking editor | Keep CodeMirror changes isolated, test extensively |
-| Accessibility issues | Contrast checker validation, keyboard testing |
-| Migration errors | Incremental approach, one component at a time |
+| Risk                 | Mitigation                                         |
+| -------------------- | -------------------------------------------------- |
+| Visual regressions   | Manual testing after each component                |
+| Breaking editor      | Keep CodeMirror changes isolated, test extensively |
+| Accessibility issues | Contrast checker validation, keyboard testing      |
+| Migration errors     | Incremental approach, one component at a time      |
 
 ## Success Metrics
 

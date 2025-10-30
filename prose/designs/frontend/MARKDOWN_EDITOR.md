@@ -601,18 +601,21 @@ Per [DESIGN_SYSTEM.md - Theme System](./DESIGN_SYSTEM.md#theme-system):
 - Syntax colors: Balanced contrast for readability
 
 **Dark Theme Values:**
+
 - Background: #18181b (zinc-900 equivalent)
 - Text: #f4f4f5 (zinc-100 equivalent)
 - Selection: #3f3f46 (zinc-700 equivalent) with opacity
 - Active line: #27272a (zinc-800 equivalent)
 
 **Light Theme Values:**
+
 - Background: #ffffff (white)
 - Text: #09090b (near-black)
 - Selection: #e4e4e7 (light gray)
 - Active line: #f4f4f5 (very light gray)
 
 **Implementation:**
+
 - Theme utility in `src/lib/utils/editor-theme.ts` reads CSS variables at runtime
 - Editor theme updates automatically when app theme changes
 - See `prose/debriefs/theme-unification-implementation.md` for details

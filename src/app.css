@@ -15,11 +15,15 @@
 	--sidebar-icon-size: 1.5rem; /* 24px - size of icons within buttons */
 	--sidebar-collapsed-width: 3.5rem; /* 56px - collapsed sidebar width (40px button + 8px padding each side) */
 	--sidebar-expanded-width: 18rem; /* 288px - expanded sidebar width */
-	
+
 	/* Semantic sidebar button slot tokens (DRY - derived from base tokens) */
-	--sidebar-slot-width-collapsed: var(--sidebar-collapsed-width); /* Slot width in collapsed state */
+	--sidebar-slot-width-collapsed: var(
+		--sidebar-collapsed-width
+	); /* Slot width in collapsed state */
 	--sidebar-slot-height: var(--sidebar-collapsed-width); /* Slot height (square aspect ratio) */
-	--sidebar-button-spacing: calc((var(--sidebar-collapsed-width) - var(--sidebar-button-size)) / 2); /* 8px - auto-calculated centering offset */
+	--sidebar-button-spacing: calc(
+		(var(--sidebar-collapsed-width) - var(--sidebar-button-size)) / 2
+	); /* 8px - auto-calculated centering offset */
 
 	/* Top menu spacing tokens */
 	--top-menu-height: var(--sidebar-collapsed-width); /* Aligned with sidebar */
@@ -144,9 +148,10 @@ body {
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
-	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+	transition:
+		background-color 200ms ease-in-out,
+		color 200ms ease-in-out;
 }
-
 
 /* Screen reader only utility */
 .sr-only {

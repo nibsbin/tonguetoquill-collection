@@ -16,7 +16,7 @@ const config = {
 	onwarn: (warning, handler) => {
 		// Suppress the CSS unused selector warning.
 		if (warning.code === 'css_unused_selector') {
-		return;
+			return;
 		}
 		// Let the default handler process other warnings.
 		handler(warning);

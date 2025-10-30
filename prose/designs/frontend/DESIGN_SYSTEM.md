@@ -449,6 +449,7 @@ This section outlines the centralized theme architecture for tonguetoquill-web t
 All theme tokens are defined as CSS custom properties in `src/app.css`, following the Tailwind CSS 4.0 `@theme inline` pattern.
 
 **Rationale**: CSS custom properties provide:
+
 - Runtime theme switching without rebuilding
 - Access from both CSS (Tailwind) and JavaScript (CodeMirror)
 - Browser-native support with excellent performance
@@ -457,6 +458,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 #### Theme Token Structure
 
 **Color Tokens**: Define semantic color tokens for all UI elements including surfaces, interactive states, semantic colors, UI elements, and editor-specific colors. These include:
+
 - Surface colors (background, foreground, surface, surface-elevated)
 - Interactive states (primary, secondary with foreground variants)
 - Semantic colors (muted, accent, destructive with foreground variants)
@@ -464,6 +466,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 - Editor-specific (background, foreground, line-active, selection, cursor, gutter colors)
 
 **Spacing & Layout Tokens**: Define responsive spacing tokens including:
+
 - Border radius scale (sm, md, lg, xl) calculated from base radius
 - Spacing scale (xs through xl) for consistent padding and margins
 - Values use CSS calc() for derived measurements from base tokens
@@ -477,8 +480,9 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 **Dark Theme**: Dark mode class overrides with inverted values (dark backgrounds, light text)
 
 **Zinc Palette Mapping**: Current zinc color scale maps to semantic tokens:
+
 - zinc-900 → background (dark mode)
-- zinc-800 → surface-elevated (dark mode)  
+- zinc-800 → surface-elevated (dark mode)
 - zinc-700 → borders (dark mode)
 - zinc-500 → muted-foreground (dark mode)
 - zinc-400/300 → secondary text variants (dark mode)
@@ -490,6 +494,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 **Approach**: Use Tailwind's `@theme inline` directive to map CSS custom properties to Tailwind utility classes.
 
 **Benefits**:
+
 - Enables usage of semantic tokens in standard Tailwind classes (e.g., `bg-background`, `text-foreground`)
 - Maintains consistency between custom properties and utility classes
 - Allows theme switching without rebuilding CSS
@@ -501,6 +506,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 **Architecture**: Create utility functions that generate CodeMirror themes from CSS custom properties at runtime.
 
 **Key Functions**:
+
 - `createEditorTheme()`: Reads computed CSS custom properties from document and applies them to CodeMirror theme configuration
 - `createReactiveEditorTheme()`: Extends basic theme with reactivity to update when theme tokens change (supports theme switching)
 
@@ -513,6 +519,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 **Library**: Use `mode-watcher` library (already in dependencies) for theme state management.
 
 **Theme Store** (`src/lib/stores/theme.svelte.ts`):
+
 - Export theme utilities: current mode, toggle function, explicit setters for light/dark/system
 - Integrates with mode-watcher's API for consistent behavior
 
@@ -523,9 +530,11 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 #### Component Migration Strategy
 
 **Replace Hardcoded Colors**: Convert all component color references from hardcoded zinc values to semantic tokens.
+
 - Example: `bg-zinc-900 text-zinc-100` becomes `bg-background text-foreground`
 
 **shadcn-svelte Component Alignment**: Update component variants to use semantic tokens:
+
 - Button variants reference primary, accent, and destructive tokens
 - Ensure hover states use token-based colors
 - Maintain consistent theming across all component states
@@ -535,6 +544,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 **TypeScript Type Definitions** (`src/lib/types/theme.ts`):
 
 Define strict types for theme tokens:
+
 - `ColorToken`: Union type of all valid color token names
 - `RadiusToken`: Union type of radius variants (sm, md, lg, xl)
 - `getThemeValue()`: Helper function to safely retrieve computed token values with type checking
@@ -548,7 +558,6 @@ This ensures compile-time validation of token usage and prevents typos in token 
 1. **Dialog.svelte** → Replace with shadcn-svelte Dialog component
    - **Reasoning**: shadcn-svelte provides a more feature-rich, accessible dialog with better keyboard navigation, focus trapping, and animation support
    - **Components needed**: dialog, dialog-content, dialog-header, dialog-title, dialog-description
-   
 2. **Toast.svelte** → Keep as-is (svelte-sonner wrapper)
    - **Reasoning**: svelte-sonner is already well-integrated and provides excellent toast functionality. The wrapper is minimal and just configures the toaster.
    - **Action**: Update wrapper to use theme tokens for consistency
@@ -563,10 +572,11 @@ This ensures compile-time validation of token usage and prevents typos in token 
 #### Existing shadcn-svelte Components
 
 Keep and update to use theme tokens:
+
 - button.svelte
-- dropdown-menu-*.svelte
-- popover-*.svelte
-- sheet-*.svelte
+- dropdown-menu-\*.svelte
+- popover-\*.svelte
+- sheet-\*.svelte
 - switch.svelte
 - separator.svelte
 - label.svelte
@@ -656,15 +666,20 @@ Synced with Tailwind configuration for unified system.
 ### Save Triggers
 
 - **Manual Save**: Ctrl/Cmd+S keyboard shortcut
-- **Auto-Save**: 7 seconds after last keystroke (when auto-save enabled in settings)
+- **Auto-Save**: 4 seconds after last keystroke (when auto-save enabled in settings)
 - **Blur Event**: When editor loses focus (optional, based on user preference)
 
 ### Auto-Save Implementation
 
-- Debounce delay: 7 seconds from last keystroke
+- **Debounce delay**: 4 seconds (4000ms) from last keystroke
+  - Balances responsiveness with system performance
+  - Reduces server load compared to shorter intervals
+  - Provides timely save feedback without being intrusive
 - Only trigger if document has unsaved changes
 - Show save status indicator (saving/saved/unsaved/error)
 - Network request timeout: 30 seconds
+
+**Note**: The 4-second debounce is the authoritative specification. See [UI_REFINEMENTS.md](./UI_REFINEMENTS.md#auto-save-configuration) for rationale and implementation details.
 
 ### Error Handling
 
