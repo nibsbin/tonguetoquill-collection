@@ -55,6 +55,7 @@
 		"clsx": "^2.1.1",
 		"lucide-svelte": "^0.548.0",
 		"marked": "^16.4.1",
+		"mode-watcher": "^1.1.0",
 		"shadcn-svelte": "^1.0.10",
 		"svelte-sonner": "^1.0.5",
 		"tailwind-merge": "^3.3.1",
