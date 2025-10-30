@@ -179,7 +179,7 @@
 		<div class="{isExpanded ? 'sidebar-padding-y' : 'pt-2'}">
 			<Button
 				variant="ghost"
-				class="sidebar-button-full w-full justify-{isExpanded ? 'start' : 'center'} overflow-hidden text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="sidebar-button-full w-full justify-start overflow-hidden text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
@@ -252,7 +252,7 @@
 		{#if user}
 			<Button
 				variant="ghost"
-				class="sidebar-button-full w-full justify-{isExpanded ? 'start' : 'center'} overflow-hidden text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="sidebar-button-full w-full justify-start overflow-hidden text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
@@ -269,7 +269,7 @@
 		<Popover bind:open={popoverOpen}>
 			{#snippet children()}
 				<PopoverTrigger
-					class="sidebar-button-full inline-flex w-full items-center justify-{isExpanded ? 'start' : 'center'} overflow-hidden rounded-md text-sm font-medium text-muted-foreground whitespace-nowrap transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+					class="sidebar-button-full inline-flex w-full items-center justify-start overflow-hidden rounded-md text-sm font-medium text-muted-foreground whitespace-nowrap transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 				>
 					{#snippet children()}
 						<Settings class="sidebar-icon h-5 w-5" />
