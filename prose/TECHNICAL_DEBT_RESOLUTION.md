@@ -152,9 +152,10 @@ Created `DESIGN_REVIEW_CHECKLIST.md` providing:
 4. `prose/designs/frontend/UI_COMPONENTS.md`
 5. `prose/designs/frontend/MARKDOWN_EDITOR.md`
 
-### New Documentation (2 files)
+### New Documentation (3 files)
 1. `prose/plans/MAINTAINABILITY_PLAN.md`
 2. `prose/DESIGN_REVIEW_CHECKLIST.md`
+3. `prose/TECHNICAL_DEBT_RESOLUTION.md` (this document)
 
 ### Plan Organization (4 files moved)
 1. `prose/plans/sidebar-redesign.md` → `__archive__/`
