@@ -39,7 +39,7 @@ prose/
 
 2. **Plan Documents** (`prose/plans/`)
    - **Purpose**: Bridge current state to desired state
-   - **Audience**: Implementers, project managers
+   - **Audience**: Implementers
    - **Lifecycle**: Active until implementation complete, then archived
    - **Level**: Tactical, phase-by-phase implementation steps
    - **Examples**: theme-unification-plan.md, sidebar-redesign.md
@@ -49,7 +49,6 @@ prose/
    - **Audience**: Future maintainers, team members
    - **Lifecycle**: Created after implementation, rarely updated
    - **Level**: Detailed, includes code snippets and file lists
-   - **Examples**: phase-6-6-technical-debt-repair.md, theme-unification-implementation.md
 
 ## Change Management Process
 
@@ -342,17 +341,12 @@ Completed plans to archive:
 1. **Immediate** (This PR):
    - ✅ Update design documents for recent changes
    - ✅ Create this maintainability plan
-   - [ ] Archive completed plans
 
-2. **Short-term** (Next 2 weeks):
+2. **Short-term**:
    - [ ] Review all design docs for completeness
    - [ ] Add missing cross-references
    - [ ] Create design review checklist template
 
-3. **Medium-term** (Next quarter):
-   - [ ] Implement documentation linter
-   - [ ] Create documentation dashboard
-   - [ ] Conduct first quarterly review
 
 ## Conclusion
 
