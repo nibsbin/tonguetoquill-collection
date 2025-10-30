@@ -144,13 +144,11 @@
 
 {#snippet sidebarContent()}
 	<!-- Hamburger Menu and Title -->
-	<div
-		class="relative flex items-center {isExpanded ? 'h-12 px-2' : 'justify-center py-2'}"
-	>
+	<div class="sidebar-section relative flex items-center">
 		<Button
 			variant="ghost"
 			size="icon"
-			class="h-8 w-8 flex-shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
+			class="sidebar-button shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
 			onclick={handleToggle}
 			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 		>
@@ -170,66 +168,54 @@
 	</div>
 
 	<!-- Logo centered below -->
-	<div
-		class="relative flex items-center justify-center overflow-hidden {isExpanded ? 'h-11' : 'py-2'}"
-	>
-		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-7 flex-shrink-0" />
+	<div class="sidebar-section-height relative flex items-center justify-center overflow-hidden">
+		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-7 shrink-0" />
 	</div>
 
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div
-		class="flex-1 overflow-hidden {isExpanded ? 'px-2' : ''}"
-	>
-		<div class="{isExpanded ? 'p-2' : 'flex flex-col items-center py-2'}">
+	<div class="sidebar-padding-x flex-1 overflow-hidden">
+		<div class="{isExpanded ? 'sidebar-padding-y' : 'pt-2'}">
 			<Button
 				variant="ghost"
-				class="w-full {isExpanded ? 'h-9 justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="sidebar-button-full w-full overflow-hidden text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] {isExpanded ? 'justify-start' : 'justify-center'}"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
 				{#snippet children()}
-					<Plus class="{isExpanded ? 'mr-2' : ''} h-4 w-4 flex-shrink-0" />
+					<Plus class="h-5 w-5 shrink-0 {isExpanded ? 'mr-2' : ''}" />
 					{#if isExpanded}
-						<span class="animate-in fade-in transition-opacity duration-300">New File</span>
+						<span class="animate-in fade-in truncate">New File</span>
 					{/if}
 				{/snippet}
 			</Button>
 
 			{#if documentStore.documents.length > 0 && isExpanded}
-				<Separator class="my-2 bg-border" />
+				<Separator class="sidebar-margin-y bg-border" />
 
 				<!-- Recents Section Header -->
-				<div
-					class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
-				>
+				<div class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2">
 					<h3 class="text-xs text-muted-foreground">Recents</h3>
 				</div>
 
 				<!-- Scrollable Recent Items -->
-				<div
-					class="space-y-px overflow-x-hidden overflow-y-auto"
-					style="max-height: calc(100vh - 300px);"
-				>
+				<div class="space-y-px overflow-x-hidden overflow-y-auto" style="max-height: calc(100vh - 300px);">
 					{#each documentStore.documents as doc (doc.id)}
 						<div
-							class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 transition-transform {doc.id ===
-							documentStore.activeDocumentId
-								? 'bg-accent active:scale-100'
-								: 'hover:bg-accent/50 active:scale-[0.985]'}"
+							class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 transition-transform {doc.id === documentStore.activeDocumentId ? 'bg-accent active:scale-100' : 'hover:bg-accent/50 active:scale-[0.985]'}"
 						>
 							<Button
 								variant="ghost"
-								class="flex-1 justify-start text-xs transition-colors hover:bg-transparent {doc.id ===
+								class="flex-1 overflow-hidden justify-start text-xs transition-colors hover:bg-transparent {doc.id ===
 								documentStore.activeDocumentId
 									? 'font-medium text-foreground'
 									: 'text-muted-foreground hover:text-foreground'}"
 								onclick={() => handleFileSelect(doc.id)}
 							>
 								{#snippet children()}
-									<FileText class="mr-2 h-4 w-4 flex-shrink-0" />
-									<span class="animate-in fade-in truncate transition-opacity duration-300">
+									<FileText class="mr-2 h-4 w-4 shrink-0" />
+									<span class="truncate transition-opacity duration-300">
 										{doc.name}
 									</span>
 								{/snippet}
@@ -237,7 +223,7 @@
 							<Button
 								variant="ghost"
 								size="icon"
-								class="h-8 w-8 flex-shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
+								class="h-8 w-8 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
 								onclick={(e) => {
 									e.stopPropagation();
 									handleDeleteFile(doc.id);
@@ -261,23 +247,19 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div
-		class="border-t border-border {isExpanded ? 'space-y-1 px-2 pb-1' : 'flex flex-col items-center gap-0 py-2'}"
-	>
+	<div class="sidebar-padding space-y-1 border-t border-border">
 		<!-- User Profile Button -->
 		{#if user}
 			<Button
 				variant="ghost"
-				class="{isExpanded ? 'h-9 w-full justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="sidebar-button-full w-full overflow-hidden text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] {isExpanded ? 'justify-start' : 'justify-center'}"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
 				{#snippet children()}
-					<User class="{isExpanded ? 'mr-2' : ''} h-5 w-5 flex-shrink-0" />
+					<User class="h-5 w-5 shrink-0 {isExpanded ? 'mr-2' : ''}" />
 					{#if isExpanded}
-						<span class="animate-in fade-in truncate transition-opacity duration-300">
-							{user.email}
-						</span>
+						<span class="animate-in fade-in truncate">{user.email}</span>
 					{/if}
 				{/snippet}
 			</Button>
@@ -286,21 +268,14 @@
 		<!-- Settings Gear Button -->
 		<Popover bind:open={popoverOpen}>
 			{#snippet children()}
-				<PopoverTrigger asChild>
-					{#snippet children({ builder })}
-						<Button
-							variant="ghost"
-							class="{isExpanded ? 'h-9 w-full justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
-							aria-label="Settings"
-							{...builder}
-						>
-							{#snippet children()}
-								<Settings class="{isExpanded ? 'mr-2' : ''} h-5 w-5 flex-shrink-0" />
-								{#if isExpanded}
-									<span class="animate-in fade-in transition-opacity duration-300">Settings</span>
-								{/if}
-							{/snippet}
-						</Button>
+				<PopoverTrigger
+					class="sidebar-button-full inline-flex w-full items-center overflow-hidden rounded-md text-sm font-medium text-muted-foreground whitespace-nowrap transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 {isExpanded ? 'justify-start' : 'justify-center'}"
+				>
+					{#snippet children()}
+						<Settings class="h-5 w-5 shrink-0 {isExpanded ? 'mr-2' : ''}" />
+						{#if isExpanded}
+							<span class="animate-in fade-in">Settings</span>
+						{/if}
 					{/snippet}
 				</PopoverTrigger>
 				<PopoverContent
@@ -391,10 +366,8 @@
 {:else}
 	<!-- Desktop Sidebar -->
 	<div
-		class="flex h-screen flex-col overflow-hidden border-r border-border bg-background text-foreground transition-all duration-300 {isExpanded
-			? 'w-72'
-			: 'w-12'}"
-		style="transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
+		class="flex h-screen flex-col overflow-hidden border-r border-border bg-background text-foreground transition-all duration-300"
+		style="width: {isExpanded ? 'var(--sidebar-expanded-width)' : 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 	>
 		{@render sidebarContent()}
 	</div>

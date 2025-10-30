@@ -10,7 +10,10 @@
 	--radius-xl: calc(var(--radius) + 4px);
 
 	/* Sidebar spacing tokens */
-	--sidebar-icon-padding: 0.5rem; /* 8px - padding between icons and dividers/borders */
+	--sidebar-padding: 0.5rem; /* 8px - consistent padding around all sidebar buttons */
+	--sidebar-button-size: 2.25rem; /* 36px - size of icon buttons */
+	--sidebar-collapsed-width: 3.25rem; /* 52px - collapsed sidebar width (36px button + 8px padding each side) */
+	--sidebar-expanded-width: 18rem; /* 288px - expanded sidebar width */
 
 	/* Light Theme Color Tokens */
 	/* Surface colors */
@@ -133,6 +136,45 @@ body {
 	padding: 0;
 	overflow: hidden;
 	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
+}
+
+/* Sidebar utility classes */
+.sidebar-button {
+	width: var(--sidebar-button-size);
+	height: var(--sidebar-button-size);
+}
+
+.sidebar-button-full {
+	height: var(--sidebar-button-size);
+	padding: var(--sidebar-padding);
+}
+
+.sidebar-section {
+	height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
+	padding: var(--sidebar-padding);
+}
+
+.sidebar-section-height {
+	height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
+}
+
+.sidebar-padding {
+	padding: var(--sidebar-padding);
+}
+
+.sidebar-padding-x {
+	padding-left: var(--sidebar-padding);
+	padding-right: var(--sidebar-padding);
+}
+
+.sidebar-padding-y {
+	padding-top: var(--sidebar-padding);
+	padding-bottom: var(--sidebar-padding);
+}
+
+.sidebar-margin-y {
+	margin-top: var(--sidebar-padding);
+	margin-bottom: var(--sidebar-padding);
 }
 
 /* Screen reader only utility */
