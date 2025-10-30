@@ -164,7 +164,7 @@
 	</div>
 
 	<!-- Logo centered below -->
-	<div class="sidebar-section-height relative flex items-center justify-center overflow-hidden">
+	<div class="pt-0 pb-3 relative flex items-center justify-center overflow-hidden">
 		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-8 shrink-0" />
 	</div>
 
