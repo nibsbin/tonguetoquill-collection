@@ -7,7 +7,6 @@
 		Shield,
 		Upload,
 		ExternalLink,
-		Keyboard,
 		Check,
 		Loader2,
 		AlertCircle,
@@ -43,11 +42,6 @@
 	function handleDocumentInfo() {
 		// TODO: Open document info dialog
 		console.log('Document info');
-	}
-
-	function handleKeyboardShortcuts() {
-		// TODO: Open keyboard shortcuts dialog
-		console.log('Keyboard shortcuts');
 	}
 
 	function handleAbout() {
@@ -158,16 +152,6 @@
 							{#snippet children()}
 								<FileText class="mr-2 h-4 w-4" />
 								Document Info
-							{/snippet}
-						</DropdownMenuItem>
-
-						<DropdownMenuItem
-							class="text-foreground/80 focus:bg-accent focus:text-foreground"
-							onclick={handleKeyboardShortcuts}
-						>
-							{#snippet children()}
-								<Keyboard class="mr-2 h-4 w-4" />
-								Keyboard Shortcuts
 							{/snippet}
 						</DropdownMenuItem>
 
