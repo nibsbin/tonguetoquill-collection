@@ -323,6 +323,95 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 - Consider virtual scrolling for very long lists
 - Lazy load non-critical assets
 
+## Button Slot Architecture
+
+### Concept
+
+The sidebar button slot is a three-layer nested structure designed to maintain consistent sizing and centering across collapsed and expanded states:
+
+**Layer 1: Button Slot Container**
+- Size: Square of `--sidebar-collapsed-width` (56px) in collapsed state
+- Expands: Horizontally to full sidebar width when expanded
+- Purpose: Provides consistent vertical rhythm and horizontal padding
+- Centering: Uses flexbox to center child elements
+
+**Layer 2: Button Element**
+- Size: Square of `--sidebar-button-size` (40px)
+- Behavior: Remains fixed size in both collapsed and expanded states
+- Purpose: Interactive click target with consistent touch area
+- Centering: Centered within the slot container
+
+**Layer 3: Icon Element**
+- Size: Square of `--sidebar-icon-size` (24px)
+- Behavior: Fixed size, centered within button
+- Purpose: Visual indicator
+- Spacing: When text is present (expanded state), icon has right margin
+
+### Component Implementation
+
+**SidebarButtonSlot Component**:
+- Reusable component for all sidebar buttons
+- Handles centering logic automatically
+- Supports both icon-only (collapsed) and icon+label (expanded) states
+- Maintains consistent padding in both states
+- Props:
+  - `icon`: Icon component to display
+  - `label`: Text label (shown only when expanded)
+  - `variant`: Button style variant ('ghost', 'primary', etc.)
+  - `onclick`: Click handler
+  - `ariaLabel`: Accessibility label
+  - Other button props as needed
+
+### Semantic Tokens
+
+**Size Tokens** (already defined):
+- `--sidebar-collapsed-width`: 3.5rem (56px) - Full slot width when collapsed
+- `--sidebar-button-size`: 2.5rem (40px) - Button element size
+- `--sidebar-icon-size`: 1.5rem (24px) - Icon size
+- `--sidebar-padding`: 0.5rem (8px) - Consistent padding
+
+**Derived Tokens** (for clarity and DRY):
+- `--sidebar-slot-width-collapsed`: var(--sidebar-collapsed-width)
+- `--sidebar-slot-height`: var(--sidebar-collapsed-width) - Maintains square aspect ratio
+- `--sidebar-button-spacing`: calc((var(--sidebar-collapsed-width) - var(--sidebar-button-size)) / 2) - Auto-calculates centering offset (8px)
+
+### Centering Strategy
+
+**Horizontal Centering**:
+- Collapsed state: Button centered in slot using flexbox (`justify-center`)
+- Expanded state: Button aligned to start with consistent left padding (`--sidebar-padding`)
+
+**Vertical Centering**:
+- Always centered using flexbox (`items-center`)
+- Slot height equals `--sidebar-collapsed-width` for perfect square in collapsed state
+
+**Nested Centering**:
+- Icon centered within button using flexbox
+- Text aligned with icon baseline when present
+
+### Implementation
+
+**File**: `src/lib/components/SidebarButtonSlot.svelte`
+
+**Usage Example**:
+```svelte
+<SidebarButtonSlot
+  icon={Menu}
+  label="Settings"  // Optional, shown only when expanded
+  {isExpanded}
+  class="custom-classes"
+  onclick={handleClick}
+  ariaLabel="Descriptive label for accessibility"
+/>
+```
+
+**Features**:
+- Automatic layout switching between icon-only and icon+label states
+- Proper centering at all three layers (slot, button, icon)
+- Consistent padding in both collapsed and expanded states
+- Supports all standard button props (variant, onclick, disabled, etc.)
+- Maintains visual consistency across all sidebar buttons
+
 ## Design Tokens Reference
 
 **Background Tokens**:
@@ -388,6 +477,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 
 - Source inspiration: `prose/claude-theme/claude-sidebar.html`
 - Current implementation: `src/lib/components/Sidebar.svelte`
+- Button slot component: `src/lib/components/SidebarButtonSlot.svelte`
 - Design system: `prose/designs/frontend/DESIGN_SYSTEM.md`
 - Component library: shadcn-svelte
 - Icon library: lucide-svelte

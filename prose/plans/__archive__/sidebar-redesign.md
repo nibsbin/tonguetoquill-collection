@@ -19,6 +19,56 @@ This plan outlines the implementation of the redesigned sidebar component based 
 4. ✅ Maintain all existing functionality
 5. ✅ Keep existing color palette and transition timings
 6. ✅ Ensure responsive behavior on mobile and desktop
+7. ⏳ Abstract button slot logic into reusable component
+
+## Phase 0: Button Slot Component Abstraction
+
+### Tasks
+
+- [x] **Create semantic CSS tokens for button slots**
+  - Add `--sidebar-slot-width-collapsed` token (equals `--sidebar-collapsed-width`)
+  - Add `--sidebar-slot-height` token (equals `--sidebar-collapsed-width` for square aspect)
+  - Add `--sidebar-button-spacing` derived token for centering calculations
+  - Document token relationships and DRY principles
+
+- [x] **Create SidebarButtonSlot component**
+  - File: `src/lib/components/SidebarButtonSlot.svelte`
+  - Three-layer architecture: Slot → Button → Icon
+  - Slot layer: Square container of `--sidebar-collapsed-width` size, expands horizontally when sidebar expands
+  - Button layer: Square of `--sidebar-button-size`, centered in slot
+  - Icon layer: Square of `--sidebar-icon-size`, centered in button
+  - Props: `icon`, `label`, `variant`, `onclick`, `ariaLabel`, `isExpanded`, and standard button props
+  - Support both icon-only and icon+label states
+  - Maintain consistent padding in collapsed and expanded states
+
+- [x] **Refactor Sidebar.svelte to use SidebarButtonSlot**
+  - Replace hamburger/menu button with SidebarButtonSlot
+  - Replace New File button with SidebarButtonSlot
+  - Replace User Profile button with SidebarButtonSlot
+  - Replace Settings button with SidebarButtonSlot (wrapped in slot container)
+  - Remove redundant CSS classes from Sidebar.svelte
+  - Ensure all button behaviors are preserved
+
+- [x] **Update CSS in app.css**
+  - Add new semantic tokens to `:root`
+  - Keep existing tokens for backward compatibility
+  - Add comments explaining token relationships
+
+### Files to Create/Modify
+
+- Create: `src/lib/components/SidebarButtonSlot.svelte` ✓
+- Modify: `src/lib/components/Sidebar.svelte` ✓
+- Modify: `src/app.css` ✓
+
+### Acceptance Criteria
+
+- [x] Button slots are perfect squares in collapsed state
+- [x] Buttons are centered within slots in both states
+- [x] Icons are centered within buttons
+- [x] Horizontal expansion works smoothly when sidebar expands
+- [x] All existing functionality preserved
+- [x] Code is more DRY and maintainable
+- [x] No visual regressions
 
 ## Phase 1: Update Dimensions and Structure
 

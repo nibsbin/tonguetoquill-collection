@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Menu, FileText, SquarePen, Settings, Trash2, User } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
+	import SidebarButtonSlot from '$lib/components/SidebarButtonSlot.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
 	import Popover from '$lib/components/ui/popover.svelte';
 	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';
@@ -144,18 +145,14 @@
 
 {#snippet sidebarContent()}
 	<!-- Hamburger Menu and Title -->
-	<div class="sidebar-section relative flex items-center">
-		<Button
-			variant="ghost"
-			size="icon"
-			class="sidebar-button shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
+	<div class="relative flex items-center">
+		<SidebarButtonSlot
+			icon={Menu}
+			{isExpanded}
+			class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
 			onclick={handleToggle}
-			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-		>
-			{#snippet children()}
-				<Menu class="h-5 w-5" />
-			{/snippet}
-		</Button>
+			ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+		/>
 
 		<span
 			class="pointer-events-none absolute right-0 left-0 text-center text-sm font-medium whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
@@ -175,28 +172,23 @@
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div class="sidebar-padding-x flex-1 overflow-hidden">
-		<div class="{isExpanded ? 'sidebar-padding-y' : 'pt-2'}">
-			<Button
-				variant="ghost"
-				class="sidebar-button-full w-full justify-start overflow-hidden text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+	<div class="flex-1 overflow-hidden">
+		<div>
+			<SidebarButtonSlot
+				icon={SquarePen}
+				label="New File"
+				{isExpanded}
+				class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				onclick={handleNewFile}
-				aria-label="Create new document"
-			>
-				{#snippet children()}
-					<SquarePen class="sidebar-icon" />
-					{#if isExpanded}
-						<span class="truncate">New File</span>
-					{/if}
-				{/snippet}
-			</Button>
+				ariaLabel="Create new document"
+			/>
 
 			{#if !isExpanded}
-				<Separator class="sidebar-margin-y bg-border" />
+				<Separator class="bg-border" />
 			{/if}
 
 			{#if documentStore.documents.length > 0 && isExpanded}
-				<Separator class="sidebar-margin-y bg-border" />
+				<Separator class="bg-border" />
 
 				<!-- Recents Section Header -->
 				<div class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2">
@@ -251,37 +243,33 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="sidebar-padding space-y-1 border-t border-border">
+	<div class="space-y-1 border-t border-border">
 		<!-- User Profile Button -->
 		{#if user}
-			<Button
-				variant="ghost"
-				class="sidebar-button-full w-full justify-start overflow-hidden text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+			<SidebarButtonSlot
+				icon={User}
+				label={user.email}
+				{isExpanded}
+				class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				title={user.email}
-				aria-label="User profile: {user.email}"
-			>
-				{#snippet children()}
-					<User class="sidebar-icon" />
-					{#if isExpanded}
-						<span class="truncate">{user.email}</span>
-					{/if}
-				{/snippet}
-			</Button>
+				ariaLabel="User profile: {user.email}"
+			/>
 		{/if}
 
 		<!-- Settings Gear Button -->
-		<Popover bind:open={popoverOpen}>
-			{#snippet children()}
-				<PopoverTrigger
-					class="sidebar-button-full inline-flex w-full items-center justify-start overflow-hidden rounded-md text-sm font-medium text-muted-foreground whitespace-nowrap transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-				>
-					{#snippet children()}
-						<Settings class="sidebar-icon" />
-						{#if isExpanded}
-							<span>Settings</span>
-						{/if}
-					{/snippet}
-				</PopoverTrigger>
+		<div class="sidebar-button-slot">
+			<Popover bind:open={popoverOpen}>
+				{#snippet children()}
+					<PopoverTrigger
+						class="sidebar-slot-button {isExpanded ? 'sidebar-slot-button-full' : ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium text-muted-foreground whitespace-nowrap transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+					>
+						{#snippet children()}
+							<Settings class="sidebar-icon" />
+							{#if isExpanded}
+								<span>Settings</span>
+							{/if}
+						{/snippet}
+					</PopoverTrigger>
 				<PopoverContent
 					side="right"
 					align="end"
@@ -338,6 +326,7 @@
 				</PopoverContent>
 			{/snippet}
 		</Popover>
+		</div>
 	</div>
 {/snippet}
 
@@ -437,46 +426,13 @@
     }
 
 	:global(.sidebar-icon-small) {
-        /* This calculates 80% of the parent's --sidebar-icon-size */
+        /* This calculates 60% of the parent's --sidebar-icon-size */
         width: calc(var(--sidebar-icon-size) * 0.6);
 		height: calc(var(--sidebar-icon-size) * 0.6);
-    }
-
-    :global(.sidebar-button) {
-        width: var(--sidebar-button-size);
-        height: var(--sidebar-button-size);
-    }
-
-    :global(.sidebar-button-full) {
-        height: var(--sidebar-button-size);
-        padding: var(--sidebar-padding);
-    }
-
-    :global(.sidebar-section) {
-        height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
-        padding: var(--sidebar-padding);
     }
 
     :global(.sidebar-section-height) {
         height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
     }
 
-    :global(.sidebar-padding) {
-        padding: var(--sidebar-padding);
-    }
-
-    :global(.sidebar-padding-x) {
-        padding-left: var(--sidebar-padding);
-        padding-right: var(--sidebar-padding);
-    }
-
-    :global(.sidebar-padding-y) {
-        padding-top: var(--sidebar-padding);
-        padding-bottom: var(--sidebar-padding);
-    }
-
-    :global(.sidebar-margin-y) {
-        margin-top: var(--sidebar-padding);
-        margin-bottom: var(--sidebar-padding);
-    }
 </style>
