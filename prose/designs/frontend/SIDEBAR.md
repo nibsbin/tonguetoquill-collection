@@ -26,14 +26,16 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 ### Dimensions
 
 **Desktop (≥1024px)**:
-- **Expanded width**: 18rem (288px) - increased from current 14rem (224px)
-- **Collapsed width**: 3rem (48px) - same as current
+- **Expanded width**: 18rem (288px / w-72) - updated October 2025
+- **Collapsed width**: 3rem (48px / w-12)
 - **Transition**: 300ms duration with cubic-bezier(0.165, 0.85, 0.45, 1) easing
 
 **Mobile (<1024px)**:
 - Full-screen drawer overlay
-- Width: 18rem (288px) when open
+- Width: 18rem (288px / w-72) when open
 - Slides in from left with shadow
+
+**Implementation Status**: ✅ Implemented (October 2025). See `prose/debriefs/sidebar-redesign.md`
 
 ### Structure
 
@@ -43,14 +45,13 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 │  + App Branding             │
 ├─────────────────────────────┤
 │  Primary Actions            │  
-│  (New chat/file button)     │  h-9 (36px) per action
+│  (New Document button)      │  h-9 (36px) per action
 ├─────────────────────────────┤
-│  Navigation Items           │
-│  (Chats, Projects, etc.)    │  h-9 (36px) per item
+│  "Recents" Section Header   │  text-xs - Visual hierarchy
 ├─────────────────────────────┤
 │                             │
 │  Recent Items List          │  h-8 (32px) per item
-│  (Scrollable)               │
+│  (Scrollable with gradient) │
 │                             │
 │  ↓ Scrollable Area ↓        │
 ├─────────────────────────────┤
@@ -90,24 +91,24 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 
 ## Color Scheme
 
-Maintain our existing zinc-based palette with semantic tokens:
+Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYSTEM.md):
 
 ### Background Colors
-- **Sidebar background**: `bg-bg-200` → zinc-900 (#18181b)
-- **Hover state**: `hover:bg-bg-400` → zinc-800/50 (rgba(39, 39, 42, 0.5))
-- **Active/Selected**: `bg-bg-400` → zinc-800 (#27272a)
-- **Border**: `border-border-300` → zinc-700 (#3f3f46)
+- **Sidebar background**: `bg-background` → CSS var(--color-background)
+- **Hover state**: `hover:bg-accent` → CSS var(--color-accent)
+- **Active/Selected**: `bg-accent` → CSS var(--color-accent)
+- **Border**: `border-border` → CSS var(--color-border)
 
 ### Text Colors
-- **Primary text**: `text-text-100` → zinc-100 (#f4f4f5)
-- **Secondary text**: `text-text-200` → zinc-300 (#d4d4d8)
-- **Muted text**: `text-text-300` → zinc-400 (#a1a1aa)
-- **Hover text**: `hover:text-text-100` → zinc-100 (#f4f4f5)
+- **Primary text**: `text-foreground` → CSS var(--color-foreground)
+- **Secondary text**: `text-muted-foreground` → CSS var(--color-muted-foreground)
+- **Hover text**: `hover:text-foreground` → CSS var(--color-foreground)
 
 ### Accent Colors
-- **Primary action background**: `bg-accent-main-000` → USAF Blue or branded color
-- **Primary action text**: `text-always-white` → #ffffff
-- **Accent hover**: `hover:bg-accent-main-000/[0.08]` → USAF Blue with 8% opacity
+- **Destructive actions**: `text-destructive` → CSS var(--color-destructive)
+- **Destructive hover**: `hover:bg-destructive` → CSS var(--color-destructive)
+
+**Note**: All color references use semantic tokens from the theme system, enabling both light and dark mode support.
 
 ## Interactive Behaviors
 
