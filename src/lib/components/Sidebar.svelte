@@ -144,11 +144,11 @@
 
 {#snippet sidebarContent()}
 	<!-- Hamburger Menu and Title -->
-	<div class="relative flex h-12 items-center p-1">
+	<div class="relative flex h-12 items-center px-2">
 		<Button
 			variant="ghost"
 			size="icon"
-			class="flex-shrink-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			class="flex-shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
 			onclick={handleToggle}
 			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 		>
@@ -158,10 +158,10 @@
 		</Button>
 
 		<span
-			class="pointer-events-none absolute right-0 left-0 text-center whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center text-sm font-medium whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
-			style="font-family: 'Lato', Arial, sans-serif; font-weight: 700; font-size: 1.2rem;"
+			style="font-family: 'Lato', Arial, sans-serif;"
 		>
 			Tonguetoquill
 		</span>
@@ -175,11 +175,11 @@
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div class="flex-1 overflow-y-auto p-2">
-		<div class="space-y-1">
+	<div class="flex-1 overflow-hidden px-2">
+		<div class="p-2">
 			<Button
 				variant="ghost"
-				class="w-full justify-start text-foreground/80 hover:bg-accent hover:text-foreground"
+				class="h-9 w-full justify-start px-4 py-2 text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
@@ -193,55 +193,74 @@
 
 			{#if documentStore.documents.length > 0 && isExpanded}
 				<Separator class="my-2 bg-border" />
-				{#each documentStore.documents as doc (doc.id)}
-					<div
-						class="group -mr-2 flex items-center gap-1 rounded pr-2 pl-2 {doc.id ===
-						documentStore.activeDocumentId
-							? 'bg-accent'
-							: 'hover:bg-accent/50'}"
-					>
-						<Button
-							variant="ghost"
-							class="flex-1 justify-start text-sm hover:bg-transparent {doc.id ===
+
+				<!-- Recents Section Header -->
+				<div
+					class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
+				>
+					<h3 class="text-xs text-muted-foreground">Recents</h3>
+				</div>
+
+				<!-- Scrollable Recent Items -->
+				<div
+					class="space-y-px overflow-x-hidden overflow-y-auto"
+					style="max-height: calc(100vh - 300px);"
+				>
+					{#each documentStore.documents as doc (doc.id)}
+						<div
+							class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 transition-transform {doc.id ===
 							documentStore.activeDocumentId
-								? 'text-foreground'
-								: 'text-muted-foreground hover:text-foreground'}"
-							onclick={() => handleFileSelect(doc.id)}
+								? 'bg-accent active:scale-100'
+								: 'hover:bg-accent/50 active:scale-[0.985]'}"
 						>
-							{#snippet children()}
-								<FileText class="mr-2 h-4 w-4 flex-shrink-0" />
-								<span class="animate-in fade-in truncate transition-opacity duration-300">
-									{doc.name}
-								</span>
-							{/snippet}
-						</Button>
-						<Button
-							variant="ghost"
-							size="icon"
-							class="h-8 w-8 flex-shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-transparent hover:text-red-400"
-							onclick={(e) => {
-								e.stopPropagation();
-								handleDeleteFile(doc.id);
-							}}
-							aria-label="Delete {doc.name}"
-						>
-							{#snippet children()}
-								<Trash2 class="h-4 w-4" />
-							{/snippet}
-						</Button>
-					</div>
-				{/each}
+							<Button
+								variant="ghost"
+								class="flex-1 justify-start text-xs transition-colors hover:bg-transparent {doc.id ===
+								documentStore.activeDocumentId
+									? 'font-medium text-foreground'
+									: 'text-muted-foreground hover:text-foreground'}"
+								onclick={() => handleFileSelect(doc.id)}
+							>
+								{#snippet children()}
+									<FileText class="mr-2 h-4 w-4 flex-shrink-0" />
+									<span class="animate-in fade-in truncate transition-opacity duration-300">
+										{doc.name}
+									</span>
+								{/snippet}
+							</Button>
+							<Button
+								variant="ghost"
+								size="icon"
+								class="h-8 w-8 flex-shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
+								onclick={(e) => {
+									e.stopPropagation();
+									handleDeleteFile(doc.id);
+								}}
+								aria-label="Delete {doc.name}"
+							>
+								{#snippet children()}
+									<Trash2 class="h-4 w-4" />
+								{/snippet}
+							</Button>
+						</div>
+					{/each}
+
+					<!-- Bottom gradient fade -->
+					<div
+						class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
+					></div>
+				</div>
 			{/if}
 		</div>
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="space-y-1 border-t border-border p-2">
+	<div class="space-y-1 border-t border-border px-2 pb-1">
 		<!-- User Profile Button -->
 		{#if user}
 			<Button
 				variant="ghost"
-				class="w-full justify-start text-muted-foreground hover:bg-accent hover:text-foreground"
+				class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
@@ -263,7 +282,7 @@
 					{#snippet children()}
 						<Button
 							variant="ghost"
-							class="w-full justify-start text-muted-foreground hover:bg-accent hover:text-foreground"
+							class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							aria-label="Settings"
 						>
 							{#snippet children()}
@@ -352,7 +371,7 @@
 						</Button>
 					{/snippet}
 				</SheetTrigger>
-				<SheetContent side="left" class="flex w-56 flex-col bg-background p-0 text-foreground">
+				<SheetContent side="left" class="flex w-72 flex-col bg-background p-0 text-foreground">
 					{#snippet children()}
 						{@render sidebarContent()}
 					{/snippet}
@@ -364,8 +383,9 @@
 	<!-- Desktop Sidebar -->
 	<div
 		class="flex h-screen flex-col overflow-hidden border-r border-border bg-background text-foreground transition-all duration-300 {isExpanded
-			? 'w-56'
+			? 'w-72'
 			: 'w-12'}"
+		style="transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 	>
 		{@render sidebarContent()}
 	</div>
