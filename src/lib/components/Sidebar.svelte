@@ -155,10 +155,9 @@
 		/>
 
 		<span
-			class="pointer-events-none absolute right-0 left-0 text-center text-sm font-medium whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center text-lg font-mono whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
-			style="font-family: 'Lato', Arial, sans-serif;"
 		>
 			Tonguetoquill
 		</span>
@@ -166,7 +165,7 @@
 
 	<!-- Logo centered below -->
 	<div class="sidebar-section-height relative flex items-center justify-center overflow-hidden">
-		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-7 shrink-0" />
+		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-8 shrink-0" />
 	</div>
 
 	<Separator class="bg-border" />
