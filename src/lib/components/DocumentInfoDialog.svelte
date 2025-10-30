@@ -22,7 +22,8 @@
 	// Calculate statistics
 	let stats = $derived({
 		characters: content.length,
-		words: content.trim().split(/\s+/).filter((w) => w.length > 0).length,
+		words:
+			content.trim().length === 0 ? 0 : content.trim().split(/\s+/).filter((w) => w.length > 0).length,
 		lines: content.split('\n').length
 	});
 
