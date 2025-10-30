@@ -6,7 +6,12 @@ Component behavior specifications for Tonguetoquill, defining props, states, int
 
 Components support mobile-responsive layouts and Section 508 accessibility compliance.
 
-**Phase 6.5 Status**: UI components have been reworked to match `prose/legacy/mock_project` visual design. For feature parity recovery, see `prose/plans/REPAIR.md`.
+**Phase Status**: 
+- ✅ Theme unification completed (October 2025) - components now use semantic color tokens
+- ✅ Sidebar redesign completed (October 2025) - updated dimensions and visual hierarchy
+- ✅ Auto-save implemented (October 2025) - 7-second debounce with status indicator
+
+See debriefs in `prose/debriefs/` for implementation details.
 
 ## Component Library: shadcn-svelte
 
@@ -48,88 +53,89 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 
 **Purpose**: Collapsible navigation for document management, user profile, and settings
 
-**Reference**: Visual design matches `prose/legacymock_project/components/Sidebar.tsx`
+**Design Reference**: See [SIDEBAR.md](./SIDEBAR.md) for complete design specification
 
 **States**:
 
-- Desktop Expanded: 224px width, full content visible
-- Desktop Collapsed: 48px width, icons only
-- Mobile: Full-screen drawer overlay (see [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patterns))
+- Desktop Expanded: 288px (w-72) width, full content visible - updated October 2025
+- Desktop Collapsed: 48px (w-12) width, icons only
+- Mobile: Full-screen drawer overlay at 288px width (see [DESIGN_SYSTEM.md - Navigation Patterns](./DESIGN_SYSTEM.md#navigation-patterns))
 
 **Visual Design**:
 
-- Background: zinc-900 (matches main background for unified appearance)
-- Right border: 1px solid zinc-700 (tertiary color used for dividers)
+- Background: Uses semantic token `bg-background` (CSS var(--color-background))
+- Border: Uses semantic token `border-border` (CSS var(--color-border))
 - Creates subtle separation between sidebar and main content
 
 **Structure**:
 
-**Header Section (Height: 48px)**:
+**Header Section (Height: 48px / h-12)**:
 
 - Hamburger menu button: Left-aligned, toggles sidebar collapse/expand
-- Title: "Tonguetoquill" text centered (Lato font, 700 weight, 1.2rem size)
+- Title: "Tonguetoquill" text centered (Lato font, medium weight, text-sm)
   - Visible when expanded (opacity: 100%)
   - Hidden when collapsed (opacity: 0%, pointer-events: none)
-  - Smooth 300ms opacity transition
-- Background: zinc-900
+  - Smooth 300ms opacity transition with custom cubic-bezier easing
+- Background: Uses `bg-background`
 
-**Logo Section (Height: 44px)**:
+**Primary Actions (Height: 36px / h-9)**:
 
-- Logo image centered below header
-- Height: 28px (h-7) - slightly reduced from 32px to align divider with editor toolbar
-- Always visible regardless of collapse state
-- Background: zinc-900
-- Size reduction maintains proportions while allowing divider alignment with toolbar bottom border
+- "New Document" button
+- Full-width, left-aligned when expanded
+- Plus icon + text (when expanded)
+- Hover: Uses `hover:bg-accent` with scale effect
+- Press effect: `active:scale-[0.985]` on standard buttons
 
-**Separator**:
+**Section Header**:
 
-- zinc-700 border
-- Positioned to align with the bottom border of the editor toolbar (96px from top: 48px header + 48px toolbar)
+- "Recents" header with `text-xs text-muted-foreground`
+- Sticky positioning with gradient background for visual hierarchy
+- Improves document list scannability
 
 **Content Section (Scrollable)**:
 
-- **"New File" button**:
+- **"New Document" button**:
   - Full-width, left-aligned
-  - Plus icon (16px, h-4 w-4) + "New File" text (when expanded)
-  - Ghost variant: transparent background, zinc-300 text
-  - Hover: zinc-800 background, zinc-100 text
-  - Padding: 8px (p-2)
+  - Plus icon (h-4 w-4) + "New Document" text (when expanded)
+  - Uses semantic tokens: `text-muted-foreground`
+  - Hover: `hover:bg-accent hover:text-foreground`
+  - Padding: p-2
 
-- **File List** (when expanded):
-  - Separator above list (zinc-700)
-  - File items in group containers:
+- **Document List** (when expanded):
+  - Separator above list using `border-border`
+  - Document items in group containers (h-8 / 32px per item):
     - Group hover reveals delete button
-    - Active state: zinc-700 background
-    - Hover state: zinc-800 background
-    - File button:
-      - FileText icon (16px, h-4 w-4) + filename (truncated)
-      - Active: zinc-100 text
-      - Inactive: zinc-400 text, hover to zinc-100
+    - Active state: `bg-accent`
+    - Hover state: `hover:bg-accent`
+    - Document button:
+      - FileText icon (h-4 w-4) + filename (truncated with `text-xs`)
+      - Active: `text-foreground`
+      - Inactive: `text-muted-foreground hover:text-foreground`
     - Delete button (right side):
-      - Trash icon (16px, h-4 w-4)
+      - Trash icon (h-4 w-4)
       - Invisible by default (opacity: 0)
       - Visible on group hover (opacity: 100)
-      - Text: zinc-500, hover to red-400
+      - Uses `text-destructive hover:bg-destructive`
 
 **Footer Section (Sticky Bottom)**:
 
-- Border top: zinc-700
-- Padding: 8px (p-2)
-- **Profile Button**:
-  - User icon (20px, h-5 w-5) + "Profile" text (when expanded)
-  - Ghost variant: zinc-400 text
-  - Hover: zinc-800 background, zinc-100 text
-- **Settings Button**:
-  - Settings icon (20px, h-5 w-5) + "Settings" text (when expanded)
-  - Ghost variant: zinc-400 text
-  - Hover: zinc-800 background, zinc-100 text
+- Border top: `border-border`
+- Padding: p-2
+- **Profile Button** (h-9 / 36px):
+  - User icon (h-5 w-5) + "Profile" text (when expanded)
+  - Uses `text-muted-foreground`
+  - Hover: `hover:bg-accent hover:text-foreground`
+- **Settings Button** (h-9 / 36px):
+  - Settings icon (h-5 w-5) + "Settings" text (when expanded)
+  - Uses `text-muted-foreground`
+  - Hover: `hover:bg-accent hover:text-foreground`
   - Opens settings popover on click
 
 **Collapsed State**:
 
-- Width: 48px
+- Width: 48px (w-12)
 - Icons only (no text labels)
-- Text fades out smoothly (300ms transition)
+- Text fades out smoothly (300ms transition with cubic-bezier easing)
 - Tooltips show labels on hover (using shadcn-svelte's Tooltip component)
 
 **Mobile Behavior**:

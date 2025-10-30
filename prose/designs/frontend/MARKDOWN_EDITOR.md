@@ -197,20 +197,20 @@ Use CodeMirror's highlighting system with custom tags for extended syntax.
 
 **Color Scheme:**
 
-Follows [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) color palette:
+Follows [DESIGN_SYSTEM.md - Theme System](./DESIGN_SYSTEM.md#theme-system):
 
-- Metadata delimiters: Muted gray (`zinc-500`)
-- SCOPE/QUILL keywords: USAF blue accent (`#355e93`)
-- Scope/quill names: Bright cyan (`cyan-400`)
-- YAML keys: Light gray (`zinc-300`)
-- YAML values: Warm gray (`zinc-200`)
-- Standard markdown: Per markdown highlighting conventions
+- Metadata delimiters: Muted text using `var(--color-muted-foreground)`
+- SCOPE/QUILL keywords: USAF blue accent (#355e93) - brand color
+- Scope/quill names: Bright cyan for differentiation
+- YAML keys: Secondary text color
+- YAML values: Primary text color
+- Standard markdown: Per markdown highlighting conventions using theme tokens
 
 **Visual Differentiation:**
 
 Metadata blocks visually distinguished from body content:
 
-- Subtle background tint for metadata regions (`zinc-800/50`)
+- Subtle background tint for metadata regions using theme tokens
 - Left border accent in USAF blue for scoped blocks
 - Distinct styling for SCOPE vs QUILL vs global blocks
 
@@ -587,25 +587,35 @@ Use facets for runtime configuration:
 
 ### Theme Integration
 
-**Dark Theme (Default):**
+**Theme Integration:**
 
-Per [DESIGN_SYSTEM.md - Color Palette](./DESIGN_SYSTEM.md):
+Per [DESIGN_SYSTEM.md - Theme System](./DESIGN_SYSTEM.md#theme-system):
 
-- Background: `zinc-900` (#18181b)
-- Text: `zinc-100` (#f4f4f5)
-- Selection: `zinc-700` with 40% opacity
-- Active line: `zinc-800` (#27272a)
-- Cursor: USAF blue (`#355e93`)
+- Editor uses CSS custom properties from theme system
+- Background: `var(--color-editor-background)`
+- Text: `var(--color-editor-foreground)`
+- Selection: `var(--color-editor-selection)`
+- Active line: `var(--color-editor-line-active)`
+- Cursor: `var(--color-editor-cursor)`
+- Gutter: `var(--color-editor-gutter-background)` and `var(--color-editor-gutter-foreground)`
 - Syntax colors: Balanced contrast for readability
 
-**Light Theme (Optional):**
+**Dark Theme Values:**
+- Background: #18181b (zinc-900 equivalent)
+- Text: #f4f4f5 (zinc-100 equivalent)
+- Selection: #3f3f46 (zinc-700 equivalent) with opacity
+- Active line: #27272a (zinc-800 equivalent)
 
-Post-MVP theme switching:
+**Light Theme Values:**
+- Background: #ffffff (white)
+- Text: #09090b (near-black)
+- Selection: #e4e4e7 (light gray)
+- Active line: #f4f4f5 (very light gray)
 
-- Background: White or light gray
-- Text: Dark gray or black
-- Adjust syntax colors for light background
-- Maintain WCAG AA contrast ratios
+**Implementation:**
+- Theme utility in `src/lib/utils/editor-theme.ts` reads CSS variables at runtime
+- Editor theme updates automatically when app theme changes
+- See `prose/debriefs/theme-unification-implementation.md` for details
 
 ## Testing Strategy
 

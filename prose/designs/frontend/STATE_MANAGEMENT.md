@@ -4,7 +4,7 @@
 
 Tonguetoquill uses a hybrid state management approach with reactive local state, global stores for application-wide state, and server-side state management for data persistence. The implementation leverages SvelteKit 5's reactive system with `$state` runes.
 
-**Note**: This document reflects the design goals and specifications. For current implementation status post-Phase 6.5, see `prose/plans/REPAIR.md`.
+**Status**: Current as of October 2025. Auto-save and document persistence implemented in Phase 6.6.
 
 ## Reactive State Patterns
 
@@ -231,31 +231,28 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 - Optimistic UI updates
 - Error handling and rollback
 
-**Current Status (Post-Phase 6.5)**: ⚠️ Auto-save logic not implemented. See `prose/plans/REPAIR.md` Phase R1 for recovery plan.
+**Current Status**: ✅ Implemented in Phase 6.6 (October 2025). See `prose/debriefs/phase-6-6-technical-debt-repair.md` for implementation details.
 
-**Required Implementation**:
+**Implementation Details**:
+
+The AutoSave class is implemented in `src/lib/utils/auto-save.svelte.ts`:
 
 ```typescript
-// DocumentEditor component needs:
-let saveTimer: number | undefined;
-let isDirty = $state(false);
-
-function autoSave(content: string) {
-	if (!autoSaveEnabled) return;
-
-	if (saveTimer) clearTimeout(saveTimer);
-
-	saveTimer = window.setTimeout(async () => {
-		try {
-			await documentStore.updateDocumentContent(documentId, content);
-			isDirty = false;
-			// Update save status indicator
-		} catch (err) {
-			// Show error toast
-		}
-	}, 7000); // 7 second debounce
+class AutoSave {
+  // 7-second debounce timer
+  // Save status tracking (idle, saving, saved, error)
+  // Support for both guest (localStorage) and authenticated (API) modes
+  // Configurable debounce interval
+  // Proper cleanup of timers
 }
 ```
+
+Integrated into DocumentEditor component:
+- Tracks dirty state (unsaved changes)
+- Triggers auto-save on content changes
+- Respects user's auto-save preference from settings
+- Updates initialContent after successful save
+- Save status indicator in TopMenu shows current state
 
 ## State Persistence
 
