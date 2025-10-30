@@ -47,7 +47,7 @@
 						<DialogHeader>
 							{#snippet children()}
 								<div class="flex items-center justify-between">
-									<DialogTitle class="text-lg font-semibold">Document Info</DialogTitle>
+									<DialogTitle class="text-lg font-semibold text">Document Info</DialogTitle>
 									<Button
 										variant="ghost"
 										size="sm"
@@ -102,3 +102,9 @@
 		</Portal>
 	{/snippet}
 </Root>
+
+<style>
+	.text{
+		color: var(--color-foreground);
+	}
+	</style>
