@@ -30,16 +30,15 @@
 <!-- 
 	Button Slot Architecture (3 layers):
 	1. Slot Container: Square of --sidebar-collapsed-width in collapsed state, 
-	   expands horizontally when sidebar expands
-	2. Button Element: Square of --sidebar-button-size when icon-only,
-	   full width with padding when label is shown
-	3. Icon Element: Square of --sidebar-icon-size, centered in button
+	   expands horizontally when sidebar expands, clips button content
+	2. Button Element: Always full width of available space, content clipped by container
+	3. Icon Element: Square of --sidebar-icon-size, followed by label text
 -->
 <div class="sidebar-button-slot">
 	<Button
 		{variant}
 		size="icon"
-		class="sidebar-slot-button {isExpanded && label ? 'sidebar-slot-button-full' : ''} {className}"
+		class="sidebar-slot-button {className}"
 		{onclick}
 		aria-label={ariaLabel}
 		{title}
@@ -48,8 +47,8 @@
 		{#snippet children()}
 			{@const Icon = icon}
 			<Icon class="sidebar-icon" />
-			{#if isExpanded && label}
-				<span class="truncate">{label}</span>
+			{#if label}
+				<span class="truncate transition-opacity duration-300 {isExpanded ? 'opacity-100' : 'opacity-0'}">{label}</span>
 			{/if}
 		{/snippet}
 	</Button>
@@ -73,31 +72,27 @@
 		padding-right: var(--sidebar-button-spacing);
 		/* Prevent shrinking */
 		flex-shrink: 0;
+		/* Overflow hidden to clip expanding button content */
+		overflow: hidden;
 	}
 
-	/* Layer 2: Button Element (icon-only, square) */
+	/* Layer 2: Button Element - always full width of available space */
 	:global(.sidebar-slot-button) {
-		/* Fixed square size */
-		width: var(--sidebar-button-size);
+		/* Always full width - let container control clipping */
+		width: 100%;
 		height: var(--sidebar-button-size);
 		/* Flexbox for centering icon */
 		display: inline-flex;
 		align-items: center;
-		justify-content: center;
+		justify-content: flex-start;
 		/* Prevent shrinking */
 		flex-shrink: 0;
-		/* Smooth transitions - only transition width, not position */
-		transition: width 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
-	}
-
-	/* Layer 2: Button Element (with label, expands horizontally) */
-	:global(.sidebar-slot-button-full) {
-		/* Full width in expanded state */
-		width: 100%;
-		/* Left-aligned content */
-		justify-content: flex-start;
-		/* Maintain consistent padding */
+		/* No width transition - only opacity for label */
+		transition: none;
+		/* Padding for content */
 		padding: var(--sidebar-padding);
+		/* Remove default button cursor */
+		cursor: default;
 	}
 
 	/* Layer 3: Icon Element (handled by global .sidebar-icon in Sidebar.svelte) */
