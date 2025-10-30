@@ -11,9 +11,6 @@ export function createEditorTheme(): Extension {
 	const cursorColor = styles.getPropertyValue('--color-editor-cursor').trim() || '#09090b';
 	const isDark = document.documentElement.classList.contains('dark');
 
-	// Debug: log the cursor color value
-	console.log('Editor cursor color:', cursorColor, 'isEmpty:', !styles.getPropertyValue('--color-editor-cursor').trim());
-
 	return EditorView.theme({
 		'&': {
 			height: '100%',
