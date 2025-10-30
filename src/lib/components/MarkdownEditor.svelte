@@ -274,6 +274,27 @@
 
 		// Create initial editor
 		editorView = createEditor(value);
+
+		// Watch for theme changes via MutationObserver
+		const observer = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (mutation.attributeName === 'class') {
+					const newIsDarkTheme = document.documentElement.classList.contains('dark');
+					if (isDarkTheme !== newIsDarkTheme) {
+						isDarkTheme = newIsDarkTheme;
+					}
+				}
+			});
+		});
+
+		observer.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['class']
+		});
+
+		return () => {
+			observer.disconnect();
+		};
 	});
 
 	onDestroy(() => {
@@ -295,16 +316,12 @@
 
 	// Recreate editor when showLineNumbers or theme changes
 	$effect(() => {
-		// Detect theme changes by observing the dark class
-		const newIsDarkTheme = document.documentElement.classList.contains('dark');
+		// Track both showLineNumbers and isDarkTheme for reactivity
+		showLineNumbers;
+		isDarkTheme;
 
-		// Track showLineNumbers for reactivity
-		const currentShowLineNumbers = showLineNumbers;
-
-		// Only recreate if editor already exists (not initial mount) and something changed
-		if (editorView && editorElement && (isDarkTheme !== newIsDarkTheme || currentShowLineNumbers)) {
-			isDarkTheme = newIsDarkTheme;
-
+		// Only recreate if editor already exists (not initial mount)
+		if (editorView && editorElement) {
 			const currentValue = editorView.state.doc.toString();
 			editorView.destroy();
 			editorView = createEditor(currentValue);
