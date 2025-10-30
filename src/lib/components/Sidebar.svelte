@@ -175,8 +175,8 @@
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div class="flex-1 overflow-y-auto px-2">
-		<div class="space-y-px p-2">
+	<div class="flex-1 overflow-hidden px-2">
+		<div class="p-2">
 			<Button
 				variant="ghost"
 				class="h-9 w-full justify-start px-4 py-2 text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
@@ -193,44 +193,56 @@
 
 			{#if documentStore.documents.length > 0 && isExpanded}
 				<Separator class="my-2 bg-border" />
-				{#each documentStore.documents as doc (doc.id)}
-					<div
-						class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 transition-transform {doc.id ===
-						documentStore.activeDocumentId
-							? 'bg-accent active:scale-100'
-							: 'hover:bg-accent/50 active:scale-[0.985]'}"
-					>
-						<Button
-							variant="ghost"
-							class="flex-1 justify-start text-xs transition-colors hover:bg-transparent {doc.id ===
+				
+				<!-- Recents Section Header -->
+				<div class="sticky top-0 z-10 bg-gradient-to-b from-background from-50% to-background/40 pb-2 mt-1 pl-2">
+					<h3 class="text-xs text-muted-foreground">Recents</h3>
+				</div>
+				
+				<!-- Scrollable Recent Items -->
+				<div class="space-y-px overflow-y-auto overflow-x-hidden" style="max-height: calc(100vh - 300px);">
+					{#each documentStore.documents as doc (doc.id)}
+						<div
+							class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 transition-transform {doc.id ===
 							documentStore.activeDocumentId
-								? 'text-foreground font-medium'
-								: 'text-muted-foreground hover:text-foreground'}"
-							onclick={() => handleFileSelect(doc.id)}
+								? 'bg-accent active:scale-100'
+								: 'hover:bg-accent/50 active:scale-[0.985]'}"
 						>
-							{#snippet children()}
-								<FileText class="mr-2 h-4 w-4 flex-shrink-0" />
-								<span class="animate-in fade-in truncate transition-opacity duration-300">
-									{doc.name}
-								</span>
-							{/snippet}
-						</Button>
-						<Button
-							variant="ghost"
-							size="icon"
-							class="h-8 w-8 flex-shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
-							onclick={(e) => {
-								e.stopPropagation();
-								handleDeleteFile(doc.id);
-							}}
-							aria-label="Delete {doc.name}"
-						>
-							{#snippet children()}
-								<Trash2 class="h-4 w-4" />
-							{/snippet}
-						</Button>
-					</div>
-				{/each}
+							<Button
+								variant="ghost"
+								class="flex-1 justify-start text-xs transition-colors hover:bg-transparent {doc.id ===
+								documentStore.activeDocumentId
+									? 'text-foreground font-medium'
+									: 'text-muted-foreground hover:text-foreground'}"
+								onclick={() => handleFileSelect(doc.id)}
+							>
+								{#snippet children()}
+									<FileText class="mr-2 h-4 w-4 flex-shrink-0" />
+									<span class="animate-in fade-in truncate transition-opacity duration-300">
+										{doc.name}
+									</span>
+								{/snippet}
+							</Button>
+							<Button
+								variant="ghost"
+								size="icon"
+								class="h-8 w-8 flex-shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
+								onclick={(e) => {
+									e.stopPropagation();
+									handleDeleteFile(doc.id);
+								}}
+								aria-label="Delete {doc.name}"
+							>
+								{#snippet children()}
+									<Trash2 class="h-4 w-4" />
+								{/snippet}
+							</Button>
+						</div>
+					{/each}
+					
+					<!-- Bottom gradient fade -->
+					<div class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"></div>
+				</div>
 			{/if}
 		</div>
 	</div>
