@@ -1,4 +1,4 @@
-# Design-Codebase Maintainability Plan
+# Design-Codebase Maintainability Guide
 
 ## Overview
 
