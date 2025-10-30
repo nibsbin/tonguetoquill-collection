@@ -118,16 +118,9 @@ Provide users with quick access to document metadata and statistics without leav
 ### Implementation Notes
 
 **Component Structure**:
-```svelte
-<Dialog.Root bind:open={showDocumentInfo}>
-  <Dialog.Content class="...custom positioning...">
-    <Dialog.Header>
-      <Dialog.Title>Document Info</Dialog.Title>
-    </Dialog.Header>
-    <!-- Content sections -->
-  </Dialog.Content>
-</Dialog.Root>
-```
+- Use shadcn-svelte Dialog components (Root, Content, Header, Title)
+- Bind dialog open state to component prop
+- Include custom positioning classes for desktop layout
 
 **Custom Positioning** (Desktop only):
 - Override default center positioning
@@ -137,11 +130,13 @@ Provide users with quick access to document metadata and statistics without leav
 
 **Date Formatting**:
 - Use JavaScript `Intl.DateTimeFormat` for locale-aware dates
-- Example: `new Date(created_at).toLocaleString()`
+- Format: Medium date style with short time
 
 **Statistics Calculation**:
-- Recalculate on dialog open based on current editor content
-- Consider debouncing if live updates are added later
+- Calculate on dialog open based on current editor content
+- Characters: Total character count including whitespace
+- Words: Split by whitespace, filter empty strings
+- Lines: Count newline characters + 1
 
 ---
 
@@ -161,25 +156,13 @@ Custom keyboard shortcut implementations add complexity and can conflict with OS
 #### Remove from TopMenu.svelte
 
 **Menu Item to Remove**:
-```svelte
-<DropdownMenuItem onclick={handleKeyboardShortcuts}>
-  <Keyboard class="mr-2 h-4 w-4" />
-  Keyboard Shortcuts
-</DropdownMenuItem>
-```
+- "Keyboard Shortcuts" dropdown menu item with Keyboard icon
 
 **Handler to Remove**:
-```typescript
-function handleKeyboardShortcuts() {
-  // TODO: Open keyboard shortcuts dialog
-  console.log('Keyboard shortcuts');
-}
-```
+- `handleKeyboardShortcuts()` function (currently logs to console)
 
 **Icon Import to Remove** (if unused elsewhere):
-```typescript
-import { Keyboard } from 'lucide-svelte';
-```
+- Keyboard icon from lucide-svelte
 
 #### Preserve CodeMirror Shortcuts
 
@@ -247,8 +230,8 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 6. Code (inline code with backticks)
 7. Hyperlink
 8. Separator
-9. Numbered List
-10. Bullet List (unordered)
+9. Numbered List (ordered list: 1. 2. 3.)
+10. Bullet List (unordered list: - • *)
 11. (Right side) Manual Save (keep existing)
 
 ### Button Specifications
@@ -290,19 +273,8 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 
 **Change behavior from block to inline**
 
-**Current**:
-```typescript
-function handleCodeBlock() {
-  insertAtCursor('\n```\ncode\n```\n');
-}
-```
-
-**New**:
-```typescript
-function handleInlineCode() {
-  applyFormatting('`');
-}
-```
+**Previous behavior**: Inserted code block with triple backticks
+**New behavior**: Wraps selection with single backticks for inline code
 
 **Icon**: Keep `Code` icon from lucide-svelte
 
@@ -320,7 +292,7 @@ function handleInlineCode() {
 
 **Tooltip**: "Numbered List"
 
-**Note**: Name change from "orderedList" to "numberedList" for clarity
+**Note**: Creates ordered lists (1. 2. 3.)
 
 #### 8. Bullet List
 
@@ -328,7 +300,7 @@ function handleInlineCode() {
 
 **Tooltip**: "Bullet List"
 
-**Note**: Formerly called "bulletList", now listed as "Bullet List" (unordered)
+**Note**: Creates unordered lists (- • *)
 
 #### Remove:
 
