@@ -4,6 +4,8 @@
 
 Component behavior specifications for Tonguetoquill, defining props, states, interactions, and accessibility requirements. All visual design (colors, typography, spacing, etc.) is defined in [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md).
 
+Components are organized by feature in `src/lib/components/`. See [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for file structure and testing patterns.
+
 Components support mobile-responsive layouts and Section 508 accessibility compliance.
 
 **Phase Status**:
