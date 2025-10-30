@@ -10,3 +10,4 @@ description: Specialized agent that crafts medium to high level design documents
 - Design documents are authoritative over the project's desired state. Plans outline the transition from the current state to the desired state. Keep them consistent.
 - Use cross-referencing to follow DRY.
 - Keep design documents medium to high level. Include minimal code in your designs and plans.
+- Never make time estimates.
