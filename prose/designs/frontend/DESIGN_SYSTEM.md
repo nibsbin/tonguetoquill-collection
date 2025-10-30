@@ -396,11 +396,180 @@ Keyboard shortcuts displayed in:
 
 ## Theme System
 
+### Overview
+
+This section outlines the centralized theme architecture for tonguetoquill-web that enables consistent theming across both Tailwind CSS-based UI components and the CodeMirror editor, with support for light/dark mode switching.
+
+### Design Goals
+
+1. **Centralized Token Management**: Single source of truth for all color and spacing values
+2. **Framework Agnostic**: Works with both Tailwind CSS and vanilla JavaScript (CodeMirror)
+3. **Theme Switching**: Support for light/dark mode with seamless transitions
+4. **Maintainability**: Easy to update and iterate on themes
+5. **Accessibility**: Maintain WCAG 2.1 AA compliance for all color combinations
+6. **Type Safety**: Leverage TypeScript for theme token access
+
+### Architecture
+
+#### CSS Custom Properties Foundation
+
+All theme tokens are defined as CSS custom properties in `src/app.css`, following the Tailwind CSS 4.0 `@theme inline` pattern.
+
+**Rationale**: CSS custom properties provide:
+- Runtime theme switching without rebuilding
+- Access from both CSS (Tailwind) and JavaScript (CodeMirror)
+- Browser-native support with excellent performance
+- Standard CSS cascade and inheritance behavior
+
+#### Theme Token Structure
+
+**Color Tokens**: Define semantic color tokens for all UI elements including surfaces, interactive states, semantic colors, UI elements, and editor-specific colors. These include:
+- Surface colors (background, foreground, surface, surface-elevated)
+- Interactive states (primary, secondary with foreground variants)
+- Semantic colors (muted, accent, destructive with foreground variants)
+- UI elements (border, border-hover, input, ring)
+- Editor-specific (background, foreground, line-active, selection, cursor, gutter colors)
+
+**Spacing & Layout Tokens**: Define responsive spacing tokens including:
+- Border radius scale (sm, md, lg, xl) calculated from base radius
+- Spacing scale (xs through xl) for consistent padding and margins
+- Values use CSS calc() for derived measurements from base tokens
+
+#### Theme Variants (Light/Dark)
+
+**Structure**: Both light and dark themes use identical token names with different values, enabling seamless switching.
+
+**Light Theme**: Default root-level tokens with light color values (white backgrounds, dark text)
+
+**Dark Theme**: Dark mode class overrides with inverted values (dark backgrounds, light text)
+
+**Zinc Palette Mapping**: Current zinc color scale maps to semantic tokens:
+- zinc-900 → background (dark mode)
+- zinc-800 → surface-elevated (dark mode)  
+- zinc-700 → borders (dark mode)
+- zinc-500 → muted-foreground (dark mode)
+- zinc-400/300 → secondary text variants (dark mode)
+- zinc-100 → primary foreground (dark mode)
+- zinc-50 → highlights (dark mode)
+
+#### Tailwind CSS Integration
+
+**Approach**: Use Tailwind's `@theme inline` directive to map CSS custom properties to Tailwind utility classes.
+
+**Benefits**:
+- Enables usage of semantic tokens in standard Tailwind classes (e.g., `bg-background`, `text-foreground`)
+- Maintains consistency between custom properties and utility classes
+- Allows theme switching without rebuilding CSS
+
+**Pattern**: Map each CSS custom property to a corresponding Tailwind theme value, creating a bidirectional relationship between design tokens and utility classes.
+
+#### CodeMirror Theme Integration
+
+**Architecture**: Create utility functions that generate CodeMirror themes from CSS custom properties at runtime.
+
+**Key Functions**:
+- `createEditorTheme()`: Reads computed CSS custom properties from document and applies them to CodeMirror theme configuration
+- `createReactiveEditorTheme()`: Extends basic theme with reactivity to update when theme tokens change (supports theme switching)
+
+**Implementation Location**: `src/lib/utils/editor-theme.ts`
+
+**Theme Elements**: Configure all CodeMirror visual elements including editor background, content styling, cursor, active line, selections, and gutters using corresponding editor-specific tokens.
+
+#### Theme Switching Mechanism
+
+**Library**: Use `mode-watcher` library (already in dependencies) for theme state management.
+
+**Theme Store** (`src/lib/stores/theme.svelte.ts`):
+- Export theme utilities: current mode, toggle function, explicit setters for light/dark/system
+- Integrates with mode-watcher's API for consistent behavior
+
+**Root Layout Integration**: Initialize ModeWatcher component in root layout to enable theme detection and switching throughout the application.
+
+**Persistence**: Theme preference automatically persisted to localStorage by mode-watcher.
+
+#### Component Migration Strategy
+
+**Replace Hardcoded Colors**: Convert all component color references from hardcoded zinc values to semantic tokens.
+- Example: `bg-zinc-900 text-zinc-100` becomes `bg-background text-foreground`
+
+**shadcn-svelte Component Alignment**: Update component variants to use semantic tokens:
+- Button variants reference primary, accent, and destructive tokens
+- Ensure hover states use token-based colors
+- Maintain consistent theming across all component states
+
+#### Type Safety
+
+**TypeScript Type Definitions** (`src/lib/types/theme.ts`):
+
+Define strict types for theme tokens:
+- `ColorToken`: Union type of all valid color token names
+- `RadiusToken`: Union type of radius variants (sm, md, lg, xl)
+- `getThemeValue()`: Helper function to safely retrieve computed token values with type checking
+
+This ensures compile-time validation of token usage and prevents typos in token references.
+
+### Component Replacement Strategy
+
+#### Custom Components to Replace
+
+1. **Dialog.svelte** → Replace with shadcn-svelte Dialog component
+   - **Reasoning**: shadcn-svelte provides a more feature-rich, accessible dialog with better keyboard navigation, focus trapping, and animation support
+   - **Components needed**: dialog, dialog-content, dialog-header, dialog-title, dialog-description
+   
+2. **Toast.svelte** → Keep as-is (svelte-sonner wrapper)
+   - **Reasoning**: svelte-sonner is already well-integrated and provides excellent toast functionality. The wrapper is minimal and just configures the toaster.
+   - **Action**: Update wrapper to use theme tokens for consistency
+
+#### shadcn-svelte Components to Add
+
+1. **Dialog** - Replace custom Dialog.svelte
+2. **Input** - For consistent form inputs (login/register pages)
+3. **Card** - For structured content display (optional, for future use)
+4. **Textarea** - For multi-line inputs (optional, for future use)
+
+#### Existing shadcn-svelte Components
+
+Keep and update to use theme tokens:
+- button.svelte
+- dropdown-menu-*.svelte
+- popover-*.svelte
+- sheet-*.svelte
+- switch.svelte
+- separator.svelte
+- label.svelte
+
 ### Implementation
 
 - Dark theme only (no theme toggle in UI)
 - CSS custom properties for all design tokens
 - Automatic high contrast support via `prefers-contrast` media query
+
+### Implementation Phases
+
+This design supports a phased implementation approach (detailed in the plan document):
+
+1. **Phase 1**: Define CSS custom properties and theme variants
+2. **Phase 2**: Integrate with Tailwind CSS
+3. **Phase 3**: Create CodeMirror theme utilities
+4. **Phase 4**: Migrate components to use semantic tokens
+5. **Phase 5**: Replace custom components with shadcn-svelte
+6. **Phase 6**: Add theme switching UI
+
+### Future Enhancements
+
+1. **Multiple Theme Support**: Beyond light/dark (e.g., high contrast, color blind modes)
+2. **Custom Theme Builder**: Allow users to customize their theme
+3. **Theme Presets**: Curated theme collections
+4. **CSS-in-JS Integration**: If needed for dynamic theming
+5. **Animation Tokens**: Centralize animation durations and easings
+
+### References
+
+- [Tailwind CSS 4.0 Theme Configuration](https://tailwindcss.com/docs/theme)
+- [shadcn-svelte Theming](https://www.shadcn-svelte.com/docs/theming)
+- [mode-watcher Documentation](https://mode-watcher.svecosystem.com/)
+- [CodeMirror Theming Guide](https://codemirror.net/examples/styling/)
+- [WCAG 2.1 Color Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
 
 ## Design Tokens
 
