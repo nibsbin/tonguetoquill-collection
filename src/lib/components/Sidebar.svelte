@@ -173,7 +173,7 @@
 
 	<!-- Menu Items -->
 	<div class="flex-1 overflow-hidden">
-		<div class="{isExpanded ? 'sidebar-padding-y' : 'pt-2'}">
+		<div>
 			<SidebarButtonSlot
 				icon={SquarePen}
 				label="New File"
@@ -184,11 +184,11 @@
 			/>
 
 			{#if !isExpanded}
-				<Separator class="sidebar-margin-y bg-border" />
+				<Separator class="bg-border" />
 			{/if}
 
 			{#if documentStore.documents.length > 0 && isExpanded}
-				<Separator class="sidebar-margin-y bg-border" />
+				<Separator class="bg-border" />
 
 				<!-- Recents Section Header -->
 				<div class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2">
