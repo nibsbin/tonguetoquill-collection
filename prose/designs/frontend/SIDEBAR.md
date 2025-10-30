@@ -388,6 +388,29 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 - Icon centered within button using flexbox
 - Text aligned with icon baseline when present
 
+### Implementation
+
+**File**: `src/lib/components/SidebarButtonSlot.svelte`
+
+**Usage Example**:
+```svelte
+<SidebarButtonSlot
+  icon={Menu}
+  label="Settings"  // Optional, shown only when expanded
+  {isExpanded}
+  class="custom-classes"
+  onclick={handleClick}
+  ariaLabel="Descriptive label for accessibility"
+/>
+```
+
+**Features**:
+- Automatic layout switching between icon-only and icon+label states
+- Proper centering at all three layers (slot, button, icon)
+- Consistent padding in both collapsed and expanded states
+- Supports all standard button props (variant, onclick, disabled, etc.)
+- Maintains visual consistency across all sidebar buttons
+
 ## Design Tokens Reference
 
 **Background Tokens**:
@@ -453,6 +476,7 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 
 - Source inspiration: `prose/claude-theme/claude-sidebar.html`
 - Current implementation: `src/lib/components/Sidebar.svelte`
+- Button slot component: `src/lib/components/SidebarButtonSlot.svelte`
 - Design system: `prose/designs/frontend/DESIGN_SYSTEM.md`
 - Component library: shadcn-svelte
 - Icon library: lucide-svelte
