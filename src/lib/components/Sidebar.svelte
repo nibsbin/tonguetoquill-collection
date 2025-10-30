@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, FileText, Plus, Settings, Trash2, User } from 'lucide-svelte';
+	import { Menu, FileText, SquarePen, Settings, Trash2, User } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
 	import Popover from '$lib/components/ui/popover.svelte';
@@ -184,7 +184,7 @@
 				aria-label="Create new document"
 			>
 				{#snippet children()}
-					<Plus class="sidebar-icon h-5 w-5" />
+					<SquarePen class="sidebar-icon" />
 					{#if isExpanded}
 						<span class="truncate">New File</span>
 					{/if}
@@ -218,7 +218,7 @@
 								onclick={() => handleFileSelect(doc.id)}
 							>
 								{#snippet children()}
-									<FileText class="sidebar-icon h-5 w-5" />
+									<FileText class="sidebar-icon sidebar-icon-small" />
 									<span class="truncate transition-opacity duration-300">
 										{doc.name}
 									</span>
@@ -261,7 +261,7 @@
 				aria-label="User profile: {user.email}"
 			>
 				{#snippet children()}
-					<User class="sidebar-icon h-5 w-5" />
+					<User class="sidebar-icon" />
 					{#if isExpanded}
 						<span class="truncate">{user.email}</span>
 					{/if}
@@ -276,7 +276,7 @@
 					class="sidebar-button-full inline-flex w-full items-center justify-start overflow-hidden rounded-md text-sm font-medium text-muted-foreground whitespace-nowrap transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 				>
 					{#snippet children()}
-						<Settings class="sidebar-icon h-5 w-5" />
+						<Settings class="sidebar-icon" />
 						{#if isExpanded}
 							<span>Settings</span>
 						{/if}
@@ -424,3 +424,59 @@
 		</DialogContent>
 	{/snippet}
 </Dialog>
+
+<style>
+    :global(.sidebar-icon) {
+        width: var(--sidebar-icon-size);
+        height: var(--sidebar-icon-size);
+        flex-shrink: 0;
+    }
+
+    :global(.sidebar-icon:has(+ *)) {
+        margin-right: 0.5rem;
+    }
+
+	:global(.sidebar-icon-small) {
+        /* This calculates 80% of the parent's --sidebar-icon-size */
+        width: calc(var(--sidebar-icon-size) * 0.6);
+		height: calc(var(--sidebar-icon-size) * 0.6);
+    }
+
+    :global(.sidebar-button) {
+        width: var(--sidebar-button-size);
+        height: var(--sidebar-button-size);
+    }
+
+    :global(.sidebar-button-full) {
+        height: var(--sidebar-button-size);
+        padding: var(--sidebar-padding);
+    }
+
+    :global(.sidebar-section) {
+        height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
+        padding: var(--sidebar-padding);
+    }
+
+    :global(.sidebar-section-height) {
+        height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
+    }
+
+    :global(.sidebar-padding) {
+        padding: var(--sidebar-padding);
+    }
+
+    :global(.sidebar-padding-x) {
+        padding-left: var(--sidebar-padding);
+        padding-right: var(--sidebar-padding);
+    }
+
+    :global(.sidebar-padding-y) {
+        padding-top: var(--sidebar-padding);
+        padding-bottom: var(--sidebar-padding);
+    }
+
+    :global(.sidebar-margin-y) {
+        margin-top: var(--sidebar-padding);
+        margin-bottom: var(--sidebar-padding);
+    }
+</style>

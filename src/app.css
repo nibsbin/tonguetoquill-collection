@@ -11,9 +11,13 @@
 
 	/* Sidebar spacing tokens */
 	--sidebar-padding: 0.5rem; /* 8px - consistent padding around all sidebar buttons */
-	--sidebar-button-size: 2.25rem; /* 36px - size of icon buttons */
-	--sidebar-collapsed-width: 3.25rem; /* 52px - collapsed sidebar width (36px button + 8px padding each side) */
+	--sidebar-button-size: 2.5em; /* 40px - size of icon buttons */
+	--sidebar-icon-size: 1.5rem; /* 24px - size of icons within buttons */
+	--sidebar-collapsed-width: 3.5rem; /* 56px - collapsed sidebar width (40px button + 8px padding each side) */
 	--sidebar-expanded-width: 18rem; /* 288px - expanded sidebar width */
+
+	/* Top menu spacing tokens */
+	--top-menu-height: var(--sidebar-collapsed-width); /* Aligned with sidebar */
 
 	/* Light Theme Color Tokens */
 	/* Surface colors */
@@ -138,53 +142,6 @@ body {
 	transition: background-color 200ms ease-in-out, color 200ms ease-in-out;
 }
 
-/* Sidebar utility classes */
-.sidebar-button {
-	width: var(--sidebar-button-size);
-	height: var(--sidebar-button-size);
-}
-
-.sidebar-button-full {
-	height: var(--sidebar-button-size);
-	padding: var(--sidebar-padding);
-}
-
-.sidebar-section {
-	height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
-	padding: var(--sidebar-padding);
-}
-
-.sidebar-section-height {
-	height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
-}
-
-.sidebar-padding {
-	padding: var(--sidebar-padding);
-}
-
-.sidebar-padding-x {
-	padding-left: var(--sidebar-padding);
-	padding-right: var(--sidebar-padding);
-}
-
-.sidebar-padding-y {
-	padding-top: var(--sidebar-padding);
-	padding-bottom: var(--sidebar-padding);
-}
-
-.sidebar-margin-y {
-	margin-top: var(--sidebar-padding);
-	margin-bottom: var(--sidebar-padding);
-}
-
-/* Sidebar icon - automatically adds margin when followed by text */
-.sidebar-icon {
-	flex-shrink: 0;
-}
-
-.sidebar-icon:has(+ *) {
-	margin-right: 0.5rem;
-}
 
 /* Screen reader only utility */
 .sr-only {

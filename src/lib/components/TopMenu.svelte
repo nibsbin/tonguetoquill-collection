@@ -47,7 +47,7 @@
 	}
 </script>
 
-<div class="flex h-12 items-center justify-between border-b border-border bg-background px-4">
+<div class="flex items-center justify-between border-b border-border bg-background px-4" style="height: var(--top-menu-height)">
 	<div class="flex items-center gap-2">
 		<span class="text-foreground/80">{fileName}</span>
 
@@ -58,12 +58,12 @@
 				<span>Saving...</span>
 			</div>
 		{:else if saveStatus === 'saved'}
-			<div class="flex items-center gap-1 text-xs text-green-400">
+			<div class="flex items-center gap-1 text-xs text-muted-foreground">
 				<Check class="h-3 w-3" />
 				<span>Saved</span>
 			</div>
 		{:else if saveStatus === 'error'}
-			<div class="flex items-center gap-1 text-xs text-red-400" title={saveError}>
+			<div class="flex items-center gap-1 text-xs text-destructive" title={saveError}>
 				<AlertCircle class="h-3 w-3" />
 				<span>Error</span>
 			</div>
