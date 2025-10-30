@@ -656,15 +656,20 @@ Synced with Tailwind configuration for unified system.
 ### Save Triggers
 
 - **Manual Save**: Ctrl/Cmd+S keyboard shortcut
-- **Auto-Save**: 7 seconds after last keystroke (when auto-save enabled in settings)
+- **Auto-Save**: 4 seconds after last keystroke (when auto-save enabled in settings)
 - **Blur Event**: When editor loses focus (optional, based on user preference)
 
 ### Auto-Save Implementation
 
-- Debounce delay: 7 seconds from last keystroke
+- **Debounce delay**: 4 seconds (4000ms) from last keystroke
+  - Balances responsiveness with system performance
+  - Reduces server load compared to shorter intervals
+  - Provides timely save feedback without being intrusive
 - Only trigger if document has unsaved changes
 - Show save status indicator (saving/saved/unsaved/error)
 - Network request timeout: 30 seconds
+
+**Note**: The 4-second debounce is the authoritative specification. See [UI_REFINEMENTS.md](./UI_REFINEMENTS.md#auto-save-configuration) for rationale and implementation details.
 
 ### Error Handling
 
