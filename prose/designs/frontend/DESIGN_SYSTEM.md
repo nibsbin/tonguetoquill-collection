@@ -8,44 +8,74 @@ The Tonguetoquill design system provides a consistent visual language across des
 
 ### Theme Philosophy
 
-- **Dark Theme Only**: Professional VSCode-inspired aesthetic with reduced eye strain
+- **Light and Dark Themes**: Professional aesthetic with support for user preference
+- **Semantic Tokens**: Color values defined using semantic CSS custom properties for maintainability
 - **Accessibility**: Built-in support for high contrast via CSS media queries (`prefers-contrast`)
-- **Reference**: Color values aligned with `prose/legacymock_project`
+- **Reference**: Theme system documented in Theme System section below
 
-### Color Scheme
+### Semantic Color Tokens
 
-**Background Layers**:
+All colors are defined as CSS custom properties in `src/app.css`, with separate values for light and dark themes.
 
-- Primary: zinc-900 (#18181b) - main background
-- Secondary: zinc-800 (#27272a) - elevated surfaces (top menu, toolbar)
-- Sidebar Background: zinc-900 (#18181b) - sidebar uses same color as main background for unified appearance
-- Tertiary: zinc-700 (#3f3f46) - active/hover states, borders, dividers
-- Overlay: zinc-900 with transparency (modals/drawers)
+**Surface Colors**:
 
-**Text Colors**:
+- `--color-background`: Main background color
+- `--color-foreground`: Main text color
+- `--color-surface`: Secondary background for cards/panels
+- `--color-surface-elevated`: Elevated surfaces (top menu, toolbar)
 
-- Primary: zinc-100 (#f4f4f5) - main text, hover state
-- Secondary: zinc-300 (#d4d4d8) - secondary text, labels
-- Tertiary: zinc-400 (#a1a1aa) - muted text, inactive icons
-- Disabled: zinc-500 (#71717a) - disabled state, placeholder text
+**Interactive States**:
 
-**Interactive Colors**:
-
-- Default: zinc-400 - default state for icons and secondary text
-- Hover: zinc-100 - hover state for text and icons
-- Active: zinc-700 background - active/selected state
-- Hover Background: zinc-700 - hover state for interactive elements
+- `--color-primary`: Primary action color
+- `--color-primary-foreground`: Text on primary color
+- `--color-secondary`: Secondary action color
+- `--color-secondary-foreground`: Text on secondary color
 
 **Semantic Colors**:
 
-- Success: Green tones
-- Error: Red tones (#d4183d for destructive actions)
-- Warning: Yellow tones
-- Info: Blue tones
+- `--color-muted`: Muted backgrounds
+- `--color-muted-foreground`: Muted text (#71717a in dark mode)
+- `--color-accent`: Accent backgrounds (hover states)
+- `--color-accent-foreground`: Text on accent color
+- `--color-destructive`: Error/destructive action color (#ef4444)
+- `--color-destructive-foreground`: Text on destructive color
+
+**UI Elements**:
+
+- `--color-border`: Default border color
+- `--color-border-hover`: Border color on hover
+- `--color-input`: Input field borders
+- `--color-ring`: Focus ring color
+
+**Editor-Specific Colors**:
+
+- `--color-editor-background`: Editor background
+- `--color-editor-foreground`: Editor text
+- `--color-editor-line-active`: Active line highlight
+- `--color-editor-selection`: Text selection background
+- `--color-editor-cursor`: Cursor color
+- `--color-editor-gutter-background`: Line number gutter background
+- `--color-editor-gutter-foreground`: Line number text
+
+**Dark Theme Values** (`.dark` class):
+
+- Background: #18181b (zinc-900)
+- Surface Elevated: #27272a (zinc-800)
+- Borders: #3f3f46 (zinc-700)
+- Muted Foreground: #71717a (zinc-500)
+- Foreground: #f4f4f5 (zinc-100)
+
+**Light Theme Values** (`:root`):
+
+- Background: #ffffff (white)
+- Surface Elevated: #fafafa (near-white)
+- Borders: #e4e4e7 (light gray)
+- Muted Foreground: #71717a (gray)
+- Foreground: #09090b (near-black)
 
 **Brand**: USAF Blue (#355e93) for accents and primary actions (preserved from legacy)
 
-**Preview Section**: White background (#ffffff) for professional document rendering (not dark theme)
+**Preview Section**: Uses `--color-background` which is white in light mode, dark in dark mode
 
 ### High Contrast Support
 
@@ -137,15 +167,18 @@ Automatically adapts to system `prefers-contrast: high` media query:
 
 **Component Heights**:
 
-- Top bar: 48px (matches mock project)
-- Toolbar: 48px (matches mock project)
-- Sidebar expanded: 224px (matches mock project)
-- Sidebar collapsed: 48px (matches mock project)
+- Top bar: 48px (h-12)
+- Toolbar: 48px
+- Sidebar header: 48px (h-12)
+- Sidebar primary action buttons: 36px (h-9)
+- Sidebar recent items: 32px (h-8)
+- Sidebar expanded: 288px (w-72) - updated from 224px for better proportions
+- Sidebar collapsed: 48px (w-12)
 - Small buttons: 28px (h-7, icon-only toolbar buttons)
 - Medium buttons: 32px (h-8)
-- Standard buttons: 40px
+- Standard buttons: 40px (h-10)
 
-**Reference**: Component dimensions match `prose/legacymock_project`
+**Reference**: Sidebar dimensions updated per sidebar redesign (October 2025)
 
 **Padding Standards**:
 
