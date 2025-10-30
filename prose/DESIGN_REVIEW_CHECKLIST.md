@@ -211,6 +211,6 @@ When documenting architecture:
 ---
 
 **Related Documents**:
-- [MAINTAINABILITY_PLAN.md](./plans/MAINTAINABILITY_PLAN.md) - Overall documentation strategy
+- [MAINTAINABILITY_PLAN.md](./MAINTAINABILITY_PLAN.md) - Overall documentation strategy
 - [INDEX.md](./designs/frontend/INDEX.md) - Design document index
 - [DESIGN_SYSTEM.md](./designs/frontend/DESIGN_SYSTEM.md) - Visual design tokens and patterns
