@@ -331,21 +331,6 @@ Based on recent implementations, the following design documents have been update
 - [x] STATE_MANAGEMENT.md - Updated auto-save status
 - [x] SIDEBAR.md - Updated with implementation status and color tokens
 
-Completed plans to archive:
-- [ ] Move `prose/plans/theme-unification-plan.md` to `__archive__/`
-- [ ] Move `prose/plans/sidebar-redesign.md` to `__archive__/`
-- [ ] Move `prose/plans/__archive__/REPAIR.md` (already archived)
-
-## Next Steps
-
-1. **Immediate** (This PR):
-   - ✅ Update design documents for recent changes
-   - ✅ Create this maintainability plan
-
-2. **Short-term**:
-   - [ ] Review all design docs for completeness
-   - [ ] Add missing cross-references
-   - [ ] Create design review checklist template
 
 
 ## Conclusion
