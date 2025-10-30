@@ -7,7 +7,6 @@
 		Shield,
 		Upload,
 		ExternalLink,
-		Keyboard,
 		Check,
 		Loader2,
 		AlertCircle,
@@ -26,9 +25,11 @@
 		onDownload: () => void;
 		saveStatus?: SaveStatus;
 		saveError?: string;
+		onDocumentInfo?: () => void;
 	};
 
-	let { fileName, onDownload, saveStatus = 'idle', saveError }: TopMenuProps = $props();
+	let { fileName, onDownload, saveStatus = 'idle', saveError, onDocumentInfo }: TopMenuProps =
+		$props();
 
 	function handleImport() {
 		// TODO: Open file picker
@@ -41,13 +42,9 @@
 	}
 
 	function handleDocumentInfo() {
-		// TODO: Open document info dialog
-		console.log('Document info');
-	}
-
-	function handleKeyboardShortcuts() {
-		// TODO: Open keyboard shortcuts dialog
-		console.log('Keyboard shortcuts');
+		if (onDocumentInfo) {
+			onDocumentInfo();
+		}
 	}
 
 	function handleAbout() {
@@ -158,16 +155,6 @@
 							{#snippet children()}
 								<FileText class="mr-2 h-4 w-4" />
 								Document Info
-							{/snippet}
-						</DropdownMenuItem>
-
-						<DropdownMenuItem
-							class="text-foreground/80 focus:bg-accent focus:text-foreground"
-							onclick={handleKeyboardShortcuts}
-						>
-							{#snippet children()}
-								<Keyboard class="mr-2 h-4 w-4" />
-								Keyboard Shortcuts
 							{/snippet}
 						</DropdownMenuItem>
 

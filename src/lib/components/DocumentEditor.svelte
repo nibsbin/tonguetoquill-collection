@@ -10,9 +10,10 @@
 	interface Props {
 		documentId: string;
 		autoSave: AutoSave;
+		onContentChange?: (content: string) => void;
 	}
 
-	let { documentId, autoSave }: Props = $props();
+	let { documentId, autoSave, onContentChange }: Props = $props();
 
 	let content = $state('');
 	let initialContent = $state('');
@@ -62,6 +63,11 @@
 
 		// Trigger auto-save
 		autoSave.scheduleSave(documentId, newContent, autoSaveEnabled);
+
+		// Notify parent of content change
+		if (onContentChange) {
+			onContentChange(newContent);
+		}
 	}
 
 	// Watch for successful auto-save to update initialContent

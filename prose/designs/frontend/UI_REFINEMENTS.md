@@ -4,6 +4,8 @@
 
 This document defines medium-level design specifications for UI refinements to improve consistency, usability, and component organization in Tonguetoquill.
 
+**Note**: This document is superseded by [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md) for keyboard shortcuts removal and related menu changes. See that document for the latest UX specifications.
+
 ## More Actions Menu
 
 ### Purpose

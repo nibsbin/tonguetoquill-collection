@@ -150,8 +150,8 @@
 		applyFormatting('~~');
 	}
 
-	function handleCodeBlock() {
-		insertAtCursor('\n```\ncode\n```\n');
+	function handleInlineCode() {
+		applyFormatting('`');
 	}
 
 	function handleQuote() {
@@ -183,6 +183,10 @@
 			editorView?.dispatch(transaction);
 		}
 		editorView?.focus();
+	}
+
+	function handleToggleFrontmatter() {
+		console.log('Toggle frontmatter folding (not yet implemented)');
 	}
 
 	function handleBulletList() {
@@ -251,7 +255,7 @@
 				handleStrikethrough();
 				break;
 			case 'code':
-				handleCodeBlock();
+				handleInlineCode();
 				break;
 			case 'quote':
 				handleQuote();
@@ -264,6 +268,9 @@
 				break;
 			case 'link':
 				handleLink();
+				break;
+			case 'toggleFrontmatter':
+				handleToggleFrontmatter();
 				break;
 		}
 	}

@@ -7,10 +7,13 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import TopMenu from '$lib/components/TopMenu.svelte';
 	import DocumentEditor from '$lib/components/DocumentEditor.svelte';
+	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
 
 	let user = $state<{ email: string; id: string } | null>(null);
 	let loading = $state(true);
 	let autoSave = new AutoSave();
+	let showDocumentInfo = $state(false);
+	let documentContent = $state('');
 
 	onMount(async () => {
 		// Show classification message
@@ -59,6 +62,14 @@
 		a.click();
 		URL.revokeObjectURL(url);
 	}
+
+	function handleContentChange(content: string) {
+		documentContent = content;
+	}
+
+	function handleDocumentInfo() {
+		showDocumentInfo = true;
+	}
 </script>
 
 {#if loading}
@@ -86,6 +97,7 @@
 				onDownload={handleDownload}
 				saveStatus={autoSave.saveState.status}
 				saveError={autoSave.saveState.errorMessage}
+				onDocumentInfo={handleDocumentInfo}
 			/>
 
 			<!-- Editor and Preview Area -->
@@ -105,11 +117,23 @@
 						</div>
 					</div>
 				{:else}
-					<DocumentEditor documentId={documentStore.activeDocumentId} {autoSave} />
+					<DocumentEditor
+						documentId={documentStore.activeDocumentId}
+						{autoSave}
+						onContentChange={handleContentChange}
+					/>
 				{/if}
 			</div>
 		</div>
 	</div>
+
+	<!-- Document Info Dialog -->
+	<DocumentInfoDialog
+		open={showDocumentInfo}
+		document={documentStore.activeDocument}
+		content={documentContent}
+		onOpenChange={(open) => (showDocumentInfo = open)}
+	/>
 
 	<!-- Toast Notifications using Sonner -->
 	<Toaster theme="dark" />
