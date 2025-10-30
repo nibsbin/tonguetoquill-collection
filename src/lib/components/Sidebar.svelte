@@ -191,6 +191,10 @@
 				{/snippet}
 			</Button>
 
+			{#if !isExpanded}
+				<Separator class="sidebar-margin-y bg-border" />
+			{/if}
+
 			{#if documentStore.documents.length > 0 && isExpanded}
 				<Separator class="sidebar-margin-y bg-border" />
 
