@@ -179,14 +179,14 @@
 		<div class="{isExpanded ? 'sidebar-padding-y' : 'pt-2'}">
 			<Button
 				variant="ghost"
-				class="sidebar-button-full w-full overflow-hidden text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] {isExpanded ? 'justify-start' : 'justify-center'}"
+				class="sidebar-button-full w-full justify-{isExpanded ? 'start' : 'center'} overflow-hidden text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
 				{#snippet children()}
-					<Plus class="h-5 w-5 shrink-0 {isExpanded ? 'mr-2' : ''}" />
+					<Plus class="sidebar-icon h-5 w-5" />
 					{#if isExpanded}
-						<span class="animate-in fade-in truncate">New File</span>
+						<span class="truncate">New File</span>
 					{/if}
 				{/snippet}
 			</Button>
@@ -252,14 +252,14 @@
 		{#if user}
 			<Button
 				variant="ghost"
-				class="sidebar-button-full w-full overflow-hidden text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] {isExpanded ? 'justify-start' : 'justify-center'}"
+				class="sidebar-button-full w-full justify-{isExpanded ? 'start' : 'center'} overflow-hidden text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
 				{#snippet children()}
-					<User class="h-5 w-5 shrink-0 {isExpanded ? 'mr-2' : ''}" />
+					<User class="sidebar-icon h-5 w-5" />
 					{#if isExpanded}
-						<span class="animate-in fade-in truncate">{user.email}</span>
+						<span class="truncate">{user.email}</span>
 					{/if}
 				{/snippet}
 			</Button>
@@ -269,12 +269,12 @@
 		<Popover bind:open={popoverOpen}>
 			{#snippet children()}
 				<PopoverTrigger
-					class="sidebar-button-full inline-flex w-full items-center overflow-hidden rounded-md text-sm font-medium text-muted-foreground whitespace-nowrap transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 {isExpanded ? 'justify-start' : 'justify-center'}"
+					class="sidebar-button-full inline-flex w-full items-center justify-{isExpanded ? 'start' : 'center'} overflow-hidden rounded-md text-sm font-medium text-muted-foreground whitespace-nowrap transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 				>
 					{#snippet children()}
-						<Settings class="h-5 w-5 shrink-0 {isExpanded ? 'mr-2' : ''}" />
+						<Settings class="sidebar-icon h-5 w-5" />
 						{#if isExpanded}
-							<span class="animate-in fade-in">Settings</span>
+							<span>Settings</span>
 						{/if}
 					{/snippet}
 				</PopoverTrigger>
