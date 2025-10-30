@@ -95,8 +95,7 @@
 		transition: none;
 		/* Padding for content */
 		padding: var(--sidebar-padding);
-		/* Remove default button cursor */
-		cursor: default;
+
 	}
 
 	/* Layer 3: Icon Element (handled by global .sidebar-icon in Sidebar.svelte) */

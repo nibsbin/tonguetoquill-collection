@@ -83,6 +83,13 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 Feature-based component organization with co-located tests and optional styles. Defines directory structure, file naming conventions, and testing patterns.
 
 **Topics**: Feature folders (Sidebar, TopMenu, Editor, Preview), file structure per component, testing strategy, migration from flat structure, import patterns
+### [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md)
+
+**UX Improvements 2025**
+
+Specifications for UX enhancements including Document Info dialog, keyboard shortcuts removal, and minimal markdown toolbar redesign.
+
+**Topics**: Document Info dialog (metadata and statistics display), keyboard shortcuts removal (rely on semantic HTML and CodeMirror), minimal markdown toolbar (streamlined formatting buttons), accessibility improvements
 
 ---
 
