@@ -189,7 +189,8 @@ Custom components are only created when shadcn-svelte doesn't provide the specif
 - **Share**: Share2 icon + "Share" text
 - **Import File**: Upload icon + "Import File" text
 - Separator (zinc-700)
-- **Document Info**: FileText icon + "Document Info" text
+- **Document Info**: FileText icon + "
+" text
 - **Keyboard Shortcuts**: Keyboard icon + "Keyboard Shortcuts" text
 - Separator (zinc-700)
 - **About Us**: Info icon + "About Us" text + ExternalLink icon (right)
