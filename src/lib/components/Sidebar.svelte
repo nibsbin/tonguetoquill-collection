@@ -172,7 +172,7 @@
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div class="sidebar-padding-x flex-1 overflow-hidden">
+	<div class="flex-1 overflow-hidden">
 		<div class="{isExpanded ? 'sidebar-padding-y' : 'pt-2'}">
 			<SidebarButtonSlot
 				icon={SquarePen}
@@ -243,7 +243,7 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="sidebar-padding space-y-1 border-t border-border">
+	<div class="space-y-1 border-t border-border">
 		<!-- User Profile Button -->
 		{#if user}
 			<SidebarButtonSlot
