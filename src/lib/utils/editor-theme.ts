@@ -8,6 +8,11 @@ import type { Extension } from '@codemirror/state';
 export function createEditorTheme(): Extension {
 	// Get computed CSS custom properties at runtime
 	const styles = getComputedStyle(document.documentElement);
+	const cursorColor = styles.getPropertyValue('--color-editor-cursor').trim() || '#09090b';
+	const isDark = document.documentElement.classList.contains('dark');
+
+	// Debug: log the cursor color value
+	console.log('Editor cursor color:', cursorColor, 'isEmpty:', !styles.getPropertyValue('--color-editor-cursor').trim());
 
 	return EditorView.theme({
 		'&': {
@@ -26,18 +31,11 @@ export function createEditorTheme(): Extension {
 		'.cm-line': {
 			padding: '0 16px'
 		},
-		'.cm-cursor, .cm-cursor-primary': {
-			borderLeftColor: styles.getPropertyValue('--color-editor-cursor').trim(),
-			borderLeftWidth: '2px',
-			borderLeftStyle: 'solid',
-			visibility: 'visible'
+		'.cm-cursor, .cm-dropCursor': {
+			borderLeftColor: cursorColor
 		},
 		'&.cm-focused .cm-cursor': {
-			animation: 'cm-blink 1.2s step-end infinite'
-		},
-		'@keyframes cm-blink': {
-			'0%, 50%': { visibility: 'visible' },
-			'50.01%, 100%': { visibility: 'hidden' }
+			borderLeftColor: cursorColor
 		},
 		'.cm-activeLine': {
 			backgroundColor: styles.getPropertyValue('--color-editor-line-active').trim()
@@ -50,5 +48,5 @@ export function createEditorTheme(): Extension {
 			color: styles.getPropertyValue('--color-editor-gutter-foreground').trim(),
 			border: 'none'
 		}
-	});
+	}, { dark: isDark });
 }
