@@ -371,15 +371,6 @@ The current separator implementation uses the shadcn-svelte Separator component,
 - Test auto-save functionality
 - Test manual save (Ctrl/Cmd+S)
 
-## Rollback Plan
-
-Each phase is independent and can be rolled back individually:
-- Phase 1: Remove new menu items, revert to previous structure
-- Phase 2: Revert debounce value back to 7000ms
-- Phase 3: Remove showLineNumbers prop passing
-- Phase 4: Revert separator changes
-- Phase 5: Revert to inline document list markup
-
 ## Success Criteria
 
 - [ ] More Actions menu displays all items in correct order with proper grouping
