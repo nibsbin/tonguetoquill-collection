@@ -26,8 +26,18 @@ export function createEditorTheme(): Extension {
 		'.cm-line': {
 			padding: '0 16px'
 		},
-		'.cm-cursor': {
-			borderLeftColor: styles.getPropertyValue('--color-editor-cursor').trim()
+		'.cm-cursor, .cm-cursor-primary': {
+			borderLeftColor: styles.getPropertyValue('--color-editor-cursor').trim(),
+			borderLeftWidth: '2px',
+			borderLeftStyle: 'solid',
+			visibility: 'visible'
+		},
+		'&.cm-focused .cm-cursor': {
+			animation: 'cm-blink 1.2s step-end infinite'
+		},
+		'@keyframes cm-blink': {
+			'0%, 50%': { visibility: 'visible' },
+			'50.01%, 100%': { visibility: 'hidden' }
 		},
 		'.cm-activeLine': {
 			backgroundColor: styles.getPropertyValue('--color-editor-line-active').trim()
