@@ -25,9 +25,11 @@
 		onDownload: () => void;
 		saveStatus?: SaveStatus;
 		saveError?: string;
+		onDocumentInfo?: () => void;
 	};
 
-	let { fileName, onDownload, saveStatus = 'idle', saveError }: TopMenuProps = $props();
+	let { fileName, onDownload, saveStatus = 'idle', saveError, onDocumentInfo }: TopMenuProps =
+		$props();
 
 	function handleImport() {
 		// TODO: Open file picker
@@ -40,8 +42,9 @@
 	}
 
 	function handleDocumentInfo() {
-		// TODO: Open document info dialog
-		console.log('Document info');
+		if (onDocumentInfo) {
+			onDocumentInfo();
+		}
 	}
 
 	function handleAbout() {
