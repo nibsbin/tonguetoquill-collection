@@ -9,6 +9,9 @@
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) + 4px);
 
+	/* Sidebar spacing tokens */
+	--sidebar-icon-padding: 0.5rem; /* 8px - padding between icons and dividers/borders */
+
 	/* Light Theme Color Tokens */
 	/* Surface colors */
 	--color-background: #ffffff;

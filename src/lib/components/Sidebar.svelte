@@ -144,7 +144,9 @@
 
 {#snippet sidebarContent()}
 	<!-- Hamburger Menu and Title -->
-	<div class="relative flex h-12 items-center {isExpanded ? 'px-2' : 'justify-center'}">
+	<div
+		class="relative flex items-center {isExpanded ? 'h-12 px-2' : 'justify-center py-2'}"
+	>
 		<Button
 			variant="ghost"
 			size="icon"
@@ -168,18 +170,22 @@
 	</div>
 
 	<!-- Logo centered below -->
-	<div class="relative flex h-11 items-center justify-center overflow-hidden">
+	<div
+		class="relative flex items-center justify-center overflow-hidden {isExpanded ? 'h-11' : 'py-2'}"
+	>
 		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-7 flex-shrink-0" />
 	</div>
 
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div class="flex-1 overflow-hidden {isExpanded ? 'px-2' : ''}">
+	<div
+		class="flex-1 overflow-hidden {isExpanded ? 'px-2' : ''}"
+	>
 		<div class="{isExpanded ? 'p-2' : 'flex flex-col items-center py-2'}">
 			<Button
 				variant="ghost"
-				class="h-9 w-full {isExpanded ? 'justify-start px-4' : 'justify-center w-8 px-0'} py-2 text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="w-full {isExpanded ? 'h-9 justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
@@ -255,12 +261,14 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="space-y-1 border-t border-border {isExpanded ? 'px-2' : 'flex flex-col items-center'} pb-1">
+	<div
+		class="border-t border-border {isExpanded ? 'space-y-1 px-2 pb-1' : 'flex flex-col items-center gap-0 py-2'}"
+	>
 		<!-- User Profile Button -->
 		{#if user}
 			<Button
 				variant="ghost"
-				class="h-9 {isExpanded ? 'w-full justify-start px-4' : 'w-8 justify-center px-0'} py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="{isExpanded ? 'h-9 w-full justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
@@ -282,7 +290,7 @@
 					{#snippet children({ builder })}
 						<Button
 							variant="ghost"
-							class="h-9 {isExpanded ? 'w-full justify-start px-4' : 'w-8 justify-center px-0'} py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+							class="{isExpanded ? 'h-9 w-full justify-start px-4 py-2' : 'h-8 w-8 justify-center px-0 py-0'} text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							aria-label="Settings"
 							{...builder}
 						>
