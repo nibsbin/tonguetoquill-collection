@@ -158,7 +158,7 @@
 		</Button>
 
 		<span
-			class="pointer-events-none absolute right-0 left-0 text-center whitespace-nowrap text-sm font-medium text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center text-sm font-medium whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
 			style="font-family: 'Lato', Arial, sans-serif;"
@@ -193,14 +193,19 @@
 
 			{#if documentStore.documents.length > 0 && isExpanded}
 				<Separator class="my-2 bg-border" />
-				
+
 				<!-- Recents Section Header -->
-				<div class="sticky top-0 z-10 bg-gradient-to-b from-background from-50% to-background/40 pb-2 mt-1 pl-2">
+				<div
+					class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
+				>
 					<h3 class="text-xs text-muted-foreground">Recents</h3>
 				</div>
-				
+
 				<!-- Scrollable Recent Items -->
-				<div class="space-y-px overflow-y-auto overflow-x-hidden" style="max-height: calc(100vh - 300px);">
+				<div
+					class="space-y-px overflow-x-hidden overflow-y-auto"
+					style="max-height: calc(100vh - 300px);"
+				>
 					{#each documentStore.documents as doc (doc.id)}
 						<div
 							class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 transition-transform {doc.id ===
@@ -212,7 +217,7 @@
 								variant="ghost"
 								class="flex-1 justify-start text-xs transition-colors hover:bg-transparent {doc.id ===
 								documentStore.activeDocumentId
-									? 'text-foreground font-medium'
+									? 'font-medium text-foreground'
 									: 'text-muted-foreground hover:text-foreground'}"
 								onclick={() => handleFileSelect(doc.id)}
 							>
@@ -239,9 +244,11 @@
 							</Button>
 						</div>
 					{/each}
-					
+
 					<!-- Bottom gradient fade -->
-					<div class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"></div>
+					<div
+						class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
+					></div>
 				</div>
 			{/if}
 		</div>
