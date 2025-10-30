@@ -22,7 +22,7 @@
 	let { onFormat, isDirty = false, onManualSave }: EditorToolbarProps = $props();
 </script>
 
-<div class="flex h-12 items-center justify-between gap-1 border-b border-border bg-surface-elevated px-2">
+<div class="flex min-h-11 items-center justify-between gap-1 border-b border-border bg-surface-elevated px-2">
 	<div class="flex items-center gap-1">
 		<Button
 			variant="ghost"
