@@ -8,6 +8,8 @@ import type { Extension } from '@codemirror/state';
 export function createEditorTheme(): Extension {
 	// Get computed CSS custom properties at runtime
 	const styles = getComputedStyle(document.documentElement);
+	const cursorColor = styles.getPropertyValue('--color-editor-cursor').trim() || '#09090b';
+	const isDark = document.documentElement.classList.contains('dark');
 
 	return EditorView.theme({
 		'&': {
@@ -26,8 +28,11 @@ export function createEditorTheme(): Extension {
 		'.cm-line': {
 			padding: '0 16px'
 		},
-		'.cm-cursor': {
-			borderLeftColor: styles.getPropertyValue('--color-editor-cursor').trim()
+		'.cm-cursor, .cm-dropCursor': {
+			borderLeftColor: cursorColor
+		},
+		'&.cm-focused .cm-cursor': {
+			borderLeftColor: cursorColor
 		},
 		'.cm-activeLine': {
 			backgroundColor: styles.getPropertyValue('--color-editor-line-active').trim()
@@ -40,5 +45,5 @@ export function createEditorTheme(): Extension {
 			color: styles.getPropertyValue('--color-editor-gutter-foreground').trim(),
 			border: 'none'
 		}
-	});
+	}, { dark: isDark });
 }
