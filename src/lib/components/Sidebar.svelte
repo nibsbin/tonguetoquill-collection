@@ -148,7 +148,7 @@
 		<Button
 			variant="ghost"
 			size="icon"
-			class="flex-shrink-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			class="flex-shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
 			onclick={handleToggle}
 			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 		>
@@ -179,7 +179,7 @@
 		<div class="space-y-px p-2">
 			<Button
 				variant="ghost"
-				class="h-9 w-full justify-start px-4 py-2 text-sm text-foreground/80 hover:bg-accent hover:text-foreground"
+				class="h-9 w-full justify-start px-4 py-2 text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
@@ -195,14 +195,14 @@
 				<Separator class="my-2 bg-border" />
 				{#each documentStore.documents as doc (doc.id)}
 					<div
-						class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 {doc.id ===
+						class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 transition-transform {doc.id ===
 						documentStore.activeDocumentId
-							? 'bg-accent'
-							: 'hover:bg-accent/50'}"
+							? 'bg-accent active:scale-100'
+							: 'hover:bg-accent/50 active:scale-[0.985]'}"
 					>
 						<Button
 							variant="ghost"
-							class="flex-1 justify-start text-xs hover:bg-transparent {doc.id ===
+							class="flex-1 justify-start text-xs transition-colors hover:bg-transparent {doc.id ===
 							documentStore.activeDocumentId
 								? 'text-foreground font-medium'
 								: 'text-muted-foreground hover:text-foreground'}"
@@ -218,7 +218,7 @@
 						<Button
 							variant="ghost"
 							size="icon"
-							class="h-8 w-8 flex-shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-transparent hover:text-red-400"
+							class="h-8 w-8 flex-shrink-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
 							onclick={(e) => {
 								e.stopPropagation();
 								handleDeleteFile(doc.id);
@@ -241,7 +241,7 @@
 		{#if user}
 			<Button
 				variant="ghost"
-				class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+				class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
@@ -263,7 +263,7 @@
 					{#snippet children()}
 						<Button
 							variant="ghost"
-							class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+							class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							aria-label="Settings"
 						>
 							{#snippet children()}
