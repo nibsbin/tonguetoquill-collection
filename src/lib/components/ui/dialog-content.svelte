@@ -14,7 +14,7 @@
 	<DialogPrimitive.Overlay class="fixed inset-0 z-50 bg-black/50" />
 	<DialogPrimitive.Content
 		class={cn(
-			'fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg border border-border bg-background p-6 shadow-lg',
+			'fixed top-[50%] left-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg border border-border bg-background p-6 shadow-lg',
 			className
 		)}
 		{...restProps}

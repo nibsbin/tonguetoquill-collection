@@ -7,6 +7,7 @@ This document establishes processes and guidelines for keeping design documentat
 ## Purpose
 
 After completing several major implementation phases (Phase 6.6 Technical Debt Repair, Theme Unification, Sidebar Redesign), we need a sustainable process to:
+
 1. Keep design documents current with code changes
 2. Ensure new features are designed before implementation
 3. Maintain consistency between plans, designs, and implementation
@@ -55,32 +56,34 @@ prose/
 ### For New Features
 
 **Phase 1: Design**
+
 1. Create or update design document in `prose/designs/`
    - Define desired behavior and architecture
    - Specify component interfaces and interactions
    - Document accessibility and responsive requirements
    - Get review/approval before implementation
 
-**Phase 2: Planning**
-2. Create implementation plan in `prose/plans/`
-   - Reference relevant design documents
-   - Break work into phases
-   - Identify files to modify
-   - Estimate effort
-   - Define success criteria
+**Phase 2: Planning** 2. Create implementation plan in `prose/plans/`
 
-**Phase 3: Implementation**
-3. Implement according to plan
-   - Reference both design and plan documents
-   - Note any deviations in commit messages
-   - Update plan if approach changes
+- Reference relevant design documents
+- Break work into phases
+- Identify files to modify
+- Estimate effort
+- Define success criteria
 
-**Phase 4: Documentation**
-4. Create debrief document in `prose/debriefs/`
-   - Summarize what was implemented
-   - Document decisions and deviations
-   - List modified files
-   - Note any outstanding work
+**Phase 3: Implementation** 3. Implement according to plan
+
+- Reference both design and plan documents
+- Note any deviations in commit messages
+- Update plan if approach changes
+
+**Phase 4: Documentation** 4. Create debrief document in `prose/debriefs/`
+
+- Summarize what was implemented
+- Document decisions and deviations
+- List modified files
+- Note any outstanding work
+
 5. Update affected design documents
    - Mark features as implemented
    - Update status notes
@@ -92,16 +95,19 @@ prose/
 ### For Bug Fixes and Minor Changes
 
 **Small Changes** (< 3 files, no architectural impact):
+
 - Update code
 - Update relevant design doc if behavior changed
 - Note change in commit message
 
 **Medium Changes** (3-10 files, minor architectural impact):
+
 - Create short plan or checklist
 - Update affected design documents
 - Consider creating brief debrief if complex
 
 **Large Changes** (> 10 files, architectural impact):
+
 - Follow full change management process above
 
 ## Design Document Maintenance
@@ -109,6 +115,7 @@ prose/
 ### Update Triggers
 
 Design documents should be updated when:
+
 1. ✅ New features are implemented
 2. ✅ Architecture changes significantly
 3. ✅ Component interfaces change
@@ -120,6 +127,7 @@ Design documents should be updated when:
 ### Update Checklist
 
 When updating design documents:
+
 - [ ] Update status markers (⚠️, ✅, ❌)
 - [ ] Add cross-references to debriefs
 - [ ] Update code samples if included
@@ -130,12 +138,14 @@ When updating design documents:
 ### Design Document Review Schedule
 
 **Quarterly Review**: Every 3 months
+
 - Review all design documents for accuracy
 - Update outdated sections
 - Archive obsolete documents
 - Identify gaps in documentation
 
 **Pre-Release Review**: Before major releases
+
 - Verify design docs match implementation
 - Update all status markers
 - Create summary of changes since last release
@@ -144,12 +154,14 @@ When updating design documents:
 
 ### Best Practices
 
-1. **Use Relative Paths**: 
+1. **Use Relative Paths**:
+
    ```markdown
    See [DESIGN_SYSTEM.md](../frontend/DESIGN_SYSTEM.md) for colors
    ```
 
 2. **Link to Specific Sections**:
+
    ```markdown
    See [Auto-Save Behavior](./DESIGN_SYSTEM.md#auto-save-behavior)
    ```
@@ -166,21 +178,25 @@ When updating design documents:
 ### Cross-Reference Patterns
 
 **Design → Design**:
+
 ```markdown
 For color tokens, see [DESIGN_SYSTEM.md - Theme System](./DESIGN_SYSTEM.md#theme-system)
 ```
 
 **Plan → Design**:
+
 ```markdown
 This plan implements [SIDEBAR.md](../designs/frontend/SIDEBAR.md)
 ```
 
 **Debrief → Design**:
+
 ```markdown
 Implementation documented in [sidebar-redesign.md](../../debriefs/sidebar-redesign.md)
 ```
 
 **Design → Debrief**:
+
 ```markdown
 **Status**: ✅ Implemented (October 2025). See `prose/debriefs/sidebar-redesign.md`
 ```
@@ -199,21 +215,25 @@ Use consistent status markers in design documents:
 ## File Naming Conventions
 
 ### Design Documents
+
 - Use UPPERCASE names for major documents: `ARCHITECTURE.md`, `DESIGN_SYSTEM.md`
 - Use lowercase for specific features: `sidebar.md`, `auth.md`
 - Be descriptive but concise
 
 ### Plan Documents
+
 - Use lowercase with hyphens: `theme-unification-plan.md`
 - Include "-plan" suffix for implementation plans
 - Include "-summary" suffix for overview documents
 
 ### Debrief Documents
+
 - Use lowercase with hyphens: `sidebar-redesign.md`
 - Include phase number if part of structured plan: `phase-6-6-technical-debt-repair.md`
 - Use descriptive names matching the work completed
 
 ### Archived Plans
+
 - Move to `__archive__/` subdirectory
 - Consider adding completion date: `MVP_PLAN_2025-10.md` (optional)
 - Keep original name for traceability
@@ -221,6 +241,7 @@ Use consistent status markers in design documents:
 ## Documentation Quality Standards
 
 ### Design Documents Should:
+
 - [ ] Be clear and unambiguous
 - [ ] Include rationale for major decisions
 - [ ] Reference authoritative sources
@@ -231,6 +252,7 @@ Use consistent status markers in design documents:
 - [ ] Cross-reference related documents
 
 ### Plan Documents Should:
+
 - [ ] Reference design documents
 - [ ] Define clear phases
 - [ ] Estimate effort for each phase
@@ -241,6 +263,7 @@ Use consistent status markers in design documents:
 - [ ] Specify what's out of scope
 
 ### Debrief Documents Should:
+
 - [ ] Summarize what was implemented
 - [ ] Document key decisions
 - [ ] List modified files
@@ -253,6 +276,7 @@ Use consistent status markers in design documents:
 ## Code Review Checklist
 
 When reviewing PRs, check:
+
 - [ ] Are affected design docs updated?
 - [ ] Is a debrief needed for this change?
 - [ ] Should a plan be archived?
@@ -263,11 +287,13 @@ When reviewing PRs, check:
 ## Tooling and Automation
 
 ### Current Tools
+
 - **Markdown**: All documentation in Markdown for git-friendly diffs
 - **Git**: Version control for documentation alongside code
 - **grep/find**: Search for outdated references
 
 ### Potential Future Tools
+
 - **Documentation linter**: Check for broken links, missing sections
 - **Status dashboard**: Visual overview of design vs implementation status
 - **Auto-linking**: Generate cross-reference suggestions
@@ -276,6 +302,7 @@ When reviewing PRs, check:
 ## Team Responsibilities
 
 ### Developers
+
 - Read relevant design docs before starting work
 - Follow established patterns and conventions
 - Update design docs when changing behavior
@@ -283,6 +310,7 @@ When reviewing PRs, check:
 - Archive completed plans
 
 ### Architects
+
 - Review and approve design documents
 - Ensure consistency across documents
 - Conduct quarterly documentation reviews
@@ -290,6 +318,7 @@ When reviewing PRs, check:
 - Maintain this maintainability plan
 
 ### Product Owners
+
 - Ensure features are designed before implementation
 - Approve architectural changes
 - Prioritize documentation updates
@@ -305,6 +334,7 @@ Track these metrics to measure documentation health:
 5. **Plan Completion**: % of plans with corresponding debriefs
 
 **Target Metrics**:
+
 - Consistency: > 90%
 - Coverage: > 85%
 - Freshness: > 60%
@@ -331,11 +361,10 @@ Based on recent implementations, the following design documents have been update
 - [x] STATE_MANAGEMENT.md - Updated auto-save status
 - [x] SIDEBAR.md - Updated with implementation status and color tokens
 
-
-
 ## Conclusion
 
 This maintainability plan establishes processes to keep design documentation synchronized with the codebase. By following these guidelines, we can:
+
 - Prevent technical debt accumulation
 - Maintain clear communication about system design
 - Enable efficient onboarding of new team members

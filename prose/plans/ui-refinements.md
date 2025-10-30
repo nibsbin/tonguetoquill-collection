@@ -21,6 +21,7 @@ This plan outlines the implementation steps for UI refinements including More Ac
 **Objective**: Add Import, Share, and Document Info items with proper grouping
 
 **Files to Modify**:
+
 - `src/lib/components/TopMenu.svelte`
 
 **Changes**:
@@ -34,19 +35,20 @@ This plan outlines the implementation steps for UI refinements including More Ac
    - `Share2` (for Share menu item)
 
 3. Update menu structure in DropdownMenuContent:
+
    ```
    Group 1: Document Actions
    - Import (Upload icon)
    - Share (Share2 icon)
-   
+
    Separator
-   
+
    Group 2: Info & Help
    - Document Info (FileText icon)
    - Keyboard Shortcuts (Keyboard icon)
-   
+
    Separator
-   
+
    Group 3: Legal & About
    - About Us (Info icon + ExternalLink)
    - Terms of Use (FileText icon + ExternalLink)
@@ -59,6 +61,7 @@ This plan outlines the implementation steps for UI refinements including More Ac
    - External link icon: `ml-auto h-3 w-3`
 
 **Testing**:
+
 - Verify menu items appear in correct order
 - Verify separators display between groups
 - Verify icons display correctly
@@ -67,6 +70,7 @@ This plan outlines the implementation steps for UI refinements including More Ac
 - Verify external links open in new tabs
 
 **Validation**:
+
 - Take screenshot of More Actions menu in expanded state
 - Verify grouping matches specification
 
@@ -77,12 +81,14 @@ This plan outlines the implementation steps for UI refinements including More Ac
 **Objective**: Change auto-save debounce from 7 seconds to 4 seconds and consolidate specification
 
 **Files to Modify**:
+
 - `src/lib/utils/auto-save.svelte.ts`
 - `prose/designs/frontend/DESIGN_SYSTEM.md` (already updated)
 
 **Changes**:
 
 1. Update AutoSave class constructor default:
+
    ```typescript
    constructor(debounceMs: number = 4000) {  // Changed from 7000
      this.saveDebounceMs = debounceMs;
@@ -93,13 +99,14 @@ This plan outlines the implementation steps for UI refinements including More Ac
    ```typescript
    /**
     * AutoSave class to manage document saving with debounce
-    * 
+    *
     * @param debounceMs - Debounce delay in milliseconds (default: 4000ms)
     *                     See DESIGN_SYSTEM.md Auto-Save Behavior for rationale
     */
    ```
 
 **Testing**:
+
 - Enable auto-save in settings
 - Make changes to a document
 - Verify save triggers 4 seconds after last keystroke
@@ -107,6 +114,7 @@ This plan outlines the implementation steps for UI refinements including More Ac
 - Verify multiple rapid edits reset the 4-second timer
 
 **Validation**:
+
 - Time the auto-save delay with a stopwatch
 - Verify it's approximately 4 seconds (±200ms tolerance)
 
@@ -117,51 +125,55 @@ This plan outlines the implementation steps for UI refinements including More Ac
 **Objective**: Make line numbers toggle in Settings apply to the markdown editor
 
 **Files to Modify**:
+
 - `src/lib/components/DocumentEditor.svelte`
 
 **Changes**:
 
 1. Import line numbers setting from localStorage on mount:
+
    ```typescript
    let showLineNumbers = $state(true);
-   
+
    onMount(() => {
-     const savedLineNumbers = localStorage.getItem('line-numbers');
-     if (savedLineNumbers !== null) {
-       showLineNumbers = savedLineNumbers === 'true';
-     }
+   	const savedLineNumbers = localStorage.getItem('line-numbers');
+   	if (savedLineNumbers !== null) {
+   		showLineNumbers = savedLineNumbers === 'true';
+   	}
    });
    ```
 
 2. Listen for storage events to react to settings changes:
+
    ```typescript
    function handleStorageChange(e: StorageEvent) {
-     if (e.key === 'line-numbers' && e.newValue !== null) {
-       showLineNumbers = e.newValue === 'true';
-     }
+   	if (e.key === 'line-numbers' && e.newValue !== null) {
+   		showLineNumbers = e.newValue === 'true';
+   	}
    }
-   
+
    onMount(() => {
-     window.addEventListener('storage', handleStorageChange);
-     return () => {
-       window.removeEventListener('storage', handleStorageChange);
-     };
+   	window.addEventListener('storage', handleStorageChange);
+   	return () => {
+   		window.removeEventListener('storage', handleStorageChange);
+   	};
    });
    ```
 
 3. Pass showLineNumbers prop to MarkdownEditor:
    ```svelte
    <MarkdownEditor
-     value={content}
-     onChange={handleContentChange}
-     onSave={handleManualSave}
-     {showLineNumbers}
+   	value={content}
+   	onChange={handleContentChange}
+   	onSave={handleManualSave}
+   	{showLineNumbers}
    />
    ```
 
 **Note**: The MarkdownEditor component already supports the `showLineNumbers` prop and will automatically recreate the editor when the value changes.
 
 **Testing**:
+
 - Open Settings popover
 - Toggle line numbers ON
 - Verify line numbers appear in editor
@@ -171,6 +183,7 @@ This plan outlines the implementation steps for UI refinements including More Ac
 - Verify editor content is preserved when toggling
 
 **Validation**:
+
 - Take screenshot with line numbers ON
 - Take screenshot with line numbers OFF
 - Verify no layout shift or content loss
@@ -182,6 +195,7 @@ This plan outlines the implementation steps for UI refinements including More Ac
 **Objective**: Ensure separators don't shift layout and act as bottom borders
 
 **Files to Modify**:
+
 - `src/lib/components/Sidebar.svelte`
 
 **Analysis**:
@@ -195,6 +209,7 @@ The current separator implementation uses the shadcn-svelte Separator component,
    - Before footer section (line 245)
 
 2. Ensure no extra spacing around separators:
+
    ```svelte
    <Separator class="bg-border" />
    <!-- No margin classes, no wrapper divs with padding -->
@@ -203,11 +218,12 @@ The current separator implementation uses the shadcn-svelte Separator component,
 3. If layout shift persists, consider using border-bottom on parent elements instead:
    ```svelte
    <div class="border-b border-border">
-     <!-- Content -->
+   	<!-- Content -->
    </div>
    ```
 
 **Testing**:
+
 - Expand/collapse sidebar
 - Verify separator position remains stable
 - Verify no layout jump when separator renders
@@ -215,6 +231,7 @@ The current separator implementation uses the shadcn-svelte Separator component,
 - Verify separator is exactly 1px tall
 
 **Validation**:
+
 - Take screenshot highlighting separator positions
 - Measure element heights in DevTools to confirm no shift
 
@@ -225,9 +242,11 @@ The current separator implementation uses the shadcn-svelte Separator component,
 **Objective**: Abstract document list items to a separate component with consistent padding
 
 **Files to Create**:
+
 - `src/lib/components/DocumentListItem.svelte`
 
 **Files to Modify**:
+
 - `src/lib/components/Sidebar.svelte`
 
 **Implementation**:
@@ -236,59 +255,61 @@ The current separator implementation uses the shadcn-svelte Separator component,
 
 ```svelte
 <script lang="ts">
-  import { FileText, Trash2 } from 'lucide-svelte';
-  import Button from '$lib/components/ui/button.svelte';
-  
-  type DocumentListItemProps = {
-    document: {
-      id: string;
-      name: string;
-    };
-    isActive: boolean;
-    onSelect: (id: string) => void;
-    onDelete: (id: string) => void;
-  };
-  
-  let { document, isActive, onSelect, onDelete }: DocumentListItemProps = $props();
-  
-  function handleSelect() {
-    onSelect(document.id);
-  }
-  
-  function handleDelete(e: MouseEvent) {
-    e.stopPropagation();
-    onDelete(document.id);
-  }
+	import { FileText, Trash2 } from 'lucide-svelte';
+	import Button from '$lib/components/ui/button.svelte';
+
+	type DocumentListItemProps = {
+		document: {
+			id: string;
+			name: string;
+		};
+		isActive: boolean;
+		onSelect: (id: string) => void;
+		onDelete: (id: string) => void;
+	};
+
+	let { document, isActive, onSelect, onDelete }: DocumentListItemProps = $props();
+
+	function handleSelect() {
+		onSelect(document.id);
+	}
+
+	function handleDelete(e: MouseEvent) {
+		e.stopPropagation();
+		onDelete(document.id);
+	}
 </script>
 
 <div
-  class="group flex h-8 items-center gap-1 rounded pr-2 transition-transform {isActive ? 'bg-accent active:scale-100' : 'hover:bg-accent/50 active:scale-[0.985]'}"
+	class="group flex h-8 items-center gap-1 rounded pr-2 transition-transform {isActive
+		? 'bg-accent active:scale-100'
+		: 'hover:bg-accent/50 active:scale-[0.985]'}"
 >
-  <Button
-    variant="ghost"
-    class="flex-1 overflow-hidden justify-start p-2 text-xs transition-colors hover:bg-transparent {isActive
-      ? 'font-medium text-foreground'
-      : 'text-muted-foreground hover:text-foreground'}"
-    onclick={handleSelect}
-  >
-    {#snippet children()}
-      <FileText class="sidebar-icon sidebar-icon-small" />
-      <span class="truncate transition-opacity duration-300">
-        {document.name}
-      </span>
-    {/snippet}
-  </Button>
-  <Button
-    variant="ghost"
-    size="icon"
-    class="h-5 w-5 shrink-0 p-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
-    onclick={handleDelete}
-    aria-label="Delete {document.name}"
-  >
-    {#snippet children()}
-      <Trash2 class="h-5 w-5" />
-    {/snippet}
-  </Button>
+	<Button
+		variant="ghost"
+		class="flex-1 justify-start overflow-hidden p-2 text-xs transition-colors hover:bg-transparent {isActive
+			? 'font-medium text-foreground'
+			: 'text-muted-foreground hover:text-foreground'}"
+		onclick={handleSelect}
+	>
+		{#snippet children()}
+			<FileText class="sidebar-icon sidebar-icon-small" />
+			<span class="truncate transition-opacity duration-300">
+				{document.name}
+			</span>
+		{/snippet}
+	</Button>
+	<Button
+		variant="ghost"
+		size="icon"
+		class="h-5 w-5 shrink-0 p-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
+		onclick={handleDelete}
+		aria-label="Delete {document.name}"
+	>
+		{#snippet children()}
+			<Trash2 class="h-5 w-5" />
+		{/snippet}
+	</Button>
 </div>
 ```
 
@@ -296,37 +317,39 @@ The current separator implementation uses the shadcn-svelte Separator component,
 
 ```svelte
 <script lang="ts">
-  // Add import
-  import DocumentListItem from '$lib/components/DocumentListItem.svelte';
-  
-  // ... existing code ...
+	// Add import
+	import DocumentListItem from '$lib/components/DocumentListItem.svelte';
+
+	// ... existing code ...
 </script>
 
 <!-- Replace the document list section (lines 199-233) -->
 <div class="space-y-px overflow-x-hidden overflow-y-auto" style="max-height: calc(100vh - 300px);">
-  {#each documentStore.documents as doc (doc.id)}
-    <DocumentListItem
-      document={doc}
-      isActive={doc.id === documentStore.activeDocumentId}
-      onSelect={handleFileSelect}
-      onDelete={handleDeleteFile}
-    />
-  {/each}
-  
-  <!-- Bottom gradient fade -->
-  <div
-    class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
-  ></div>
+	{#each documentStore.documents as doc (doc.id)}
+		<DocumentListItem
+			document={doc}
+			isActive={doc.id === documentStore.activeDocumentId}
+			onSelect={handleFileSelect}
+			onDelete={handleDeleteFile}
+		/>
+	{/each}
+
+	<!-- Bottom gradient fade -->
+	<div
+		class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
+	></div>
 </div>
 ```
 
 **Padding Consistency Verification**:
+
 - DocumentListItem uses same `p-2` padding as SidebarButtonSlot
 - Icon uses `.sidebar-icon` and `.sidebar-icon-small` classes
 - Container has zero vertical margin for efficient stacking
 - Height fixed at `h-8` (32px) matching specification
 
 **Testing**:
+
 - Verify document list items render correctly
 - Verify hover state reveals delete button
 - Verify active state highlights correctly
@@ -336,6 +359,7 @@ The current separator implementation uses the shadcn-svelte Separator component,
 - Verify no vertical gaps between items
 
 **Validation**:
+
 - Take screenshot of document list
 - Measure padding in DevTools and compare to SidebarButtonSlot
 - Verify visual alignment between document items and other sidebar buttons
@@ -353,6 +377,7 @@ The current separator implementation uses the shadcn-svelte Separator component,
 ## Testing Strategy
 
 ### Manual Testing
+
 - Test each phase individually before proceeding
 - Verify UI screenshots match specifications
 - Test on different viewport sizes (mobile, tablet, desktop)
@@ -360,11 +385,13 @@ The current separator implementation uses the shadcn-svelte Separator component,
 - Test with multiple documents in the list
 
 ### Browser Testing
+
 - Chrome/Edge (primary)
 - Firefox (secondary)
 - Safari (if available)
 
 ### Regression Testing
+
 - Verify existing functionality still works
 - Test document creation, selection, deletion
 - Test settings persistence across page refreshes

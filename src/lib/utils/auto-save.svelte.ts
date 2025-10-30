@@ -15,6 +15,9 @@ export interface SaveState {
 
 /**
  * AutoSave class to manage document saving with debounce
+ *
+ * @param debounceMs - Debounce delay in milliseconds (default: 4000ms)
+ *                     See DESIGN_SYSTEM.md Auto-Save Behavior for rationale
  */
 export class AutoSave {
 	private debounceTimer: number | undefined;
@@ -23,7 +26,7 @@ export class AutoSave {
 		status: 'idle'
 	});
 
-	constructor(debounceMs: number = 7000) {
+	constructor(debounceMs: number = 4000) {
 		this.saveDebounceMs = debounceMs;
 	}
 

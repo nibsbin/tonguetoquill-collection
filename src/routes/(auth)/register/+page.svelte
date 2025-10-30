@@ -52,7 +52,9 @@
 
 			<div class="space-y-4">
 				<div>
-					<label for="email" class="block text-sm font-medium text-muted-foreground">Email address</label>
+					<label for="email" class="block text-sm font-medium text-muted-foreground"
+						>Email address</label
+					>
 					<input
 						id="email"
 						name="email"
@@ -66,7 +68,9 @@
 				</div>
 
 				<div>
-					<label for="password" class="block text-sm font-medium text-muted-foreground">Password</label>
+					<label for="password" class="block text-sm font-medium text-muted-foreground"
+						>Password</label
+					>
 					<input
 						id="password"
 						name="password"

@@ -239,15 +239,16 @@ The AutoSave class is implemented in `src/lib/utils/auto-save.svelte.ts`:
 
 ```typescript
 class AutoSave {
-  // 7-second debounce timer
-  // Save status tracking (idle, saving, saved, error)
-  // Support for both guest (localStorage) and authenticated (API) modes
-  // Configurable debounce interval
-  // Proper cleanup of timers
+	// 7-second debounce timer
+	// Save status tracking (idle, saving, saved, error)
+	// Support for both guest (localStorage) and authenticated (API) modes
+	// Configurable debounce interval
+	// Proper cleanup of timers
 }
 ```
 
 Integrated into DocumentEditor component:
+
 - Tracks dirty state (unsaved changes)
 - Triggers auto-save on content changes
 - Respects user's auto-save preference from settings

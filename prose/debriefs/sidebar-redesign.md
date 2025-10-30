@@ -63,6 +63,7 @@ Successfully implemented the sidebar redesign for tonguetoquill-web based on the
 ### Key Changes
 
 **Dimensions:**
+
 ```svelte
 <!-- Desktop sidebar -->
 w-72 (expanded) / w-12 (collapsed)
@@ -71,12 +72,11 @@ w-72 (expanded) / w-12 (collapsed)
 w-72
 
 <!-- Heights -->
-h-12 (header)
-h-9 (primary actions, footer buttons)
-h-8 (recent items)
+h-12 (header) h-9 (primary actions, footer buttons) h-8 (recent items)
 ```
 
 **Interaction Effects:**
+
 ```svelte
 <!-- Standard buttons -->
 active:scale-[0.985]
@@ -89,12 +89,13 @@ active:scale-100
 ```
 
 **Visual Hierarchy:**
+
 ```svelte
 <!-- Section header -->
 <h3 class="text-xs text-muted-foreground">Recents</h3>
 
 <!-- Scrollable container -->
-<div class="overflow-y-auto overflow-x-hidden" 
+<div class="overflow-y-auto overflow-x-hidden"
      style="max-height: calc(100vh - 300px);">
 ```
 
@@ -142,11 +143,13 @@ Implementation closely follows `prose/designs/frontend/SIDEBAR.md`:
 ## Issues Encountered and Solutions
 
 ### Issue 1: Missing mode-watcher Dependency
+
 **Problem**: Build failed due to missing `mode-watcher` package referenced in layout.  
 **Solution**: Installed `mode-watcher` package via npm.  
 **Status**: ✅ Resolved
 
 ### Issue 2: Gradient Background Rendering
+
 **Problem**: Initial gradient background for section header needed proper positioning.  
 **Solution**: Added `sticky top-0 z-10` with gradient from background to transparent.  
 **Status**: ✅ Resolved

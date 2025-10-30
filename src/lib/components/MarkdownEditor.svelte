@@ -267,7 +267,7 @@
 				break;
 		}
 	}
-	
+
 	onMount(() => {
 		// Detect initial theme
 		isDarkTheme = document.documentElement.classList.contains('dark');
