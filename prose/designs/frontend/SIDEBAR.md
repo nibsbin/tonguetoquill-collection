@@ -114,223 +114,115 @@ Maintain our existing zinc-based palette with semantic tokens:
 ### Button States
 
 **Ghost Buttons** (most sidebar items):
-```css
-/* Default */
-- Background: transparent
-- Text: text-text-300 (muted)
-- Transition: all 300ms cubic-bezier(0.165, 0.85, 0.45, 1)
-
-/* Hover */
-- Background: bg-bg-400
-- Text: text-text-100
-- Scale: active:scale-[0.985] (subtle press effect)
-
-/* Active/Selected */
-- Background: bg-bg-400
-- Text: text-text-100
-- Scale: active:scale-[1.0] (no press effect when already active)
-```
+- **Default**: Transparent background, muted text color
+- **Hover**: Semi-transparent background (bg-400), brighter text
+- **Press**: Subtle scale-down effect (98.5% scale)
+- **Active/Selected**: Persistent background color, no scale on press
+- **Transition**: 300ms with custom easing curve
 
 **Primary Action Button** (New File/Chat):
-```css
-/* Default */
-- Background: bg-accent-main-000 (USAF Blue or brand color)
-- Text: text-always-white
-- Icon container: rounded-full with shadow
-- Transition: all ease-in-out
-
-/* Hover */
-- Icon: -rotate-3 scale-110 with shadow-md
-- Text: no change
-
-/* Active */
-- Icon: rotate-6 scale-[0.98] (playful bounce)
-- Background: bg-accent-brand/15
-```
+- **Default**: Branded accent background, white text, rounded icon container with shadow
+- **Hover**: Icon rotates slightly and scales up with enhanced shadow
+- **Press**: Playful bounce effect with rotation
+- **Visual**: Distinctive from other buttons through color and iconography
 
 ### Icon Animations
 
 **Toggle/Navigation Icons**:
-```css
-/* Default */
-- Scale: scale-100
-- Opacity: opacity-100
-- Transition: all properties
+- **Dual-icon pattern**: Two icon states overlay each other
+- **Default state**: Primary icon visible at full scale and opacity
+- **Hover state**: Primary icon shrinks and fades out, secondary icon scales up and fades in
+- **Transition**: Smooth crossfade between states
 
-/* Hover */
-- Scale: scale-80 (shrink slightly)
-- Opacity: opacity-0 (fade out)
-- Secondary icon fades in: scale-100 opacity-100
-```
-
-**Action Icons** (from Claude):
-```css
-/* Chats icon on hover */
-- Inner paths: translate-x-[0.5px] or -translate-x-[0.5px]
-
-/* Projects icon on hover */
-- Top layer: -translate-y-[1.4px] translate-x-[0.5px] rotate-3
-- Middle layer: -translate-y-[2.8px] translate-x-px rotate-6
-
-/* Artifacts icon on hover */
-- Specific elements rotate or transform
-```
+**Action Icons**:
+- **Hover effects**: Subtle transforms specific to each icon's semantic meaning
+  - Chat icons: Horizontal translation suggesting conversation flow
+  - Project/stack icons: Vertical layering effect with rotation
+  - Settings/gear icons: Rotation suggesting mechanical action
+- **Principles**: Animations should be subtle, meaningful, and complete within 200ms
 
 ### List Item Behaviors
 
 **Recent Items**:
-```css
-/* Default */
-- Height: h-8 (32px)
-- Text: truncate with ellipsis
-- Options button: opacity-0
-
-/* Hover */
-- Options button: opacity-100
-- Text mask: gradient fade on right edge
-  [mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)]
-
-/* Selected */
-- Background: bg-bg-400
-- Text: full opacity
-- Show delete icon on hover
-```
+- **Default**: Compact height (32px), truncated text with ellipsis
+- **Hover**: Background color change, options button fades in, text applies gradient mask for smooth fade effect
+- **Selected**: Persistent background highlighting, full text visibility
+- **Options button**: Hidden by default, revealed on hover positioned at right edge
+- **Delete action**: Integrated into options or separate button, requires confirmation dialog
 
 ### Scroll Behavior
 
 **Recents List**:
-```css
-/* Container */
-- overflow-y-auto
-- overflow-x-hidden
-- Gradient fade at bottom:
-  bg-gradient-to-t from-bg-200 to-transparent
-  sticky h-4 bottom-0
-```
+- **Scrolling**: Vertical scroll enabled, horizontal scroll hidden
+- **Visual feedback**: Gradient fade overlay at bottom edge to indicate more content
+- **Performance**: Smooth scrolling with momentum on touch devices
+- **Accessibility**: Keyboard navigation support (arrow keys, page up/down)
 
 ## Component Structure
 
 ### Header Section
 
-```svelte
-<div class="flex w-full items-center gap-px p-2">
-  <!-- Toggle button with dual-icon animation -->
-  <Button variant="ghost" size="icon" class="h-8 w-8">
-    <div class="relative">
-      <!-- Default icon -->
-      <Icon class="group-hover:scale-80 transition scale-100 group-hover:opacity-0" />
-      <!-- Hover icon -->
-      <Icon class="opacity-0 scale-75 absolute inset-0 group-hover:scale-100 group-hover:opacity-100" />
-    </div>
-  </Button>
-  
-  <!-- App branding/logo -->
-  <a class="flex flex-col justify-start items-top">
-    <svg class="ml-[3px] h-4 flex-shrink-0" />
-  </a>
-</div>
-```
+**Layout**:
+- Toggle button with dual-icon animation on left
+- App branding/logo centered or right-aligned
+- Height: 48px with appropriate padding
+- Horizontal gap between elements for breathing room
+
+**Toggle Button**:
+- Icon-only design (no text label)
+- Dual-icon pattern: sidebar-open and sidebar-collapsed icons
+- Smooth crossfade animation on hover
+- ARIA label for accessibility
 
 ### Primary Actions
 
-```svelte
-<div class="flex flex-col px-2 pt-1 gap-px mb-6">
-  <!-- New File/Chat Button with animated icon -->
-  <Button class="h-9 px-4 py-2 rounded-lg hover:bg-accent-main-000/[0.08]">
-    <div class="flex flex-row items-center gap-2">
-      <div class="w-6 h-6 rounded-full bg-accent-main-000 
-                  group-hover:-rotate-3 group-hover:scale-110 
-                  group-hover:shadow-md transition-all">
-        <PlusIcon class="text-always-white group-hover:scale-105" />
-      </div>
-      <div class="text-accent-main-100 font-medium text-sm">New File</div>
-    </div>
-  </Button>
-</div>
-```
+**New File/Chat Button**:
+- Prominent visual treatment to encourage action
+- Rounded pill style with sufficient padding
+- Animated icon container (circular background)
+- Icon scales and rotates on hover
+- Positioned at top of main navigation area
 
 ### Navigation Items
 
-```svelte
-<div class="relative group">
-  <Button variant="ghost" class="h-9 px-4 py-2 w-full hover:bg-bg-400">
-    <div class="flex flex-row items-center justify-start gap-3">
-      <div class="size-4 flex items-center justify-center">
-        <!-- Animated icon on hover -->
-        <Icon class="group-hover:translate-effect" />
-      </div>
-      <span class="truncate text-sm">{label}</span>
-    </div>
-  </Button>
-  
-  <!-- Options menu (hidden by default, shown on hover) -->
-  <div class="absolute right-0 top-1/2 -translate-y-1/2 
-              hidden group-hover:block group-focus-within:block">
-    <Button size="icon" variant="ghost">
-      <MoreIcon />
-    </Button>
-  </div>
-</div>
-```
+**Structure**:
+- Standard list item format
+- Icon + label layout (label hidden when collapsed)
+- Options menu appears on hover/focus
+- Proper spacing between items (minimal gaps)
+
+**Interaction Pattern**:
+- Group hover state reveals additional actions
+- Click navigates to corresponding view
+- Visual indication of current/active item
+- Keyboard focusable with visible focus indicator
 
 ### Recent Items List
 
-```svelte
-<div class="flex flex-col overflow-y-auto overflow-x-hidden px-2">
-  <!-- Section header with gradient background -->
-  <h3 class="text-text-300 pb-2 text-xs pl-2 sticky top-0 z-10 
-             bg-gradient-to-b from-bg-200 from-50% to-bg-200/40">
-    Recents
-  </h3>
-  
-  <ul class="flex flex-col gap-px">
-    {#each items as item}
-      <li class="relative group">
-        <Button variant="ghost" class="h-8 px-3 text-xs w-full hover:bg-bg-400">
-          <span class="truncate w-full
-                       group-hover:[mask-image:linear-gradient(to_right,hsl(var(--always-black))_78%,transparent_95%)]">
-            {item.name}
-          </span>
-        </Button>
-        
-        <!-- Options button (fades in on hover) -->
-        <Button class="absolute right-0 top-1/2 -translate-y-1/2 
-                       hidden group-hover:block">
-          <MoreIcon />
-        </Button>
-      </li>
-    {/each}
-  </ul>
-  
-  <!-- Bottom gradient fade -->
-  <div class="bg-gradient-to-t from-bg-200 to-transparent 
-              sticky h-4 bottom-0"></div>
-</div>
-```
+**Layout**:
+- Section header with sticky positioning
+- Scrollable container for list items
+- Gradient background on header for depth
+- Bottom gradient fade to indicate scrollability
+
+**List Items**:
+- Compact design (32px height)
+- File/document icon + truncated name
+- Options button revealed on hover
+- Selected state with persistent background
 
 ### Footer Section
 
-```svelte
-<div class="px-2 pb-1 transition">
-  <Button class="h-9 px-1.5 py-6 gap-3 w-full hover:bg-bg-400">
-    <div class="flex flex-row flex-grow items-center justify-between">
-      <!-- User avatar -->
-      <div class="size-8 rounded-full bg-text-200 text-bg-100">
-        {initials}
-      </div>
-      
-      <!-- User info (expanded only) -->
-      <div class="flex flex-col items-start w-full overflow-hidden pr-4">
-        <span class="truncate w-full text-sm">{name}</span>
-        <span class="truncate w-full text-xs text-text-300">{plan}</span>
-      </div>
-      
-      <!-- Dropdown arrow -->
-      <ChevronDown class="flex-shrink-0 w-3.5 h-3.5" />
-    </div>
-  </Button>
-</div>
-```
+**User Profile Display**:
+- Avatar/initials display (circular)
+- User name and secondary info (email or plan type)
+- Chevron/dropdown indicator for menu access
+- Layout: horizontal flex with proper alignment
+
+**Settings**:
+- Accessible via icon button or user menu
+- Popover/menu pattern for settings options
+- Maintains consistency with other interactive elements
 
 ## Responsive Behavior
 
@@ -373,107 +265,86 @@ Maintain our existing zinc-based palette with semantic tokens:
 ## Animation Details
 
 ### Transition Timing
-```css
-/* Standard transitions */
-transition: all 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
-
-/* Duration variants */
-duration-100  /* 100ms - very fast micro-interactions */
-duration-200  /* 200ms - fast transitions */
-duration-300  /* 300ms - standard (our default) */
-duration-500  /* 500ms - slow, deliberate */
-
-/* Easing function */
-ease-[cubic-bezier(0.165,0.85,0.45,1)]  /* Claude's custom easing */
-ease-in-out                              /* Standard alternative */
-```
+- **Standard duration**: 300ms for most transitions
+- **Fast micro-interactions**: 100-150ms for immediate feedback
+- **Slower deliberate actions**: 500ms for emphasis
+- **Easing curve**: Custom cubic-bezier(0.165, 0.85, 0.45, 1) for natural movement
 
 ### Scale Effects
-```css
-/* Button press */
-active:scale-[0.985]  /* Slight shrink on click */
-active:scale-95       /* More pronounced shrink */
-active:!scale-100     /* No scale when already active */
+- **Button press**: Subtle shrink to 98.5% on active state
+- **Hover grow**: Slight scale increase (105-110%) for emphasis
+- **No scale on active items**: Prevent double-animation when item is already selected
 
-/* Hover grow */
-hover:scale-105       /* Slight grow */
-hover:scale-110       /* More pronounced grow */
-```
-
-### Icon Transformations
-```css
-/* Rotation */
-hover:-rotate-3       /* Subtle counter-clockwise */
-hover:rotate-6        /* Clockwise tilt */
-
-/* Translation */
-hover:translate-x-[0.5px]    /* Micro movement */
-hover:-translate-y-[1.4px]   /* Upward lift */
-
-/* Combined */
-hover:-translate-y-[2.8px] hover:translate-x-px hover:rotate-6
-```
+### Transform Patterns
+- **Rotation**: Micro rotations (-3° to 6°) for playfulness
+- **Translation**: Pixel-level movements (0.5-2.8px) for subtle shifts
+- **Combined transforms**: Rotation + translation + scale for rich interactions
+- **Performance**: Use CSS transforms for GPU acceleration
 
 ## Implementation Notes
 
 ### Collapse/Expand Logic
 
-When sidebar is collapsed (48px):
-- Show only icons, hide all text labels
-- Maintain icon button sizes (h-8 w-8)
-- Hide user info, show only avatar
-- Hide recent items section
-- Tooltips on hover (optional enhancement)
+**Collapsed State (48px width)**:
+- Display icons only, hide text labels
+- Maintain consistent icon button sizes
+- Show user avatar only (hide name/plan)
+- Hide recent items section entirely
+- Consider tooltips on hover for context
 
-When sidebar is expanded (288px):
-- Show icons + text labels
-- Full user info display
-- Show recent items with scrolling
-- Full section headers
+**Expanded State (288px width)**:
+- Display icons with text labels
+- Show full user profile information
+- Display recent items with scrolling
+- Show all section headers and dividers
 
 ### Mobile Considerations
 
-- Hamburger menu button: fixed position, z-40
-- Drawer: full height, 288px width
-- Overlay: semi-transparent background
-- Close on: backdrop click, escape key, navigation
-- Prevent scroll on body when open
+**Drawer Pattern**:
+- Hamburger menu trigger: fixed position, high z-index
+- Drawer slides in from left edge
+- Full height, 288px width
+- Semi-transparent backdrop overlay
+- Close triggers: backdrop click, escape key, navigation
+
+**Touch Optimization**:
+- Minimum 44x44px touch targets
+- Adequate spacing between interactive elements
+- Prevent accidental activation
+- Body scroll lock when drawer is open
 
 ### Performance
 
-- Use CSS transforms for animations (GPU-accelerated)
-- Avoid layout thrashing
-- Debounce resize events
-- Virtual scrolling for long lists (if needed)
-- Lazy load icons/images
+**Optimization Strategies**:
+- Use CSS transforms for GPU acceleration
+- Avoid animating layout-triggering properties
+- Debounce resize event handlers
+- Consider virtual scrolling for very long lists
+- Lazy load non-critical assets
 
 ## Design Tokens Reference
 
-Map to our existing design system:
+**Background Tokens**:
+- bg-200: Main sidebar background (zinc-900, #18181b)
+- bg-300: Intermediate level (between 900 and 800)
+- bg-400: Elevated surfaces and hover states (zinc-800, #27272a)
 
-```css
-/* Background tokens */
---bg-200: zinc-900 (#18181b)
---bg-300: zinc-850 (between 900 and 800)
---bg-400: zinc-800 (#27272a)
+**Text Tokens**:
+- text-100: Primary text (zinc-100, #f4f4f5)
+- text-200: Secondary text (zinc-300, #d4d4d8)
+- text-300: Muted/tertiary text (zinc-400, #a1a1aa)
 
-/* Text tokens */
---text-100: zinc-100 (#f4f4f5)
---text-200: zinc-300 (#d4d4d8)
---text-300: zinc-400 (#a1a1aa)
+**Border Tokens**:
+- border-300: Standard borders (zinc-700, #3f3f46)
 
-/* Border tokens */
---border-300: zinc-700 (#3f3f46)
+**Accent Tokens**:
+- accent-main-000: Primary brand color (USAF Blue #355e93)
+- accent-main-100: Lighter variant for text on dark backgrounds
+- accent-brand: Alias for main accent color
 
-/* Accent tokens */
---accent-main-000: USAF Blue (#355e93) or brand primary
---accent-main-100: lighter variant
---accent-brand: same as main-000
-
-/* Special */
---always-white: #ffffff
---always-black: #000000 (used in masks/gradients)
-```
+**Special Tokens**:
+- always-white: Pure white (#ffffff) for high contrast
+- always-black: Pure black (#000000) for masks and overlays
 
 ## Migration Path
 

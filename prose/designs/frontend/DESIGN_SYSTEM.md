@@ -423,277 +423,90 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 
 #### Theme Token Structure
 
-**Color Tokens**:
+**Color Tokens**: Define semantic color tokens for all UI elements including surfaces, interactive states, semantic colors, UI elements, and editor-specific colors. These include:
+- Surface colors (background, foreground, surface, surface-elevated)
+- Interactive states (primary, secondary with foreground variants)
+- Semantic colors (muted, accent, destructive with foreground variants)
+- UI elements (border, border-hover, input, ring)
+- Editor-specific (background, foreground, line-active, selection, cursor, gutter colors)
 
-```css
-:root {
-  /* Surface colors */
-  --color-background: <value>;
-  --color-foreground: <value>;
-  --color-surface: <value>;
-  --color-surface-elevated: <value>;
-  
-  /* Interactive states */
-  --color-primary: <value>;
-  --color-primary-foreground: <value>;
-  --color-secondary: <value>;
-  --color-secondary-foreground: <value>;
-  
-  /* Semantic colors */
-  --color-muted: <value>;
-  --color-muted-foreground: <value>;
-  --color-accent: <value>;
-  --color-accent-foreground: <value>;
-  --color-destructive: <value>;
-  --color-destructive-foreground: <value>;
-  
-  /* UI elements */
-  --color-border: <value>;
-  --color-border-hover: <value>;
-  --color-input: <value>;
-  --color-ring: <value>;
-  
-  /* Editor-specific colors */
-  --color-editor-background: <value>;
-  --color-editor-foreground: <value>;
-  --color-editor-line-active: <value>;
-  --color-editor-selection: <value>;
-  --color-editor-cursor: <value>;
-  --color-editor-gutter-background: <value>;
-  --color-editor-gutter-foreground: <value>;
-}
-```
-
-**Spacing & Layout Tokens**:
-
-```css
-:root {
-  /* Radius */
-  --radius: 0.625rem;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  
-  /* Spacing scale (if needed beyond Tailwind defaults) */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-}
-```
+**Spacing & Layout Tokens**: Define responsive spacing tokens including:
+- Border radius scale (sm, md, lg, xl) calculated from base radius
+- Spacing scale (xs through xl) for consistent padding and margins
+- Values use CSS calc() for derived measurements from base tokens
 
 #### Theme Variants (Light/Dark)
 
-Define both light and dark themes using the same token structure:
+**Structure**: Both light and dark themes use identical token names with different values, enabling seamless switching.
 
-```css
-/* Light theme (default) */
-:root {
-  --color-background: #ffffff;
-  --color-foreground: #09090b;
-  /* ... */
-}
+**Light Theme**: Default root-level tokens with light color values (white backgrounds, dark text)
 
-/* Dark theme */
-.dark {
-  --color-background: #09090b;
-  --color-foreground: #fafafa;
-  /* ... */
-}
-```
+**Dark Theme**: Dark mode class overrides with inverted values (dark backgrounds, light text)
 
-**Migration from Zinc**: Map current zinc palette to semantic tokens:
-- `zinc-900` (#18181b) → `--color-background` (dark mode)
-- `zinc-800` (#27272a) → `--color-surface-elevated` (dark mode)
-- `zinc-700` (#3f3f46) → `--color-border` (dark mode)
-- `zinc-500` (#71717a) → `--color-muted-foreground` (dark mode)
-- `zinc-400` (#a1a1aa) → Secondary text (dark mode)
-- `zinc-300` (#d4d4d8) → `--color-foreground` secondary (dark mode)
-- `zinc-100` (#f4f4f5) → `--color-foreground` primary (dark mode)
-- `zinc-50` (#fafafa) → Highlights (dark mode)
+**Zinc Palette Mapping**: Current zinc color scale maps to semantic tokens:
+- zinc-900 → background (dark mode)
+- zinc-800 → surface-elevated (dark mode)  
+- zinc-700 → borders (dark mode)
+- zinc-500 → muted-foreground (dark mode)
+- zinc-400/300 → secondary text variants (dark mode)
+- zinc-100 → primary foreground (dark mode)
+- zinc-50 → highlights (dark mode)
 
 #### Tailwind CSS Integration
 
-Extend Tailwind's theme with custom properties using the `@theme inline` directive:
+**Approach**: Use Tailwind's `@theme inline` directive to map CSS custom properties to Tailwind utility classes.
 
-```css
-@theme inline {
-  --color-background: var(--color-background);
-  --color-foreground: var(--color-foreground);
-  --color-surface: var(--color-surface);
-  --color-surface-elevated: var(--color-surface-elevated);
-  
-  --color-primary: var(--color-primary);
-  --color-primary-foreground: var(--color-primary-foreground);
-  
-  --color-border: var(--color-border);
-  --color-border-hover: var(--color-border-hover);
-  
-  /* ... map all tokens */
-}
-```
+**Benefits**:
+- Enables usage of semantic tokens in standard Tailwind classes (e.g., `bg-background`, `text-foreground`)
+- Maintains consistency between custom properties and utility classes
+- Allows theme switching without rebuilding CSS
 
-This allows using tokens in Tailwind classes:
-```html
-<div class="bg-background text-foreground border-border">
-```
+**Pattern**: Map each CSS custom property to a corresponding Tailwind theme value, creating a bidirectional relationship between design tokens and utility classes.
 
 #### CodeMirror Theme Integration
 
-Create a utility function to generate CodeMirror themes from CSS custom properties:
+**Architecture**: Create utility functions that generate CodeMirror themes from CSS custom properties at runtime.
 
-**File**: `src/lib/utils/editor-theme.ts`
+**Key Functions**:
+- `createEditorTheme()`: Reads computed CSS custom properties from document and applies them to CodeMirror theme configuration
+- `createReactiveEditorTheme()`: Extends basic theme with reactivity to update when theme tokens change (supports theme switching)
 
-```typescript
-import { EditorView } from '@codemirror/view';
+**Implementation Location**: `src/lib/utils/editor-theme.ts`
 
-/**
- * Creates a CodeMirror theme using CSS custom properties
- * from the document's computed styles
- */
-export function createEditorTheme(): Extension {
-  // Get computed CSS custom properties at runtime
-  const styles = getComputedStyle(document.documentElement);
-  
-  return EditorView.theme({
-    '&': {
-      height: '100%',
-      fontSize: '14px',
-      backgroundColor: styles.getPropertyValue('--color-editor-background').trim()
-    },
-    '.cm-content': {
-      padding: '16px 0',
-      color: styles.getPropertyValue('--color-editor-foreground').trim()
-    },
-    '.cm-cursor': {
-      borderLeftColor: styles.getPropertyValue('--color-editor-cursor').trim()
-    },
-    '.cm-activeLine': {
-      backgroundColor: styles.getPropertyValue('--color-editor-line-active').trim()
-    },
-    '.cm-selectionBackground, .cm-focused .cm-selectionBackground': {
-      backgroundColor: styles.getPropertyValue('--color-editor-selection').trim()
-    },
-    '.cm-gutters': {
-      backgroundColor: styles.getPropertyValue('--color-editor-gutter-background').trim(),
-      color: styles.getPropertyValue('--color-editor-gutter-foreground').trim(),
-      border: 'none'
-    },
-    // ... other editor elements
-  });
-}
-
-/**
- * Reactive theme that updates when CSS custom properties change
- * (useful for theme switching)
- */
-export function createReactiveEditorTheme(): Extension {
-  // Re-create theme on theme changes
-  // Implementation will use MutationObserver or manual refresh
-}
-```
+**Theme Elements**: Configure all CodeMirror visual elements including editor background, content styling, cursor, active line, selections, and gutters using corresponding editor-specific tokens.
 
 #### Theme Switching Mechanism
 
-Use `mode-watcher` library (already in dependencies) for theme management:
+**Library**: Use `mode-watcher` library (already in dependencies) for theme state management.
 
-**File**: `src/lib/stores/theme.svelte.ts`
+**Theme Store** (`src/lib/stores/theme.svelte.ts`):
+- Export theme utilities: current mode, toggle function, explicit setters for light/dark/system
+- Integrates with mode-watcher's API for consistent behavior
 
-```typescript
-import { mode, setMode, toggleMode } from 'mode-watcher';
+**Root Layout Integration**: Initialize ModeWatcher component in root layout to enable theme detection and switching throughout the application.
 
-export const theme = {
-  current: mode,
-  toggle: toggleMode,
-  setLight: () => setMode('light'),
-  setDark: () => setMode('dark'),
-  setSystem: () => setMode('system')
-};
-```
-
-Initialize in root layout:
-
-```svelte
-<script>
-  import { ModeWatcher } from 'mode-watcher';
-</script>
-
-<ModeWatcher />
-```
+**Persistence**: Theme preference automatically persisted to localStorage by mode-watcher.
 
 #### Component Migration Strategy
 
-**Replace Hardcoded Colors**:
+**Replace Hardcoded Colors**: Convert all component color references from hardcoded zinc values to semantic tokens.
+- Example: `bg-zinc-900 text-zinc-100` becomes `bg-background text-foreground`
 
-Before:
-```html
-<div class="bg-zinc-900 text-zinc-100">
-```
-
-After:
-```html
-<div class="bg-background text-foreground">
-```
-
-**shadcn-svelte Component Alignment**:
-
-Update existing shadcn-svelte components to use semantic tokens:
-
-```typescript
-// button.svelte
-const variants = {
-  default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-  ghost: 'hover:bg-accent hover:text-accent-foreground',
-  outline: 'border border-border hover:bg-accent hover:text-accent-foreground'
-};
-```
+**shadcn-svelte Component Alignment**: Update component variants to use semantic tokens:
+- Button variants reference primary, accent, and destructive tokens
+- Ensure hover states use token-based colors
+- Maintain consistent theming across all component states
 
 #### Type Safety
 
-Create TypeScript types for theme tokens:
+**TypeScript Type Definitions** (`src/lib/types/theme.ts`):
 
-**File**: `src/lib/types/theme.ts`
+Define strict types for theme tokens:
+- `ColorToken`: Union type of all valid color token names
+- `RadiusToken`: Union type of radius variants (sm, md, lg, xl)
+- `getThemeValue()`: Helper function to safely retrieve computed token values with type checking
 
-```typescript
-export type ColorToken = 
-  | 'background'
-  | 'foreground'
-  | 'surface'
-  | 'surface-elevated'
-  | 'primary'
-  | 'primary-foreground'
-  | 'secondary'
-  | 'secondary-foreground'
-  | 'muted'
-  | 'muted-foreground'
-  | 'accent'
-  | 'accent-foreground'
-  | 'destructive'
-  | 'destructive-foreground'
-  | 'border'
-  | 'border-hover'
-  | 'input'
-  | 'ring'
-  | 'editor-background'
-  | 'editor-foreground'
-  | 'editor-line-active'
-  | 'editor-selection'
-  | 'editor-cursor'
-  | 'editor-gutter-background'
-  | 'editor-gutter-foreground';
-
-export type RadiusToken = 'sm' | 'md' | 'lg' | 'xl';
-
-/**
- * Get a CSS custom property value
- */
-export function getThemeValue(token: ColorToken | RadiusToken, prefix: 'color' | 'radius' = 'color'): string {
-  const propName = `--${prefix}-${token}`;
-  return getComputedStyle(document.documentElement).getPropertyValue(propName).trim();
-}
-```
+This ensures compile-time validation of token usage and prevents typos in token references.
 
 ### Component Replacement Strategy
 
