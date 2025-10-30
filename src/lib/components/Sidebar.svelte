@@ -144,11 +144,11 @@
 
 {#snippet sidebarContent()}
 	<!-- Hamburger Menu and Title -->
-	<div class="relative flex h-12 items-center px-2">
+	<div class="relative flex h-12 items-center {isExpanded ? 'px-2' : 'justify-center'}">
 		<Button
 			variant="ghost"
 			size="icon"
-			class="flex-shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
+			class="h-8 w-8 flex-shrink-0 text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-95"
 			onclick={handleToggle}
 			aria-label={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 		>
@@ -175,16 +175,16 @@
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div class="flex-1 overflow-hidden px-2">
-		<div class="p-2">
+	<div class="flex-1 overflow-hidden {isExpanded ? 'px-2' : ''}">
+		<div class="{isExpanded ? 'p-2' : 'flex flex-col items-center py-2'}">
 			<Button
 				variant="ghost"
-				class="h-9 w-full justify-start px-4 py-2 text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="h-9 w-full {isExpanded ? 'justify-start px-4' : 'justify-center w-8 px-0'} py-2 text-sm text-foreground/80 transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
 				{#snippet children()}
-					<Plus class="mr-2 h-4 w-4 flex-shrink-0" />
+					<Plus class="{isExpanded ? 'mr-2' : ''} h-4 w-4 flex-shrink-0" />
 					{#if isExpanded}
 						<span class="animate-in fade-in transition-opacity duration-300">New File</span>
 					{/if}
@@ -255,17 +255,17 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="space-y-1 border-t border-border px-2 pb-1">
+	<div class="space-y-1 border-t border-border {isExpanded ? 'px-2' : 'flex flex-col items-center'} pb-1">
 		<!-- User Profile Button -->
 		{#if user}
 			<Button
 				variant="ghost"
-				class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+				class="h-9 {isExpanded ? 'w-full justify-start px-4' : 'w-8 justify-center px-0'} py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
 				{#snippet children()}
-					<User class="mr-2 h-5 w-5 flex-shrink-0" />
+					<User class="{isExpanded ? 'mr-2' : ''} h-5 w-5 flex-shrink-0" />
 					{#if isExpanded}
 						<span class="animate-in fade-in truncate transition-opacity duration-300">
 							{user.email}
@@ -278,15 +278,16 @@
 		<!-- Settings Gear Button -->
 		<Popover bind:open={popoverOpen}>
 			{#snippet children()}
-				<PopoverTrigger>
-					{#snippet children()}
+				<PopoverTrigger asChild>
+					{#snippet children({ builder })}
 						<Button
 							variant="ghost"
-							class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
+							class="h-9 {isExpanded ? 'w-full justify-start px-4' : 'w-8 justify-center px-0'} py-2 text-sm text-muted-foreground transition-transform hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							aria-label="Settings"
+							{...builder}
 						>
 							{#snippet children()}
-								<Settings class="mr-2 h-5 w-5 flex-shrink-0" />
+								<Settings class="{isExpanded ? 'mr-2' : ''} h-5 w-5 flex-shrink-0" />
 								{#if isExpanded}
 									<span class="animate-in fade-in transition-opacity duration-300">Settings</span>
 								{/if}
