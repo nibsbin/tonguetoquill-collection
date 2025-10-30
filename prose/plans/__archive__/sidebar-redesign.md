@@ -190,7 +190,7 @@ This plan outlines the implementation of the redesigned sidebar component based 
 - [ ] **Update typography**
   - App title: `text-sm font-medium` (increased from current)
   - Navigation: `text-sm` font-normal
-  - Recent items: `text-xs` 
+  - Recent items: `text-xs`
   - Section headers: `text-xs text-text-300`
 
 - [ ] **Implement text truncation with gradient mask**
@@ -470,28 +470,36 @@ Recommended sequence to minimize disruption:
 ## Risks and Mitigation
 
 ### Risk: Animations cause performance issues
-**Mitigation**: 
+
+**Mitigation**:
+
 - Use CSS transforms (GPU-accelerated)
 - Avoid animating layout properties
 - Test on low-end devices
 - Provide reduced motion option
 
 ### Risk: Breaking existing functionality
+
 **Mitigation**:
+
 - Maintain all existing props and events
 - Test each phase thoroughly
 - Keep git history clean for easy rollback
 - Feature flags for gradual rollout (if applicable)
 
 ### Risk: Mobile responsiveness issues
+
 **Mitigation**:
+
 - Test early and often on real devices
 - Use mobile-first approach
 - Ensure touch targets are large enough
 - Test landscape and portrait modes
 
 ### Risk: Accessibility regressions
+
 **Mitigation**:
+
 - Run automated accessibility tests
 - Manual keyboard testing
 - Screen reader validation

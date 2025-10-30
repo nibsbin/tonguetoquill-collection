@@ -15,14 +15,17 @@ Provide a centralized location for secondary document actions and application in
 The More Actions menu (accessed via the meatball/kebab menu in TopMenu) organizes items into three logical groups:
 
 **Group 1: Document Actions**
+
 - Import
 - Share
 
 **Group 2: Document & Application Information**
+
 - Document Info
 - Keyboard Shortcuts
 
 **Group 3: Legal & Information Links**
+
 - About Us
 - Terms of Use
 - Privacy Policy
@@ -30,30 +33,35 @@ The More Actions menu (accessed via the meatball/kebab menu in TopMenu) organize
 ### Menu Item Specifications
 
 **Import**
+
 - Icon: Upload (from lucide-svelte)
 - Label: "Import"
 - Action: Opens file picker for importing documents (stub implementation)
 - Purpose: Allow users to import external markdown files
 
 **Share**
+
 - Icon: Share2 (from lucide-svelte)
 - Label: "Share"
 - Action: Opens share dialog (stub implementation)
 - Purpose: Enable document sharing functionality
 
 **Document Info**
+
 - Icon: FileText (from lucide-svelte)
 - Label: "Document Info"
 - Action: Opens document metadata dialog (stub implementation)
 - Purpose: Display document properties (size, created date, word count, etc.)
 
 **Keyboard Shortcuts** (existing)
+
 - Icon: Keyboard (from lucide-svelte)
 - Label: "Keyboard Shortcuts"
 - Action: Opens keyboard shortcuts reference
 - Purpose: Help users discover available shortcuts
 
 **About Us** (existing)
+
 - Icon: Info (from lucide-svelte)
 - Label: "About Us"
 - External Link Icon: ExternalLink (from lucide-svelte, right-aligned)
@@ -61,6 +69,7 @@ The More Actions menu (accessed via the meatball/kebab menu in TopMenu) organize
 - Purpose: Provide information about the application
 
 **Terms of Use** (existing)
+
 - Icon: FileText (from lucide-svelte)
 - Label: "Terms of Use"
 - External Link Icon: ExternalLink (from lucide-svelte, right-aligned)
@@ -68,6 +77,7 @@ The More Actions menu (accessed via the meatball/kebab menu in TopMenu) organize
 - Purpose: Display terms of service
 
 **Privacy Policy** (existing)
+
 - Icon: Shield (from lucide-svelte)
 - Label: "Privacy Policy"
 - External Link Icon: ExternalLink (from lucide-svelte, right-aligned)
@@ -81,7 +91,8 @@ References [UI_COMPONENTS.md - Dropdown Menu Component](./UI_COMPONENTS.md) and 
 **Separators**: Use shadcn-svelte DropdownMenuSeparator between groups
 **Menu Background**: Uses semantic token `bg-surface-elevated`
 **Menu Border**: Uses semantic token `border-border`
-**Menu Items**: 
+**Menu Items**:
+
 - Text color: `text-foreground/80`
 - Hover state: `focus:bg-accent focus:text-foreground`
 - Icon size: 16px (h-4 w-4)
@@ -99,7 +110,8 @@ Auto-save behavior is centralized in this design to follow DRY (Don't Repeat You
 
 **Value**: 4 seconds (4000ms)
 
-**Rationale**: 
+**Rationale**:
+
 - Reduces server load compared to shorter intervals
 - Provides timely save without being intrusive
 - Balances between user experience and system performance
@@ -112,6 +124,7 @@ Auto-save behavior is centralized in this design to follow DRY (Don't Repeat You
 The auto-save toggle in Settings (Sidebar popover) controls whether auto-save is enabled. When enabled, it uses the 4-second debounce duration.
 
 **Related Components**:
+
 - `src/lib/utils/auto-save.svelte.ts` - AutoSave class implementation
 - `src/lib/components/Sidebar.svelte` - Settings popover with auto-save toggle
 - `src/lib/components/DocumentEditor.svelte` - Integration point for auto-save
@@ -129,16 +142,19 @@ The line numbers setting toggle exists in the Sidebar settings popover but curre
 ### Design Requirements
 
 **Setting Control**: Located in Settings popover (Sidebar footer)
+
 - Label: "Line Numbers"
 - Control: Switch component (shadcn-svelte)
 - Persistence: localStorage key `line-numbers`
 
 **Editor Integration**: The MarkdownEditor component accepts a `showLineNumbers` prop that:
+
 - Controls the CodeMirror `lineNumbers()` extension
 - Defaults to `true` (line numbers shown by default)
 - Recreates the editor when the value changes to apply the setting
 
 **Data Flow**:
+
 1. User toggles line numbers switch in Settings
 2. Value stored in localStorage
 3. Parent component (DocumentEditor) reads localStorage value
@@ -161,17 +177,20 @@ The Sidebar currently uses the shadcn-svelte Separator component but may exhibit
 **Component**: Use shadcn-svelte `Separator` component (already implemented in `src/lib/components/ui/separator.svelte`)
 
 **Visual Behavior**: The separator should act as a bottom border of the item above it:
+
 - Zero height impact on layout flow
 - No margin or padding that shifts surrounding elements
 - Visually appears as a border between sections
 
 **Technical Implementation**:
+
 - Use `h-[1px]` for horizontal separators (already implemented)
 - Apply `bg-border` for consistent theming (already implemented)
 - Ensure no vertical margin/padding is added by container elements
 - Consider using border-bottom on parent elements as an alternative if layout shift persists
 
 **Affected Locations**:
+
 - Between "New File" button and document list
 - Before footer section (User Profile and Settings)
 - Within Settings popover between setting groups
@@ -197,6 +216,7 @@ The document list is currently embedded directly in Sidebar.svelte as an inline 
 **Location**: `src/lib/components/DocumentListItem.svelte`
 
 **Props**:
+
 ```typescript
 {
   document: {
@@ -210,6 +230,7 @@ The document list is currently embedded directly in Sidebar.svelte as an inline 
 ```
 
 **Features**:
+
 - Encapsulates the group hover behavior
 - Manages delete button visibility
 - Handles active state styling
@@ -220,15 +241,18 @@ The document list is currently embedded directly in Sidebar.svelte as an inline 
 **Requirement**: Document list items should have the same horizontal padding as SidebarButtonSlot.svelte.
 
 **SidebarButtonSlot Padding**:
+
 - Left/Right: `var(--sidebar-button-spacing)` (calculated from sidebar tokens)
 - Container uses `.sidebar-button-slot` with fixed padding
 
 **DocumentListItem Padding**:
+
 - Should match SidebarButtonSlot horizontal padding
 - Vertical padding: Zero between items for efficient stacking
 - Individual item height: 32px (h-8)
 
 **Implementation Strategy**:
+
 - Use the same CSS custom property values as SidebarButtonSlot
 - Apply padding to the group container, not individual buttons
 - This ensures visual alignment between sidebar button types
@@ -259,6 +283,7 @@ The document list is currently embedded directly in Sidebar.svelte as an inline 
 ## Future Enhancements
 
 These refinements establish patterns for future improvements:
+
 - Keyboard shortcut dialog with interactive reference
 - Document info modal with detailed metadata
 - Share functionality with permissions

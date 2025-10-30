@@ -123,6 +123,7 @@ Use this checklist when reviewing design documents or creating new ones to ensur
 ## Review Process
 
 ### Before Publishing
+
 1. Self-review using this checklist
 2. Check all links resolve correctly
 3. Verify code examples compile/work
@@ -130,12 +131,14 @@ Use this checklist when reviewing design documents or creating new ones to ensur
 5. Read through for clarity
 
 ### Peer Review
+
 1. Have another team member review
 2. Address feedback and questions
 3. Update cross-references if needed
 4. Get approval from architect/lead
 
 ### After Publishing
+
 1. Link from related documents
 2. Update INDEX.md if adding new doc
 3. Notify team of new/updated docs
@@ -157,21 +160,27 @@ Use this checklist when reviewing design documents or creating new ones to ensur
 ## Checklist Usage
 
 ### For New Documents
+
 Work through checklist as you create the document to ensure nothing is missed.
 
 ### For Updates
+
 Focus on relevant sections based on what changed:
+
 - Content updates → Content Quality, Consistency, Technical Accuracy
 - Structure changes → Document Structure, Cross-References
 - Implementation complete → Status & Tracking, add debrief reference
 
 ### For Reviews
+
 Use full checklist when reviewing PRs that modify documentation.
 
 ## Document-Specific Checklists
 
 ### DESIGN_SYSTEM.md Updates
+
 When updating design system:
+
 - [ ] All theme tokens defined for light and dark
 - [ ] Color contrast ratios verified (4.5:1 minimum)
 - [ ] Spacing scale is consistent
@@ -182,7 +191,9 @@ When updating design system:
 - [ ] Accessibility features detailed
 
 ### Component Design Documents
+
 When designing components:
+
 - [ ] Props are listed with types
 - [ ] States are enumerated
 - [ ] Interactions are specified
@@ -193,7 +204,9 @@ When designing components:
 - [ ] Empty states are planned
 
 ### Architecture Documents
+
 When documenting architecture:
+
 - [ ] System boundaries are clear
 - [ ] Component responsibilities defined
 - [ ] Data flow is explained
@@ -211,6 +224,7 @@ When documenting architecture:
 ---
 
 **Related Documents**:
+
 - [MAINTAINABILITY_PLAN.md](./MAINTAINABILITY_PLAN.md) - Overall documentation strategy
 - [INDEX.md](./designs/frontend/INDEX.md) - Design document index
 - [DESIGN_SYSTEM.md](./designs/frontend/DESIGN_SYSTEM.md) - Visual design tokens and patterns

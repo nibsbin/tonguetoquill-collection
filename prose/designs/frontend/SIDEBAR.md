@@ -7,6 +7,7 @@ This document describes the redesigned sidebar component for Tonguetoquill, insp
 ## Design Inspiration
 
 The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, incorporating:
+
 - Modern proportions and spacing
 - Smooth interactive behaviors
 - Icon hover effects and transitions
@@ -26,11 +27,13 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 ### Dimensions
 
 **Desktop (≥1024px)**:
+
 - **Expanded width**: 18rem (288px / w-72) - updated October 2025
 - **Collapsed width**: 3rem (48px / w-12)
 - **Transition**: 300ms duration with cubic-bezier(0.165, 0.85, 0.45, 1) easing
 
 **Mobile (<1024px)**:
+
 - Full-screen drawer overlay
 - Width: 18rem (288px / w-72) when open
 - Slides in from left with shadow
@@ -44,7 +47,7 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 │  Toggle Button              │  h-12 (48px) - Header
 │  + App Branding             │
 ├─────────────────────────────┤
-│  Primary Actions            │  
+│  Primary Actions            │
 │  (New Document button)      │  h-9 (36px) per action
 ├─────────────────────────────┤
 │  "Recents" Section Header   │  text-xs - Visual hierarchy
@@ -65,12 +68,14 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 ### Spacing
 
 **Padding & Margins** (based on Claude patterns):
+
 - Container padding: `px-2` (8px horizontal)
 - Item gaps: `gap-px` or `gap-1` (1px or 4px between items)
 - Section padding: `p-2` (8px all around)
 - Inner content padding: `px-4 py-2` for buttons
 
 **Item Heights**:
+
 - Primary actions (New File): `h-9` (36px)
 - Navigation items: `h-9` (36px)
 - Recent items: `h-8` (32px)
@@ -79,12 +84,14 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 ### Typography
 
 **Text Sizes**:
+
 - App title: `text-sm` font-medium (14px)
 - Navigation items: `text-sm` (14px)
 - Recent items: `text-xs` (12px)
 - Section headers: `text-xs` text-text-300 (muted)
 
 **Font Weights**:
+
 - Headings/Primary: font-medium (500)
 - Regular items: font-normal (400)
 - Active items: font-medium (500)
@@ -94,17 +101,20 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYSTEM.md):
 
 ### Background Colors
+
 - **Sidebar background**: `bg-background` → CSS var(--color-background)
 - **Hover state**: `hover:bg-accent` → CSS var(--color-accent)
 - **Active/Selected**: `bg-accent` → CSS var(--color-accent)
 - **Border**: `border-border` → CSS var(--color-border)
 
 ### Text Colors
+
 - **Primary text**: `text-foreground` → CSS var(--color-foreground)
 - **Secondary text**: `text-muted-foreground` → CSS var(--color-muted-foreground)
 - **Hover text**: `hover:text-foreground` → CSS var(--color-foreground)
 
 ### Accent Colors
+
 - **Destructive actions**: `text-destructive` → CSS var(--color-destructive)
 - **Destructive hover**: `hover:bg-destructive` → CSS var(--color-destructive)
 
@@ -115,6 +125,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Button States
 
 **Ghost Buttons** (most sidebar items):
+
 - **Default**: Transparent background, muted text color
 - **Hover**: Semi-transparent background (bg-400), brighter text
 - **Press**: Subtle scale-down effect (98.5% scale)
@@ -122,6 +133,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 - **Transition**: 300ms with custom easing curve
 
 **Primary Action Button** (New File/Chat):
+
 - **Default**: Branded accent background, white text, rounded icon container with shadow
 - **Hover**: Icon rotates slightly and scales up with enhanced shadow
 - **Press**: Playful bounce effect with rotation
@@ -130,12 +142,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Icon Animations
 
 **Toggle/Navigation Icons**:
+
 - **Dual-icon pattern**: Two icon states overlay each other
 - **Default state**: Primary icon visible at full scale and opacity
 - **Hover state**: Primary icon shrinks and fades out, secondary icon scales up and fades in
 - **Transition**: Smooth crossfade between states
 
 **Action Icons**:
+
 - **Hover effects**: Subtle transforms specific to each icon's semantic meaning
   - Chat icons: Horizontal translation suggesting conversation flow
   - Project/stack icons: Vertical layering effect with rotation
@@ -145,6 +159,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### List Item Behaviors
 
 **Recent Items**:
+
 - **Default**: Compact height (32px), truncated text with ellipsis
 - **Hover**: Background color change, options button fades in, text applies gradient mask for smooth fade effect
 - **Selected**: Persistent background highlighting, full text visibility
@@ -154,6 +169,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Scroll Behavior
 
 **Recents List**:
+
 - **Scrolling**: Vertical scroll enabled, horizontal scroll hidden
 - **Visual feedback**: Gradient fade overlay at bottom edge to indicate more content
 - **Performance**: Smooth scrolling with momentum on touch devices
@@ -164,12 +180,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Header Section
 
 **Layout**:
+
 - Toggle button with dual-icon animation on left
 - App branding/logo centered or right-aligned
 - Height: 48px with appropriate padding
 - Horizontal gap between elements for breathing room
 
 **Toggle Button**:
+
 - Icon-only design (no text label)
 - Dual-icon pattern: sidebar-open and sidebar-collapsed icons
 - Smooth crossfade animation on hover
@@ -178,6 +196,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Primary Actions
 
 **New File/Chat Button**:
+
 - Prominent visual treatment to encourage action
 - Rounded pill style with sufficient padding
 - Animated icon container (circular background)
@@ -187,12 +206,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Navigation Items
 
 **Structure**:
+
 - Standard list item format
 - Icon + label layout (label hidden when collapsed)
 - Options menu appears on hover/focus
 - Proper spacing between items (minimal gaps)
 
 **Interaction Pattern**:
+
 - Group hover state reveals additional actions
 - Click navigates to corresponding view
 - Visual indication of current/active item
@@ -201,12 +222,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Recent Items List
 
 **Layout**:
+
 - Section header with sticky positioning
 - Scrollable container for list items
 - Gradient background on header for depth
 - Bottom gradient fade to indicate scrollability
 
 **List Items**:
+
 - Compact design (32px height)
 - File/document icon + truncated name
 - Options button revealed on hover
@@ -215,12 +238,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Footer Section
 
 **User Profile Display**:
+
 - Avatar/initials display (circular)
 - User name and secondary info (email or plan type)
 - Chevron/dropdown indicator for menu access
 - Layout: horizontal flex with proper alignment
 
 **Settings**:
+
 - Accessible via icon button or user menu
 - Popover/menu pattern for settings options
 - Maintains consistency with other interactive elements
@@ -228,12 +253,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ## Responsive Behavior
 
 ### Desktop (≥1024px)
+
 - Sidebar persistent and fixed/sticky
 - Width transitions smoothly between collapsed (48px) and expanded (288px)
 - Border on right edge: `border-r-0.5` or `border-r`
 - Shadow: `shadow-lg` on desktop (optional)
 
 ### Tablet/Mobile (<1024px)
+
 - Sidebar becomes full-screen drawer overlay
 - Activated by hamburger menu button (top-left)
 - Width: 18rem (288px) when open
@@ -245,12 +272,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ## Accessibility
 
 ### Keyboard Navigation
+
 - All interactive elements focusable
 - Visible focus indicators (ring)
 - Logical tab order
 - Escape key closes mobile drawer
 
 ### ARIA Attributes
+
 - `aria-label` on icon-only buttons
 - `aria-expanded` on toggle button
 - `aria-current` on active navigation item
@@ -258,6 +287,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 - `aria-hidden` on decorative elements
 
 ### Screen Reader Support
+
 - Meaningful button labels
 - Status announcements for state changes
 - Skip to main content link
@@ -266,17 +296,20 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ## Animation Details
 
 ### Transition Timing
+
 - **Standard duration**: 300ms for most transitions
 - **Fast micro-interactions**: 100-150ms for immediate feedback
 - **Slower deliberate actions**: 500ms for emphasis
 - **Easing curve**: Custom cubic-bezier(0.165, 0.85, 0.45, 1) for natural movement
 
 ### Scale Effects
+
 - **Button press**: Subtle shrink to 98.5% on active state
 - **Hover grow**: Slight scale increase (105-110%) for emphasis
 - **No scale on active items**: Prevent double-animation when item is already selected
 
 ### Transform Patterns
+
 - **Rotation**: Micro rotations (-3° to 6°) for playfulness
 - **Translation**: Pixel-level movements (0.5-2.8px) for subtle shifts
 - **Combined transforms**: Rotation + translation + scale for rich interactions
@@ -287,6 +320,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Collapse/Expand Logic
 
 **Collapsed State (48px width)**:
+
 - Display icons only, hide text labels
 - Maintain consistent icon button sizes
 - Show user avatar only (hide name/plan)
@@ -294,6 +328,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 - Consider tooltips on hover for context
 
 **Expanded State (288px width)**:
+
 - Display icons with text labels
 - Show full user profile information
 - Display recent items with scrolling
@@ -302,6 +337,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Mobile Considerations
 
 **Drawer Pattern**:
+
 - Hamburger menu trigger: fixed position, high z-index
 - Drawer slides in from left edge
 - Full height, 288px width
@@ -309,6 +345,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 - Close triggers: backdrop click, escape key, navigation
 
 **Touch Optimization**:
+
 - Minimum 44x44px touch targets
 - Adequate spacing between interactive elements
 - Prevent accidental activation
@@ -317,6 +354,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 ### Performance
 
 **Optimization Strategies**:
+
 - Use CSS transforms for GPU acceleration
 - Avoid animating layout-triggering properties
 - Debounce resize event handlers
@@ -330,18 +368,21 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 The sidebar button slot is a three-layer nested structure designed to maintain consistent sizing and centering across collapsed and expanded states:
 
 **Layer 1: Button Slot Container**
+
 - Size: Square of `--sidebar-collapsed-width` (56px) in collapsed state
 - Expands: Horizontally to full sidebar width when expanded
 - Purpose: Provides consistent vertical rhythm and horizontal padding
 - Centering: Uses flexbox to center child elements
 
 **Layer 2: Button Element**
+
 - Size: Square of `--sidebar-button-size` (40px)
 - Behavior: Remains fixed size in both collapsed and expanded states
 - Purpose: Interactive click target with consistent touch area
 - Centering: Centered within the slot container
 
 **Layer 3: Icon Element**
+
 - Size: Square of `--sidebar-icon-size` (24px)
 - Behavior: Fixed size, centered within button
 - Purpose: Visual indicator
@@ -350,6 +391,7 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 ### Component Implementation
 
 **SidebarButtonSlot Component**:
+
 - Reusable component for all sidebar buttons
 - Handles centering logic automatically
 - Supports both icon-only (collapsed) and icon+label (expanded) states
@@ -365,12 +407,14 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 ### Semantic Tokens
 
 **Size Tokens** (already defined):
+
 - `--sidebar-collapsed-width`: 3.5rem (56px) - Full slot width when collapsed
 - `--sidebar-button-size`: 2.5rem (40px) - Button element size
 - `--sidebar-icon-size`: 1.5rem (24px) - Icon size
 - `--sidebar-padding`: 0.5rem (8px) - Consistent padding
 
 **Derived Tokens** (for clarity and DRY):
+
 - `--sidebar-slot-width-collapsed`: var(--sidebar-collapsed-width)
 - `--sidebar-slot-height`: var(--sidebar-collapsed-width) - Maintains square aspect ratio
 - `--sidebar-button-spacing`: calc((var(--sidebar-collapsed-width) - var(--sidebar-button-size)) / 2) - Auto-calculates centering offset (8px)
@@ -378,14 +422,17 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 ### Centering Strategy
 
 **Horizontal Centering**:
+
 - Collapsed state: Button centered in slot using flexbox (`justify-center`)
 - Expanded state: Button aligned to start with consistent left padding (`--sidebar-padding`)
 
 **Vertical Centering**:
+
 - Always centered using flexbox (`items-center`)
 - Slot height equals `--sidebar-collapsed-width` for perfect square in collapsed state
 
 **Nested Centering**:
+
 - Icon centered within button using flexbox
 - Text aligned with icon baseline when present
 
@@ -394,6 +441,7 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 **File**: `src/lib/components/SidebarButtonSlot.svelte`
 
 **Usage Example**:
+
 ```svelte
 <SidebarButtonSlot
   icon={Menu}
@@ -406,6 +454,7 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 ```
 
 **Features**:
+
 - Automatic layout switching between icon-only and icon+label states
 - Proper centering at all three layers (slot, button, icon)
 - Consistent padding in both collapsed and expanded states
@@ -415,24 +464,29 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 ## Design Tokens Reference
 
 **Background Tokens**:
+
 - bg-200: Main sidebar background (zinc-900, #18181b)
 - bg-300: Intermediate level (between 900 and 800)
 - bg-400: Elevated surfaces and hover states (zinc-800, #27272a)
 
 **Text Tokens**:
+
 - text-100: Primary text (zinc-100, #f4f4f5)
 - text-200: Secondary text (zinc-300, #d4d4d8)
 - text-300: Muted/tertiary text (zinc-400, #a1a1aa)
 
 **Border Tokens**:
+
 - border-300: Standard borders (zinc-700, #3f3f46)
 
 **Accent Tokens**:
+
 - accent-main-000: Primary brand color (USAF Blue #355e93)
 - accent-main-100: Lighter variant for text on dark backgrounds
 - accent-brand: Alias for main accent color
 
 **Special Tokens**:
+
 - always-white: Pure white (#ffffff) for high contrast
 - always-black: Pure black (#000000) for masks and overlays
 
