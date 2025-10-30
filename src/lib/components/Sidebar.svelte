@@ -144,7 +144,7 @@
 
 {#snippet sidebarContent()}
 	<!-- Hamburger Menu and Title -->
-	<div class="relative flex h-12 items-center p-1">
+	<div class="relative flex h-12 items-center px-2">
 		<Button
 			variant="ghost"
 			size="icon"
@@ -158,10 +158,10 @@
 		</Button>
 
 		<span
-			class="pointer-events-none absolute right-0 left-0 text-center whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center whitespace-nowrap text-sm font-medium text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
-			style="font-family: 'Lato', Arial, sans-serif; font-weight: 700; font-size: 1.2rem;"
+			style="font-family: 'Lato', Arial, sans-serif;"
 		>
 			Tonguetoquill
 		</span>
@@ -175,11 +175,11 @@
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->
-	<div class="flex-1 overflow-y-auto p-2">
-		<div class="space-y-1">
+	<div class="flex-1 overflow-y-auto px-2">
+		<div class="space-y-px p-2">
 			<Button
 				variant="ghost"
-				class="w-full justify-start text-foreground/80 hover:bg-accent hover:text-foreground"
+				class="h-9 w-full justify-start px-4 py-2 text-sm text-foreground/80 hover:bg-accent hover:text-foreground"
 				onclick={handleNewFile}
 				aria-label="Create new document"
 			>
@@ -195,16 +195,16 @@
 				<Separator class="my-2 bg-border" />
 				{#each documentStore.documents as doc (doc.id)}
 					<div
-						class="group -mr-2 flex items-center gap-1 rounded pr-2 pl-2 {doc.id ===
+						class="group -mr-2 flex h-8 items-center gap-1 rounded px-3 {doc.id ===
 						documentStore.activeDocumentId
 							? 'bg-accent'
 							: 'hover:bg-accent/50'}"
 					>
 						<Button
 							variant="ghost"
-							class="flex-1 justify-start text-sm hover:bg-transparent {doc.id ===
+							class="flex-1 justify-start text-xs hover:bg-transparent {doc.id ===
 							documentStore.activeDocumentId
-								? 'text-foreground'
+								? 'text-foreground font-medium'
 								: 'text-muted-foreground hover:text-foreground'}"
 							onclick={() => handleFileSelect(doc.id)}
 						>
@@ -236,12 +236,12 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="space-y-1 border-t border-border p-2">
+	<div class="space-y-1 border-t border-border px-2 pb-1">
 		<!-- User Profile Button -->
 		{#if user}
 			<Button
 				variant="ghost"
-				class="w-full justify-start text-muted-foreground hover:bg-accent hover:text-foreground"
+				class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
 				title={user.email}
 				aria-label="User profile: {user.email}"
 			>
@@ -263,7 +263,7 @@
 					{#snippet children()}
 						<Button
 							variant="ghost"
-							class="w-full justify-start text-muted-foreground hover:bg-accent hover:text-foreground"
+							class="h-9 w-full justify-start px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
 							aria-label="Settings"
 						>
 							{#snippet children()}
@@ -352,7 +352,7 @@
 						</Button>
 					{/snippet}
 				</SheetTrigger>
-				<SheetContent side="left" class="flex w-56 flex-col bg-background p-0 text-foreground">
+				<SheetContent side="left" class="flex w-72 flex-col bg-background p-0 text-foreground">
 					{#snippet children()}
 						{@render sidebarContent()}
 					{/snippet}
@@ -364,8 +364,9 @@
 	<!-- Desktop Sidebar -->
 	<div
 		class="flex h-screen flex-col overflow-hidden border-r border-border bg-background text-foreground transition-all duration-300 {isExpanded
-			? 'w-56'
+			? 'w-72'
 			: 'w-12'}"
+		style="transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 	>
 		{@render sidebarContent()}
 	</div>
