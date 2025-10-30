@@ -435,22 +435,4 @@
         height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
     }
 
-    :global(.sidebar-padding) {
-        padding: var(--sidebar-padding);
-    }
-
-    :global(.sidebar-padding-x) {
-        padding-left: var(--sidebar-padding);
-        padding-right: var(--sidebar-padding);
-    }
-
-    :global(.sidebar-padding-y) {
-        padding-top: var(--sidebar-padding);
-        padding-bottom: var(--sidebar-padding);
-    }
-
-    :global(.sidebar-margin-y) {
-        margin-top: var(--sidebar-padding);
-        margin-bottom: var(--sidebar-padding);
-    }
 </style>
