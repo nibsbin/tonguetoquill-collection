@@ -176,7 +176,7 @@
 		/>
 
 		<span
-			class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center italic font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
 		>
