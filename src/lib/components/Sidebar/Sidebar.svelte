@@ -184,11 +184,7 @@
 		</span>
 	</div>
 
-	<!-- Logo centered below -->
-	<div class="relative flex items-center justify-center overflow-hidden pt-0 pb-3">
-		<img src="/logo.svg" alt="Tonguetoquill Logo" class="h-8 shrink-0" />
-	</div>
-
+	<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
 	<Separator class="bg-border" />
 
 	<!-- Menu Items -->

@@ -63,6 +63,8 @@
 	:global(.sidebar-button-slot) {
 		/* Square in collapsed state, expands horizontally when sidebar expands */
 		height: var(--sidebar-slot-height);
+		/* Include padding in the height calculation so slot height aligns with top menu */
+		box-sizing: border-box;
 		/* Flexbox for alignment */
 		display: flex;
 		align-items: center;
@@ -78,6 +80,12 @@
 		flex-shrink: 0;
 		/* Overflow hidden to clip expanding button content */
 		overflow: hidden;
+	}
+
+	/* Slightly reduced vertical padding for the very first slot (hamburger) to improve visual alignment */
+	:global(.sidebar-button-slot:first-child) {
+		padding-top: calc(var(--sidebar-padding)  );
+		padding-bottom: calc(var(--sidebar-padding)  );
 	}
 
 	/* Layer 2: Button Element - always full width of available space */
