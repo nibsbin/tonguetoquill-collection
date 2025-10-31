@@ -28,6 +28,7 @@ ComponentName/
 ```
 
 **Notes**:
+
 - `style.css` is optional - only create if component needs styles beyond Tailwind classes
 - Tests use `.svelte.ts` extension and are co-located with components
 - Follow vitest and vitest-browser-svelte testing patterns
@@ -71,6 +72,7 @@ src/lib/components/
 ### Test Location
 
 Tests are co-located with components using the `.svelte.ts` extension:
+
 - Component: `ComponentName.svelte`
 - Tests: `ComponentName.svelte.ts`
 
@@ -89,18 +91,19 @@ import { render } from 'vitest-browser-svelte';
 import ComponentName from './ComponentName.svelte';
 
 describe('ComponentName', () => {
-  it('should render correctly', async () => {
-    render(ComponentName);
-    
-    const element = page.getByRole('button', { name: 'Click me' });
-    await expect.element(element).toBeInTheDocument();
-  });
+	it('should render correctly', async () => {
+		render(ComponentName);
+
+		const element = page.getByRole('button', { name: 'Click me' });
+		await expect.element(element).toBeInTheDocument();
+	});
 });
 ```
 
 ### Test Coverage
 
 Each component should have tests for:
+
 - Rendering (basic structure and accessibility)
 - Props (different prop combinations)
 - User interactions (clicks, inputs, keyboard navigation)
@@ -112,6 +115,7 @@ Each component should have tests for:
 The current flat structure in `src/lib/components/` will be reorganized into feature folders:
 
 **Current** → **New**:
+
 - `Sidebar.svelte` → `Sidebar/Sidebar.svelte`
 - `SidebarButtonSlot.svelte` → `Sidebar/SidebarButtonSlot.svelte`
 - `TopMenu.svelte` → `TopMenu/TopMenu.svelte`
@@ -153,21 +157,25 @@ import { Sidebar, SidebarButtonSlot } from '$lib/components/Sidebar';
 ## Benefits
 
 ### Maintainability
+
 - Related files grouped together
 - Easier to find component code and tests
 - Clear component boundaries
 
 ### Testability
+
 - Tests co-located with implementation
 - Easy to run tests for specific features
 - Clear test coverage per component
 
 ### Scalability
+
 - New features get their own folders
 - Shared UI components remain separate
 - Easy to extract features to separate packages
 
 ### Developer Experience
+
 - Intuitive file organization
 - Less scrolling through flat lists
 - Clear component ownership
@@ -177,12 +185,14 @@ import { Sidebar, SidebarButtonSlot } from '$lib/components/Sidebar';
 ### When to Create a New Feature Folder
 
 Create a new feature folder when:
+
 - Component represents a distinct UI feature
 - Component has multiple sub-components
 - Component has significant business logic
 - Component will have multiple test files
 
 Keep in `ui/` when:
+
 - Component is a pure UI primitive
 - Component is reusable across features
 - Component comes from shadcn-svelte
@@ -190,6 +200,7 @@ Keep in `ui/` when:
 ### Style Files
 
 Only create `style.css` files when:
+
 - Component needs CSS animations not possible in Tailwind
 - Component has complex pseudo-selectors
 - Component needs global CSS variables

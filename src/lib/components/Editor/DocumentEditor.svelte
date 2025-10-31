@@ -3,9 +3,8 @@
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { toast } from 'svelte-sonner';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
-	import EditorToolbar from './EditorToolbar.svelte';
-	import MarkdownEditor from './MarkdownEditor.svelte';
-	import MarkdownPreview from './MarkdownPreview.svelte';
+	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
+	import { MarkdownPreview } from '$lib/components/Preview';
 
 	interface Props {
 		documentId: string;

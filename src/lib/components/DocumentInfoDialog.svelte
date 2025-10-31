@@ -23,7 +23,12 @@
 	let stats = $derived({
 		characters: content.length,
 		words:
-			content.trim().length === 0 ? 0 : content.trim().split(/\s+/).filter((w) => w.length > 0).length,
+			content.trim().length === 0
+				? 0
+				: content
+						.trim()
+						.split(/\s+/)
+						.filter((w) => w.length > 0).length,
 		lines: content.split('\n').length
 	});
 
@@ -36,18 +41,18 @@
 	}
 </script>
 
-<Root {open} onOpenChange={onOpenChange}>
+<Root {open} {onOpenChange}>
 	{#snippet children()}
 		<Portal>
 			{#snippet children()}
 				<DialogContent
-					class="max-w-md border border-border bg-background p-6 shadow-lg lg:right-8 lg:left-auto lg:top-1/2 lg:-translate-y-1/2 lg:translate-x-0"
+					class="max-w-md border border-border bg-background p-6 shadow-lg lg:top-1/2 lg:right-8 lg:left-auto lg:translate-x-0 lg:-translate-y-1/2"
 				>
 					{#snippet children()}
 						<DialogHeader>
 							{#snippet children()}
 								<div class="flex items-center justify-between">
-									<DialogTitle class="text-lg font-semibold text">Document Info</DialogTitle>
+									<DialogTitle class="text text-lg font-semibold">Document Info</DialogTitle>
 									<Button
 										variant="ghost"
 										size="sm"
@@ -104,7 +109,7 @@
 </Root>
 
 <style>
-	.text{
+	.text {
 		color: var(--color-foreground);
 	}
-	</style>
+</style>
