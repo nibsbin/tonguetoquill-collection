@@ -57,6 +57,7 @@ None. Implementation followed the plan exactly as specified.
 All manual testing completed successfully:
 
 ### Document Info Dialog
+
 - ✅ Opens from More Actions menu
 - ✅ Displays correct document name
 - ✅ Formats created/modified dates correctly
@@ -66,12 +67,14 @@ All manual testing completed successfully:
 - ✅ Dialog is accessible and properly labeled
 
 ### Keyboard Shortcuts Removal
+
 - ✅ "Keyboard Shortcuts" menu item removed
 - ✅ No console errors
 - ✅ Remaining menu items display correctly
 - ✅ CodeMirror shortcuts still work (Ctrl+B, Ctrl+I, Ctrl+S)
 
 ### Minimal Toolbar
+
 - ✅ Frontmatter toggle button appears and logs to console
 - ✅ Bold, Italic, Strikethrough buttons work correctly
 - ✅ Inline code button wraps with backticks (tested: `` `text` ``)
@@ -139,9 +142,11 @@ Document Info dialog with statistics:
 **Objective**: Create a dialog displaying document metadata and statistics, accessible from More Actions menu
 
 **Files to Create**:
+
 - `src/lib/components/DocumentInfoDialog.svelte`
 
 **Files to Modify**:
+
 - `src/lib/components/TopMenu.svelte`
 - `src/routes/+page.svelte`
 
@@ -150,109 +155,119 @@ Document Info dialog with statistics:
 #### 1.1 Create DocumentInfoDialog Component
 
 **Component Props**:
+
 ```typescript
 interface DocumentInfoDialogProps {
-  open: boolean;
-  document: {
-    name: string;
-    created_at: string;
-    updated_at: string;
-  } | null;
-  content: string;
-  onOpenChange: (open: boolean) => void;
+	open: boolean;
+	document: {
+		name: string;
+		created_at: string;
+		updated_at: string;
+	} | null;
+	content: string;
+	onOpenChange: (open: boolean) => void;
 }
 ```
 
 **Component Structure**:
+
 ```svelte
 <script lang="ts">
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { X } from 'lucide-svelte';
-  
-  // Props
-  let { open, document, content, onOpenChange } = $props();
-  
-  // Calculate statistics
-  let stats = $derived({
-    characters: content.length,
-    words: content.trim().split(/\s+/).filter(w => w.length > 0).length,
-    lines: content.split('\n').length
-  });
-  
-  // Format dates
-  function formatDate(isoDate: string): string {
-    return new Date(isoDate).toLocaleString();
-  }
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { X } from 'lucide-svelte';
+
+	// Props
+	let { open, document, content, onOpenChange } = $props();
+
+	// Calculate statistics
+	let stats = $derived({
+		characters: content.length,
+		words: content
+			.trim()
+			.split(/\s+/)
+			.filter((w) => w.length > 0).length,
+		lines: content.split('\n').length
+	});
+
+	// Format dates
+	function formatDate(isoDate: string): string {
+		return new Date(isoDate).toLocaleString();
+	}
 </script>
 
-<Dialog.Root {open} onOpenChange={onOpenChange}>
-  <Dialog.Content class="...custom positioning...">
-    <!-- Dialog header, content sections -->
-  </Dialog.Content>
+<Dialog.Root {open} {onOpenChange}>
+	<Dialog.Content class="...custom positioning...">
+		<!-- Dialog header, content sections -->
+	</Dialog.Content>
 </Dialog.Root>
 ```
 
 **Styling Considerations**:
+
 - Desktop: Position on right side, aligned with Preview pane
 - Mobile (<1024px): Center on screen
 - Use CSS media queries or Tailwind responsive classes
 
 **Date Formatting**:
+
 - Use `Intl.DateTimeFormat` for locale-aware formatting
 - Example: `new Date(created_at).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })`
 
 #### 1.2 Integrate Dialog in TopMenu
 
 **Add state for dialog**:
+
 ```typescript
 let showDocumentInfo = $state(false);
 ```
 
 **Update handleDocumentInfo handler**:
+
 ```typescript
 function handleDocumentInfo() {
-  showDocumentInfo = true;
+	showDocumentInfo = true;
 }
 ```
 
 **Pass props to DocumentInfoDialog**:
+
 - Need to receive `document` metadata and `content` from parent
 - TopMenu doesn't have access to content, so need to lift state up
 
 #### 1.3 Lift State to +page.svelte
 
 **Add to +page.svelte**:
+
 ```svelte
 <script lang="ts">
-  import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
-  
-  let showDocumentInfo = $state(false);
-  let documentContent = $state('');
-  
-  // Pass to DocumentEditor to get content updates
-  function handleContentUpdate(newContent: string) {
-    documentContent = newContent;
-  }
+	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
+
+	let showDocumentInfo = $state(false);
+	let documentContent = $state('');
+
+	// Pass to DocumentEditor to get content updates
+	function handleContentUpdate(newContent: string) {
+		documentContent = newContent;
+	}
 </script>
 
-<TopMenu 
-  onDocumentInfo={() => showDocumentInfo = true}
-  ...other props
-/>
+<TopMenu onDocumentInfo={() => (showDocumentInfo = true)} ...other props />
 
 <DocumentInfoDialog
-  open={showDocumentInfo}
-  document={documentStore.activeDocument}
-  content={documentContent}
-  onOpenChange={(open) => showDocumentInfo = open}
+	open={showDocumentInfo}
+	document={documentStore.activeDocument}
+	content={documentContent}
+	onOpenChange={(open) => (showDocumentInfo = open)}
 />
 ```
 
 **Update DocumentEditor to emit content**:
+
 - Add callback prop `onContentUpdate`
 - Call when content changes
 
 **Testing**:
+
 - Click "Document Info" in More Actions menu
 - Verify dialog opens and displays correct information
 - Test dismissal via X, Escape, and clicking outside
@@ -267,46 +282,52 @@ function handleDocumentInfo() {
 **Objective**: Remove "Keyboard Shortcuts" from More Actions menu and related code
 
 **Files to Modify**:
+
 - `src/lib/components/TopMenu.svelte`
 
 **Changes**:
 
 1. **Remove menu item** (lines 164-172):
+
 ```svelte
 <!-- REMOVE THIS -->
 <DropdownMenuItem
-  class="text-foreground/80 focus:bg-accent focus:text-foreground"
-  onclick={handleKeyboardShortcuts}
+	class="text-foreground/80 focus:bg-accent focus:text-foreground"
+	onclick={handleKeyboardShortcuts}
 >
-  {#snippet children()}
-    <Keyboard class="mr-2 h-4 w-4" />
-    Keyboard Shortcuts
-  {/snippet}
+	{#snippet children()}
+		<Keyboard class="mr-2 h-4 w-4" />
+		Keyboard Shortcuts
+	{/snippet}
 </DropdownMenuItem>
 ```
 
 2. **Remove handler function** (lines 48-51):
+
 ```typescript
 // REMOVE THIS
 function handleKeyboardShortcuts() {
-  // TODO: Open keyboard shortcuts dialog
-  console.log('Keyboard shortcuts');
+	// TODO: Open keyboard shortcuts dialog
+	console.log('Keyboard shortcuts');
 }
 ```
 
 3. **Remove Keyboard icon import** (line 10):
+
 ```typescript
 // REMOVE from imports if not used elsewhere
-Keyboard
+Keyboard;
 ```
 
 **Verification**:
+
 - Check if `Keyboard` icon is used elsewhere
 - If not used, remove from import statement
 - Verify no console errors
 - Verify menu renders correctly without the item
 
 **Testing**:
+
 - Open More Actions menu
 - Verify "Keyboard Shortcuts" item is gone
 - Verify remaining items display correctly
@@ -319,26 +340,31 @@ Keyboard
 **Objective**: Remove keyboard shortcut hints from toolbar button tooltips
 
 **Files to Modify**:
+
 - `src/lib/components/EditorToolbar.svelte`
 
 **Changes**:
 
 1. **Bold button** (line 34):
+
 ```svelte
-title="Bold (Ctrl+B)"  →  title="Bold"
+title="Bold (Ctrl+B)" → title="Bold"
 ```
 
 2. **Italic button** (line 46):
+
 ```svelte
-title="Italic (Ctrl+I)"  →  title="Italic"
+title="Italic (Ctrl+I)" → title="Italic"
 ```
 
 3. **Save button** (line 142):
+
 ```svelte
-title="Save (Ctrl+S)"  →  title="Save"
+title="Save (Ctrl+S)" → title="Save"
 ```
 
 **Testing**:
+
 - Hover over Bold, Italic, and Save buttons
 - Verify tooltips display without keyboard hints
 - Verify buttons still function correctly
@@ -351,6 +377,7 @@ title="Save (Ctrl+S)"  →  title="Save"
 **Objective**: Redesign markdown toolbar with minimal set of formatting buttons
 
 **Files to Modify**:
+
 - `src/lib/components/EditorToolbar.svelte`
 - `src/lib/components/MarkdownEditor.svelte`
 
@@ -361,28 +388,31 @@ title="Save (Ctrl+S)"  →  title="Save"
 **In EditorToolbar.svelte**:
 
 1. **Add ChevronDown icon import**:
+
 ```typescript
 import { ChevronDown } from 'lucide-svelte';
 ```
 
 2. **Add button as first element**:
+
 ```svelte
 <Button
-  variant="ghost"
-  size="sm"
-  class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
-  onclick={() => onFormat('toggleFrontmatter')}
-  title="Toggle Frontmatter"
+	variant="ghost"
+	size="sm"
+	class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+	onclick={() => onFormat('toggleFrontmatter')}
+	title="Toggle Frontmatter"
 >
-  {#snippet children()}
-    <ChevronDown class="h-4 w-4" />
-  {/snippet}
+	{#snippet children()}
+		<ChevronDown class="h-4 w-4" />
+	{/snippet}
 </Button>
 ```
 
 **In MarkdownEditor.svelte**:
 
 Add stub handler:
+
 ```typescript
 function handleToggleFrontmatter() {
   console.log('Toggle frontmatter folding (not yet implemented)');
@@ -411,6 +441,7 @@ case 'toggleFrontmatter':
 11. (Right) Manual Save
 
 **Remove**:
+
 - Quote button
 - Code Block button (replace with inline code)
 - One Separator (consolidate)
@@ -420,6 +451,7 @@ case 'toggleFrontmatter':
 **In EditorToolbar.svelte**:
 
 Update title attribute:
+
 ```svelte
 <Button
   ...
@@ -431,19 +463,21 @@ Update title attribute:
 **In MarkdownEditor.svelte**:
 
 1. **Rename handler**:
-```typescript
+
+````typescript
 // OLD:
 function handleCodeBlock() {
-  insertAtCursor('\n```\ncode\n```\n');
+	insertAtCursor('\n```\ncode\n```\n');
 }
 
 // NEW:
 function handleInlineCode() {
-  applyFormatting('`');
+	applyFormatting('`');
 }
-```
+````
 
 2. **Update handleFormat switch**:
+
 ```typescript
 case 'code':
   handleInlineCode();
@@ -456,6 +490,7 @@ case 'code':
 Remove keyboard hints from all tooltips (already done in Phase 3 for Bold, Italic, Save)
 
 **Remaining tooltips**:
+
 - "Strikethrough" (already correct)
 - "Inline Code" (updated in 4.3)
 - "Hyperlink" (update from "Link")
@@ -463,6 +498,7 @@ Remove keyboard hints from all tooltips (already done in Phase 3 for Bold, Itali
 - "Bullet List" (already correct)
 
 **Testing**:
+
 - Verify all 10 buttons display correctly
 - Test each button's functionality
 - Verify frontmatter toggle logs to console
@@ -487,6 +523,7 @@ Remove keyboard hints from all tooltips (already done in Phase 3 for Bold, Itali
 ### Manual Testing Checklist
 
 **Document Info Dialog**:
+
 - [ ] Opens from More Actions menu
 - [ ] Displays correct document name
 - [ ] Formats created/modified dates correctly
@@ -501,12 +538,14 @@ Remove keyboard hints from all tooltips (already done in Phase 3 for Bold, Itali
 - [ ] Announced correctly by screen reader
 
 **Keyboard Shortcuts Removal**:
+
 - [ ] "Keyboard Shortcuts" menu item removed
 - [ ] No console errors
 - [ ] Remaining menu items display correctly
 - [ ] CodeMirror shortcuts still work (Ctrl+B, Ctrl+I, Ctrl+S)
 
 **Minimal Toolbar**:
+
 - [ ] Frontmatter toggle button appears and logs to console
 - [ ] Bold button works
 - [ ] Italic button works
@@ -524,6 +563,7 @@ Remove keyboard hints from all tooltips (already done in Phase 3 for Bold, Itali
 ### Browser Testing
 
 Test on:
+
 - Chrome/Edge (primary)
 - Firefox
 - Safari (if available)
@@ -555,6 +595,7 @@ Test on:
 ## Rollback Plan
 
 If issues arise:
+
 1. Revert specific commits using git
 2. Phases are independent and can be reverted separately
 3. No database migrations or breaking changes

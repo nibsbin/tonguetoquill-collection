@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Menu, SquarePen, Settings, User } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
-	import SidebarButtonSlot from '$lib/components/SidebarButtonSlot.svelte';
-	import DocumentListItem from '$lib/components/DocumentListItem.svelte';
+	import { SidebarButtonSlot } from '$lib/components/Sidebar';
+	import { DocumentListItem } from '$lib/components/DocumentList';
 	import Separator from '$lib/components/ui/separator.svelte';
 	import Popover from '$lib/components/ui/popover.svelte';
 	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';
@@ -122,11 +122,31 @@
 	function handleAutoSaveChange(value: boolean) {
 		autoSave = value;
 		localStorage.setItem('auto-save', value.toString());
+		// Dispatch storage event manually for same-tab communication
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'auto-save',
+				newValue: value.toString(),
+				oldValue: (!value).toString(),
+				url: window.location.href,
+				storageArea: localStorage
+			})
+		);
 	}
 
 	function handleLineNumbersChange(value: boolean) {
 		lineNumbers = value;
 		localStorage.setItem('line-numbers', value.toString());
+		// Dispatch storage event manually for same-tab communication
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'line-numbers',
+				newValue: value.toString(),
+				oldValue: (!value).toString(),
+				url: window.location.href,
+				storageArea: localStorage
+			})
+		);
 	}
 
 	function updateDarkMode(dark: boolean) {

@@ -76,6 +76,14 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 
 ---
 
+### [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md)
+
+**Component Organization Strategy**
+
+Feature-based component organization with co-located tests and optional styles. Defines directory structure, file naming conventions, and testing patterns.
+
+**Topics**: Feature folders (Sidebar, TopMenu, Editor, Preview), file structure per component, testing strategy, migration from flat structure, import patterns
+
 ### [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md)
 
 **UX Improvements 2025**
@@ -172,11 +180,12 @@ The frontend integrates with backend services documented in `prose/designs/backe
 
 1. Review [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual design tokens and patterns
 2. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for project structure
-3. Study [UI_COMPONENTS.md](./UI_COMPONENTS.md) for component behavior
-4. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
-5. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
-6. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
-7. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
+3. Review [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for component structure and testing
+4. Study [UI_COMPONENTS.md](./UI_COMPONENTS.md) for component behavior
+5. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
+6. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
+7. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
+8. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
 
 ### Development Workflow
 

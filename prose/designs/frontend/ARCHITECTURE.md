@@ -67,6 +67,10 @@ The parentheses create a folder for organization but are removed from the final 
 
 ## Component Architecture
 
+### Component Organization
+
+Components are organized by feature in `src/lib/components/`. See [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for detailed structure, testing patterns, and file naming conventions.
+
 ### Component Hierarchy
 
 - **Layout Components**: Persistent across navigation, manage global state

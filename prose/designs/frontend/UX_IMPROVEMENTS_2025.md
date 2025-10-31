@@ -5,6 +5,7 @@
 This document specifies UX improvements to enhance usability, accessibility, and streamline the user interface. These changes focus on providing better document information visibility, removing unnecessary complexity, and simplifying the markdown toolbar.
 
 **Related Documents**:
+
 - [UI_COMPONENTS.md](./UI_COMPONENTS.md) - Component specifications
 - [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) - Editor design
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) - Visual design tokens
@@ -38,14 +39,16 @@ Provide users with quick access to document metadata and statistics without leav
 
 **Dialog Type**: shadcn-svelte Dialog component
 
-**Positioning**: 
+**Positioning**:
+
 - Overlays the Preview pane only (right side of screen)
 - Does not obstruct the editor pane
 - On mobile/tablet (< 1024px), centers on screen
 
 **Behavior**:
+
 - **Persistent**: Remains visible until explicitly dismissed
-- **Dismissible**: 
+- **Dismissible**:
   - Click X button in dialog header
   - Click on Preview pane background (outside dialog)
   - Press Escape key
@@ -79,11 +82,13 @@ Provide users with quick access to document metadata and statistics without leav
 ### Data Sources
 
 **From DocumentMetadata** (see `src/lib/services/documents/types.ts`):
+
 - `name` - Document name
 - `created_at` - ISO 8601 timestamp
 - `updated_at` - ISO 8601 timestamp
 
 **From Editor Content** (calculated in real-time):
+
 - **Characters**: Total character count including whitespace
 - **Words**: Count of word-separated tokens (split by whitespace)
 - **Lines**: Count of newline characters + 1
@@ -91,6 +96,7 @@ Provide users with quick access to document metadata and statistics without leav
 ### Styling
 
 **Dialog**:
+
 - Width: `max-w-md` (448px)
 - Background: `bg-background`
 - Border: `border border-border`
@@ -98,12 +104,14 @@ Provide users with quick access to document metadata and statistics without leav
 - Shadow: `shadow-lg`
 
 **Typography**:
+
 - Title: `text-lg font-semibold`
 - Section labels: `text-sm font-medium text-muted-foreground`
 - Values: `text-base text-foreground`
 - Statistics list: `text-sm`
 
 **Layout**:
+
 - Vertical spacing between sections: `gap-4`
 - Label-value pairing: `gap-1`
 
@@ -118,21 +126,25 @@ Provide users with quick access to document metadata and statistics without leav
 ### Implementation Notes
 
 **Component Structure**:
+
 - Use shadcn-svelte Dialog components (Root, Content, Header, Title)
 - Bind dialog open state to component prop
 - Include custom positioning classes for desktop layout
 
 **Custom Positioning** (Desktop only):
+
 - Override default center positioning
 - Position on right side of viewport
 - Align with Preview pane boundaries
 - Use CSS custom properties or Tailwind positioning
 
 **Date Formatting**:
+
 - Use JavaScript `Intl.DateTimeFormat` for locale-aware dates
 - Format: Medium date style with short time
 
 **Statistics Calculation**:
+
 - Calculate on dialog open based on current editor content
 - Characters: Total character count including whitespace
 - Words: Split by whitespace, filter empty strings
@@ -145,6 +157,7 @@ Provide users with quick access to document metadata and statistics without leav
 ### Rationale
 
 Modern web applications should leverage:
+
 1. **Semantic HTML** - Provides native keyboard navigation
 2. **OS Accessibility Features** - Screen readers, keyboard navigation built into OS
 3. **CodeMirror Built-in Shortcuts** - Editor already handles Ctrl+B, Ctrl+I, Ctrl+S, etc.
@@ -156,22 +169,26 @@ Custom keyboard shortcut implementations add complexity and can conflict with OS
 #### Remove from TopMenu.svelte
 
 **Menu Item to Remove**:
+
 - "Keyboard Shortcuts" dropdown menu item with Keyboard icon
 
 **Handler to Remove**:
+
 - `handleKeyboardShortcuts()` function (currently logs to console)
 
 **Icon Import to Remove** (if unused elsewhere):
+
 - Keyboard icon from lucide-svelte
 
 #### Preserve CodeMirror Shortcuts
 
 **Keep in MarkdownEditor.svelte**:
+
 - CodeMirror's `defaultKeymap` (undo/redo, selection, navigation)
 - CodeMirror's `historyKeymap` (undo/redo history)
 - Custom keymaps for:
   - `Mod-b` - Bold
-  - `Mod-i` - Italic  
+  - `Mod-i` - Italic
   - `Mod-s` - Save
 
 These are essential editor functions and are scoped to the editor component.
@@ -179,12 +196,14 @@ These are essential editor functions and are scoped to the editor component.
 #### Documentation Updates
 
 **Update Tooltip Text**:
+
 - Change `"Bold (Ctrl+B)"` to `"Bold"` in EditorToolbar.svelte
 - Change `"Italic (Ctrl+I)"` to `"Italic"` in EditorToolbar.svelte
 - Change `"Save (Ctrl+S)"` to `"Save"` in EditorToolbar.svelte
 - Tooltips will still appear on hover but won't advertise shortcuts
 
 **Remove from Comments**:
+
 - Search for "Ctrl+" and "keyboard" in comments
 - Update or remove references to keyboard shortcuts in documentation
 
@@ -206,6 +225,7 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 ### Current Toolbar (EditorToolbar.svelte)
 
 **Current buttons**:
+
 1. Bold
 2. Italic
 3. Strikethrough
@@ -222,6 +242,7 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 ### New Minimal Toolbar
 
 **Desired buttons**:
+
 1. Toggle Frontmatter Folding (stub - not yet functional)
 2. Separator
 3. Bold
@@ -231,7 +252,7 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 7. Hyperlink
 8. Separator
 9. Numbered List (ordered list: 1. 2. 3.)
-10. Bullet List (unordered list: - • *)
+10. Bullet List (unordered list: - • \*)
 11. (Right side) Manual Save (keep existing)
 
 ### Button Specifications
@@ -241,6 +262,7 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 **Icon**: `ChevronDown` from lucide-svelte (rotates when folded/unfolded)
 
 **Behavior** (stub implementation):
+
 - Click handler: `console.log('Toggle frontmatter folding')`
 - Visual state: No active state initially
 - Future: Will integrate with CodeMirror folding extension
@@ -253,14 +275,16 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 
 **Keep existing implementation**
 
-**Changes**: 
+**Changes**:
+
 - Remove tooltip keyboard hint: `"Bold (Ctrl+B)"` → `"Bold"`
 
 #### 3. Italic
 
 **Keep existing implementation**
 
-**Changes**: 
+**Changes**:
+
 - Remove tooltip keyboard hint: `"Italic (Ctrl+I)"` → `"Italic"`
 
 #### 4. Strikethrough
@@ -300,7 +324,7 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 
 **Tooltip**: "Bullet List"
 
-**Note**: Creates unordered lists (- • *)
+**Note**: Creates unordered lists (- • \*)
 
 #### Remove:
 
@@ -310,6 +334,7 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 ### Layout
 
 **Structure**:
+
 ```
 [Frontmatter Toggle] | [Bold] [Italic] [Strikethrough] [Code] [Link] | [1.] [•] [Save*]
                      ↑ Separator                                      ↑ Separator  ↑ Right aligned
@@ -322,6 +347,7 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 ### Implementation Changes
 
 **EditorToolbar.svelte**:
+
 1. Add ChevronDown icon import
 2. Add frontmatter toggle button (stub)
 3. Reorder buttons to match specification
@@ -331,6 +357,7 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 7. Update separator placement
 
 **MarkdownEditor.svelte**:
+
 1. Rename `handleCodeBlock` to `handleInlineCode`
 2. Update implementation to use backticks for inline code
 3. Update `handleFormat` switch statement to match new button names
@@ -339,12 +366,14 @@ Simplify the markdown toolbar to focus on the most commonly used formatting opti
 ### Future Enhancements
 
 **Frontmatter Folding**:
+
 - Will integrate with CodeMirror's `foldGutter` extension
 - Detect YAML frontmatter blocks (`---` at start of document)
 - Toggle fold state on frontmatter region
 - Update button visual state (rotate chevron)
 
 **Code Block**:
+
 - May be re-added as a separate feature later
 - Could be part of a "More Formatting" dropdown
 - Not in scope for minimal toolbar
@@ -360,20 +389,23 @@ None. All changes are additive or simplifications.
 ### User Impact
 
 **Positive**:
+
 - Clearer document information access
 - Simpler, less cluttered toolbar
 - Fewer conflicting keyboard shortcuts
 - Better accessibility for keyboard and screen reader users
 
 **Neutral**:
+
 - Users who relied on Quote and Code Block buttons must use markdown syntax directly
 - Users who memorized keyboard shortcuts from tooltips will need to discover CodeMirror's built-in shortcuts
 
 ### Training/Documentation
 
 **Update user documentation** (if exists):
+
 - Document Info dialog usage
-- Markdown syntax for quote (`>`) and code blocks (`` ``` ``)
+- Markdown syntax for quote (`>`) and code blocks (` ``` `)
 - CodeMirror keyboard shortcuts (link to official docs)
 
 ---
