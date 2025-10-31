@@ -1,0 +1,22 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name == 'production' && 'deploy-production' || 'deploy-staging' }}
+
+    steps:
+      - name: Trigger Vercel Deployment
+        run: |
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+
+      - name: Deployment triggered
+        run: |
+          echo "Deployment triggered for ${{ github.ref_name }} branch to ${{ github.ref_name == 'production' && 'deploy-production' || 'deploy-staging' }} environment"
