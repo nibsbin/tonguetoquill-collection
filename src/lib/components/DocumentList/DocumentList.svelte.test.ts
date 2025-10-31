@@ -1,5 +1,5 @@
 import { page } from '@vitest/browser/context';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import DocumentList from './DocumentList.svelte';
 

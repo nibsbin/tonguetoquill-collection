@@ -1,5 +1,5 @@
 import { page } from '@vitest/browser/context';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import DocumentEditor from './DocumentEditor.svelte';
 import { AutoSave } from '$lib/utils/auto-save.svelte';

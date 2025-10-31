@@ -35,7 +35,7 @@ Unify CSS colors and spacing tokens across the tonguetoquill-web application to 
 - Define editor-specific color tokens
 - Include all required foreground/background pairs for accessibility
 
-1.2. **Define dark theme variant in `.dark` selector**
+  1.2. **Define dark theme variant in `.dark` selector**
 
 - Mirror all tokens from light theme
 - Map zinc colors to dark theme equivalents:
@@ -46,7 +46,7 @@ Unify CSS colors and spacing tokens across the tonguetoquill-web application to 
   - `--color-foreground`: #f4f4f5 (zinc-100)
   - Editor tokens matching current CodeMirror inline styles
 
-1.3. **Extend existing spacing tokens**
+    1.3. **Extend existing spacing tokens**
 
 - Keep `--radius` and variants (already defined)
 - Add any additional spacing if needed
@@ -75,6 +75,7 @@ Unify CSS colors and spacing tokens across the tonguetoquill-web application to 
 - Map all CSS custom properties to Tailwind color classes
 - Follow pattern from `prose/legacy/mock_project/styles/globals.css`
 - Create mappings like:
+
   ```css
   @theme inline {
   	--color-background: var(--color-background);
@@ -83,7 +84,7 @@ Unify CSS colors and spacing tokens across the tonguetoquill-web application to 
   }
   ```
 
-2.2. **Test Tailwind integration**
+  2.2. **Test Tailwind integration**
 
 - Verify classes like `bg-background`, `text-foreground` work in components
 - Check that theme switching updates Tailwind classes
@@ -126,7 +127,7 @@ Unify CSS colors and spacing tokens across the tonguetoquill-web application to 
   - `.cm-line`
   - `.cm-scroller`
 
-3.2. **Add theme refresh capability**
+    3.2. **Add theme refresh capability**
 
 - Create mechanism to re-create editor theme when CSS variables change
 - Options:
@@ -134,7 +135,7 @@ Unify CSS colors and spacing tokens across the tonguetoquill-web application to 
   - Manual refresh function called after theme toggle
   - Svelte reactive statement
 
-3.3. **Update MarkdownEditor component**
+    3.3. **Update MarkdownEditor component**
 
 - Replace inline color values (currently hardcoded hex values)
 - Use `createEditorTheme()` utility
@@ -173,7 +174,7 @@ Unify CSS colors and spacing tokens across the tonguetoquill-web application to 
 - Add to root layout
 - Configure default mode (system preference)
 
-4.2. **Create theme store wrapper (optional)**
+  4.2. **Create theme store wrapper (optional)**
 
 - Wrap mode-watcher's exports for easier consumption
 - Export typed helper functions
@@ -211,20 +212,20 @@ Unify CSS colors and spacing tokens across the tonguetoquill-web application to 
 - `popover-content.svelte`
 - `switch.svelte`
 
-5.2. **Custom components** (priority: high)
+  5.2. **Custom components** (priority: high)
 
 - `TopMenu.svelte` - Replace all `zinc-*` references
 - `Sidebar.svelte` - Replace all `zinc-*` references
 - `MarkdownEditor.svelte` - Already done in Phase 3
 - `Dialog.svelte` - Will be replaced in Phase 6, but update for now
 
-5.3. **Route components** (priority: medium)
+  5.3. **Route components** (priority: medium)
 
 - `src/routes/+page.svelte`
 - `src/routes/(auth)/login/+page.svelte`
 - `src/routes/(auth)/register/+page.svelte`
 
-5.4. **Other components** (priority: low)
+  5.4. **Other components** (priority: low)
 
 - `DocumentEditor.svelte`
 - `DocumentList.svelte`
@@ -299,13 +300,13 @@ npx shadcn-svelte@latest add dialog
 - Follow prompts to install in `src/lib/components/ui/`
 - Component should auto-configure with existing theme tokens
 
-6.2. **Customize dialog styling** (if needed)
+  6.2. **Customize dialog styling** (if needed)
 
 - Ensure dialog backdrop, content match current design aesthetic
 - Verify border-radius uses `--radius` variable
 - Check colors use semantic tokens
 
-6.3. **Update Dialog consumers**
+  6.3. **Update Dialog consumers**
 
 - Find all usages: `grep -r "Dialog" src --include="*.svelte"`
 - Replace custom Dialog imports with shadcn-svelte Dialog
@@ -313,14 +314,14 @@ npx shadcn-svelte@latest add dialog
   - Old: `<Dialog open={open} title={title} onClose={handleClose}>`
   - New: Use Dialog trigger/content pattern
 
-6.4. **Test dialog functionality**
+    6.4. **Test dialog functionality**
 
 - Verify keyboard navigation (Escape to close, Tab focus trap)
 - Test backdrop click to close
 - Verify ARIA attributes for screen readers
 - Check animations and transitions
 
-6.5. **Remove old Dialog component**
+  6.5. **Remove old Dialog component**
 
 - Delete `src/lib/components/Dialog.svelte`
 - Update `src/lib/components/index.ts` if exists
@@ -356,14 +357,14 @@ npx shadcn-svelte@latest add dialog
 - Use mode-watcher's `setMode()` function
 - Display current theme state
 
-7.2. **Optional: Quick toggle in TopMenu**
+  7.2. **Optional: Quick toggle in TopMenu**
 
 - Add moon/sun icon button to TopMenu
 - Toggle between light/dark on click
 - Use `lucide-svelte` icons: `Moon`, `Sun`, `SunMoon`
 - Show appropriate icon based on current theme
 
-7.3. **Style theme toggle controls**
+  7.3. **Style theme toggle controls**
 
 - Use semantic tokens
 - Ensure accessibility (labels, focus indicators)
@@ -392,20 +393,20 @@ npx shadcn-svelte@latest add dialog
 - Update login/register forms to use Input component
 - More consistent styling with rest of app
 
-8.2. **Create type-safe theme utilities**
+  8.2. **Create type-safe theme utilities**
 
 - Create `src/lib/types/theme.ts`
 - Export `ColorToken` type
 - Export `getThemeValue()` helper function
 - Useful for any JavaScript code needing theme values
 
-8.3. **Optimize theme switching transition**
+  8.3. **Optimize theme switching transition**
 
 - Add smooth color transitions: `transition-colors duration-200`
 - Apply to root element and key components
 - Avoid jarring theme changes
 
-8.4. **Add theme to toast configuration**
+  8.4. **Add theme to toast configuration**
 
 - Update `Toast.svelte` wrapper
 - Pass theme prop to svelte-sonner: `<Toaster theme={$mode} />`

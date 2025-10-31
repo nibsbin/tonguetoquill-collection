@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import Dialog from './Dialog.svelte';
+	import { Root as Dialog } from '$lib/components/ui/dialog.svelte';
+	import DialogContent from '$lib/components/ui/dialog-content.svelte';
+	import DialogHeader from '$lib/components/ui/dialog-header.svelte';
+	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
+	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
+	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
+	import Button from '$lib/components/ui/button.svelte';
 
 	let showDeleteDialog = $state(false);
 	let documentToDelete = $state<string | null>(null);
@@ -105,30 +111,52 @@
 	</div>
 </aside>
 
-<Dialog
-	open={showDeleteDialog}
-	title="Delete Document"
-	description="Are you sure you want to delete this document? This action cannot be undone."
-	onClose={() => {
-		showDeleteDialog = false;
-		documentToDelete = null;
-	}}
->
-	<div class="flex justify-end gap-2">
-		<button
-			onclick={() => {
-				showDeleteDialog = false;
-				documentToDelete = null;
-			}}
-			class="rounded-lg border border-input px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-surface focus:ring-2 focus:ring-blue-500 focus:outline-none"
-		>
-			Cancel
-		</button>
-		<button
-			onclick={handleDelete}
-			class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:outline-none"
-		>
-			Delete
-		</button>
-	</div>
+<Dialog bind:open={showDeleteDialog}>
+	{#snippet children()}
+		<DialogContent>
+			{#snippet children()}
+				<DialogHeader>
+					{#snippet children()}
+						<DialogTitle>
+							{#snippet children()}
+								Delete Document
+							{/snippet}
+						</DialogTitle>
+						<DialogDescription>
+							{#snippet children()}
+								Are you sure you want to delete this document? This action cannot be undone.
+							{/snippet}
+						</DialogDescription>
+					{/snippet}
+				</DialogHeader>
+				<DialogFooter>
+					{#snippet children()}
+						<Button
+							variant="ghost"
+							size="sm"
+							class="text-muted-foreground hover:bg-accent hover:text-foreground"
+							onclick={() => {
+								showDeleteDialog = false;
+								documentToDelete = null;
+							}}
+						>
+							{#snippet children()}
+								Cancel
+							{/snippet}
+						</Button>
+						<Button
+							variant="default"
+							size="sm"
+							class="bg-red-600 text-white hover:bg-red-700"
+							onclick={handleDelete}
+						>
+							{#snippet children()}
+								Delete
+							{/snippet}
+						</Button>
+					{/snippet}
+				</DialogFooter>
+			{/snippet}
+		</DialogContent>
+	{/snippet}
 </Dialog>

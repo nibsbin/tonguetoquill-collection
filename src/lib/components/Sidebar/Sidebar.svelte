@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Menu, SquarePen, Settings, User } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
-	import SidebarButtonSlot from '$lib/components/Sidebar/SidebarButtonSlot.svelte';
-	import DocumentListItem from '$lib/components/DocumentList/DocumentListItem.svelte';
+	import { SidebarButtonSlot } from '$lib/components/Sidebar';
+	import { DocumentListItem } from '$lib/components/DocumentList';
 	import Separator from '$lib/components/ui/separator.svelte';
 	import Popover from '$lib/components/ui/popover.svelte';
 	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';

@@ -28,8 +28,13 @@
 		onDocumentInfo?: () => void;
 	};
 
-	let { fileName, onDownload, saveStatus = 'idle', saveError, onDocumentInfo }: TopMenuProps =
-		$props();
+	let {
+		fileName,
+		onDownload,
+		saveStatus = 'idle',
+		saveError,
+		onDocumentInfo
+	}: TopMenuProps = $props();
 
 	function handleImport() {
 		// TODO: Open file picker

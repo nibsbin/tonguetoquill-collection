@@ -7,6 +7,7 @@ Transition from flat component organization to feature-based organization as def
 ## Current State
 
 Components are in a flat structure under `src/lib/components/`:
+
 - Sidebar.svelte
 - SidebarButtonSlot.svelte
 - TopMenu.svelte
@@ -22,6 +23,7 @@ Components are in a flat structure under `src/lib/components/`:
 ## Desired State
 
 Components organized by feature in folders:
+
 - `Sidebar/` - Sidebar and SidebarButtonSlot
 - `TopMenu/` - TopMenu component
 - `Editor/` - EditorToolbar, MarkdownEditor, DocumentEditor
@@ -30,6 +32,7 @@ Components organized by feature in folders:
 - `ui/` - unchanged (shadcn-svelte components)
 
 Each component has:
+
 - `ComponentName.svelte` - implementation
 - `ComponentName.svelte.ts` - tests
 - `style.css` - optional component-specific styles
@@ -52,25 +55,31 @@ Each component has:
 Move components to their feature folders:
 
 **Sidebar feature**:
+
 - `Sidebar.svelte` → `Sidebar/Sidebar.svelte`
 - `SidebarButtonSlot.svelte` → `Sidebar/SidebarButtonSlot.svelte`
 
 **TopMenu feature**:
+
 - `TopMenu.svelte` → `TopMenu/TopMenu.svelte`
 
 **Editor feature**:
+
 - `EditorToolbar.svelte` → `Editor/EditorToolbar.svelte`
 - `MarkdownEditor.svelte` → `Editor/MarkdownEditor.svelte`
 - `DocumentEditor.svelte` → `Editor/DocumentEditor.svelte`
 
 **Preview feature**:
+
 - `MarkdownPreview.svelte` → `Preview/MarkdownPreview.svelte`
 
 **DocumentList feature**:
+
 - `DocumentList.svelte` → `DocumentList/DocumentList.svelte`
 - `DocumentListItem.svelte` → `DocumentList/DocumentListItem.svelte`
 
 **Deprecated**:
+
 - `Toast.svelte` - Remove (replaced by shadcn-svelte Sonner)
 
 ### Phase 3: Update Import Paths
@@ -78,11 +87,13 @@ Move components to their feature folders:
 Update all imports throughout the codebase:
 
 **Files to check**:
+
 - `src/routes/+page.svelte`
 - `src/routes/+layout.svelte`
 - Any other files importing components
 
 **Import pattern change**:
+
 ```typescript
 // Before
 import Sidebar from '$lib/components/Sidebar.svelte';
@@ -106,6 +117,7 @@ Create test files for each component:
 9. `DocumentList/DocumentListItem.svelte.ts` - list item tests
 
 **Test template**:
+
 ```typescript
 import { page } from '@vitest/browser/context';
 import { describe, expect, it } from 'vitest';
@@ -113,10 +125,10 @@ import { render } from 'vitest-browser-svelte';
 import ComponentName from './ComponentName.svelte';
 
 describe('ComponentName', () => {
-  it('should render', async () => {
-    render(ComponentName);
-    // Add assertions
-  });
+	it('should render', async () => {
+		render(ComponentName);
+		// Add assertions
+	});
 });
 ```
 
@@ -125,12 +137,14 @@ describe('ComponentName', () => {
 Create index files for convenience imports:
 
 **Example** (`Sidebar/index.ts`):
+
 ```typescript
 export { default as Sidebar } from './Sidebar.svelte';
 export { default as SidebarButtonSlot } from './SidebarButtonSlot.svelte';
 ```
 
 This allows:
+
 ```typescript
 import { Sidebar } from '$lib/components/Sidebar';
 ```
@@ -145,6 +159,7 @@ import { Sidebar } from '$lib/components/Sidebar';
 ## Validation
 
 After completion, verify:
+
 - [ ] All components in feature folders
 - [ ] All imports updated and working
 - [ ] Build succeeds without errors
@@ -156,6 +171,7 @@ After completion, verify:
 ## Rollback Plan
 
 If issues occur:
+
 1. Revert git commits
 2. Keep changes in a feature branch
 3. Fix issues incrementally
