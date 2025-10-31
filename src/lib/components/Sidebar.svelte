@@ -122,11 +122,31 @@
 	function handleAutoSaveChange(value: boolean) {
 		autoSave = value;
 		localStorage.setItem('auto-save', value.toString());
+		// Dispatch storage event manually for same-tab communication
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'auto-save',
+				newValue: value.toString(),
+				oldValue: (!value).toString(),
+				url: window.location.href,
+				storageArea: localStorage
+			})
+		);
 	}
 
 	function handleLineNumbersChange(value: boolean) {
 		lineNumbers = value;
 		localStorage.setItem('line-numbers', value.toString());
+		// Dispatch storage event manually for same-tab communication
+		window.dispatchEvent(
+			new StorageEvent('storage', {
+				key: 'line-numbers',
+				newValue: value.toString(),
+				oldValue: (!value).toString(),
+				url: window.location.href,
+				storageArea: localStorage
+			})
+		);
 	}
 
 	function updateDarkMode(dark: boolean) {
