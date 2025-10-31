@@ -4,9 +4,9 @@
 	import { Toaster, toast } from 'svelte-sonner';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
-	import Sidebar from '$lib/components/Sidebar.svelte';
-	import TopMenu from '$lib/components/TopMenu.svelte';
-	import DocumentEditor from '$lib/components/DocumentEditor.svelte';
+	import Sidebar from '$lib/components/Sidebar/Sidebar.svelte';
+	import TopMenu from '$lib/components/TopMenu/TopMenu.svelte';
+	import DocumentEditor from '$lib/components/Editor/DocumentEditor.svelte';
 	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
 
 	let user = $state<{ email: string; id: string } | null>(null);

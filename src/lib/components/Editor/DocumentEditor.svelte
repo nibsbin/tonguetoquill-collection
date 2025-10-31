@@ -5,7 +5,7 @@
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import EditorToolbar from './EditorToolbar.svelte';
 	import MarkdownEditor from './MarkdownEditor.svelte';
-	import MarkdownPreview from './MarkdownPreview.svelte';
+	import MarkdownPreview from '$lib/components/Preview/MarkdownPreview.svelte';
 
 	interface Props {
 		documentId: string;
