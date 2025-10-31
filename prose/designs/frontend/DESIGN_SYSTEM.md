@@ -178,6 +178,12 @@ Automatically adapts to system `prefers-contrast: high` media query:
 - Medium buttons: 32px (h-8)
 - Standard buttons: 40px (h-10)
 
+### Header & Sidebar alignment (note)
+
+- The top-menu left/document-title area is intentionally set to a predictable height to ensure visual alignment with the left sidebar slots. In the implementation this is set to `3.1rem` for the left area and the global token `--top-menu-height` is derived from `--sidebar-collapsed-width` so the header and collapsed sidebar keep matched baselines.
+- A small utility class `.top-menu-strong-border` was added to centralize a slightly heavier bottom divider (1.5px) for the top menu so visual weight can be themed in one place.
+- The sidebar slot container (`.sidebar-button-slot`) now uses `box-sizing: border-box` so declared slot heights include padding. Additionally, the first slot (the hamburger slot) uses slightly reduced vertical padding to align its bottom with the top-menu baseline. These changes make slot heights predictable and reduce the need for per-slot manual offsets.
+
 **Reference**: Sidebar dimensions updated per sidebar redesign (October 2025)
 
 **Padding Standards**:
