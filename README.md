@@ -1,6 +1,6 @@
 # Tonguetoquill Web
 
-A professional markdown document editor with authentication, auto-save, and Section 508 compliance.
+A professional markdown document editor.
 
 ## Technology Stack
 
