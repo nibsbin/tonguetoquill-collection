@@ -1,5 +1,4 @@
-import { page } from '@vitest/browser/context';
-import { describe, it, vi } from 'vitest';
+import { describe, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import DocumentEditor from './DocumentEditor.svelte';
 import { AutoSave } from '$lib/utils/auto-save.svelte';
@@ -9,10 +8,7 @@ describe('DocumentEditor', () => {
 		const autoSave = new AutoSave();
 		render(DocumentEditor, {
 			documentId: 'test-id',
-			autoSave: autoSave,
-			onContentChange: vi.fn()
+			autoSave: autoSave
 		});
-		// Wait for component to initialize
-		await page.waitForTimeout(100);
 	});
 });
