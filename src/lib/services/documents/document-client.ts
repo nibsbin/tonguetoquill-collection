@@ -50,7 +50,7 @@ export class DocumentClient {
 		}
 
 		const data = await response.json();
-		return data.document || data;
+		return data.document ?? data;
 	}
 
 	/**
@@ -72,7 +72,7 @@ export class DocumentClient {
 		}
 
 		const data = await response.json();
-		return data.metadata || data;
+		return data.metadata ?? data;
 	}
 
 	/**
@@ -110,8 +110,8 @@ export class DocumentClient {
 
 		const data = await response.json();
 		return {
-			content_size_bytes: data.document?.content_size_bytes || data.content_size_bytes,
-			updated_at: data.document?.updated_at || data.updated_at
+			content_size_bytes: data.document?.content_size_bytes ?? data.content_size_bytes,
+			updated_at: data.document?.updated_at ?? data.updated_at
 		};
 	}
 

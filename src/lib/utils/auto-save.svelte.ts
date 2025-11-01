@@ -5,6 +5,7 @@
 
 import { documentStore } from '$lib/stores/documents.svelte';
 import { createDocumentClient } from '$lib/services/documents/document-client';
+import type { DocumentMetadata } from '$lib/services/documents/types';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -80,11 +81,15 @@ export class AutoSave {
 			const result = await this.documentClient.updateDocument(documentId, { content });
 
 			// Update document store metadata
-			if (result.content_size_bytes !== undefined && result.updated_at !== undefined) {
-				documentStore.updateDocument(documentId, {
-					content_size_bytes: result.content_size_bytes,
-					updated_at: result.updated_at
-				});
+			const updates: Partial<DocumentMetadata> = {};
+			if (result.content_size_bytes !== undefined) {
+				updates.content_size_bytes = result.content_size_bytes;
+			}
+			if (result.updated_at !== undefined) {
+				updates.updated_at = result.updated_at;
+			}
+			if (Object.keys(updates).length > 0) {
+				documentStore.updateDocument(documentId, updates);
 			}
 
 			this.state.status = 'saved';
