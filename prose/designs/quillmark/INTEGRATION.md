@@ -157,10 +157,19 @@ Components can request renders through the service:
 ```typescript
 import { quillmarkService } from '$lib/services/quillmark';
 
-// Render to PDF blob
-const pdfBlob = await quillmarkService.renderToPDF(markdown, 'usaf_memo');
+// Render for preview (auto-detects format)
+const { format, data } = await quillmarkService.renderForPreview(markdown, 'usaf_memo');
+if (format === 'pdf') {
+	// Display PDF blob
+	const url = URL.createObjectURL(data as Blob);
+	embedElement.src = url;
+} else {
+	// Display SVG string
+	previewElement.innerHTML = data as string;
+}
 
-// Render to SVG string
+// Render to specific format for download
+const pdfBlob = await quillmarkService.renderToPDF(markdown, 'usaf_memo');
 const svgString = await quillmarkService.renderToSVG(markdown, 'taro');
 ```
 
