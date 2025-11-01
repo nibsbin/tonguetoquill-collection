@@ -28,6 +28,11 @@
 		if (!markdown) {
 			renderResult = null;
 			svgPages = [];
+			// Clean up PDF object URL when clearing
+			if (pdfObjectUrl) {
+				URL.revokeObjectURL(pdfObjectUrl);
+				pdfObjectUrl = null;
+			}
 			return;
 		}
 
@@ -39,9 +44,22 @@
 			const result = await quillmarkService.renderForPreview(markdown);
 			renderResult = result;
 
-			// Process SVG pages if applicable
+			// Clean up previous PDF object URL before creating new one
+			if (pdfObjectUrl) {
+				URL.revokeObjectURL(pdfObjectUrl);
+				pdfObjectUrl = null;
+			}
+
+			// Process output based on format
 			if (result.outputFormat === 'svg') {
 				svgPages = resultToSVGPages(result);
+			} else if (result.outputFormat === 'pdf') {
+				// Create new object URL for PDF only on new render
+				svgPages = [];
+				const blob = resultToBlob(result);
+				pdfObjectUrl = URL.createObjectURL(blob);
+				console.log('Length of PDF blob:', blob.size);
+				console.log('Created PDF object URL:', pdfObjectUrl);
 			} else {
 				svgPages = [];
 			}
@@ -95,23 +113,6 @@
 			}
 		}
 	}
-
-	/**
-	 * Create PDF object URL when render result changes
-	 */
-	$effect(() => {
-		// Clean up previous object URL
-		if (pdfObjectUrl) {
-			URL.revokeObjectURL(pdfObjectUrl);
-			pdfObjectUrl = null;
-		}
-
-		// Create new object URL for PDF
-		if (renderResult?.outputFormat === 'pdf') {
-			const blob = resultToBlob(renderResult);
-			pdfObjectUrl = URL.createObjectURL(blob);
-		}
-	});
 
 	/**
 	 * Trigger render when markdown changes
@@ -191,12 +192,12 @@
 			{/each}
 		</div>
 	{:else if renderResult?.outputFormat === 'pdf' && pdfObjectUrl}
-		<embed
+		<iframe
 			src={pdfObjectUrl}
-			type="application/pdf"
-			class="h-full w-full"
+			title="PDF preview"
+			class="h-full w-full border-0"
 			aria-label="PDF preview"
-		/>
+		></iframe>
 	{:else}
 		<div class="flex h-full items-center justify-center">
 			<p class="text-gray-500">No preview available</p>
