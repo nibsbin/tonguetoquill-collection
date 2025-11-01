@@ -4,6 +4,8 @@
  * Type definitions for the Quillmark service and related functionality.
  */
 
+import type { RenderResult as QuillmarkRenderResult } from '@quillmark-test/web';
+
 /**
  * Quill metadata extracted from Quill.toml
  */
@@ -58,6 +60,11 @@ export class QuillmarkError extends Error {
 export type RenderFormat = 'pdf' | 'svg';
 
 /**
+ * Re-export RenderResult and Artifact from @quillmark-test/web
+ */
+export type { RenderResult, Artifact } from '@quillmark-test/web';
+
+/**
  * Quillmark Service Interface
  *
  * Provides methods for initializing Quillmark engine and rendering documents.
@@ -97,14 +104,14 @@ export interface QuillmarkService {
 	renderToPDF(markdown: string, quillName: string): Promise<Blob>;
 
 	/**
-	 * Render markdown content to SVG string.
+	 * Render markdown for preview with auto-detected format and backend.
+	 * Does not specify quill or output format - allows engine to auto-detect based on content.
 	 *
 	 * @param markdown - Markdown content to render
-	 * @param quillName - Name of Quill template to use
-	 * @returns SVG as string
-	 * @throws {QuillmarkError} If service is not initialized or Quill not found
+	 * @returns RenderResult from Quillmark engine
+	 * @throws {QuillmarkError} If service is not initialized
 	 */
-	renderToSVG(markdown: string, quillName: string): Promise<string>;
+	renderForPreview(markdown: string): Promise<QuillmarkRenderResult>;
 
 	/**
 	 * Download rendered document to user's file system.

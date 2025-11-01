@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MockDocumentService } from './mock-service';
-import { DocumentError } from './types';
+import { MockDocumentService } from './document-mock-service';
+import { DocumentError } from '$lib/services/documents/types';
 
 describe('DocumentServiceContract - MockDocumentService', () => {
 	let documentService: MockDocumentService;

@@ -3,8 +3,8 @@
  * Creates document service instances based on environment configuration
  */
 
-import type { DocumentServiceContract } from './types';
-import { MockDocumentService } from './mock-service';
+import type { DocumentServiceContract } from '$lib/services/documents/types';
+import { MockDocumentService } from './document-mock-service';
 
 let cachedService: DocumentServiceContract | null = null;
 

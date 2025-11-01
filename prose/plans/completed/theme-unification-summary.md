@@ -71,7 +71,6 @@ Create a centralized theme system using CSS custom properties that:
                            │
                            ▼
                  ┌─────────────────┐
-                 │  mode-watcher   │
                  │ (Theme toggle)  │
                  └─────────────────┘
 ```
@@ -254,7 +253,6 @@ A: After Phase 4, theme switching works. After Phase 5, maintenance becomes easi
 
 - [Tailwind CSS 4.0 Docs](https://tailwindcss.com/docs)
 - [shadcn-svelte](https://www.shadcn-svelte.com/)
-- [mode-watcher](https://mode-watcher.svecosystem.com/)
 - [CodeMirror Theming](https://codemirror.net/examples/styling/)
 - [WCAG Contrast Checker](https://webaim.org/resources/contrastchecker/)
 

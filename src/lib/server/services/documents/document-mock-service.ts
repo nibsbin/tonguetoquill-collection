@@ -14,8 +14,8 @@ import type {
 	UpdateContentParams,
 	UpdateNameParams,
 	UUID
-} from './types';
-import { DocumentError } from './types';
+} from '$lib/services/documents/types';
+import { DocumentError } from '$lib/services/documents/types';
 
 /**
  * Mock Document Service

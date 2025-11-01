@@ -3,4 +3,4 @@
  */
 
 export * from './types';
-export { quillmarkService } from './service';
+export { quillmarkService, resultToBlob, artifactToSVGString, resultToSVGPages } from './service';

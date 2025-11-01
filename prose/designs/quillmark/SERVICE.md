@@ -45,6 +45,17 @@ interface QuillmarkService {
 	renderToSVG(markdown: string, quillName: string): Promise<string>;
 
 	/**
+	 * Render markdown for preview (auto-detects format based on backend)
+	 * @param markdown - Markdown content to render
+	 * @param quillName - Name of Quill template to use
+	 * @returns Object with format and data (Blob for PDF, string for SVG)
+	 */
+	renderForPreview(
+		markdown: string,
+		quillName: string
+	): Promise<{ format: 'pdf' | 'svg'; data: Blob | string }>;
+
+	/**
 	 * Download rendered document
 	 * @param markdown - Markdown content to render
 	 * @param quillName - Name of Quill template to use
@@ -163,6 +174,8 @@ initialize()
 
 ### Render Flow
 
+**Explicit Format Rendering (Download):**
+
 ```
 renderToPDF(markdown, quillName)
   │
@@ -173,6 +186,24 @@ renderToPDF(markdown, quillName)
         quill: quillName,
         format: 'pdf'
       })
+```
+
+**Auto-Format Rendering (Preview):**
+
+```
+renderForPreview(markdown, quillName)
+  │
+  ├─> validateInitialized()
+  ├─> validateQuillExists(quillName)
+  │
+  ├─> exporters.render(engine, markdown, {
+  │     quillName: quillName
+  │     // No format specified - uses backend default
+  │   })
+  │
+  └─> Check result.outputFormat
+      ├─> if 'pdf': return { format: 'pdf', data: exporters.toBlob(result) }
+      └─> if 'svg': return { format: 'svg', data: new TextDecoder().decode(result.artifacts[0].bytes) }
 ```
 
 ### Error Handling
@@ -341,6 +372,42 @@ These features may be added in future iterations as needed.
 - **Consistency**: All renders use same engine configuration
 
 ### Why Preload All Quills?
+
+- **User Experience**: No delays when switching templates
+- **Simplicity**: Avoid complex lazy-loading logic
+- **Acceptable Cost**: ~3-5 Quills = ~1-2MB total (minimal)
+
+### Why toBlob() and TextDecoder?
+
+For preview rendering, we use different approaches for different formats:
+
+**For PDF:**
+
+- **API Stability**: `exporters.toBlob()` is stable public API
+- **Type Safety**: Return type is properly typed (Blob)
+- **MIME Type Handling**: toBlob() handles MIME type correctly
+- **Future-proof**: Handles multi-artifact results if needed
+
+**For SVG:**
+
+- **Direct Decoding**: Use `TextDecoder` to decode Uint8Array to UTF-8 string
+- **Standard API**: TextDecoder is a standard web API
+- **Simplicity**: Straightforward conversion without wrapper functions
+- **Efficiency**: No unnecessary intermediate conversions
+
+The Quillmark library doesn't provide a dedicated SVG string conversion function, so we use the standard TextDecoder approach to decode the bytes from `result.artifacts[0].bytes`.
+
+### Why Auto-Format for Preview?
+
+The `renderForPreview()` method doesn't specify a format, allowing the Quillmark backend to choose:
+
+- **Backend Intelligence**: Typst backend defaults to SVG (best for preview), PDF backend to PDF
+- **Flexibility**: Different backends may support different formats
+- **Performance**: Backend can choose most efficient format for preview
+- **User Experience**: Always get the best preview format without manual selection
+- **Simplicity**: No need to track backend capabilities in the service
+
+Download methods still specify explicit format because users expect specific file types.
 
 - **User Experience**: No delays when switching templates
 - **Simplicity**: Avoid complex lazy-loading logic
