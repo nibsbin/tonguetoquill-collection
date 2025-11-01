@@ -5,11 +5,10 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "npm run pack:quills; vite build",
 		"preview": "vite preview",
 		"prepare": "husky",
-		"package:quills": "node scripts/package-quills.js",
-		"prebuild": "npm run package:quills",
+		"pack:quills": "node scripts/package-quills.js",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",

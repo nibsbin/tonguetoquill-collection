@@ -132,7 +132,7 @@ Add to `package.json`:
 ```json
 {
 	"scripts": {
-		"package:quills": "node scripts/package-quills.js",
+		"pack:quills": "node scripts/package-quills.js",
 		"build": "npm run package:quills && vite build"
 	}
 }
