@@ -30,13 +30,13 @@
 
 	/* Utility class: slightly heavier top-menu divider for visual alignment/theming */
 	.top-menu-strong-border {
-		height: 49px!important;
+		height: 49px !important;
 		/* keep border style/color from existing utility classes; only increase width */
 		border-bottom-width: 1.5px;
 	}
 
-	button{
-		cursor:pointer!important;
+	button {
+		cursor: pointer !important;
 	}
 
 	/* Light Theme Color Tokens */

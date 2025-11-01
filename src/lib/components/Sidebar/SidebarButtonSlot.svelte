@@ -44,17 +44,14 @@
 		{title}
 		{disabled}
 	>
-		{#snippet children()}
-			{@const Icon = icon}
-			<Icon class="sidebar-icon" />
-			{#if label}
-				<span
-					class="truncate transition-opacity duration-300 {isExpanded
-						? 'opacity-100'
-						: 'opacity-0'}">{label}</span
-				>
-			{/if}
-		{/snippet}
+		{@const Icon = icon}
+		<Icon class="sidebar-icon" />
+		{#if label}
+			<span
+				class="truncate transition-opacity duration-300 {isExpanded ? 'opacity-100' : 'opacity-0'}"
+				>{label}</span
+			>
+		{/if}
 	</Button>
 </div>
 
@@ -84,8 +81,8 @@
 
 	/* Slightly reduced vertical padding for the very first slot (hamburger) to improve visual alignment */
 	:global(.sidebar-button-slot:first-child) {
-		padding-top: calc(var(--sidebar-padding)  );
-		padding-bottom: calc(var(--sidebar-padding)  );
+		padding-top: calc(var(--sidebar-padding));
+		padding-bottom: calc(var(--sidebar-padding));
 	}
 
 	/* Layer 2: Button Element - always full width of available space */
