@@ -85,7 +85,13 @@ class DocumentStore {
 	removeDocument(id: string) {
 		this.state.documents = this.state.documents.filter((doc) => doc.id !== id);
 		if (this.state.activeDocumentId === id) {
-			this.state.activeDocumentId = null;
+			// If there are remaining documents, select the topmost recent so the
+			// editor remains populated. Otherwise clear the active document.
+			if (this.state.documents.length > 0) {
+				this.state.activeDocumentId = this.state.documents[0].id;
+			} else {
+				this.state.activeDocumentId = null;
+			}
 		}
 	}
 
