@@ -145,7 +145,21 @@ class QuillmarkServiceImpl implements QuillmarkService {
 		if (!response.ok) {
 			throw new Error(`Failed to load manifest: ${response.statusText}`);
 		}
-		return await response.json();
+		const manifest = await response.json();
+		
+		// Validate manifest structure
+		if (!manifest || !Array.isArray(manifest.quills)) {
+			throw new Error('Invalid manifest format: missing quills array');
+		}
+		
+		// Validate each quill has required fields
+		for (const quill of manifest.quills) {
+			if (!quill.name || !quill.backend) {
+				throw new Error(`Invalid quill in manifest: missing required fields`);
+			}
+		}
+		
+		return manifest;
 	}
 
 	/**

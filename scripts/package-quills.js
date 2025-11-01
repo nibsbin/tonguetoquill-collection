@@ -31,6 +31,7 @@ async function parseQuillToml(tomlPath) {
 		const content = await fs.readFile(tomlPath, 'utf-8');
 
 		// Simple TOML parser for our specific use case
+		// Note: For production use, consider using a proper TOML parsing library
 		const metadata = {
 			name: '',
 			description: '',
@@ -48,6 +49,11 @@ async function parseQuillToml(tomlPath) {
 		if (descMatch) metadata.description = descMatch[1];
 		if (backendMatch) metadata.backend = backendMatch[1];
 		if (exampleMatch) metadata.exampleFile = exampleMatch[1];
+
+		// Validate required fields
+		if (!metadata.name || !metadata.backend) {
+			throw new Error(`Missing required fields (name or backend) in ${tomlPath}`);
+		}
 
 		return metadata;
 	} catch (error) {
