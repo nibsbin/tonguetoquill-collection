@@ -4,7 +4,8 @@
  */
 
 import { documentStore } from '$lib/stores/documents.svelte';
-import { localStorageDocumentService } from '$lib/services/documents/localstorage-service';
+import { createDocumentClient } from '$lib/services/documents/document-client';
+import type { DocumentMetadata } from '$lib/services/documents/types';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -25,6 +26,9 @@ export class AutoSave {
 	private state = $state<SaveState>({
 		status: 'idle'
 	});
+
+	// Create document client with guest mode accessor
+	private documentClient = createDocumentClient(() => documentStore.isGuest);
 
 	constructor(debounceMs: number = 4000) {
 		this.saveDebounceMs = debounceMs;
@@ -74,35 +78,18 @@ export class AutoSave {
 		this.state.errorMessage = undefined;
 
 		try {
-			if (documentStore.isGuest) {
-				// Guest mode: save to LocalStorage
-				await localStorageDocumentService.updateDocumentContent(documentId, content);
+			const result = await this.documentClient.updateDocument(documentId, { content });
 
-				// Update document store metadata
-				const contentSizeBytes = new Blob([content]).size;
-				documentStore.updateDocument(documentId, {
-					content_size_bytes: contentSizeBytes,
-					updated_at: new Date().toISOString()
-				});
-			} else {
-				// Authenticated mode: save to API
-				const response = await fetch(`/api/documents/${documentId}/content`, {
-					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ content })
-				});
-
-				if (!response.ok) {
-					throw new Error('Failed to save document');
-				}
-
-				const data = await response.json();
-
-				// Update document store metadata
-				documentStore.updateDocument(documentId, {
-					content_size_bytes: data.document.content_size_bytes,
-					updated_at: data.document.updated_at
-				});
+			// Update document store metadata
+			const updates: Partial<DocumentMetadata> = {};
+			if (result.content_size_bytes !== undefined) {
+				updates.content_size_bytes = result.content_size_bytes;
+			}
+			if (result.updated_at !== undefined) {
+				updates.updated_at = result.updated_at;
+			}
+			if (Object.keys(updates).length > 0) {
+				documentStore.updateDocument(documentId, updates);
 			}
 
 			this.state.status = 'saved';
