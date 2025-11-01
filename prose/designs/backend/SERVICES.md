@@ -1,116 +1,124 @@
-# Services
+# Services Architecture
 
-This document outlines the design and architecture of the services used in the Tonguetoquill application. It covers the various backend services, their interactions, and how they contribute to the overall functionality of the application.
+## Overview
 
-> **Note**: For information about the services refactor separating server-side and client-side services, see [SERVICES_REFACTOR.md](./SERVICES_REFACTOR.md).
+Services are separated into two layers with strict boundaries:
 
-## Architecture Overview
+1. **Server-Side Services** (`$lib/server/services/`): Provider implementations for databases and external services. SvelteKit's `$lib/server/` convention ensures these are never bundled in client code.
+2. **Client-Side Services** (`$lib/services/`): Abstract API communication and browser storage. Provides unified interface for stores/components regardless of guest vs authenticated mode.
 
-Services are separated into two layers:
-
-1. **Server-Side Services** (`src/lib/server/services/`): Provider implementations that access databases and run server-only logic
-2. **Client-Side Services** (`src/lib/services/`): Client communication layer that abstracts API calls and browser storage
-
-This separation ensures type safety (server code can't be imported client-side) and clear separation of concerns.
+This separation provides type safety, clear boundaries, and simplified stores that focus solely on state management.
 
 ## Authentication Context
 
-Services receive authenticated user context through middleware that extracts and validates the JWT from the request. The authenticated user's ID is passed to service methods for authorization.
-
-**Pattern:**
-
-- Middleware validates JWT and extracts user ID
-- User ID passed to service layer via context/parameter
-- Services perform ownership/permission checks before operations
+Services receive authenticated user context through middleware that validates JWT and extracts user ID. Services perform ownership/permission checks before operations.
 
 ## Document Service
 
-The Document service is responsible for managing user documents. It handles CRUD operations with authorization and validation.
+### Server-Side (`$lib/server/services/documents/`)
 
-### Core Methods
+```
+├── document-provider.ts         ← createDocumentService() factory
+├── document-mock-service.ts     ← In-memory implementation
+├── document-supabase-service.ts ← Database implementation
+└── index.ts                     ← export { documentService }
+```
+
+**Responsibilities**: Implement DocumentServiceContract, access databases, execute server-only business logic. Used exclusively by API route handlers.
+
+### Client-Side (`$lib/services/documents/`)
+
+```
+├── document-client.ts           ← Unified client interface
+├── document-browser-storage.ts  ← localStorage wrapper
+├── types.ts                     ← Shared types
+└── index.ts                     ← export { documentClient }
+```
+
+**DocumentClient** abstracts all I/O operations:
+
+- Branches internally on guest vs authenticated mode
+- Guest: Uses `documentBrowserStorage` (localStorage)
+- Authenticated: Uses `fetch()` to call API routes
+- Provides simple async methods for stores/components
+
+```typescript
+// Stores delegate all I/O to client service
+async fetchDocuments() {
+  const documents = await documentClient.listDocuments();
+  this.setDocuments(documents);
+}
+```
+
+### API Specification
+
+All methods validate inputs and check authorization. Server-side implementation throws typed errors.
 
 **`createDocument(userId: UUID, name: String, content: String): DocumentMetadata`**
 
-- **Authorization**: User must be authenticated
-- **Validation**:
-  - `name`: Required, 1-255 characters, no leading/trailing whitespace
-  - `content`: Required, max 524,288 bytes (0.5 MB)
-- **Returns**: Document metadata (id, name, owner_id, size, timestamps)
-- **Errors**: `ValidationError`, `ContentTooLargeError`
+- Validation: name (1-255 chars, trimmed), content (max 524,288 bytes)
+- Returns: Document metadata (id, name, owner_id, size, timestamps)
+- Errors: `ValidationError`, `ContentTooLargeError`
 
 **`getDocumentMetadata(userId: UUID, documentId: UUID): DocumentMetadata`**
 
-- **Authorization**: User must own the document
-- **Returns**: Document metadata without content (id, name, owner_id, size, timestamps)
-- **Query Optimization**: Selects only metadata fields; PostgreSQL TOAST automatically skips loading content
-- **Errors**: `NotFoundError`, `UnauthorizedError`
+- Authorization: User must own document
+- Returns: Metadata without content (TOAST optimization skips loading content)
+- Errors: `NotFoundError`, `UnauthorizedError`
 
 **`getDocumentContent(userId: UUID, documentId: UUID): Document`**
 
-- **Authorization**: User must own the document
-- **Returns**: Full document including content
-- **Query Optimization**: Selects all fields; PostgreSQL TOAST fetches content when explicitly requested
-- **Errors**: `NotFoundError`, `UnauthorizedError`
+- Authorization: User must own document
+- Returns: Full document including content
+- Errors: `NotFoundError`, `UnauthorizedError`
 
 **`updateDocumentContent(userId: UUID, documentId: UUID, content: String): DocumentMetadata`**
 
-- **Authorization**: User must own the document
-- **Validation**:
-  - `content`: Required, max 524,288 bytes (0.5 MB)
-- **Returns**: Updated document metadata
-- **Errors**: `NotFoundError`, `UnauthorizedError`, `ValidationError`, `ContentTooLargeError`
+- Validation: content (max 524,288 bytes)
+- Returns: Updated metadata
+- Errors: `NotFoundError`, `UnauthorizedError`, `ValidationError`, `ContentTooLargeError`
 
 **`updateDocumentName(userId: UUID, documentId: UUID, name: String): DocumentMetadata`**
 
-- **Authorization**: User must own the document
-- **Validation**:
-  - `name`: Required, 1-255 characters, no leading/trailing whitespace
-- **Returns**: Updated document metadata
-- **Errors**: `NotFoundError`, `UnauthorizedError`, `ValidationError`
+- Validation: name (1-255 chars, trimmed)
+- Returns: Updated metadata
+- Errors: `NotFoundError`, `UnauthorizedError`, `ValidationError`
 
 **`deleteDocument(userId: UUID, documentId: UUID): void`**
 
-- **Authorization**: User must own the document
-- **Returns**: Nothing on success
-- **Errors**: `NotFoundError`, `UnauthorizedError`
-
-### List Methods
+- Authorization: User must own document
+- Errors: `NotFoundError`, `UnauthorizedError`
 
 **`listUserDocuments(userId: UUID, limit: Integer, offset: Integer): List<DocumentMetadata>`**
 
-- **Authorization**: User must be authenticated (lists own documents only)
-- **Validation**:
-  - `limit`: Optional, default 50, max 100
-  - `offset`: Optional, default 0
-- **Returns**: List of document metadata (id, name, owner_id, size, timestamps), ordered by created_at DESC
-- **Query Optimization**: Selects only metadata fields; PostgreSQL TOAST ensures content is not loaded, providing efficient list rendering
+- Validation: limit (default 50, max 100), offset (default 0)
+- Returns: Metadata list ordered by created_at DESC
+- Query optimization: Selects only metadata fields, TOAST skips content
 
-### Performance Notes
+### Performance
 
-Document queries are optimized through selective field selection:
+Document queries use selective field selection with PostgreSQL TOAST:
 
-- **Metadata queries** (list, getMetadata): Only SELECT non-content fields - TOAST automatically skips loading content
-- **Full document queries** (getContent): SELECT all fields including content - TOAST fetches content as needed
-- **Single table design**: Simplifies queries while maintaining optimal performance through PostgreSQL's automatic TOAST handling
+- **Metadata queries**: Only SELECT non-content fields, TOAST skips loading content
+- **Content queries**: SELECT all fields, TOAST fetches content as needed
+- Single table design maintained for simplicity while preserving optimal performance
 
 ### Error Types
 
-**`NotFoundError`**: Requested document does not exist
+- **`NotFoundError`** (404): Document does not exist
+- **`UnauthorizedError`** (403): User doesn't own document
+- **`ValidationError`** (400): Input validation failed (includes specific message)
+- **`ContentTooLargeError`** (413): Content exceeds 0.5 MB limit
 
-- HTTP 404
-- Message: "Document not found"
+## Benefits
 
-**`UnauthorizedError`**: User does not own the requested document
+1. **Type Safety**: Server providers cannot be imported in client code
+2. **Simplified Stores**: Focus on state, not I/O orchestration
+3. **Testability**: Client service easily mocked for testing
+4. **Maintainability**: API communication changes isolated to client service
+5. **Extensibility**: Easy to add new providers (e.g., SupabaseDocumentService) or features (offline caching, optimistic updates)
 
-- HTTP 403
-- Message: "Not authorized to access this document"
+## Cross-References
 
-**`ValidationError`**: Input validation failed
-
-- HTTP 400
-- Message: Specific validation failure (e.g., "Document name cannot be empty")
-
-**`ContentTooLargeError`**: Document content exceeds size limit
-
-- HTTP 413
-- Message: "Document content exceeds maximum size of 0.5 MB"
+- [../frontend/ARCHITECTURE.md](../frontend/ARCHITECTURE.md) - Client architecture
+- [../frontend/STATE_MANAGEMENT.md](../frontend/STATE_MANAGEMENT.md) - Store patterns
