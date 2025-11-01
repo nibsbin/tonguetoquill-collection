@@ -37,14 +37,16 @@
 	}: TopMenuProps = $props();
 
 	import { documentStore } from '$lib/stores/documents.svelte';
-	let isEditing = false;
-	let title = fileName;
-	let inputEl: HTMLInputElement | null = null;
+	let isEditing = $state(false);
+	let title = $state(fileName);
+	let inputEl = $state<HTMLInputElement | null>(null);
 
-	$: if (!isEditing) {
-		// keep local title in sync when not editing
-		title = fileName;
-	}
+	$effect(() => {
+		if (!isEditing) {
+			// keep local title in sync when not editing
+			title = fileName;
+		}
+	});
 
 	function startEditing() {
 		isEditing = true;
@@ -104,29 +106,34 @@
 </script>
 
 <div
-	class="flex items-center justify-between border-b border-border bg-background px-4 top-menu-strong-border"
+	class="top-menu-strong-border flex items-center justify-between border-b border-border bg-background px-4"
 	style="height: var(--top-menu-height);"
 >
 	<div class="flex items-center gap-2" style="height: 3.1rem;">
 		<!-- Logo to the left of document title (decorative) -->
-		<img src="/logo.svg" alt="Tonguetoquill logo" aria-hidden="true" class="h-8 w-auto mr-3 shrink-0" />
+		<img
+			src="/logo.svg"
+			alt="Tonguetoquill logo"
+			aria-hidden="true"
+			class="mr-3 h-8 w-auto shrink-0"
+		/>
 		{#if isEditing}
 			<input
 				bind:this={inputEl}
-				class="bg-transparent text-foreground/80 focus:outline-none text-lg font-medium"
+				class="bg-transparent text-lg font-medium text-foreground/80 focus:outline-none"
 				value={title}
-				on:input={(e) => (title = (e.target as HTMLInputElement).value)}
-				on:blur={commitEditing}
-				on:keydown={onKeydown}
+				oninput={(e) => (title = (e.target as HTMLInputElement).value)}
+				onblur={commitEditing}
+				onkeydown={onKeydown}
 				aria-label="Edit document title"
 			/>
 		{:else}
 			<span
-				class="text-foreground/80 cursor-text"
+				class="cursor-text text-foreground/80"
 				role="button"
 				tabindex="0"
-				on:click={startEditing}
-				on:keydown={(e) => e.key === 'Enter' && startEditing()}
+				onclick={startEditing}
+				onkeydown={(e) => e.key === 'Enter' && startEditing()}
 				title="Click to edit document title"
 			>
 				{title}
@@ -161,107 +168,85 @@
 				onclick={onDownload}
 				aria-label="Download document"
 			>
-				{#snippet children()}
-					<Download class="mr-1 h-4 w-4" />
-					Download
-				{/snippet}
+				<Download class="mr-1 h-4 w-4" />
+				Download
 			</Button>
 		</div>
 
 		<!-- Meatball Menu -->
 		<DropdownMenu>
-			{#snippet children()}
-				<DropdownMenuTrigger>
-					{#snippet children()}
-						<Button
-							variant="ghost"
-							size="sm"
-							class="h-8 w-8 p-0 text-foreground/80 hover:bg-accent hover:text-foreground"
-							aria-label="More options"
-						>
-							{#snippet children()}
-								<MoreVertical class="h-4 w-4" />
-							{/snippet}
-						</Button>
-					{/snippet}
-				</DropdownMenuTrigger>
-				<DropdownMenuContent
-					align="end"
-					class="w-56 border-border bg-surface-elevated text-foreground"
+			<DropdownMenuTrigger>
+				<Button
+					variant="ghost"
+					size="sm"
+					class="h-8 w-8 p-0 text-foreground/80 hover:bg-accent hover:text-foreground"
+					aria-label="More options"
 				>
-					{#snippet children()}
-						<!-- Group 1: Document Actions -->
-						<DropdownMenuItem
-							class="text-foreground/80 focus:bg-accent focus:text-foreground"
-							onclick={handleImport}
-						>
-							{#snippet children()}
-								<Upload class="mr-2 h-4 w-4" />
-								Import
-							{/snippet}
-						</DropdownMenuItem>
+					<MoreVertical class="h-4 w-4" />
+				</Button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent
+				align="end"
+				class="w-56 border-border bg-surface-elevated text-foreground"
+			>
+				<!-- Group 1: Document Actions -->
+				<DropdownMenuItem
+					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					onclick={handleImport}
+				>
+					<Upload class="mr-2 h-4 w-4" />
+					Import
+				</DropdownMenuItem>
 
-						<DropdownMenuItem
-							class="text-foreground/80 focus:bg-accent focus:text-foreground"
-							onclick={handleShare}
-						>
-							{#snippet children()}
-								<Share2 class="mr-2 h-4 w-4" />
-								Share
-							{/snippet}
-						</DropdownMenuItem>
+				<DropdownMenuItem
+					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					onclick={handleShare}
+				>
+					<Share2 class="mr-2 h-4 w-4" />
+					Share
+				</DropdownMenuItem>
 
-						<DropdownMenuSeparator class="bg-border" />
+				<DropdownMenuSeparator class="bg-border" />
 
-						<!-- Group 2: Info & Help -->
-						<DropdownMenuItem
-							class="text-foreground/80 focus:bg-accent focus:text-foreground"
-							onclick={handleDocumentInfo}
-						>
-							{#snippet children()}
-								<FileText class="mr-2 h-4 w-4" />
-								Document Info
-							{/snippet}
-						</DropdownMenuItem>
+				<!-- Group 2: Info & Help -->
+				<DropdownMenuItem
+					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					onclick={handleDocumentInfo}
+				>
+					<FileText class="mr-2 h-4 w-4" />
+					Document Info
+				</DropdownMenuItem>
 
-						<DropdownMenuSeparator class="bg-border" />
+				<DropdownMenuSeparator class="bg-border" />
 
-						<!-- Group 3: Legal & About -->
-						<DropdownMenuItem
-							class="text-foreground/80 focus:bg-accent focus:text-foreground"
-							onclick={handleAbout}
-						>
-							{#snippet children()}
-								<Info class="mr-2 h-4 w-4" />
-								About Us
-								<ExternalLink class="ml-auto h-3 w-3" />
-							{/snippet}
-						</DropdownMenuItem>
+				<!-- Group 3: Legal & About -->
+				<DropdownMenuItem
+					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					onclick={handleAbout}
+				>
+					<Info class="mr-2 h-4 w-4" />
+					About Us
+					<ExternalLink class="ml-auto h-3 w-3" />
+				</DropdownMenuItem>
 
-						<DropdownMenuItem
-							class="text-foreground/80 focus:bg-accent focus:text-foreground"
-							onclick={handleTerms}
-						>
-							{#snippet children()}
-								<FileText class="mr-2 h-4 w-4" />
-								Terms of Use
-								<ExternalLink class="ml-auto h-3 w-3" />
-							{/snippet}
-						</DropdownMenuItem>
+				<DropdownMenuItem
+					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					onclick={handleTerms}
+				>
+					<FileText class="mr-2 h-4 w-4" />
+					Terms of Use
+					<ExternalLink class="ml-auto h-3 w-3" />
+				</DropdownMenuItem>
 
-						<DropdownMenuItem
-							class="text-foreground/80 focus:bg-accent focus:text-foreground"
-							onclick={handlePrivacy}
-						>
-							{#snippet children()}
-								<Shield class="mr-2 h-4 w-4" />
-								Privacy Policy
-								<ExternalLink class="ml-auto h-3 w-3" />
-							{/snippet}
-						</DropdownMenuItem>
-					{/snippet}
-				</DropdownMenuContent>
-			{/snippet}
+				<DropdownMenuItem
+					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					onclick={handlePrivacy}
+				>
+					<Shield class="mr-2 h-4 w-4" />
+					Privacy Policy
+					<ExternalLink class="ml-auto h-3 w-3" />
+				</DropdownMenuItem>
+			</DropdownMenuContent>
 		</DropdownMenu>
 	</div>
 </div>
