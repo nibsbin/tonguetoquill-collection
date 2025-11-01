@@ -2,6 +2,17 @@
 
 This document outlines the design and architecture of the services used in the Tonguetoquill application. It covers the various backend services, their interactions, and how they contribute to the overall functionality of the application.
 
+> **Note**: For information about the services refactor separating server-side and client-side services, see [SERVICES_REFACTOR.md](./SERVICES_REFACTOR.md).
+
+## Architecture Overview
+
+Services are separated into two layers:
+
+1. **Server-Side Services** (`src/lib/server/services/`): Provider implementations that access databases and run server-only logic
+2. **Client-Side Services** (`src/lib/services/`): Client communication layer that abstracts API calls and browser storage
+
+This separation ensures type safety (server code can't be imported client-side) and clear separation of concerns.
+
 ## Authentication Context
 
 Services receive authenticated user context through middleware that extracts and validates the JWT from the request. The authenticated user's ID is passed to service methods for authorization.
