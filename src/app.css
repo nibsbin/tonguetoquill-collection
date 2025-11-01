@@ -13,7 +13,7 @@
 	--sidebar-padding: 0.5rem; /* 8px - consistent padding around all sidebar buttons */
 	--sidebar-button-size: 2.5rem; /* 40px - size of icon buttons */
 	--sidebar-icon-size: 1.5rem; /* 24px - size of icons within buttons */
-	--sidebar-collapsed-width: 3.5rem; /* 56px - collapsed sidebar width (40px button + 8px padding each side) */
+	--sidebar-collapsed-width: 3rem; /* 48px - collapsed sidebar width (40px button + 8px padding each side) */
 	--sidebar-expanded-width: 18rem; /* 288px - expanded sidebar width */
 
 	/* Semantic sidebar button slot tokens (DRY - derived from base tokens) */
@@ -27,6 +27,17 @@
 
 	/* Top menu spacing tokens */
 	--top-menu-height: var(--sidebar-collapsed-width); /* Aligned with sidebar */
+
+	/* Utility class: slightly heavier top-menu divider for visual alignment/theming */
+	.top-menu-strong-border {
+		height: 49px!important;
+		/* keep border style/color from existing utility classes; only increase width */
+		border-bottom-width: 1.5px;
+	}
+
+	button{
+		cursor:pointer!important;
+	}
 
 	/* Light Theme Color Tokens */
 	/* Surface colors */
