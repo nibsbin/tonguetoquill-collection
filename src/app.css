@@ -43,6 +43,7 @@
 	/* Surface colors */
 	--color-background: #ffffff;
 	--color-foreground: #09090b;
+	--color-foreground-shadow: rgb(from var(--color-foreground) r g b / 0.24);
 	--color-surface: #f4f4f5;
 	--color-surface-elevated: #fafafa;
 
@@ -66,15 +67,6 @@
 	--color-input: #e4e4e7;
 	--color-ring: #18181b;
 
-	/* Editor-specific colors */
-	--color-editor-background: #ffffff;
-	--color-editor-foreground: #09090b;
-	--color-editor-line-active: #f4f4f5;
-	--color-editor-selection: #e4e4e7;
-	--color-editor-cursor: #09090b;
-	--color-editor-gutter-background: #ffffff;
-	--color-editor-gutter-foreground: #71717a;
-
 	/* Design tokens from mock project */
 	font-family: 'Lato', Arial, sans-serif;
 }
@@ -84,6 +76,7 @@
 	/* Surface colors */
 	--color-background: #18181b;
 	--color-foreground: #f4f4f5;
+	--color-foreground-shadow: rgb(from var(--color-foreground) r g b / 1);
 	--color-surface: #27272a;
 	--color-surface-elevated: #27272a;
 
@@ -106,15 +99,6 @@
 	--color-border-hover: #52525b;
 	--color-input: #27272a;
 	--color-ring: #d4d4d8;
-
-	/* Editor-specific colors */
-	--color-editor-background: #18181b;
-	--color-editor-foreground: #f4f4f5;
-	--color-editor-line-active: #27272a;
-	--color-editor-selection: #3f3f46;
-	--color-editor-cursor: #f4f4f5;
-	--color-editor-gutter-background: #18181b;
-	--color-editor-gutter-foreground: #71717a;
 }
 
 /* Tailwind CSS Integration */
@@ -144,15 +128,6 @@
 	--color-border-hover: var(--color-border-hover);
 	--color-input: var(--color-input);
 	--color-ring: var(--color-ring);
-
-	/* Editor-specific colors */
-	--color-editor-background: var(--color-editor-background);
-	--color-editor-foreground: var(--color-editor-foreground);
-	--color-editor-line-active: var(--color-editor-line-active);
-	--color-editor-selection: var(--color-editor-selection);
-	--color-editor-cursor: var(--color-editor-cursor);
-	--color-editor-gutter-background: var(--color-editor-gutter-background);
-	--color-editor-gutter-foreground: var(--color-editor-gutter-foreground);
 }
 
 body {

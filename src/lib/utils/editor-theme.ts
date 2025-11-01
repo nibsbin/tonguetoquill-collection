@@ -8,7 +8,6 @@ import type { Extension } from '@codemirror/state';
 export function createEditorTheme(): Extension {
 	// Get computed CSS custom properties at runtime
 	const styles = getComputedStyle(document.documentElement);
-	const cursorColor = styles.getPropertyValue('--color-editor-cursor').trim() || '#09090b';
 	const isDark = document.documentElement.classList.contains('dark');
 
 	return EditorView.theme(
@@ -16,7 +15,7 @@ export function createEditorTheme(): Extension {
 			'&': {
 				height: '100%',
 				fontSize: '14px',
-				backgroundColor: styles.getPropertyValue('--color-editor-background').trim()
+				backgroundColor: styles.getPropertyValue('--color-background').trim()
 			},
 			'.cm-scroller': {
 				overflow: 'auto',
@@ -24,26 +23,26 @@ export function createEditorTheme(): Extension {
 			},
 			'.cm-content': {
 				padding: '16px 0',
-				color: styles.getPropertyValue('--color-editor-foreground').trim()
+				color: styles.getPropertyValue('--color-foreground').trim()
 			},
 			'.cm-line': {
 				padding: '0 16px'
 			},
 			'.cm-cursor, .cm-dropCursor': {
-				borderLeftColor: cursorColor
+				borderLeftColor: styles.getPropertyValue('--color-foreground').trim()
 			},
 			'&.cm-focused .cm-cursor': {
-				borderLeftColor: cursorColor
+				borderLeftColor: styles.getPropertyValue('--color-foreground').trim()
 			},
 			'.cm-activeLine': {
-				backgroundColor: styles.getPropertyValue('--color-editor-line-active').trim()
+				backgroundColor: styles.getPropertyValue('--color-surface').trim()
 			},
 			'.cm-selectionBackground, .cm-focused .cm-selectionBackground': {
-				backgroundColor: styles.getPropertyValue('--color-editor-selection').trim()
+				backgroundColor: styles.getPropertyValue('--color-accent').trim()
 			},
 			'.cm-gutters': {
-				backgroundColor: styles.getPropertyValue('--color-editor-gutter-background').trim(),
-				color: styles.getPropertyValue('--color-editor-gutter-foreground').trim(),
+				backgroundColor: styles.getPropertyValue('--color-background').trim(),
+				color: styles.getPropertyValue('--color-muted-foreground').trim(),
 				border: 'none'
 			}
 		},
