@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MockAuthProvider } from '../auth/mock-provider';
-import { MockDocumentService } from './mock-service';
+import { MockAuthProvider } from '$lib/services/auth/mock-provider';
+import { MockDocumentService } from './document-mock-service';
 
 describe('Document API Integration', () => {
 	let authProvider: MockAuthProvider;

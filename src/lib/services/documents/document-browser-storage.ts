@@ -1,6 +1,6 @@
 /**
- * LocalStorage Document Service for Guest Users
- * Provides the same interface as MockDocumentService but stores in browser LocalStorage
+ * Browser Storage Document Service for Guest Users
+ * Provides document storage using browser LocalStorage for guest mode
  */
 
 import type { DocumentMetadata } from './types';
@@ -17,7 +17,7 @@ interface StoredDocument {
 	updated_at: string;
 }
 
-class LocalStorageDocumentService {
+class DocumentBrowserStorage {
 	private getDocuments(): StoredDocument[] {
 		try {
 			const data = localStorage.getItem(STORAGE_KEY);
@@ -162,4 +162,4 @@ class LocalStorageDocumentService {
 	}
 }
 
-export const localStorageDocumentService = new LocalStorageDocumentService();
+export const documentBrowserStorage = new DocumentBrowserStorage();

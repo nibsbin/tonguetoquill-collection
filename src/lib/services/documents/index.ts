@@ -3,5 +3,5 @@
  */
 
 export * from './types';
-export * from './mock-service';
-export * from './provider';
+export * from './document-browser-storage';
+export * from './document-client';
