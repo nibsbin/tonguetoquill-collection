@@ -15,9 +15,11 @@ vi.mock('@quillmark-test/web', () => ({
 		fromZip: vi.fn().mockResolvedValue({ name: 'test-quill' })
 	},
 	exporters: {
-		render: vi.fn().mockReturnValue({ format: 'pdf', data: new Uint8Array() }),
+		render: vi.fn().mockReturnValue({
+			artifacts: [{ bytes: new TextEncoder().encode('<svg></svg>'), mimeType: 'image/svg+xml' }],
+			outputFormat: 'svg'
+		}),
 		toBlob: vi.fn().mockReturnValue(new Blob(['test'], { type: 'application/pdf' })),
-		toSvgString: vi.fn().mockReturnValue('<svg></svg>'),
 		download: vi.fn()
 	}
 }));
@@ -178,6 +180,64 @@ describe('QuillmarkService', () => {
 			// Verify download was called
 			const { exporters } = await import('@quillmark-test/web');
 			expect(exporters.download).toHaveBeenCalled();
+		});
+
+		it('should render for preview with SVG format', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const mockRenderResult = {
+				artifacts: [
+					{
+						bytes: new TextEncoder().encode('<svg>test</svg>'),
+						mimeType: 'image/svg+xml'
+					}
+				],
+				outputFormat: 'svg' as const
+			};
+			vi.mocked(exporters.render).mockReturnValue(mockRenderResult);
+
+			const markdown = '# Test';
+			const result = await quillmarkService.renderForPreview(markdown, 'taro');
+
+			expect(result.format).toBe('svg');
+			expect(result.data).toBe('<svg>test</svg>');
+		});
+
+		it('should render for preview with PDF format', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const mockBlob = new Blob(['pdf content'], { type: 'application/pdf' });
+			const mockRenderResult = {
+				artifacts: [
+					{
+						bytes: new Uint8Array([1, 2, 3]),
+						mimeType: 'application/pdf'
+					}
+				],
+				outputFormat: 'pdf' as const
+			};
+			vi.mocked(exporters.render).mockReturnValue(mockRenderResult);
+			vi.mocked(exporters.toBlob).mockReturnValue(mockBlob);
+
+			const markdown = '# Test';
+			const result = await quillmarkService.renderForPreview(markdown, 'taro');
+
+			expect(result.format).toBe('pdf');
+			expect(result.data).toBe(mockBlob);
+		});
+
+		it('should throw error for unsupported output format in preview', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const mockRenderResult = {
+				artifacts: [],
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				outputFormat: 'txt' as any // Unsupported format
+			};
+			vi.mocked(exporters.render).mockReturnValue(mockRenderResult);
+
+			const markdown = '# Test';
+
+			await expect(quillmarkService.renderForPreview(markdown, 'taro')).rejects.toThrow(
+				QuillmarkError
+			);
 		});
 	});
 });
