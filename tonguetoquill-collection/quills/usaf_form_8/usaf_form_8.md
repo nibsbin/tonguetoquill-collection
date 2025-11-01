@@ -50,7 +50,7 @@ eval_info:
     date: 3000-01-01
 # Section 4
 qual_level:
-  qualified: 
+  qualified:
   unqualified: X
   expiration: 3000-01-01
 # Section 5
@@ -85,9 +85,9 @@ examiner_remarks:
   mission_description: Delivering packages to all points in the universe.
   discrepancies:
     Fry, we need to talk about your performance. Again. Your delivery times are consistently late - and I mean *consistently*. Every single package arrives after the guaranteed delivery window, which means I have to spend half my day apologizing to angry customers while you stand there with that vacant expression asking if we can stop for pizza. This isn't a joyride through the galaxy. This is a business, and you're single-handedly destroying our reputation one tardy delivery at a time.
-    
+
     And while we're on the subject, you smell like burning hair. I don't know what you're doing in your spare time, and honestly I don't want to know, but it's affecting the whole crew. Bender actually complained about a smell, Fry. *Bender*. A robot who stores week-old sandwiches in his chest cavity said you're making the ship uninhabitable. Whatever you're burning, stop burning it. Or at least shower afterwards.
-    
+
     Look, I'm sure you did your best, which is to say you failed miserably. I've tried to be patient. I've tried to work with your... limitations. But at this point, maybe you should stick to the one thing you're good at - nothing. Actually, scratch that. You're not even good at nothing. You somehow manage to make nothing worse just by being near it.
   addi_training: You need to learn how to not be you
   addi_comments: None
