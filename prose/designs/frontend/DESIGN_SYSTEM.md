@@ -516,16 +516,11 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 
 #### Theme Switching Mechanism
 
-**Library**: Use `mode-watcher` library (already in dependencies) for theme state management.
-
 **Theme Store** (`src/lib/stores/theme.svelte.ts`):
 
 - Export theme utilities: current mode, toggle function, explicit setters for light/dark/system
-- Integrates with mode-watcher's API for consistent behavior
 
 **Root Layout Integration**: Initialize ModeWatcher component in root layout to enable theme detection and switching throughout the application.
-
-**Persistence**: Theme preference automatically persisted to localStorage by mode-watcher.
 
 #### Component Migration Strategy
 
@@ -610,7 +605,6 @@ This design supports a phased implementation approach (detailed in the plan docu
 
 - [Tailwind CSS 4.0 Theme Configuration](https://tailwindcss.com/docs/theme)
 - [shadcn-svelte Theming](https://www.shadcn-svelte.com/docs/theming)
-- [mode-watcher Documentation](https://mode-watcher.svecosystem.com/)
 - [CodeMirror Theming Guide](https://codemirror.net/examples/styling/)
 - [WCAG 2.1 Color Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
 

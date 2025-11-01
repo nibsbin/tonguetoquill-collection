@@ -4,7 +4,7 @@
 	import { toast } from 'svelte-sonner';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
-	import { MarkdownPreview } from '$lib/components/Preview';
+	import { Preview } from '$lib/components/Preview';
 
 	interface Props {
 		documentId: string;
@@ -25,6 +25,7 @@
 	let previousDocumentId = $state<string | null>(null);
 	let mobileView = $state<'editor' | 'preview'>('editor');
 	let isMobile = $state(false);
+	let selectedQuill = $state('usaf_memo');
 
 	// Track dirty state (unsaved changes)
 	let isDirty = $derived(content !== initialContent);
@@ -77,6 +78,11 @@
 		}
 	});
 
+	// Save selected quill to localStorage when it changes
+	$effect(() => {
+		localStorage.setItem('preview-quill', selectedQuill);
+	});
+
 	function handleFormat(type: string) {
 		// Forward formatting command to editor
 		if (editorRef && typeof editorRef.handleFormat === 'function') {
@@ -125,6 +131,12 @@
 		const savedLineNumbers = localStorage.getItem('line-numbers');
 		if (savedLineNumbers !== null) {
 			showLineNumbers = savedLineNumbers === 'true';
+		}
+
+		// Load selected quill template from localStorage
+		const savedQuill = localStorage.getItem('preview-quill');
+		if (savedQuill !== null) {
+			selectedQuill = savedQuill;
 		}
 
 		// Check if mobile
@@ -214,7 +226,7 @@
 						: 'hidden'
 					: 'hidden lg:block'}"
 			>
-				<MarkdownPreview markdown={debouncedContent} />
+				<Preview markdown={debouncedContent} quillName={selectedQuill} />
 			</div>
 		</div>
 	</div>
