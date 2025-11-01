@@ -32,8 +32,7 @@ describe('Preview', () => {
 
 		render(Preview, {
 			props: {
-				markdown: '# Test',
-				quillName: 'usaf_memo'
+				markdown: '# Test'
 			}
 		});
 
@@ -49,8 +48,7 @@ describe('Preview', () => {
 
 		render(Preview, {
 			props: {
-				markdown: '# Test',
-				quillName: 'usaf_memo'
+				markdown: '# Test'
 			}
 		});
 
@@ -68,8 +66,7 @@ describe('Preview', () => {
 
 		render(Preview, {
 			props: {
-				markdown: '# Test',
-				quillName: 'usaf_memo'
+				markdown: '# Test'
 			}
 		});
 
@@ -80,20 +77,19 @@ describe('Preview', () => {
 		});
 	});
 
-	it('should display error when quill not found', async () => {
+	it('should display error when backend not found', async () => {
 		vi.mocked(quillmarkService.renderForPreview).mockRejectedValue(
-			new QuillmarkError('quill_not_found', 'Quill not found')
+			new QuillmarkError('render_error', 'No suitable backend found')
 		);
 
 		render(Preview, {
 			props: {
-				markdown: '# Test',
-				quillName: 'invalid_quill'
+				markdown: '# Test'
 			}
 		});
 
 		await waitFor(() => {
-			expect(screen.getByText('Invalid template selected.')).toBeDefined();
+			expect(screen.getByText('Failed to render preview. Check document syntax.')).toBeDefined();
 		});
 	});
 
@@ -103,8 +99,7 @@ describe('Preview', () => {
 
 		render(Preview, {
 			props: {
-				markdown: '# Test',
-				quillName: 'usaf_memo'
+				markdown: '# Test'
 			}
 		});
 
@@ -120,8 +115,7 @@ describe('Preview', () => {
 
 		render(Preview, {
 			props: {
-				markdown: '# Test',
-				quillName: 'usaf_memo'
+				markdown: '# Test'
 			}
 		});
 
@@ -138,8 +132,7 @@ describe('Preview', () => {
 
 		const { component } = render(Preview, {
 			props: {
-				markdown: '# Test 1',
-				quillName: 'usaf_memo'
+				markdown: '# Test 1'
 			}
 		});
 
@@ -154,39 +147,6 @@ describe('Preview', () => {
 		// Should only render once after debounce period
 		await waitFor(() => {
 			expect(renderSpy).toHaveBeenCalledTimes(1);
-		});
-	});
-
-	it('should cache render results', async () => {
-		const renderSpy = vi.mocked(quillmarkService.renderForPreview).mockResolvedValue({
-			format: 'svg',
-			data: '<svg>Test</svg>'
-		});
-
-		const { component } = render(Preview, {
-			props: {
-				markdown: '# Test',
-				quillName: 'usaf_memo'
-			}
-		});
-
-		await waitFor(() => {
-			expect(renderSpy).toHaveBeenCalledTimes(1);
-		});
-
-		// Change to different markdown
-		await component.$set({ markdown: '# Different' });
-
-		await waitFor(() => {
-			expect(renderSpy).toHaveBeenCalledTimes(2);
-		});
-
-		// Change back to original markdown
-		await component.$set({ markdown: '# Test' });
-
-		await waitFor(() => {
-			// Should still be 2 calls because result was cached
-			expect(renderSpy).toHaveBeenCalledTimes(2);
 		});
 	});
 });

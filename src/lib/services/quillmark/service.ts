@@ -115,21 +115,18 @@ class QuillmarkServiceImpl implements QuillmarkService {
 	}
 
 	/**
-	 * Render markdown for preview with auto-detected format
-	 * Does not specify output format - allows backend to choose optimal format
+	 * Render markdown for preview with auto-detected format and backend
+	 * Does not specify quill or output format - allows engine to auto-detect
 	 */
 	async renderForPreview(
-		markdown: string,
-		quillName: string
+		markdown: string
 	): Promise<{ format: 'pdf' | 'svg'; data: Blob | string }> {
 		this.validateInitialized();
-		this.validateQuillExists(quillName);
 
 		try {
-			// Render without format - let backend choose optimal format
+			// Render without quill name or format - let engine auto-detect based on content
 			const result = exporters.render(this.engine!, markdown, {
-				quillName: quillName
-				// No format specified - backend chooses based on capabilities
+				// No quillName or format specified - engine auto-detects backend
 			});
 
 			// Return data based on actual output format
@@ -143,12 +140,13 @@ class QuillmarkServiceImpl implements QuillmarkService {
 				const decoder = new TextDecoder('utf-8');
 				return {
 					format: 'svg',
-					data: decoder.decode(result.artifacts[0].bytes)
+					data: decoder.decode(exporters.toArrayBuffer(result.artifacts[0]))
 				};
 			} else {
 				throw new Error(`Unsupported output format: ${result.outputFormat}`);
 			}
 		} catch (error) {
+			console.log('Error during renderForPreview:', error);
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
 		}

@@ -9,7 +9,7 @@ This document describes the integration of live Quillmark rendering into the Pre
 
 ## Overview
 
-The Preview component will be enhanced to support live Quillmark rendering. The preview will display professional PDF/SVG output using Quill templates, providing a true WYSIWYG experience for document creation.
+The Preview component will be enhanced to support live Quillmark rendering. The preview will display professional PDF/SVG output with **automatic backend detection** based on document content, providing a true WYSIWYG experience for document creation.
 
 ## Architecture
 
@@ -17,7 +17,6 @@ The Preview component will be enhanced to support live Quillmark rendering. The 
 
 **Preview Component:**
 
-- Quill template selection
 - Display rendered output (SVG or PDF embed)
 - Handle loading/error states
 - Debounce rendering to avoid excessive updates
@@ -25,6 +24,7 @@ The Preview component will be enhanced to support live Quillmark rendering. The 
 **QuillmarkService:**
 
 - Render markdown using Quillmark engine
+- **Auto-detect appropriate backend from document content**
 - Auto-detect optimal preview format (SVG or PDF)
 - Return format + data for flexible display
 
@@ -34,12 +34,11 @@ The Preview component will be enhanced to support live Quillmark rendering. The 
 ┌──────────────────────────────────────────┐
 │         Preview                          │
 │                                          │
-│  Template: [usaf_memo ▼]                │
-│                                          │
 │  ┌────────────────────────────────────┐ │
 │  │                                    │ │
 │  │   Rendered Content                 │ │
 │  │   (SVG / PDF)                      │ │
+│  │   Auto-detected backend            │ │
 │  │                                    │ │
 │  └────────────────────────────────────┘ │
 └──────────────────────────────────────────┘
@@ -48,9 +47,12 @@ The Preview component will be enhanced to support live Quillmark rendering. The 
 ## Rendering Flow
 
 ```
-markdown + quillName
+markdown
   │
-  ├─> quillmarkService.renderForPreview(markdown, quillName)
+  ├─> quillmarkService.renderForPreview(markdown)
+  │   │
+  │   ├─> Engine auto-detects backend from content
+  │   └─> Backend auto-selects format (SVG/PDF)
   │
   ├─> Check result.format
   │   ├─> if 'svg': Display inline SVG
@@ -59,13 +61,15 @@ markdown + quillName
   └─> Update preview element
 ```
 
-### Auto-Format Detection
+### Auto-Detection
 
-The service calls `exporters.render(engine, markdown, { quill: quillName })` **without** specifying a format. The Quillmark backend automatically chooses:
+The service calls `exporters.render(engine, markdown, {})` **without** specifying a quill name or format. The Quillmark engine:
 
-- **Typst backend**: Defaults to SVG (optimal for inline preview)
-- **PDF backend**: Defaults to PDF (only supported format)
-- **Future backends**: May support other formats
+1. **Auto-detects backend** based on document content markers
+2. **Auto-selects format** based on backend capabilities:
+   - **Typst backend**: Defaults to SVG (optimal for inline preview)
+   - **PDF backend**: Defaults to PDF (only supported format)
+   - **Future backends**: May support other formats
 
 The service returns `{ format, data }` where:
 
@@ -80,9 +84,6 @@ The service returns `{ format, data }` where:
 interface PreviewProps {
 	/** Markdown content to preview */
 	markdown: string;
-
-	/** Quill template name */
-	quillName: string;
 }
 ```
 
@@ -90,7 +91,6 @@ interface PreviewProps {
 
 ```typescript
 interface PreviewState {
-	quillName: string;
 	loading: boolean;
 	error: string | null;
 	renderFormat: 'pdf' | 'svg' | null;
@@ -157,25 +157,6 @@ const debouncedRender = debounce(async () => {
 }, 50);
 ```
 
-### Caching
-
-Cache rendered output to avoid re-rendering identical content:
-
-```typescript
-const renderCache = new Map<string, RenderResult>();
-const cacheKey = `${quillName}:${markdown.slice(0, 100)}:${markdown.length}`;
-
-if (renderCache.has(cacheKey)) {
-	return renderCache.get(cacheKey);
-}
-```
-
-**Cache Invalidation:**
-
-- Clear on quill change
-- Clear on markdown change (detected via cache key)
-- LRU eviction if cache grows too large (e.g., >10 entries)
-
 ### Loading States
 
 Show loading indicator during render:
@@ -198,16 +179,13 @@ Show loading indicator during render:
 
 ```typescript
 try {
-	const result = await quillmarkService.renderForPreview(markdown, quillName);
+	const result = await quillmarkService.renderForPreview(markdown);
 	// Display result
 } catch (error) {
 	if (error instanceof QuillmarkError) {
 		switch (error.code) {
 			case 'not_initialized':
 				showError('Preview unavailable. Please refresh.');
-				break;
-			case 'quill_not_found':
-				showError('Invalid template selected.');
 				break;
 			case 'render_error':
 				showError('Failed to render preview. Check document syntax.');

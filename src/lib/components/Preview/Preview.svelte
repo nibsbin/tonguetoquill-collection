@@ -1,17 +1,14 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { SvelteMap } from 'svelte/reactivity';
 	import { quillmarkService } from '$lib/services/quillmark';
 	import { QuillmarkError } from '$lib/services/quillmark/types';
 
 	interface Props {
 		/** Markdown content to preview */
 		markdown: string;
-		/** Quill template name */
-		quillName: string;
 	}
 
-	let { markdown, quillName }: Props = $props();
+	let { markdown }: Props = $props();
 
 	// State
 	let loading = $state(false);
@@ -23,34 +20,11 @@
 	// Debounce timer
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-	// Cache for rendered content
-	const renderCache = new SvelteMap<string, { format: 'pdf' | 'svg'; data: Blob | string }>();
-	const MAX_CACHE_SIZE = 10;
-
-	/**
-	 * Generate cache key from markdown and quillName
-	 */
-	function getCacheKey(md: string, quill: string): string {
-		return `${quill}:${md.slice(0, 100)}:${md.length}`;
-	}
-
-	/**
-	 * Evict oldest cache entries if cache is too large
-	 */
-	function evictCache(): void {
-		if (renderCache.size >= MAX_CACHE_SIZE) {
-			const firstKey = renderCache.keys().next().value;
-			if (firstKey) {
-				renderCache.delete(firstKey);
-			}
-		}
-	}
-
 	/**
 	 * Render markdown using Quillmark service
 	 */
 	async function renderPreview(): Promise<void> {
-		if (!markdown || !quillName) {
+		if (!markdown) {
 			renderFormat = null;
 			renderData = null;
 			return;
@@ -60,23 +34,8 @@
 		error = null;
 
 		try {
-			// Check cache first
-			const cacheKey = getCacheKey(markdown, quillName);
-			const cached = renderCache.get(cacheKey);
-
-			if (cached) {
-				renderFormat = cached.format;
-				renderData = cached.data;
-				loading = false;
-				return;
-			}
-
-			// Render with Quillmark
-			const result = await quillmarkService.renderForPreview(markdown, quillName);
-
-			// Cache result
-			evictCache();
-			renderCache.set(cacheKey, { format: result.format, data: result.data });
+			// Render with Quillmark - engine auto-detects backend from content
+			const result = await quillmarkService.renderForPreview(markdown);
 
 			renderFormat = result.format;
 			renderData = result.data;
@@ -85,9 +44,6 @@
 				switch (err.code) {
 					case 'not_initialized':
 						error = 'Preview unavailable. Please refresh.';
-						break;
-					case 'quill_not_found':
-						error = 'Invalid template selected.';
 						break;
 					case 'render_error':
 						error = 'Failed to render preview. Check document syntax.';
@@ -151,12 +107,12 @@
 	});
 
 	/**
-	 * Trigger render when markdown or quillName changes
+	 * Trigger render when markdown changes
 	 */
 	$effect(() => {
-		// Trigger debounced render when markdown or quillName changes
+		// Trigger debounced render when markdown changes
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		(markdown, quillName);
+		markdown;
 		debouncedRender();
 	});
 
@@ -176,9 +132,6 @@
 		if (pdfObjectUrl) {
 			URL.revokeObjectURL(pdfObjectUrl);
 		}
-
-		// Clear cache
-		renderCache.clear();
 	});
 </script>
 
