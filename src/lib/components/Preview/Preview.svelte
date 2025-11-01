@@ -2,7 +2,6 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
 	import { QuillmarkError, type RenderResult } from '$lib/services/quillmark/types';
-	import Separator from '$lib/components/ui/separator.svelte';
 
 	interface Props {
 		/** Markdown content to preview */
@@ -144,7 +143,7 @@
 </script>
 
 <div
-	class="h-full overflow-auto bg-white"
+	class="h-full overflow-auto bg-background"
 	role="region"
 	aria-label="Document preview"
 	aria-live="polite"
@@ -153,17 +152,15 @@
 	{#if loading}
 		<div class="flex h-full items-center justify-center">
 			<div class="text-center">
-				<div
-					class="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"
-				></div>
-				<p class="text-gray-600">Rendering preview...</p>
+				<div class="preview-loading-spinner mb-4"></div>
+				<p class="text-muted-foreground">Rendering preview...</p>
 			</div>
 		</div>
 	{:else if error}
 		<div class="flex h-full items-center justify-center">
-			<div class="max-w-md rounded-lg bg-red-50 p-6 text-center">
+			<div class="max-w-md rounded-lg bg-red-50 p-6 text-center dark:bg-red-950">
 				<svg
-					class="mx-auto mb-4 h-12 w-12 text-red-500"
+					class="mx-auto mb-4 h-12 w-12 text-destructive dark:text-red-400"
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke="currentColor"
@@ -175,20 +172,17 @@
 						d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
 					/>
 				</svg>
-				<h3 class="mb-2 text-lg font-semibold text-red-800">Preview Error</h3>
-				<p class="text-red-700">{error}</p>
+				<h3 class="mb-2 text-lg font-semibold text-red-800 dark:text-red-300">Preview Error</h3>
+				<p class="text-red-700 dark:text-red-300">{error}</p>
 			</div>
 		</div>
 	{:else if renderResult?.outputFormat === 'svg' && svgPages.length > 0}
-		<div class="svg-preview-container">
+		<div class="preview-svg-container">
 			{#each svgPages as page, index (index)}
-				<div class="svg-page">
+				<div class="preview-svg-page">
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 					{@html page}
 				</div>
-				{#if index < svgPages.length - 1}
-					<Separator class="my-6" />
-				{/if}
 			{/each}
 		</div>
 	{:else if renderResult?.outputFormat === 'pdf' && pdfObjectUrl}
@@ -200,21 +194,22 @@
 		></iframe>
 	{:else}
 		<div class="flex h-full items-center justify-center">
-			<p class="text-gray-500">No preview available</p>
+			<p class="text-muted-foreground">No preview available</p>
 		</div>
 	{/if}
 </div>
 
 <style>
-	.svg-preview-container {
+	.preview-svg-container {
 		padding: 1.5rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		gap: 0.75rem;
 		min-height: 100%;
 	}
 
-	.svg-page {
+	.preview-svg-page {
 		display: flex;
 		justify-content: center;
 		align-items: flex-start;
@@ -222,9 +217,33 @@
 		max-width: 100%;
 	}
 
-	.svg-page :global(svg) {
+	.preview-svg-page :global(svg) {
 		max-width: 100%;
 		height: auto;
-		box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+		box-shadow:
+			0 1px 3px 0 rgb(0 0 0 / 0.1),
+			0 1px 2px -1px rgb(0 0 0 / 0.1);
+	}
+
+	:global(.dark) .preview-svg-page :global(svg) {
+		box-shadow:
+			0 1px 3px 0 rgb(0 0 0 / 0.3),
+			0 1px 2px -1px rgb(0 0 0 / 0.3);
+	}
+
+	.preview-loading-spinner {
+		display: inline-block;
+		width: 2rem;
+		height: 2rem;
+		border: 4px solid var(--color-primary);
+		border-right-color: transparent;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>
