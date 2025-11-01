@@ -1,6 +1,6 @@
 # Quillmark Preview Integration
 
-This document describes the integration of live Quillmark rendering into the MarkdownPreview component.
+This document describes the integration of live Quillmark rendering into the Preview component.
 
 > **Related**:
 >
@@ -9,13 +9,13 @@ This document describes the integration of live Quillmark rendering into the Mar
 
 ## Overview
 
-The MarkdownPreview component will be enhanced to support live Quillmark rendering. The preview will display professional PDF/SVG output using Quill templates, providing a true WYSIWYG experience for document creation.
+The Preview component will be enhanced to support live Quillmark rendering. The preview will display professional PDF/SVG output using Quill templates, providing a true WYSIWYG experience for document creation.
 
 ## Architecture
 
 ### Component Responsibilities
 
-**MarkdownPreview Component:**
+**Preview Component:**
 
 - Quill template selection
 - Display rendered output (SVG or PDF embed)
@@ -32,7 +32,7 @@ The MarkdownPreview component will be enhanced to support live Quillmark renderi
 
 ```
 ┌──────────────────────────────────────────┐
-│         MarkdownPreview                  │
+│         Preview                          │
 │                                          │
 │  Template: [usaf_memo ▼]                │
 │                                          │
@@ -77,7 +77,7 @@ The service returns `{ format, data }` where:
 ### Props
 
 ```typescript
-interface MarkdownPreviewProps {
+interface PreviewProps {
 	/** Markdown content to preview */
 	markdown: string;
 
@@ -282,11 +282,11 @@ onMount(async () => {
 
 ### 2. Editor Integration
 
-MarkdownPreview receives markdown from the editor:
+Preview receives markdown from the editor:
 
 ```svelte
 <MarkdownEditor {markdown} on:change={(e) => (markdown = e.detail)} />
-<MarkdownPreview {markdown} quillName="usaf_memo" />
+<Preview {markdown} quillName="usaf_memo" />
 ```
 
 ### 3. TopMenu Integration
@@ -407,8 +407,8 @@ Native `<embed>` element provides:
 
 - [Quillmark Service Design](./SERVICE.md)
 - [Integration Architecture](./INTEGRATION.md)
-- [MarkdownPreview Component](../frontend/UI_COMPONENTS.md)
-- [Preview Component Current Implementation](../../../src/lib/components/Preview/MarkdownPreview.svelte)
+- [Preview Component](../frontend/UI_COMPONENTS.md)
+- [Preview Component Current Implementation](../../../src/lib/components/Preview/Preview.svelte)
 - [@quillmark-test/web Exporters API](https://www.npmjs.com/package/@quillmark-test/web)
 
 ---
