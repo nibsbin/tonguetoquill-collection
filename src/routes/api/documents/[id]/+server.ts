@@ -6,7 +6,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { documentService } from '$lib/services/documents';
+import { documentService } from '$lib/server/services/documents';
 import { requireAuth } from '$lib/utils/auth';
 import { handleDocumentError } from '$lib/utils/api';
 
