@@ -1,26 +1,22 @@
 {
-  "name": "TongueToQuill Web (Node 22)",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:0-22",
-  "workspaceFolder": "/workspace",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-  "postCreateCommand": "npm ci",
-  "forwardPorts": [5173],
-  "customizations": {
-    "vscode": {
-      "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash",
-        "terminal.integrated.profiles.linux": {
-          "bash": {
-            "path": "/bin/bash"
-          }
-        }
-      },
-      "extensions": [
-        "svelte.svelte-vscode",
-        "esbenp.prettier-vscode",
-        "dbaeumer.vscode-eslint"
-      ]
-    }
-  },
-  "remoteUser": "vscode"
+	"name": "TongueToQuill Web (Node 22)",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:0-22",
+	"workspaceFolder": "/workspace",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+	"postCreateCommand": "npm ci",
+	"forwardPorts": [5173],
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "/bin/bash"
+					}
+				}
+			},
+			"extensions": ["svelte.svelte-vscode", "esbenp.prettier-vscode", "dbaeumer.vscode-eslint"]
+		}
+	},
+	"remoteUser": "vscode"
 }
