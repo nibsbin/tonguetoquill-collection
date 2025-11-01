@@ -36,6 +36,44 @@
 		onDocumentInfo
 	}: TopMenuProps = $props();
 
+	import { documentStore } from '$lib/stores/documents.svelte';
+	let isEditing = false;
+	let title = fileName;
+	let inputEl: HTMLInputElement | null = null;
+
+	$: if (!isEditing) {
+		// keep local title in sync when not editing
+		title = fileName;
+	}
+
+	function startEditing() {
+		isEditing = true;
+		// focus will be set via on:use or after DOM update
+		setTimeout(() => inputEl?.select(), 0);
+	}
+
+	function cancelEditing() {
+		isEditing = false;
+		title = fileName;
+	}
+
+	function commitEditing() {
+		isEditing = false;
+		const newName = (title || '').trim() || 'Untitled Document';
+		if (documentStore.activeDocumentId) {
+			documentStore.updateDocument(documentStore.activeDocumentId, { name: newName });
+		}
+	}
+
+	function onKeydown(event: KeyboardEvent) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			commitEditing();
+		} else if (event.key === 'Escape') {
+			cancelEditing();
+		}
+	}
+
 	function handleImport() {
 		// TODO: Open file picker
 		console.log('Import document');
@@ -72,7 +110,28 @@
 	<div class="flex items-center gap-2" style="height: 3.1rem;">
 		<!-- Logo to the left of document title (decorative) -->
 		<img src="/logo.svg" alt="Tonguetoquill logo" aria-hidden="true" class="h-8 w-auto mr-3 shrink-0" />
-		<span class="text-foreground/80">{fileName}</span>
+		{#if isEditing}
+			<input
+				bind:this={inputEl}
+				class="bg-transparent text-foreground/80 focus:outline-none text-lg font-medium"
+				value={title}
+				on:input={(e) => (title = (e.target as HTMLInputElement).value)}
+				on:blur={commitEditing}
+				on:keydown={onKeydown}
+				aria-label="Edit document title"
+			/>
+		{:else}
+			<span
+				class="text-foreground/80 cursor-text"
+				role="button"
+				tabindex="0"
+				on:click={startEditing}
+				on:keydown={(e) => e.key === 'Enter' && startEditing()}
+				title="Click to edit document title"
+			>
+				{title}
+			</span>
+		{/if}
 
 		<!-- Save Status Indicator -->
 		{#if saveStatus === 'saving'}
