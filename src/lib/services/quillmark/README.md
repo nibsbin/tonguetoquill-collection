@@ -61,31 +61,27 @@ try {
 }
 ```
 
-### Render to SVG
-
-```typescript
-try {
-	const svgString = await quillmarkService.renderToSVG(markdown, 'taro');
-	// Display SVG in preview pane
-	previewElement.innerHTML = svgString;
-} catch (error) {
-	console.error('Render failed:', error);
-}
-```
-
 ### Render for Preview (Auto-Format)
 
 ```typescript
-try {
-	const { format, data } = await quillmarkService.renderForPreview(markdown, 'usaf_memo');
+import { quillmarkService, resultToSVGPages, resultToBlob } from '$lib/services/quillmark';
 
-	if (format === 'pdf') {
+try {
+	const result = await quillmarkService.renderForPreview(markdown);
+
+	if (result.outputFormat === 'pdf') {
 		// Display PDF blob
-		const url = URL.createObjectURL(data as Blob);
+		const blob = resultToBlob(result);
+		const url = URL.createObjectURL(blob);
 		embedElement.src = url;
-	} else {
-		// Display SVG string
-		previewElement.innerHTML = data as string;
+	} else if (result.outputFormat === 'svg') {
+		// Display SVG pages (supports multi-page)
+		const pages = resultToSVGPages(result);
+		pages.forEach((page) => {
+			const pageDiv = document.createElement('div');
+			pageDiv.innerHTML = page;
+			previewElement.appendChild(pageDiv);
+		});
 	}
 } catch (error) {
 	console.error('Preview render failed:', error);
@@ -178,34 +174,26 @@ Render markdown content to PDF blob.
 
 **Throws:** `QuillmarkError` if not initialized, Quill not found, or render fails.
 
-### `renderToSVG(markdown: string, quillName: string): Promise<string>`
+### `renderForPreview(markdown: string): Promise<RenderResult>`
 
-Render markdown content to SVG string.
-
-**Parameters:**
-
-- `markdown` - Markdown content with frontmatter
-- `quillName` - Name of Quill template (e.g., 'taro')
-
-**Returns:** Promise resolving to SVG string.
-
-**Throws:** `QuillmarkError` if not initialized, Quill not found, or render fails.
-
-### `renderForPreview(markdown: string, quillName: string): Promise<{ format: 'pdf' | 'svg'; data: Blob | string }>`
-
-Render markdown for preview with auto-detected output format.
+Render markdown for preview with auto-detected output format and backend.
 
 **Parameters:**
 
 - `markdown` - Markdown content with frontmatter
-- `quillName` - Name of Quill template (e.g., 'usaf_memo')
 
-**Returns:** Promise resolving to object with:
+**Returns:** Promise resolving to `RenderResult` from Quillmark engine containing:
 
-- `format` - Detected output format ('pdf' or 'svg')
-- `data` - `Blob` for PDF or `string` for SVG
+- `outputFormat` - Detected output format ('pdf' or 'svg')
+- `artifacts` - Array of artifacts (one per page for SVG)
 
-**Throws:** `QuillmarkError` if not initialized, Quill not found, or render fails.
+**Throws:** `QuillmarkError` if not initialized or render fails.
+
+**Helper Functions:**
+
+- `resultToBlob(result)` - Convert RenderResult to Blob (for PDF)
+- `resultToSVGPages(result)` - Get array of SVG strings (one per page)
+- `artifactToSVGString(artifact)` - Decode single artifact to SVG string
 
 **Note:** This method does not specify an output format, allowing the backend to choose the optimal format for preview (typically SVG for Typst, PDF for PDF-based backends).
 

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { quillmarkService } from '$lib/services/quillmark';
-	import { QuillmarkError } from '$lib/services/quillmark/types';
+	import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
+	import { QuillmarkError, type RenderResult } from '$lib/services/quillmark/types';
+	import Separator from '$lib/components/ui/separator.svelte';
 
 	interface Props {
 		/** Markdown content to preview */
@@ -13,9 +14,9 @@
 	// State
 	let loading = $state(false);
 	let error = $state<string | null>(null);
-	let renderFormat = $state<'pdf' | 'svg' | null>(null);
-	let renderData = $state<Blob | string | null>(null);
+	let renderResult = $state<RenderResult | null>(null);
 	let pdfObjectUrl = $state<string | null>(null);
+	let svgPages = $state<string[]>([]);
 
 	// Debounce timer
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -25,8 +26,8 @@
 	 */
 	async function renderPreview(): Promise<void> {
 		if (!markdown) {
-			renderFormat = null;
-			renderData = null;
+			renderResult = null;
+			svgPages = [];
 			return;
 		}
 
@@ -36,9 +37,14 @@
 		try {
 			// Render with Quillmark - engine auto-detects backend from content
 			const result = await quillmarkService.renderForPreview(markdown);
+			renderResult = result;
 
-			renderFormat = result.format;
-			renderData = result.data;
+			// Process SVG pages if applicable
+			if (result.outputFormat === 'svg') {
+				svgPages = resultToSVGPages(result);
+			} else {
+				svgPages = [];
+			}
 		} catch (err) {
 			if (err instanceof QuillmarkError) {
 				switch (err.code) {
@@ -91,7 +97,7 @@
 	}
 
 	/**
-	 * Create PDF object URL when render data changes
+	 * Create PDF object URL when render result changes
 	 */
 	$effect(() => {
 		// Clean up previous object URL
@@ -101,8 +107,9 @@
 		}
 
 		// Create new object URL for PDF
-		if (renderFormat === 'pdf' && renderData instanceof Blob) {
-			pdfObjectUrl = URL.createObjectURL(renderData);
+		if (renderResult?.outputFormat === 'pdf') {
+			const blob = resultToBlob(renderResult);
+			pdfObjectUrl = URL.createObjectURL(blob);
 		}
 	});
 
@@ -171,12 +178,19 @@
 				<p class="text-red-700">{error}</p>
 			</div>
 		</div>
-	{:else if renderFormat === 'svg' && typeof renderData === 'string'}
-		<div class="svg-preview p-6">
-			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-			{@html renderData}
+	{:else if renderResult?.outputFormat === 'svg' && svgPages.length > 0}
+		<div class="svg-preview-container">
+			{#each svgPages as page, index (index)}
+				<div class="svg-page">
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+					{@html page}
+				</div>
+				{#if index < svgPages.length - 1}
+					<Separator class="my-6" />
+				{/if}
+			{/each}
 		</div>
-	{:else if renderFormat === 'pdf' && pdfObjectUrl}
+	{:else if renderResult?.outputFormat === 'pdf' && pdfObjectUrl}
 		<embed
 			src={pdfObjectUrl}
 			type="application/pdf"
@@ -191,15 +205,25 @@
 </div>
 
 <style>
-	.svg-preview {
+	.svg-preview-container {
+		padding: 1.5rem;
 		display: flex;
-		justify-content: center;
-		align-items: flex-start;
+		flex-direction: column;
+		align-items: center;
 		min-height: 100%;
 	}
 
-	.svg-preview :global(svg) {
+	.svg-page {
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.svg-page :global(svg) {
 		max-width: 100%;
 		height: auto;
+		box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
 	}
 </style>

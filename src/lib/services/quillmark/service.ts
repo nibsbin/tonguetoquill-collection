@@ -5,7 +5,14 @@
  */
 
 import { Quillmark, loaders, exporters } from '@quillmark-test/web';
-import type { QuillmarkService, QuillManifest, QuillMetadata, RenderFormat } from './types';
+import type { Artifact } from '@quillmark-test/web';
+import type {
+	QuillmarkService,
+	QuillManifest,
+	QuillMetadata,
+	RenderFormat,
+	RenderResult
+} from './types';
 import { QuillmarkError } from './types';
 
 /**
@@ -93,34 +100,10 @@ class QuillmarkServiceImpl implements QuillmarkService {
 	}
 
 	/**
-	 * Render markdown to SVG
-	 */
-	async renderToSVG(markdown: string, quillName: string): Promise<string> {
-		this.validateInitialized();
-		this.validateQuillExists(quillName);
-
-		try {
-			const result = exporters.render(this.engine!, markdown, {
-				quillName: quillName,
-				format: 'svg'
-			});
-
-			// Decode SVG from Uint8Array to string
-			const decoder = new TextDecoder('utf-8');
-			return decoder.decode(result.artifacts[0].bytes);
-		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('render_error', `Failed to render SVG: ${message}`);
-		}
-	}
-
-	/**
 	 * Render markdown for preview with auto-detected format and backend
 	 * Does not specify quill or output format - allows engine to auto-detect
 	 */
-	async renderForPreview(
-		markdown: string
-	): Promise<{ format: 'pdf' | 'svg'; data: Blob | string }> {
+	async renderForPreview(markdown: string): Promise<RenderResult> {
 		this.validateInitialized();
 
 		try {
@@ -129,22 +112,7 @@ class QuillmarkServiceImpl implements QuillmarkService {
 				// No quillName or format specified - engine auto-detects backend
 			});
 
-			// Return data based on actual output format
-			if (result.outputFormat === 'pdf') {
-				return {
-					format: 'pdf',
-					data: exporters.toBlob(result)
-				};
-			} else if (result.outputFormat === 'svg') {
-				// Decode SVG from Uint8Array to string
-				const decoder = new TextDecoder('utf-8');
-				return {
-					format: 'svg',
-					data: decoder.decode(exporters.toArrayBuffer(result.artifacts[0]))
-				};
-			} else {
-				throw new Error(`Unsupported output format: ${result.outputFormat}`);
-			}
+			return result;
 		} catch (error) {
 			console.log('Error during renderForPreview:', error);
 			const message = error instanceof Error ? error.message : 'Unknown error';
@@ -262,3 +230,39 @@ class QuillmarkServiceImpl implements QuillmarkService {
  * Export singleton instance
  */
 export const quillmarkService = QuillmarkServiceImpl.getInstance();
+
+/**
+ * Helper Functions for RenderResult Decoding
+ */
+
+/**
+ * Convert RenderResult to Blob (for PDF format)
+ * @param result - RenderResult from Quillmark engine
+ * @returns Blob containing the rendered output
+ */
+export function resultToBlob(result: RenderResult): Blob {
+	return exporters.toBlob(result);
+}
+
+/**
+ * Decode SVG artifact to string
+ * @param artifact - Artifact containing SVG bytes
+ * @returns SVG as string
+ */
+export function artifactToSVGString(artifact: Artifact): string {
+	const decoder = new TextDecoder('utf-8');
+	const arrayBuffer = exporters.toArrayBuffer(artifact);
+	return decoder.decode(arrayBuffer);
+}
+
+/**
+ * Get all SVG pages from RenderResult
+ * @param result - RenderResult from Quillmark engine
+ * @returns Array of SVG strings, one per page
+ */
+export function resultToSVGPages(result: RenderResult): string[] {
+	if (result.outputFormat !== 'svg') {
+		throw new Error('RenderResult is not SVG format');
+	}
+	return result.artifacts.map(artifactToSVGString);
+}

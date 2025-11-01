@@ -41,9 +41,10 @@ describe('Preview', () => {
 
 	it('should render SVG preview', async () => {
 		const svgContent = '<svg><text>Test SVG</text></svg>';
+		const encoder = new TextEncoder();
 		vi.mocked(quillmarkService.renderForPreview).mockResolvedValue({
-			format: 'svg',
-			data: svgContent
+			outputFormat: 'svg',
+			artifacts: [{ bytes: encoder.encode(svgContent) }]
 		});
 
 		render(Preview, {
@@ -58,10 +59,10 @@ describe('Preview', () => {
 	});
 
 	it('should render PDF preview', async () => {
-		const pdfBlob = new Blob(['PDF content'], { type: 'application/pdf' });
+		const encoder = new TextEncoder();
 		vi.mocked(quillmarkService.renderForPreview).mockResolvedValue({
-			format: 'pdf',
-			data: pdfBlob
+			outputFormat: 'pdf',
+			artifacts: [{ bytes: encoder.encode('PDF content'), mimeType: 'application/pdf' }]
 		});
 
 		render(Preview, {
@@ -125,9 +126,10 @@ describe('Preview', () => {
 	});
 
 	it('should debounce render calls', async () => {
+		const encoder = new TextEncoder();
 		const renderSpy = vi.mocked(quillmarkService.renderForPreview).mockResolvedValue({
-			format: 'svg',
-			data: '<svg>Test</svg>'
+			outputFormat: 'svg',
+			artifacts: [{ bytes: encoder.encode('<svg>Test</svg>') }]
 		});
 
 		const { component } = render(Preview, {

@@ -157,13 +157,6 @@ describe('QuillmarkService', () => {
 			expect(blob).toBeInstanceOf(Blob);
 		});
 
-		it('should render to SVG', async () => {
-			const markdown = '# Test\n\nContent';
-			const svg = await quillmarkService.renderToSVG(markdown, 'taro');
-
-			expect(typeof svg).toBe('string');
-		});
-
 		it('should throw error for non-existent quill', async () => {
 			const markdown = '# Test';
 
@@ -196,10 +189,10 @@ describe('QuillmarkService', () => {
 			vi.mocked(exporters.render).mockReturnValue(mockRenderResult);
 
 			const markdown = '# Test';
-			const result = await quillmarkService.renderForPreview(markdown, 'taro');
+			const result = await quillmarkService.renderForPreview(markdown);
 
-			expect(result.format).toBe('svg');
-			expect(result.data).toBe('<svg>test</svg>');
+			expect(result.outputFormat).toBe('svg');
+			expect(result.artifacts.length).toBe(1);
 		});
 
 		it('should render for preview with PDF format', async () => {
@@ -218,26 +211,10 @@ describe('QuillmarkService', () => {
 			vi.mocked(exporters.toBlob).mockReturnValue(mockBlob);
 
 			const markdown = '# Test';
-			const result = await quillmarkService.renderForPreview(markdown, 'taro');
+			const result = await quillmarkService.renderForPreview(markdown);
 
-			expect(result.format).toBe('pdf');
-			expect(result.data).toBe(mockBlob);
-		});
-
-		it('should throw error for unsupported output format in preview', async () => {
-			const { exporters } = await import('@quillmark-test/web');
-			const mockRenderResult = {
-				artifacts: [],
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				outputFormat: 'txt' as any // Unsupported format
-			};
-			vi.mocked(exporters.render).mockReturnValue(mockRenderResult);
-
-			const markdown = '# Test';
-
-			await expect(quillmarkService.renderForPreview(markdown, 'taro')).rejects.toThrow(
-				QuillmarkError
-			);
+			expect(result.outputFormat).toBe('pdf');
+			expect(result.artifacts.length).toBe(1);
 		});
 	});
 });
