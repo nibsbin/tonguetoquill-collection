@@ -9,10 +9,7 @@ This document describes the integration of live Quillmark rendering into the Mar
 
 ## Overview
 
-The MarkdownPreview component will be enhanced to support live Quillmark rendering alongside the existing HTML markdown preview. Users can choose between:
-
-1. **HTML Preview** (current): Fast, lightweight markdown-to-HTML rendering
-2. **Quillmark Preview** (new): Professional PDF/SVG output using Quill templates
+The MarkdownPreview component will be enhanced to support live Quillmark rendering. The preview will display professional PDF/SVG output using Quill templates, providing a true WYSIWYG experience for document creation.
 
 ## Architecture
 
@@ -20,9 +17,8 @@ The MarkdownPreview component will be enhanced to support live Quillmark renderi
 
 **MarkdownPreview Component:**
 
-- Render mode selection (HTML vs Quillmark)
-- Quill template selection (when in Quillmark mode)
-- Display rendered output (HTML, SVG, or PDF embed)
+- Quill template selection
+- Display rendered output (SVG or PDF embed)
 - Handle loading/error states
 - Debounce rendering to avoid excessive updates
 
@@ -32,37 +28,24 @@ The MarkdownPreview component will be enhanced to support live Quillmark renderi
 - Auto-detect optimal preview format (SVG or PDF)
 - Return format + data for flexible display
 
-### Preview Modes
+### Preview Layout
 
 ```
 ┌──────────────────────────────────────────┐
 │         MarkdownPreview                  │
 │                                          │
-│  Mode: [HTML] [Quillmark ▼]             │
-│  Template: [usaf_memo ▼]  (if Quillmark)│
+│  Template: [usaf_memo ▼]                │
 │                                          │
 │  ┌────────────────────────────────────┐ │
 │  │                                    │ │
 │  │   Rendered Content                 │ │
-│  │   (HTML / SVG / PDF)               │ │
+│  │   (SVG / PDF)                      │ │
 │  │                                    │ │
 │  └────────────────────────────────────┘ │
 └──────────────────────────────────────────┘
 ```
 
 ## Rendering Flow
-
-### HTML Mode (Current)
-
-```
-markdown
-  │
-  ├─> marked.parse(markdown)
-  │
-  └─> {@html htmlString}
-```
-
-### Quillmark Mode (New)
 
 ```
 markdown + quillName
@@ -98,11 +81,8 @@ interface MarkdownPreviewProps {
 	/** Markdown content to preview */
 	markdown: string;
 
-	/** Preview mode */
-	mode?: 'html' | 'quillmark';
-
-	/** Quill template name (required when mode='quillmark') */
-	quillName?: string;
+	/** Quill template name */
+	quillName: string;
 }
 ```
 
@@ -110,8 +90,7 @@ interface MarkdownPreviewProps {
 
 ```typescript
 interface PreviewState {
-	mode: 'html' | 'quillmark';
-	quillName: string | null;
+	quillName: string;
 	loading: boolean;
 	error: string | null;
 	renderFormat: 'pdf' | 'svg' | null;
@@ -170,18 +149,13 @@ PDF blob is displayed using `<embed>` element:
 
 ### Debouncing
 
-Quillmark rendering is more expensive than HTML rendering. Apply debouncing:
+Quillmark rendering can be expensive. Apply debouncing to avoid excessive re-renders:
 
 ```typescript
 const debouncedRender = debounce(async () => {
 	await renderQuillmark();
-}, 300); // 300ms delay
+}, 50);
 ```
-
-**Strategy:**
-
-- **HTML mode**: Fast, minimal debounce (50ms)
-- **Quillmark mode**: Slower, longer debounce (300ms)
 
 ### Caching
 
@@ -248,35 +222,22 @@ try {
 If Quillmark rendering fails:
 
 1. Show error message in preview pane
-2. Keep mode selector enabled
-3. Allow switching back to HTML mode
+2. Keep template selector enabled
+3. Allow user to change templates or fix markdown
 4. Don't crash the entire component
 
 ## User Experience
 
-### Mode Selection
-
-Dropdown or toggle to switch between HTML and Quillmark modes:
-
-```svelte
-<select bind:value={mode}>
-	<option value="html">HTML Preview</option>
-	<option value="quillmark">Quillmark Preview</option>
-</select>
-```
-
 ### Template Selection
 
-When in Quillmark mode, show template selector:
+Template selector for choosing the Quill template:
 
 ```svelte
-{#if mode === 'quillmark'}
-	<select bind:value={quillName}>
-		{#each availableQuills as quill}
-			<option value={quill.name}>{quill.description}</option>
-		{/each}
-	</select>
-{/if}
+<select bind:value={quillName}>
+	{#each availableQuills as quill}
+		<option value={quill.name}>{quill.description}</option>
+	{/each}
+</select>
 ```
 
 **Template List:**
@@ -287,17 +248,15 @@ When in Quillmark mode, show template selector:
 
 ### State Persistence
 
-Remember user's mode and template selection:
+Remember user's template selection:
 
 ```typescript
 // Save to localStorage
-localStorage.setItem('preview-mode', mode);
 localStorage.setItem('preview-quill', quillName);
 
 // Restore on mount
 onMount(() => {
-	mode = localStorage.getItem('preview-mode') ?? 'html';
-	quillName = localStorage.getItem('preview-quill') ?? null;
+	quillName = localStorage.getItem('preview-quill') ?? availableQuills[0]?.name;
 });
 ```
 
@@ -305,7 +264,7 @@ onMount(() => {
 
 ### 1. Service Initialization
 
-Ensure Quillmark service is initialized before enabling Quillmark mode:
+Ensure Quillmark service is initialized before rendering:
 
 ```typescript
 onMount(async () => {
@@ -313,10 +272,9 @@ onMount(async () => {
 		try {
 			await quillmarkService.initialize();
 			availableQuills = quillmarkService.getAvailableQuills();
-			quillmarkAvailable = true;
 		} catch (error) {
 			console.error('Quillmark initialization failed:', error);
-			quillmarkAvailable = false;
+			showError('Failed to initialize preview. Please refresh.');
 		}
 	}
 });
@@ -328,22 +286,20 @@ MarkdownPreview receives markdown from the editor:
 
 ```svelte
 <MarkdownEditor {markdown} on:change={(e) => (markdown = e.detail)} />
-<MarkdownPreview {markdown} mode="quillmark" quillName="usaf_memo" />
+<MarkdownPreview {markdown} quillName="usaf_memo" />
 ```
 
 ### 3. TopMenu Integration
 
-Show template selector in TopMenu when Quillmark mode is active:
+Show template selector in TopMenu:
 
 ```svelte
 <!-- TopMenu.svelte -->
-{#if previewMode === 'quillmark'}
-	<Select bind:value={selectedQuill}>
-		{#each quills as quill}
-			<option value={quill.name}>{quill.description}</option>
-		{/each}
-	</Select>
-{/if}
+<Select bind:value={selectedQuill}>
+	{#each quills as quill}
+		<option value={quill.name}>{quill.description}</option>
+	{/each}
+</Select>
 ```
 
 ## Accessibility
@@ -364,7 +320,6 @@ Show template selector in TopMenu when Quillmark mode is active:
 
 ### Keyboard Navigation
 
-- Mode selector: Accessible via Tab, changed with Arrow keys
 - Template selector: Accessible via Tab, changed with Arrow keys
 - Preview content: Scrollable with keyboard (arrow keys, Page Up/Down)
 
@@ -380,7 +335,6 @@ Native `<embed>` element provides:
 
 ### Touch Optimization
 
-- Mode selector: Large touch targets (44px minimum)
 - Template selector: Native select on mobile for better UX
 - PDF viewer: Pinch-to-zoom support (native)
 - SVG preview: Scrollable, no pinch-zoom (maintains layout)
@@ -397,13 +351,12 @@ Native `<embed>` element provides:
 
 **Preview Component:**
 
-- Renders HTML mode correctly
-- Switches to Quillmark mode when selected
 - Calls service with correct parameters
 - Displays SVG and PDF correctly
 - Handles loading states
 - Shows error messages on failure
 - Debounces render calls
+- Switches templates correctly
 
 **Mock Service:**
 
@@ -416,11 +369,10 @@ Native `<embed>` element provides:
 **Full Workflow:**
 
 1. Initialize Quillmark service
-2. Switch to Quillmark mode
-3. Select template
-4. Type markdown in editor
-5. Verify preview updates after debounce
-6. Verify correct format displayed
+2. Select template
+3. Type markdown in editor
+4. Verify preview updates after debounce
+5. Verify correct format displayed
 
 ### Visual Regression
 
@@ -444,11 +396,6 @@ Native `<embed>` element provides:
 - Print button triggers browser print dialog
 - PDF prints directly
 - SVG renders to print-optimized PDF first
-
-**Side-by-Side Comparison:**
-
-- Show HTML and Quillmark previews simultaneously
-- Useful for debugging formatting differences
 
 **Custom Styles:**
 
