@@ -128,7 +128,8 @@ class TemplateServiceImpl implements TemplateService {
 
 		const data = await response.json();
 
-		// Validate manifest structure
+		// Note: The JSON file is a direct array of templates, not an object with a 'templates' property
+		// We validate the array format and wrap it in TemplateManifest for internal consistency
 		if (!Array.isArray(data)) {
 			throw new TemplateError('invalid_manifest', 'Invalid manifest format: expected array');
 		}
@@ -143,6 +144,7 @@ class TemplateServiceImpl implements TemplateService {
 			}
 		}
 
+		// Wrap the array in TemplateManifest object for type safety
 		return { templates: data };
 	}
 
