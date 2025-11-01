@@ -32,6 +32,7 @@
 	/* Surface colors */
 	--color-background: #ffffff;
 	--color-foreground: #09090b;
+	--color-foreground-shadow: rgb(from var(--color-foreground) r g b / 0.24);
 	--color-surface: #f4f4f5;
 	--color-surface-elevated: #fafafa;
 
@@ -64,6 +65,7 @@
 	/* Surface colors */
 	--color-background: #18181b;
 	--color-foreground: #f4f4f5;
+	--color-foreground-shadow: rgb(from var(--color-foreground) r g b / 1);
 	--color-surface: #27272a;
 	--color-surface-elevated: #27272a;
 

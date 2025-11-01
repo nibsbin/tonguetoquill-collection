@@ -201,7 +201,7 @@
 
 <style>
 	.preview-svg-container {
-		padding: 1.5rem;
+		padding: 0.5rem;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -220,17 +220,11 @@
 	.preview-svg-page :global(svg) {
 		max-width: 100%;
 		height: auto;
+		border-color: var(--color-foreground);
 		box-shadow:
-			0 1px 3px 0 rgb(0 0 0 / 0.1),
-			0 1px 2px -1px rgb(0 0 0 / 0.1);
+			0 1px 3px 1px var(--color-foreground-shadow),
+			4px 0px 6px -1px var(--color-foreground-shadow);
 	}
-
-	:global(.dark) .preview-svg-page :global(svg) {
-		box-shadow:
-			0 1px 3px 0 rgb(0 0 0 / 0.3),
-			0 1px 2px -1px rgb(0 0 0 / 0.3);
-	}
-
 	.preview-loading-spinner {
 		display: inline-block;
 		width: 2rem;
