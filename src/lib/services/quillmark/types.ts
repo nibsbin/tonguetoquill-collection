@@ -107,6 +107,20 @@ export interface QuillmarkService {
 	renderToSVG(markdown: string, quillName: string): Promise<string>;
 
 	/**
+	 * Render markdown for preview with auto-detected format.
+	 * Does not specify output format - allows backend to choose optimal format.
+	 *
+	 * @param markdown - Markdown content to render
+	 * @param quillName - Name of Quill template to use
+	 * @returns Object with detected format and appropriate data type
+	 * @throws {QuillmarkError} If service is not initialized or Quill not found
+	 */
+	renderForPreview(
+		markdown: string,
+		quillName: string
+	): Promise<{ format: 'pdf' | 'svg'; data: Blob | string }>;
+
+	/**
 	 * Download rendered document to user's file system.
 	 *
 	 * @param markdown - Markdown content to render

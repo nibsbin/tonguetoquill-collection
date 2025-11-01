@@ -73,6 +73,35 @@ try {
 }
 ```
 
+### Render for Preview (Auto-Format)
+
+```typescript
+try {
+	const { format, data } = await quillmarkService.renderForPreview(markdown, 'usaf_memo');
+
+	if (format === 'pdf') {
+		// Display PDF blob
+		const url = URL.createObjectURL(data as Blob);
+		embedElement.src = url;
+	} else {
+		// Display SVG string
+		previewElement.innerHTML = data as string;
+	}
+} catch (error) {
+	console.error('Preview render failed:', error);
+}
+```
+
+**Why Auto-Format?**
+
+The `renderForPreview()` method doesn't specify an output format, allowing the Quillmark backend to choose the optimal format for preview:
+
+- Typst backend → SVG (best for inline display)
+- PDF backend → PDF (only supported format)
+- Future backends → May use other formats
+
+This ensures the best user experience without manual format selection.
+
 ### Download Document
 
 ```typescript
@@ -161,6 +190,24 @@ Render markdown content to SVG string.
 **Returns:** Promise resolving to SVG string.
 
 **Throws:** `QuillmarkError` if not initialized, Quill not found, or render fails.
+
+### `renderForPreview(markdown: string, quillName: string): Promise<{ format: 'pdf' | 'svg'; data: Blob | string }>`
+
+Render markdown for preview with auto-detected output format.
+
+**Parameters:**
+
+- `markdown` - Markdown content with frontmatter
+- `quillName` - Name of Quill template (e.g., 'usaf_memo')
+
+**Returns:** Promise resolving to object with:
+
+- `format` - Detected output format ('pdf' or 'svg')
+- `data` - `Blob` for PDF or `string` for SVG
+
+**Throws:** `QuillmarkError` if not initialized, Quill not found, or render fails.
+
+**Note:** This method does not specify an output format, allowing the backend to choose the optimal format for preview (typically SVG for Typst, PDF for PDF-based backends).
 
 ### `downloadDocument(markdown: string, quillName: string, filename: string, format: RenderFormat): Promise<void>`
 

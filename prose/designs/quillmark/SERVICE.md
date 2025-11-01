@@ -197,13 +197,13 @@ renderForPreview(markdown, quillName)
   ├─> validateQuillExists(quillName)
   │
   ├─> exporters.render(engine, markdown, {
-  │     quill: quillName
+  │     quillName: quillName
   │     // No format specified - uses backend default
   │   })
   │
   └─> Check result.outputFormat
       ├─> if 'pdf': return { format: 'pdf', data: exporters.toBlob(result) }
-      └─> if 'svg': return { format: 'svg', data: exporters.toSvgString(result) }
+      └─> if 'svg': return { format: 'svg', data: new TextDecoder().decode(result.artifacts[0].bytes) }
 ```
 
 ### Error Handling
@@ -377,23 +377,25 @@ These features may be added in future iterations as needed.
 - **Simplicity**: Avoid complex lazy-loading logic
 - **Acceptable Cost**: ~3-5 Quills = ~1-2MB total (minimal)
 
-### Why toBlob() over Direct Uint8Array Access?
+### Why toBlob() and TextDecoder?
 
-For preview rendering, we use `exporters.toBlob()` and `exporters.toSvgString()` rather than accessing `result.artifacts[0].bytes` directly:
+For preview rendering, we use different approaches for different formats:
 
-- **API Stability**: Exporters functions are stable public API
-- **Type Safety**: Return types are properly typed (Blob, string)
+**For PDF:**
+
+- **API Stability**: `exporters.toBlob()` is stable public API
+- **Type Safety**: Return type is properly typed (Blob)
 - **MIME Type Handling**: toBlob() handles MIME type correctly
-- **SVG Decoding**: toSvgString() properly decodes UTF-8 SVG content
 - **Future-proof**: Handles multi-artifact results if needed
-- **Consistency**: Same conversion approach across codebase
 
-Direct Uint8Array access would require:
+**For SVG:**
 
-- Manual MIME type determination
-- Manual UTF-8 decoding for SVG
-- Fragile assumptions about artifact structure
-- Duplicate logic across components
+- **Direct Decoding**: Use `TextDecoder` to decode Uint8Array to UTF-8 string
+- **Standard API**: TextDecoder is a standard web API
+- **Simplicity**: Straightforward conversion without wrapper functions
+- **Efficiency**: No unnecessary intermediate conversions
+
+The Quillmark library doesn't provide a dedicated SVG string conversion function, so we use the standard TextDecoder approach to decode the bytes from `result.artifacts[0].bytes`.
 
 ### Why Auto-Format for Preview?
 
