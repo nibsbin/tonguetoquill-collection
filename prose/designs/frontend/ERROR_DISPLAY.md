@@ -111,130 +111,32 @@ function extractErrorDisplay(error: unknown): ErrorDisplayState | null {
 }
 ```
 
-### Preview Component Changes
-
-Update `Preview.svelte` to display diagnostic information:
-
-```svelte
-<script lang="ts">
-	import { quillmarkService } from '$lib/services/quillmark';
-	import { QuillmarkError } from '$lib/services/quillmark/types';
-
-	interface Props {
-		markdown: string;
-	}
-
-	let { markdown }: Props = $props();
-
-	let loading = $state(false);
-	let errorDisplay = $state<ErrorDisplayState | null>(null);
-	let renderResult = $state<RenderResult | null>(null);
-
-	async function renderPreview(): Promise<void> {
-		loading = true;
-		errorDisplay = null;
-
-		try {
-			const result = await quillmarkService.renderForPreview(markdown);
-			renderResult = result;
-		} catch (err) {
-			// Extract diagnostic information if available
-			errorDisplay = extractErrorDisplay(err);
-			console.error('Preview render error:', err);
-		} finally {
-			loading = false;
-		}
-	}
-</script>
-
-<div class="preview-container">
-	{#if loading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Rendering preview...</p>
-		</div>
-	{:else if errorDisplay}
-		<div class="error-display" role="alert" aria-live="assertive">
-			<div class="error-header">
-				<svg class="error-icon" aria-hidden="true">
-					<!-- Warning icon -->
-				</svg>
-				<h3 class="error-title">Render Error</h3>
-			</div>
-
-			{#if errorDisplay.code}
-				<div class="error-code">
-					<span class="code-badge">{errorDisplay.code}</span>
-				</div>
-			{/if}
-
-			<div class="error-message">
-				{errorDisplay.message}
-			</div>
-
-			{#if errorDisplay.hint}
-				<div class="error-hint">
-					<svg class="hint-icon" aria-hidden="true">
-						<!-- Lightbulb icon -->
-					</svg>
-					<p>{errorDisplay.hint}</p>
-				</div>
-			{/if}
-
-			{#if errorDisplay.location}
-				<div class="error-location">
-					<svg class="location-icon" aria-hidden="true">
-						<!-- Location pin icon -->
-					</svg>
-					<p>
-						Line {errorDisplay.location.line}, Column {errorDisplay.location.column}
-					</p>
-				</div>
-			{/if}
-
-			{#if errorDisplay.sourceChain && errorDisplay.sourceChain.length > 0}
-				<details class="error-source-chain">
-					<summary>Error Context</summary>
-					<ul>
-						{#each errorDisplay.sourceChain as source}
-							<li>{source}</li>
-						{/each}
-					</ul>
-				</details>
-			{/if}
-		</div>
-	{:else if renderResult}
-		<!-- Display rendered content (SVG or PDF) -->
-	{:else}
-		<div class="empty-state">
-			<p>No preview available</p>
-		</div>
-	{/if}
-</div>
-```
-
 ## Visual Design
 
 ### Color Scheme
 
+**Semantic Tokens:**
+
+The error display uses semantic color tokens defined in `app.css` to ensure consistent theming:
+
 **Error Display:**
 
-- Background: Light red (`bg-red-50` / `dark:bg-red-950`)
-- Border: Red (`border-red-200` / `dark:border-red-800`)
-- Text: Dark red (`text-red-900` / `dark:text-red-100`)
-- Icon: Red (`text-red-600` / `dark:text-red-400`)
+- Background: `bg-error-background` (light: `#fef2f2` / dark: `#450a0a`)
+- Border: `border-error-border` (light: `#fecaca` / dark: `#991b1b`)
+- Text: `text-error-foreground` (light: `#991b1b` / dark: `#fecaca`)
+- Icon: `text-error` (light/dark: `#ef4444`)
 
 **Hint Display:**
 
-- Background: Light amber (`bg-amber-50` / `dark:bg-amber-950`)
-- Icon: Amber (`text-amber-600` / `dark:text-amber-400`)
-- Text: Dark amber (`text-amber-900` / `dark:text-amber-100`)
+- Background: `bg-warning-background` (light: `#fffbeb` / dark: `#451a03`)
+- Border: `border-warning` (light/dark: `#f59e0b`)
+- Icon: `text-warning` (light/dark: `#f59e0b`)
+- Text: `text-warning-foreground` (light: `#78350f` / dark: `#fde68a`)
 
 **Location Display:**
 
-- Background: Light gray (`bg-gray-50` / `dark:bg-gray-900`)
-- Icon: Gray (`text-gray-600` / `dark:text-gray-400`)
-- Text: Dark gray (`text-gray-900` / `dark:text-gray-100`)
+- Text: `text-muted-foreground` (existing semantic token)
+- Uses existing muted semantic tokens for consistency
 
 ### Typography
 
@@ -253,10 +155,12 @@ Update `Preview.svelte` to display diagnostic information:
 
 ### Styling Example
 
+Using semantic tokens from `app.css`:
+
 ```css
 .error-display {
-	background-color: var(--color-red-50);
-	border: 1px solid var(--color-red-200);
+	background-color: var(--color-error-background);
+	border: 1px solid var(--color-error-border);
 	border-radius: 0.5rem;
 	padding: 1.5rem;
 	display: flex;
@@ -274,13 +178,13 @@ Update `Preview.svelte` to display diagnostic information:
 .error-icon {
 	width: 1.5rem;
 	height: 1.5rem;
-	color: var(--color-red-600);
+	color: var(--color-error);
 }
 
 .error-title {
 	font-size: 1.125rem;
 	font-weight: 600;
-	color: var(--color-red-900);
+	color: var(--color-error-foreground);
 	margin: 0;
 }
 
@@ -288,15 +192,15 @@ Update `Preview.svelte` to display diagnostic information:
 	display: inline-block;
 	font-family: monospace;
 	font-size: 0.875rem;
-	background-color: var(--color-red-100);
-	color: var(--color-red-800);
+	background-color: var(--color-error-border);
+	color: var(--color-error-foreground);
 	padding: 0.25rem 0.5rem;
 	border-radius: 0.25rem;
 }
 
 .error-message {
 	font-size: 1rem;
-	color: var(--color-red-900);
+	color: var(--color-error-foreground);
 	line-height: 1.5;
 }
 
@@ -304,8 +208,8 @@ Update `Preview.svelte` to display diagnostic information:
 	display: flex;
 	align-items: start;
 	gap: 0.5rem;
-	background-color: var(--color-amber-50);
-	border-left: 3px solid var(--color-amber-400);
+	background-color: var(--color-warning-background);
+	border-left: 3px solid var(--color-warning);
 	padding: 0.75rem;
 	border-radius: 0.25rem;
 }
@@ -313,7 +217,7 @@ Update `Preview.svelte` to display diagnostic information:
 .hint-icon {
 	width: 1.25rem;
 	height: 1.25rem;
-	color: var(--color-amber-600);
+	color: var(--color-warning);
 	flex-shrink: 0;
 }
 
@@ -323,7 +227,7 @@ Update `Preview.svelte` to display diagnostic information:
 	gap: 0.5rem;
 	font-family: monospace;
 	font-size: 0.875rem;
-	color: var(--color-gray-700);
+	color: var(--color-muted-foreground);
 }
 
 .error-source-chain {
@@ -333,17 +237,23 @@ Update `Preview.svelte` to display diagnostic information:
 
 .error-source-chain summary {
 	cursor: pointer;
-	color: var(--color-gray-700);
+	color: var(--color-muted-foreground);
 	font-weight: 500;
+}
+
+.error-source-chain summary:hover {
+	color: var(--color-foreground);
 }
 
 .error-source-chain ul {
 	margin-top: 0.5rem;
 	padding-left: 1.5rem;
 	list-style: disc;
-	color: var(--color-gray-600);
+	color: var(--color-muted-foreground);
 }
 ```
+
+**Note:** These semantic tokens need to be added to `app.css` as documented in [prose/plans/informative-errors.md](../../plans/informative-errors.md#1-add-semantic-tokens-for-error-display).
 
 ## Accessibility
 

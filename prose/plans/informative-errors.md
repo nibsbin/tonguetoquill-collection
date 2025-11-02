@@ -21,7 +21,77 @@ Enable detailed diagnostic error display when Quillmark rendering fails, surfaci
 
 ## Implementation Tasks
 
-### 1. Update QuillmarkService Types
+### 1. Add Semantic Tokens for Error Display
+
+**File:** `src/app.css`
+
+**Changes:**
+
+Add semantic color tokens for error and warning states to ensure consistent theming.
+
+**New Tokens (Light Theme):**
+
+```css
+/* Error/Diagnostic colors */
+--color-error: #ef4444; /* red-500 base */
+--color-error-foreground: #991b1b; /* red-800 dark text */
+--color-error-background: #fef2f2; /* red-50 light bg */
+--color-error-border: #fecaca; /* red-200 subtle border */
+
+/* Warning/Hint colors */
+--color-warning: #f59e0b; /* amber-500 base */
+--color-warning-foreground: #78350f; /* amber-900 dark text */
+--color-warning-background: #fffbeb; /* amber-50 light bg */
+--color-warning-border: #fde68a; /* amber-200 subtle border */
+```
+
+**New Tokens (Dark Theme):**
+
+```css
+.dark {
+  /* Error/Diagnostic colors */
+  --color-error: #ef4444; /* red-500 base (unchanged) */
+  --color-error-foreground: #fecaca; /* red-200 light text */
+  --color-error-background: #450a0a; /* red-950 dark bg */
+  --color-error-border: #991b1b; /* red-800 stronger border */
+
+  /* Warning/Hint colors */
+  --color-warning: #f59e0b; /* amber-500 base (unchanged) */
+  --color-warning-foreground: #fde68a; /* amber-200 light text */
+  --color-warning-background: #451a03; /* amber-950 dark bg */
+  --color-warning-border: #78350f; /* amber-800 stronger border */
+}
+```
+
+**Tailwind Integration:**
+
+Add to `@theme inline` block:
+
+```css
+@theme inline {
+  /* ... existing tokens ... */
+
+  /* Error/Diagnostic colors */
+  --color-error: var(--color-error);
+  --color-error-foreground: var(--color-error-foreground);
+  --color-error-background: var(--color-error-background);
+  --color-error-border: var(--color-error-border);
+
+  /* Warning/Hint colors */
+  --color-warning: var(--color-warning);
+  --color-warning-foreground: var(--color-warning-foreground);
+  --color-warning-background: var(--color-warning-background);
+  --color-warning-border: var(--color-warning-border);
+}
+```
+
+**Testing:**
+
+- Verify tokens are defined in both light and dark themes
+- Check Tailwind integration (e.g., `bg-error-background` works)
+- Confirm colors meet WCAG contrast requirements
+
+### 2. Update QuillmarkService Types
 
 **File:** `src/lib/services/quillmark/types.ts`
 
@@ -95,7 +165,7 @@ export class QuillmarkError extends Error {
 - Existing code compiles (backward compatible)
 - New diagnostic property is optional
 
-### 2. Update QuillmarkService Implementation
+### 3. Update QuillmarkService Implementation
 
 **File:** `src/lib/services/quillmark/service.ts`
 
@@ -228,7 +298,7 @@ async renderToPDF(markdown: string, quillName: string): Promise<Blob> {
 - Test render methods throw `QuillmarkError` with diagnostic
 - Test backward compatibility (errors without diagnostics)
 
-### 3. Update Preview Component
+### 4. Update Preview Component
 
 **File:** `src/lib/components/Preview/Preview.svelte`
 
@@ -315,11 +385,11 @@ Replace the existing error display block with:
 ```svelte
 {:else if errorDisplay}
 	<div class="flex h-full items-center justify-center p-4">
-		<div class="max-w-2xl rounded-lg border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-950">
+		<div class="max-w-2xl rounded-lg border border-error-border bg-error-background p-6">
 			<!-- Error Header -->
 			<div class="mb-4 flex items-center gap-2">
 				<svg
-					class="h-6 w-6 text-red-600 dark:text-red-400"
+					class="h-6 w-6 text-error"
 					fill="none"
 					viewBox="0 0 24 24"
 					stroke="currentColor"
@@ -332,28 +402,28 @@ Replace the existing error display block with:
 						d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
 					/>
 				</svg>
-				<h3 class="text-lg font-semibold text-red-800 dark:text-red-300">Render Error</h3>
+				<h3 class="text-lg font-semibold text-error-foreground">Render Error</h3>
 			</div>
 
 			<!-- Error Code -->
 			{#if errorDisplay.code}
 				<div class="mb-3">
-					<span class="inline-block rounded bg-red-100 px-2 py-1 font-mono text-sm text-red-800 dark:bg-red-900 dark:text-red-200">
+					<span class="inline-block rounded bg-error-border px-2 py-1 font-mono text-sm text-error-foreground">
 						{errorDisplay.code}
 					</span>
 				</div>
 			{/if}
 
 			<!-- Error Message -->
-			<p class="mb-4 text-red-900 dark:text-red-100">
+			<p class="mb-4 text-error-foreground">
 				{errorDisplay.message}
 			</p>
 
 			<!-- Hint -->
 			{#if errorDisplay.hint}
-				<div class="mb-4 flex gap-2 rounded border-l-4 border-amber-400 bg-amber-50 p-3 dark:bg-amber-950">
+				<div class="mb-4 flex gap-2 rounded border-l-4 border-warning bg-warning-background p-3">
 					<svg
-						class="h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400"
+						class="h-5 w-5 flex-shrink-0 text-warning"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
@@ -366,7 +436,7 @@ Replace the existing error display block with:
 							d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
 						/>
 					</svg>
-					<p class="text-sm text-amber-900 dark:text-amber-100">
+					<p class="text-sm text-warning-foreground">
 						{errorDisplay.hint}
 					</p>
 				</div>
@@ -374,7 +444,7 @@ Replace the existing error display block with:
 
 			<!-- Location -->
 			{#if errorDisplay.location}
-				<div class="mb-4 flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+				<div class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
 					<svg
 						class="h-4 w-4"
 						fill="none"
@@ -404,10 +474,10 @@ Replace the existing error display block with:
 			<!-- Source Chain -->
 			{#if errorDisplay.sourceChain && errorDisplay.sourceChain.length > 0}
 				<details class="mt-4">
-					<summary class="cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
+					<summary class="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
 						Error Context
 					</summary>
-					<ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-600 dark:text-gray-400">
+					<ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
 						{#each errorDisplay.sourceChain as source}
 							<li>{source}</li>
 						{/each}
@@ -428,7 +498,7 @@ Replace the existing error display block with:
 - Source chain is collapsed by default
 - Error display is accessible (ARIA attributes)
 
-### 4. Update Service Tests
+### 5. Update Service Tests
 
 **File:** `src/lib/services/quillmark/quillmark.test.ts`
 
@@ -532,7 +602,7 @@ describe('QuillmarkService - Diagnostic Handling', () => {
 });
 ```
 
-### 5. Documentation Updates
+### 6. Documentation Updates
 
 **File:** `src/lib/services/quillmark/README.md`
 
@@ -588,7 +658,7 @@ try {
 
 ````
 
-### 6. Type Checking and Linting
+### 7. Type Checking and Linting
 
 Run type checking and linting on all modified files:
 
@@ -600,7 +670,7 @@ npm run format       # Prettier
 
 Fix any issues found.
 
-### 7. Build and Test
+### 8. Build and Test
 
 Run full test suite and build:
 
@@ -613,11 +683,14 @@ Verify all tests pass and build succeeds.
 
 ## Success Criteria
 
+- ✅ Semantic tokens added to app.css for error and warning states
+- ✅ Tokens support both light and dark themes
+- ✅ Tailwind integration configured for new tokens
 - ✅ `QuillmarkDiagnostic` type added to service types
 - ✅ `QuillmarkError` includes optional `diagnostic` property
 - ✅ Service extracts diagnostic from WASM errors
 - ✅ Service normalizes diagnostic format (snake_case → camelCase)
-- ✅ Preview component displays diagnostic information
+- ✅ Preview component displays diagnostic information using semantic tokens
 - ✅ Error code displayed when available
 - ✅ Error message displayed (required)
 - ✅ Hint displayed when available
