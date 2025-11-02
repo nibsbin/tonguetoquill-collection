@@ -337,4 +337,4 @@
 </script>
 
 <!-- Editor -->
-<div class="h-full overflow-hidden bg-editor-background" bind:this={editorElement}></div>
+<div class="bg-editor-background h-full overflow-hidden" bind:this={editorElement}></div>

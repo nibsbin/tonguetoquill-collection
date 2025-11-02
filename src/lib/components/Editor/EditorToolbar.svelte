@@ -23,7 +23,7 @@
 </script>
 
 <div
-	class="flex min-h-11 items-center justify-between gap-1 border-b border-border bg-surface-elevated px-2 match-height"
+	class="match-height flex min-h-11 items-center justify-between gap-1 border-b border-border bg-surface-elevated px-2"
 >
 	<div class="flex items-center gap-1">
 		<!-- Frontmatter Toggle Button (stub) -->
@@ -160,7 +160,7 @@
 </div>
 
 <style>
-.match-height{
-	height: 51px!important;
-}
+	.match-height {
+		height: 51px !important;
+	}
 </style>

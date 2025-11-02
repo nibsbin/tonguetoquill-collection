@@ -84,8 +84,8 @@
 
 	/* Slightly reduced vertical padding for the very first slot (hamburger) to improve visual alignment */
 	:global(.sidebar-button-slot:first-child) {
-		padding-top: calc(var(--sidebar-padding)  );
-		padding-bottom: calc(var(--sidebar-padding)  );
+		padding-top: calc(var(--sidebar-padding));
+		padding-bottom: calc(var(--sidebar-padding));
 	}
 
 	/* Layer 2: Button Element - always full width of available space */
