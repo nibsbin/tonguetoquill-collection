@@ -118,6 +118,99 @@ Document queries use selective field selection with PostgreSQL TOAST:
 4. **Maintainability**: API communication changes isolated to client service
 5. **Extensibility**: Easy to add new providers (e.g., SupabaseDocumentService) or features (offline caching, optimistic updates)
 
+## Template Service
+
+### Client-Side (`$lib/services/templates/`)
+
+```
+├── types.ts          ← Type definitions
+├── service.ts        ← TemplateService implementation
+├── index.ts          ← export { templateService }
+├── template.test.ts  ← Unit tests
+└── README.md         ← Service documentation
+```
+
+**Responsibilities**: Provide read-only access to markdown templates stored in `tonguetoquill-collection/templates/` with metadata from `templates.json`. Designed to support future database-backed templates without breaking changes.
+
+**TemplateService** provides:
+
+- Singleton pattern for manifest caching
+- Type-safe template metadata access
+- On-demand template content loading
+- Production/development filtering
+- Future-ready abstraction for database migration
+
+```typescript
+// Initialize on app load
+await templateService.initialize();
+
+// List templates for selector
+const templates = templateService.listTemplates(true); // production only
+
+// Load template when selected
+const template = await templateService.getTemplate('usaf_template.md');
+```
+
+### API Specification
+
+**`initialize(): Promise<void>`**
+
+- Loads template manifest from `/tonguetoquill-collection/templates/templates.json`
+- Idempotent: Safe to call multiple times (only initializes once)
+- Errors: `TemplateError` with code `load_error` or `invalid_manifest`
+
+**`isReady(): boolean`**
+
+- Returns: `true` if service is initialized and ready
+
+**`listTemplates(productionOnly?: boolean): TemplateMetadata[]`**
+
+- Parameters: `productionOnly` (optional, default `false`)
+- Returns: Array of template metadata, filtered by production flag if requested
+- Errors: `TemplateError` with code `not_initialized`
+
+**`getTemplateMetadata(filename: string): TemplateMetadata`**
+
+- Returns: Template metadata for the specified filename
+- Errors: `TemplateError` with code `not_initialized` or `not_found`
+
+**`getTemplate(filename: string): Promise<Template>`**
+
+- Returns: Full template with metadata and markdown content
+- Errors: `TemplateError` with code `not_initialized`, `not_found`, or `load_error`
+
+### Static File Paths
+
+Templates are accessed via URL paths:
+
+- Manifest: `/tonguetoquill-collection/templates/templates.json`
+- Templates: `/tonguetoquill-collection/templates/{filename}.md`
+
+### Error Types
+
+- **`TemplateError`** - Custom error with typed error codes:
+  - `not_initialized` - Service not initialized before use
+  - `not_found` - Template not found in manifest
+  - `load_error` - Failed to load manifest or template file
+  - `invalid_manifest` - Manifest JSON is malformed
+
+### Future Database Support
+
+The service interface supports future migration to database-backed templates:
+
+1. **Phase 1 (Current)**: Static files only
+2. **Phase 2 (Future)**: Hybrid (database + static files)
+3. **Phase 3 (Future)**: Full database migration
+
+No breaking changes required to support database-backed templates.
+
+### Documentation
+
+Full service documentation available at:
+
+- [Template Service README](../../../src/lib/services/templates/README.md) - Usage and API reference
+- [Template Service Design](./TEMPLATE_SERVICE.md) - Complete design specification
+
 ## Cross-References
 
 - [../frontend/ARCHITECTURE.md](../frontend/ARCHITECTURE.md) - Client architecture
