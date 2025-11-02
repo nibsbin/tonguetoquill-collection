@@ -106,6 +106,7 @@ Not implemented in this iteration. Can be added as a future enhancement.
 ## Design Adherence
 
 The implementation strictly follows the design specifications in:
+
 - `prose/designs/frontend/QUILLMARK_SYNTAX_HIGHLIGHTING.md`
 - `prose/designs/frontend/DESIGN_SYSTEM.md`
 
@@ -122,6 +123,7 @@ The implementation strictly follows the design specifications in:
 ### Pattern Detection Logic
 
 The implementation correctly handles:
+
 - **Metadata delimiters** - Lines with `---` that are NOT horizontal rules
 - **Horizontal rules** - Lines with `---` that have blank lines above AND below
 - **SCOPE/QUILL keywords** - `^(SCOPE|QUILL):\s*([a-z_][a-z0-9_]*)` pattern
@@ -131,6 +133,7 @@ The implementation correctly handles:
 ### Theme Integration
 
 The theme system:
+
 - Uses CSS custom properties for all colors
 - Reads computed styles at runtime (not build time)
 - Automatically adapts to theme changes via `$effect` in Svelte
@@ -148,6 +151,7 @@ The theme system:
 ### Unit Tests
 
 Created comprehensive tests in `quillmark-patterns.test.ts`:
+
 - 4 test suites, 15 test cases
 - Tests for delimiter detection
 - Tests for metadata block finding
@@ -167,6 +171,7 @@ Created comprehensive tests in `quillmark-patterns.test.ts`:
 ### Visual Verification
 
 Screenshots demonstrate:
+
 - Metadata blocks with background tint and left border
 - SCOPE/QUILL keywords in USAF blue
 - Identifiers in cyan
@@ -210,6 +215,7 @@ These limitations are acceptable for the MVP and align with the phased approach 
 ## Accessibility
 
 All syntax highlighting colors meet WCAG AA contrast requirements:
+
 - Light mode: Darker variants for better contrast on white
 - Dark mode: Brighter variants for better contrast on dark
 - Keyword color (USAF blue) works in both themes
