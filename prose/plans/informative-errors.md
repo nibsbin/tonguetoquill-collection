@@ -49,17 +49,17 @@ Add semantic color tokens for error and warning states to ensure consistent them
 
 ```css
 .dark {
-  /* Error/Diagnostic colors */
-  --color-error: #ef4444; /* red-500 base (unchanged) */
-  --color-error-foreground: #fecaca; /* red-200 light text */
-  --color-error-background: #450a0a; /* red-950 dark bg */
-  --color-error-border: #991b1b; /* red-800 stronger border */
+	/* Error/Diagnostic colors */
+	--color-error: #ef4444; /* red-500 base (unchanged) */
+	--color-error-foreground: #fecaca; /* red-200 light text */
+	--color-error-background: #450a0a; /* red-950 dark bg */
+	--color-error-border: #991b1b; /* red-800 stronger border */
 
-  /* Warning/Hint colors */
-  --color-warning: #f59e0b; /* amber-500 base (unchanged) */
-  --color-warning-foreground: #fde68a; /* amber-200 light text */
-  --color-warning-background: #451a03; /* amber-950 dark bg */
-  --color-warning-border: #78350f; /* amber-800 stronger border */
+	/* Warning/Hint colors */
+	--color-warning: #f59e0b; /* amber-500 base (unchanged) */
+	--color-warning-foreground: #fde68a; /* amber-200 light text */
+	--color-warning-background: #451a03; /* amber-950 dark bg */
+	--color-warning-border: #78350f; /* amber-800 stronger border */
 }
 ```
 
@@ -69,19 +69,19 @@ Add to `@theme inline` block:
 
 ```css
 @theme inline {
-  /* ... existing tokens ... */
+	/* ... existing tokens ... */
 
-  /* Error/Diagnostic colors */
-  --color-error: var(--color-error);
-  --color-error-foreground: var(--color-error-foreground);
-  --color-error-background: var(--color-error-background);
-  --color-error-border: var(--color-error-border);
+	/* Error/Diagnostic colors */
+	--color-error: var(--color-error);
+	--color-error-foreground: var(--color-error-foreground);
+	--color-error-background: var(--color-error-background);
+	--color-error-border: var(--color-error-border);
 
-  /* Warning/Hint colors */
-  --color-warning: var(--color-warning);
-  --color-warning-foreground: var(--color-warning-foreground);
-  --color-warning-background: var(--color-warning-background);
-  --color-warning-border: var(--color-warning-border);
+	/* Warning/Hint colors */
+	--color-warning: var(--color-warning);
+	--color-warning-foreground: var(--color-warning-foreground);
+	--color-warning-background: var(--color-warning-background);
+	--color-warning-border: var(--color-warning-border);
 }
 ```
 
