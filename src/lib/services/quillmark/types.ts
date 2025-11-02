@@ -41,16 +41,55 @@ export type QuillmarkErrorCode =
 	| 'load_error';
 
 /**
+ * Error severity level
+ */
+export type DiagnosticSeverity = 'error' | 'warning' | 'info';
+
+/**
+ * Source location for an error
+ */
+export interface DiagnosticLocation {
+	/** Line number (1-indexed) */
+	line: number;
+	/** Column number (1-indexed) */
+	column: number;
+	/** Length of the error span */
+	length?: number;
+}
+
+/**
+ * Detailed diagnostic information from Quillmark rendering
+ */
+export interface QuillmarkDiagnostic {
+	/** Error severity level */
+	severity: DiagnosticSeverity;
+	/** Optional error code (e.g., "E001", "typst::syntax") */
+	code?: string;
+	/** Human-readable error message */
+	message: string;
+	/** Primary source location */
+	location?: DiagnosticLocation;
+	/** Optional hint for fixing the error */
+	hint?: string;
+	/** Source chain as list of strings (for display purposes) */
+	sourceChain: string[];
+}
+
+/**
  * Custom error class for Quillmark service errors
  */
 export class QuillmarkError extends Error {
 	/** Error code identifying the type of error */
 	code: QuillmarkErrorCode;
 
-	constructor(code: QuillmarkErrorCode, message: string) {
+	/** Optional diagnostic information for render errors */
+	diagnostic?: QuillmarkDiagnostic;
+
+	constructor(code: QuillmarkErrorCode, message: string, diagnostic?: QuillmarkDiagnostic) {
 		super(message);
 		this.name = 'QuillmarkError';
 		this.code = code;
+		this.diagnostic = diagnostic;
 	}
 }
 
