@@ -465,20 +465,10 @@ This approach requires **no additional packages** beyond what's already installe
 
 ### Post-MVP Features
 
-**Smart Validation:**
-- Detect scope name collisions (red underline)
-- Validate YAML syntax within blocks
-- Suggest fixes for common errors
-
 **Enhanced Folding:**
 - Fold summaries (show first line when collapsed)
 - Fold all metadata blocks at once
 - Remember fold state per document
-
-**Advanced Completion:**
-- YAML field suggestions based on quill template
-- Snippet insertion for common patterns
-- Template scaffolding
 
 ## References
 
