@@ -4,7 +4,7 @@
 	import { toast } from 'svelte-sonner';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
-	import { MarkdownPreview } from '$lib/components/Preview';
+	import { Preview } from '$lib/components/Preview';
 
 	interface Props {
 		documentId: string;
@@ -214,7 +214,7 @@
 						: 'hidden'
 					: 'hidden lg:block'}"
 			>
-				<MarkdownPreview markdown={debouncedContent} />
+				<Preview markdown={debouncedContent} />
 			</div>
 		</div>
 	</div>

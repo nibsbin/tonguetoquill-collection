@@ -43,6 +43,7 @@
 	/* Surface colors */
 	--color-background: #ffffff;
 	--color-foreground: #09090b;
+	--color-foreground-shadow: rgb(from var(--color-foreground) r g b / 0.24);
 	--color-surface: #f4f4f5;
 	--color-surface-elevated: #fafafa;
 
@@ -66,14 +67,17 @@
 	--color-input: #e4e4e7;
 	--color-ring: #18181b;
 
-	/* Editor-specific colors */
-	--color-editor-background: #ffffff;
-	--color-editor-foreground: #09090b;
-	--color-editor-line-active: #f4f4f5;
-	--color-editor-selection: #e4e4e7;
-	--color-editor-cursor: #09090b;
-	--color-editor-gutter-background: #ffffff;
-	--color-editor-gutter-foreground: #71717a;
+	/* Error/Diagnostic colors */
+	--color-error: #ef4444; /* red-500 base */
+	--color-error-foreground: #991b1b; /* red-800 dark text */
+	--color-error-background: #fef2f2; /* red-50 light bg */
+	--color-error-border: #fecaca; /* red-200 subtle border */
+
+	/* Warning/Hint colors */
+	--color-warning: #f59e0b; /* amber-500 base */
+	--color-warning-foreground: #78350f; /* amber-900 dark text */
+	--color-warning-background: #fffbeb; /* amber-50 light bg */
+	--color-warning-border: #fde68a; /* amber-200 subtle border */
 
 	/* Design tokens from mock project */
 	font-family: 'Lato', Arial, sans-serif;
@@ -84,6 +88,7 @@
 	/* Surface colors */
 	--color-background: #18181b;
 	--color-foreground: #f4f4f5;
+	--color-foreground-shadow: rgb(from var(--color-foreground) r g b / 1);
 	--color-surface: #27272a;
 	--color-surface-elevated: #27272a;
 
@@ -107,14 +112,17 @@
 	--color-input: #27272a;
 	--color-ring: #d4d4d8;
 
-	/* Editor-specific colors */
-	--color-editor-background: #18181b;
-	--color-editor-foreground: #f4f4f5;
-	--color-editor-line-active: #27272a;
-	--color-editor-selection: #3f3f46;
-	--color-editor-cursor: #f4f4f5;
-	--color-editor-gutter-background: #18181b;
-	--color-editor-gutter-foreground: #71717a;
+	/* Error/Diagnostic colors */
+	--color-error: #ef4444; /* red-500 base (unchanged) */
+	--color-error-foreground: #fecaca; /* red-200 light text */
+	--color-error-background: #450a0a; /* red-950 dark bg */
+	--color-error-border: #991b1b; /* red-800 stronger border */
+
+	/* Warning/Hint colors */
+	--color-warning: #f59e0b; /* amber-500 base (unchanged) */
+	--color-warning-foreground: #fde68a; /* amber-200 light text */
+	--color-warning-background: #451a03; /* amber-950 dark bg */
+	--color-warning-border: #78350f; /* amber-800 stronger border */
 }
 
 /* Tailwind CSS Integration */
@@ -145,14 +153,17 @@
 	--color-input: var(--color-input);
 	--color-ring: var(--color-ring);
 
-	/* Editor-specific colors */
-	--color-editor-background: var(--color-editor-background);
-	--color-editor-foreground: var(--color-editor-foreground);
-	--color-editor-line-active: var(--color-editor-line-active);
-	--color-editor-selection: var(--color-editor-selection);
-	--color-editor-cursor: var(--color-editor-cursor);
-	--color-editor-gutter-background: var(--color-editor-gutter-background);
-	--color-editor-gutter-foreground: var(--color-editor-gutter-foreground);
+	/* Error/Diagnostic colors */
+	--color-error: var(--color-error);
+	--color-error-foreground: var(--color-error-foreground);
+	--color-error-background: var(--color-error-background);
+	--color-error-border: var(--color-error-border);
+
+	/* Warning/Hint colors */
+	--color-warning: var(--color-warning);
+	--color-warning-foreground: var(--color-warning-foreground);
+	--color-warning-background: var(--color-warning-background);
+	--color-warning-border: var(--color-warning-border);
 }
 
 body {

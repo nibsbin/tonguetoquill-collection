@@ -1,1 +1,1 @@
-export { default as MarkdownPreview } from './MarkdownPreview.svelte';
+export { default as Preview } from './Preview.svelte';

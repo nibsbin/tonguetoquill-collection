@@ -1,0 +1,22 @@
+{
+  "quills": [
+    {
+      "name": "taro",
+      "description": "A simple document template for testing",
+      "backend": "typst",
+      "exampleFile": "taro.md"
+    },
+    {
+      "name": "usaf_form_8",
+      "description": "Certificate of aircrew qualification",
+      "backend": "acroform",
+      "exampleFile": "usaf_form_8.md"
+    },
+    {
+      "name": "usaf_memo",
+      "description": "Typesetted USAF Official Memorandum",
+      "backend": "typst",
+      "exampleFile": "usaf_memo.md"
+    }
+  ]
+}

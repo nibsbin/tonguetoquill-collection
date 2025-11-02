@@ -1,5 +1,4 @@
 <script lang="ts">
-	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { onMount } from 'svelte';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { documentStore } from '$lib/stores/documents.svelte';

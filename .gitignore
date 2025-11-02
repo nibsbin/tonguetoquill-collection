@@ -25,3 +25,5 @@ vite.config.ts.timestamp-*
 
 prompts
 .idea
+
+AGENTS.md
