@@ -2,9 +2,9 @@
  * Quillmark Service Implementation
  *
  * Provides singleton service for Quillmark WASM engine initialization and document rendering.
+ * Uses lazy loading for @quillmark-test/web to reduce cold start time and fix WASM loading.
  */
 
-import { Quillmark, loaders, exporters } from '@quillmark-test/web';
 import type { Artifact } from '@quillmark-test/web';
 import type {
 	QuillmarkService,
@@ -15,12 +15,32 @@ import type {
 } from './types';
 import { QuillmarkError } from './types';
 
+/**p
+ * Lazy-loaded modules from @quillmark-test/web
+ */
+let Quillmark: typeof import('@quillmark-test/web').Quillmark | null = null;
+let loaders: typeof import('@quillmark-test/web').loaders | null = null;
+let exporters: typeof import('@quillmark-test/web').exporters | null = null;
+
+/**
+ * Load the @quillmark-test/web module dynamically
+ */
+async function loadQuillmarkModule() {
+	if (!Quillmark || !loaders || !exporters) {
+		const module = await import('@quillmark-test/web');
+		Quillmark = module.Quillmark;
+		loaders = module.loaders;
+		exporters = module.exporters;
+	}
+	return { Quillmark, loaders, exporters };
+}
+
 /**
  * Singleton implementation of QuillmarkService
  */
 class QuillmarkServiceImpl implements QuillmarkService {
 	private static instance: QuillmarkServiceImpl | null = null;
-	private engine: Quillmark | null = null;
+	private engine: InstanceType<typeof import('@quillmark-test/web').Quillmark> | null = null;
 	private manifest: QuillManifest | null = null;
 	private initialized = false;
 
@@ -48,11 +68,14 @@ class QuillmarkServiceImpl implements QuillmarkService {
 		}
 
 		try {
+			// Lazy load the @quillmark-test/web module
+			await loadQuillmarkModule();
+
 			// Load manifest
 			this.manifest = await this.loadManifest();
 
 			// Create Quillmark engine
-			this.engine = new Quillmark();
+			this.engine = new Quillmark!();
 
 			// Preload all Quills
 			await this.preloadQuills();
@@ -87,12 +110,12 @@ class QuillmarkServiceImpl implements QuillmarkService {
 		this.validateQuillExists(quillName);
 
 		try {
-			const result = exporters.render(this.engine!, markdown, {
+			const result = exporters!.render(this.engine!, markdown, {
 				quillName: quillName,
 				format: 'pdf'
 			});
 
-			return exporters.toBlob(result);
+			return exporters!.toBlob(result);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			throw new QuillmarkError('render_error', `Failed to render PDF: ${message}`);
@@ -108,7 +131,7 @@ class QuillmarkServiceImpl implements QuillmarkService {
 
 		try {
 			// Render without quill name or format - let engine auto-detect based on content
-			const result = exporters.render(this.engine!, markdown, {
+			const result = exporters!.render(this.engine!, markdown, {
 				// No quillName or format specified - engine auto-detects backend
 			});
 
@@ -133,12 +156,12 @@ class QuillmarkServiceImpl implements QuillmarkService {
 		this.validateQuillExists(quillName);
 
 		try {
-			const result = exporters.render(this.engine!, markdown, {
+			const result = exporters!.render(this.engine!, markdown, {
 				quillName: quillName,
 				format
 			});
 
-			exporters.download(result, filename);
+			exporters!.download(result, filename);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			throw new QuillmarkError('render_error', `Failed to download document: ${message}`);
@@ -187,7 +210,7 @@ class QuillmarkServiceImpl implements QuillmarkService {
 				}
 
 				const zipBlob = await response.blob();
-				const quillJson = await loaders.fromZip(zipBlob);
+				const quillJson = await loaders!.fromZip(zipBlob);
 
 				this.engine!.registerQuill(quillJson);
 			} catch (error) {
@@ -241,7 +264,7 @@ export const quillmarkService = QuillmarkServiceImpl.getInstance();
  * @returns Blob containing the rendered output
  */
 export function resultToBlob(result: RenderResult): Blob {
-	return exporters.toBlob(result);
+	return exporters!.toBlob(result);
 }
 
 /**
@@ -251,7 +274,7 @@ export function resultToBlob(result: RenderResult): Blob {
  */
 export function artifactToSVGString(artifact: Artifact): string {
 	const decoder = new TextDecoder('utf-8');
-	const arrayBuffer = exporters.toArrayBuffer(artifact);
+	const arrayBuffer = exporters!.toArrayBuffer(artifact);
 	return decoder.decode(arrayBuffer);
 }
 
