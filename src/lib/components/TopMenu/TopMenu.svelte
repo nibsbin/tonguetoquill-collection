@@ -66,12 +66,17 @@
 </script>
 
 <div
-	class="flex items-center justify-between border-b border-border bg-background px-4 top-menu-strong-border"
+	class="top-menu-strong-border flex items-center justify-between border-b border-border bg-background px-4"
 	style="height: var(--top-menu-height);"
 >
 	<div class="flex items-center gap-2" style="height: 3.1rem;">
 		<!-- Logo to the left of document title (decorative) -->
-		<img src="/logo.svg" alt="Tonguetoquill logo" aria-hidden="true" class="h-8 w-auto mr-3 shrink-0" />
+		<img
+			src="/logo.svg"
+			alt="Tonguetoquill logo"
+			aria-hidden="true"
+			class="mr-3 h-8 w-auto shrink-0"
+		/>
 		<span class="text-foreground/80">{fileName}</span>
 
 		<!-- Save Status Indicator -->
