@@ -185,11 +185,11 @@ Following [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) theme tokens:
 - Font weight: normal
 
 **SCOPE/QUILL Keywords:**
-- Color: `#355e93` (USAF blue brand color)
+- Color: `var(--color-syntax-keyword)` (USAF blue brand color)
 - Font weight: 600 (semi-bold)
 
 **Scope/Quill Names:**
-- Color: `#06b6d4` (cyan - high contrast)
+- Color: `var(--color-syntax-identifier)` (cyan - high contrast)
 - Font weight: 500 (medium)
 
 **YAML Keys:**
@@ -197,14 +197,16 @@ Following [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) theme tokens:
 - Font style: normal
 
 **YAML Values:**
-- Strings: `#22c55e` (green)
-- Numbers: `#f59e0b` (amber)
-- Booleans: `#8b5cf6` (purple)
+- Strings: `var(--color-syntax-string)` (green)
+- Numbers: `var(--color-syntax-number)` (amber)
+- Booleans: `var(--color-syntax-boolean)` (purple)
 
 **Metadata Block Background:**
-- Light theme: `rgba(53, 94, 147, 0.03)` (very subtle blue tint)
-- Dark theme: `rgba(53, 94, 147, 0.08)` (slightly more visible blue tint)
-- Left border: `2px solid #355e93` (USAF blue accent)
+- Light theme: `var(--color-syntax-metadata-bg)` (very subtle blue tint)
+- Dark theme: `var(--color-syntax-metadata-bg-dark)` (slightly more visible blue tint)
+- Left border: `2px solid var(--color-syntax-metadata-border)` (USAF blue accent)
+
+**Note**: All syntax colors are defined as semantic tokens in the design system. Light mode uses darker variants of cyan, green, amber, and purple for better contrast (WCAG AA compliant), while dark mode uses brighter variants. The keyword color (USAF blue) remains consistent across both themes.
 
 ### Theme Definition
 
@@ -214,33 +216,35 @@ const quillmarkTheme = EditorView.theme({
         color: 'var(--color-muted-foreground)',
     },
     '.cm-quillmark-block': {
-        backgroundColor: 'rgba(53, 94, 147, 0.05)',
-        borderLeft: '2px solid #355e93',
+        backgroundColor: 'var(--color-syntax-metadata-bg)',
+        borderLeft: '2px solid var(--color-syntax-metadata-border)',
         paddingLeft: '12px',
         marginLeft: '-14px',
     },
     '.cm-quillmark-scope-keyword, .cm-quillmark-quill-keyword': {
-        color: '#355e93',
+        color: 'var(--color-syntax-keyword)',
         fontWeight: '600',
     },
     '.cm-quillmark-scope-name': {
-        color: '#06b6d4',
+        color: 'var(--color-syntax-identifier)',
         fontWeight: '500',
     },
     '.cm-quillmark-yaml-key': {
         color: 'var(--color-foreground)',
     },
     '.cm-quillmark-yaml-string': {
-        color: '#22c55e',
+        color: 'var(--color-syntax-string)',
     },
     '.cm-quillmark-yaml-number': {
-        color: '#f59e0b',
+        color: 'var(--color-syntax-number)',
     },
     '.cm-quillmark-yaml-bool': {
-        color: '#8b5cf6',
+        color: 'var(--color-syntax-boolean)',
     },
 }, { dark: document.documentElement.classList.contains('dark') });
 ```
+
+**Note**: The theme automatically adapts to light and dark modes through CSS custom properties. In dark mode, `.cm-quillmark-block` will use `var(--color-syntax-metadata-bg-dark)` due to the `.dark` class cascade in the design system.
 
 ## Code Folding Support
 

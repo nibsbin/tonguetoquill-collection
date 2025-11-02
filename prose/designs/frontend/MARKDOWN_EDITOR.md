@@ -165,11 +165,16 @@ Custom Highlighting Theme (visual layer)
 Follows [DESIGN_SYSTEM.md - Theme System](./DESIGN_SYSTEM.md#theme-system):
 
 - Metadata delimiters: Muted text using `var(--color-muted-foreground)`
-- SCOPE/QUILL keywords: USAF blue accent (#355e93) - brand color
-- Scope/quill names: Bright cyan for differentiation
-- YAML keys: Primary text color
-- YAML values: Type-specific colors (green for strings, amber for numbers, purple for booleans)
-- Metadata blocks: Subtle background tint with USAF blue left border
+- SCOPE/QUILL keywords: Brand color using `var(--color-syntax-keyword)` (USAF blue)
+- Scope/quill names: Identifier color using `var(--color-syntax-identifier)` (cyan)
+- YAML keys: Primary text color using `var(--color-foreground)`
+- YAML values: Type-specific semantic colors:
+  - Strings: `var(--color-syntax-string)` (green)
+  - Numbers: `var(--color-syntax-number)` (amber)
+  - Booleans: `var(--color-syntax-boolean)` (purple)
+- Metadata blocks: Subtle background tint using `var(--color-syntax-metadata-bg)` with border using `var(--color-syntax-metadata-border)`
+
+**Note**: All colors use semantic tokens that automatically adapt to light/dark themes with appropriate contrast adjustments.
 
 ### Implementation Status
 
@@ -377,7 +382,7 @@ All syntax colors meet WCAG AA requirements:
 
 Per [DESIGN_SYSTEM.md - Focus Indicators](./DESIGN_SYSTEM.md):
 
-- 2px solid USAF blue (`#355e93`) outline
+- 2px solid outline using `var(--color-ring)` (adapts to theme)
 - 3px in high contrast mode
 - Visible on all interactive elements
 - Never removed via CSS
@@ -572,21 +577,11 @@ Per [DESIGN_SYSTEM.md - Theme System](./DESIGN_SYSTEM.md#theme-system):
 - Active line: `var(--color-editor-line-active)`
 - Cursor: `var(--color-editor-cursor)`
 - Gutter: `var(--color-editor-gutter-background)` and `var(--color-editor-gutter-foreground)`
-- Syntax colors: Balanced contrast for readability
+- Syntax colors: Use semantic syntax color tokens (see [DESIGN_SYSTEM.md - Syntax Highlighting Colors](./DESIGN_SYSTEM.md#semantic-color-tokens))
 
-**Dark Theme Values:**
+**Note on Theme Values:**
 
-- Background: #18181b (zinc-900 equivalent)
-- Text: #f4f4f5 (zinc-100 equivalent)
-- Selection: #3f3f46 (zinc-700 equivalent) with opacity
-- Active line: #27272a (zinc-800 equivalent)
-
-**Light Theme Values:**
-
-- Background: #ffffff (white)
-- Text: #09090b (near-black)
-- Selection: #e4e4e7 (light gray)
-- Active line: #f4f4f5 (very light gray)
+All editor and syntax highlighting colors are defined as semantic tokens in DESIGN_SYSTEM.md and automatically adapt to light and dark themes. The tokens ensure consistent contrast ratios (WCAG AA compliant) across both themes.
 
 **Implementation:**
 
