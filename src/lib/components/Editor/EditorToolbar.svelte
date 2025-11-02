@@ -34,9 +34,7 @@
 			onclick={() => onFormat('toggleFrontmatter')}
 			title="Toggle Frontmatter"
 		>
-			{#snippet children()}
-				<ChevronDown class="h-4 w-4" />
-			{/snippet}
+			<ChevronDown class="h-4 w-4" />
 		</Button>
 
 		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
@@ -49,9 +47,7 @@
 			onclick={() => onFormat('bold')}
 			title="Bold"
 		>
-			{#snippet children()}
-				<Bold class="h-4 w-4" />
-			{/snippet}
+			<Bold class="h-4 w-4" />
 		</Button>
 
 		<!-- Italic -->
@@ -62,9 +58,7 @@
 			onclick={() => onFormat('italic')}
 			title="Italic"
 		>
-			{#snippet children()}
-				<Italic class="h-4 w-4" />
-			{/snippet}
+			<Italic class="h-4 w-4" />
 		</Button>
 
 		<!-- Strikethrough -->
@@ -75,9 +69,7 @@
 			onclick={() => onFormat('strikethrough')}
 			title="Strikethrough"
 		>
-			{#snippet children()}
-				<Strikethrough class="h-4 w-4" />
-			{/snippet}
+			<Strikethrough class="h-4 w-4" />
 		</Button>
 
 		<!-- Code (inline) -->
@@ -88,9 +80,7 @@
 			onclick={() => onFormat('code')}
 			title="Inline Code"
 		>
-			{#snippet children()}
-				<Code class="h-4 w-4" />
-			{/snippet}
+			<Code class="h-4 w-4" />
 		</Button>
 
 		<!-- Hyperlink -->
@@ -101,9 +91,7 @@
 			onclick={() => onFormat('link')}
 			title="Hyperlink"
 		>
-			{#snippet children()}
-				<Link class="h-4 w-4" />
-			{/snippet}
+			<Link class="h-4 w-4" />
 		</Button>
 
 		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
@@ -116,9 +104,7 @@
 			onclick={() => onFormat('numberedList')}
 			title="Numbered List"
 		>
-			{#snippet children()}
-				<ListOrdered class="h-4 w-4" />
-			{/snippet}
+			<ListOrdered class="h-4 w-4" />
 		</Button>
 
 		<!-- Bullet List -->
@@ -129,9 +115,7 @@
 			onclick={() => onFormat('bulletList')}
 			title="Bullet List"
 		>
-			{#snippet children()}
-				<List class="h-4 w-4" />
-			{/snippet}
+			<List class="h-4 w-4" />
 		</Button>
 	</div>
 
@@ -148,12 +132,10 @@
 				title="Save"
 				disabled={!isDirty}
 			>
-				{#snippet children()}
-					<Save class="h-4 w-4" />
-					{#if isDirty}
-						<span class="text-xs">*</span>
-					{/if}
-				{/snippet}
+				<Save class="h-4 w-4" />
+				{#if isDirty}
+					<span class="text-xs">*</span>
+				{/if}
 			</Button>
 		</div>
 	{/if}

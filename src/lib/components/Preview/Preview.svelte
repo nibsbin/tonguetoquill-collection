@@ -3,8 +3,8 @@
 	import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
 	import {
 		QuillmarkError,
-		type RenderResult,
-		type QuillmarkDiagnostic
+		type RenderResult
+		// type QuillmarkDiagnostic
 	} from '$lib/services/quillmark/types';
 
 	interface Props {
@@ -328,7 +328,7 @@
 								Error Context
 							</summary>
 							<ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
-								{#each errorDisplay.sourceChain as source}
+								{#each errorDisplay.sourceChain as source, idx (idx)}
 									<li>{source}</li>
 								{/each}
 							</ul>

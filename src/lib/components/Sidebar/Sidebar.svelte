@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, SquarePen, Settings, User } from 'lucide-svelte';
+	import { Menu, Settings, User, Plus } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
@@ -12,7 +12,7 @@
 	import Sheet from '$lib/components/ui/sheet.svelte';
 	import SheetTrigger from '$lib/components/ui/sheet-trigger.svelte';
 	import SheetContent from '$lib/components/ui/sheet-content.svelte';
-	import { Root as Dialog, Portal, Close } from '$lib/components/ui/dialog.svelte';
+	import { Root as Dialog } from '$lib/components/ui/dialog.svelte';
 	import DialogContent from '$lib/components/ui/dialog-content.svelte';
 	import DialogHeader from '$lib/components/ui/dialog-header.svelte';
 	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
@@ -97,11 +97,8 @@
 	}
 
 	function handleDeleteFile(fileId: string) {
-		if (documentStore.documents.length === 1) {
-			// Can't delete the last file
-			return;
-		}
-		// Show confirmation dialog
+		// Always show confirmation dialog (allow deleting the last document).
+		// The store will handle selecting a new active document or clearing it.
 		documentToDelete = fileId;
 		deleteDialogOpen = true;
 	}
@@ -164,192 +161,164 @@
 	}
 </script>
 
-{#snippet sidebarContent()}
-	<!-- Hamburger Menu and Title -->
-	<div class="relative flex items-center">
-		<SidebarButtonSlot
-			icon={Menu}
-			{isExpanded}
-			class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
-			onclick={handleToggle}
-			ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-		/>
-
-		<span
-			class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground italic transition-opacity duration-300 {isExpanded
-				? 'opacity-100'
-				: 'opacity-0'}"
-		>
-			Tonguetoquill
-		</span>
-	</div>
-
-	<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
-	<Separator class="bg-border" />
-
-	<!-- Menu Items -->
-	<div class="flex-1 overflow-hidden">
-		<div>
-			<SidebarButtonSlot
-				icon={SquarePen}
-				label="New File"
-				{isExpanded}
-				class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
-				onclick={handleNewFile}
-				ariaLabel="Create new document"
-			/>
-
-			{#if !isExpanded}
-				<Separator class="bg-border" />
-			{/if}
-
-			{#if documentStore.documents.length > 0 && isExpanded}
-				<Separator class="bg-border" />
-
-				<!-- Recents Section Header -->
-				<div
-					class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
-				>
-					<h3 class="text-xs text-muted-foreground">Recents</h3>
-				</div>
-
-				<!-- Scrollable Recent Items -->
-				<div
-					class="space-y-px overflow-x-hidden overflow-y-auto"
-					style="max-height: calc(100vh - 300px);"
-				>
-					{#each documentStore.documents as doc (doc.id)}
-						<DocumentListItem
-							document={doc}
-							isActive={doc.id === documentStore.activeDocumentId}
-							onSelect={handleFileSelect}
-							onDelete={handleDeleteFile}
-						/>
-					{/each}
-
-					<!-- Bottom gradient fade -->
-					<div
-						class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
-					></div>
-				</div>
-			{/if}
-		</div>
-	</div>
-
-	<!-- User Profile and Settings Section -->
-	<div class="space-y-1 border-t border-border">
-		<!-- User Profile Button -->
-		{#if user}
-			<SidebarButtonSlot
-				icon={User}
-				label={user.email}
-				{isExpanded}
-				class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
-				title={user.email}
-				ariaLabel="User profile: {user.email}"
-			/>
-		{/if}
-
-		<!-- Settings Gear Button -->
-		<div class="sidebar-button-slot">
-			<Popover bind:open={popoverOpen}>
-				{#snippet children()}
-					<PopoverTrigger
-						class="sidebar-slot-button {isExpanded
-							? 'sidebar-slot-button-full'
-							: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
-					>
-						{#snippet children()}
-							<Settings class="sidebar-icon" />
-							{#if isExpanded}
-								<span>Settings</span>
-							{/if}
-						{/snippet}
-					</PopoverTrigger>
-					<PopoverContent
-						side="right"
-						align="end"
-						class="w-64 border-border bg-surface-elevated p-0 text-foreground"
-					>
-						{#snippet children()}
-							<div class="p-4">
-								<h3 class="mb-4 text-lg font-semibold">Settings</h3>
-
-								<div class="space-y-4">
-									<div class="flex items-center justify-between">
-										<Label for="dark-mode" class="text-foreground/80">
-											{#snippet children()}
-												Dark Mode
-											{/snippet}
-										</Label>
-										<Switch
-											id="dark-mode"
-											bind:checked={isDarkMode}
-											onCheckedChange={handleDarkModeChange}
-										/>
-									</div>
-
-									<Separator class="my-3 bg-border" />
-
-									<div class="flex items-center justify-between">
-										<Label for="auto-save" class="text-foreground/80">
-											{#snippet children()}
-												Auto-save
-											{/snippet}
-										</Label>
-										<Switch
-											id="auto-save"
-											bind:checked={autoSave}
-											onCheckedChange={handleAutoSaveChange}
-										/>
-									</div>
-
-									<div class="flex items-center justify-between">
-										<Label for="line-numbers" class="text-foreground/80">
-											{#snippet children()}
-												Line Numbers
-											{/snippet}
-										</Label>
-										<Switch
-											id="line-numbers"
-											bind:checked={lineNumbers}
-											onCheckedChange={handleLineNumbersChange}
-										/>
-									</div>
-								</div>
-							</div>
-						{/snippet}
-					</PopoverContent>
-				{/snippet}
-			</Popover>
-		</div>
-	</div>
-{/snippet}
-
+<!-- Note: the main sidebar content is rendered inside the mobile Sheet or the desktop sidebar below
+	 to avoid duplicating DOM and to ensure layout matches the selected container. -->
 {#if isMobile}
 	<!-- Mobile Sheet -->
 	<div>
 		<Sheet bind:open={mobileSheetOpen}>
-			{#snippet children()}
-				<SheetTrigger>
-					{#snippet children()}
-						<Button
-							variant="ghost"
-							size="icon"
-							class="fixed top-2 left-2 z-40 text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
-						>
-							{#snippet children()}
-								<Menu class="h-5 w-5" />
-							{/snippet}
-						</Button>
-					{/snippet}
-				</SheetTrigger>
-				<SheetContent side="left" class="flex w-72 flex-col bg-background p-0 text-foreground">
-					{#snippet children()}
-						{@render sidebarContent()}
-					{/snippet}
-				</SheetContent>
-			{/snippet}
+			<SheetTrigger>
+				<Button
+					variant="ghost"
+					size="icon"
+					class="fixed top-2 left-2 z-40 text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
+				>
+					<Menu class="h-5 w-5" />
+				</Button>
+			</SheetTrigger>
+			<SheetContent side="left" class="flex w-72 flex-col bg-background p-0 text-foreground">
+				<!-- Hamburger Menu and Title -->
+				<div class="relative flex items-center">
+					<SidebarButtonSlot
+						icon={Menu}
+						{isExpanded}
+						class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
+						onclick={handleToggle}
+						ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+					/>
+
+					<span
+						class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground italic transition-opacity duration-300 {isExpanded
+							? 'opacity-100'
+							: 'opacity-0'}"
+					>
+						Tonguetoquill
+					</span>
+				</div>
+
+				<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
+				<Separator class="bg-border" />
+
+				<!-- Menu Items -->
+				<div class="flex-1 overflow-hidden">
+					<div>
+						<SidebarButtonSlot
+							icon={Plus}
+							label="New Document"
+							{isExpanded}
+							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
+							onclick={handleNewFile}
+							ariaLabel="Create new document"
+						/>
+
+						{#if !isExpanded}
+							<Separator class="bg-border" />
+						{/if}
+
+						{#if documentStore.documents.length > 0 && isExpanded}
+							<Separator class="bg-border" />
+
+							<!-- Recents Section Header -->
+							<div
+								class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
+							>
+								<h3 class="text-xs text-muted-foreground">Recents</h3>
+							</div>
+
+							<!-- Scrollable Recent Items -->
+							<div
+								class="space-y-px overflow-x-hidden overflow-y-auto"
+								style="max-height: calc(100vh - 300px);"
+							>
+								{#each documentStore.documents as doc (doc.id)}
+									<DocumentListItem
+										document={doc}
+										isActive={doc.id === documentStore.activeDocumentId}
+										onSelect={handleFileSelect}
+										onDelete={handleDeleteFile}
+									/>
+								{/each}
+
+								<!-- Bottom gradient fade -->
+								<div
+									class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
+								></div>
+							</div>
+						{/if}
+					</div>
+				</div>
+
+				<!-- User Profile and Settings Section -->
+				<div class="space-y-1 border-t border-border">
+					<!-- User Profile Button -->
+					{#if user}
+						<SidebarButtonSlot
+							icon={User}
+							label={user.email}
+							{isExpanded}
+							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
+							title={user.email}
+							ariaLabel="User profile: {user.email}"
+						/>
+					{/if}
+
+					<!-- Settings Gear Button -->
+					<div class="sidebar-button-slot">
+						<Popover bind:open={popoverOpen}>
+							<PopoverTrigger
+								class="sidebar-slot-button {isExpanded
+									? 'sidebar-slot-button-full'
+									: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
+							>
+								<Settings class="sidebar-icon" />
+								{#if isExpanded}
+									<span>Settings</span>
+								{/if}
+							</PopoverTrigger>
+							<PopoverContent
+								side="right"
+								align="end"
+								class="w-64 border-border bg-surface-elevated p-0 text-foreground"
+							>
+								<div class="p-4">
+									<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+
+									<div class="space-y-4">
+										<div class="flex items-center justify-between">
+											<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
+											<Switch
+												id="dark-mode"
+												bind:checked={isDarkMode}
+												onCheckedChange={handleDarkModeChange}
+											/>
+										</div>
+
+										<Separator class="my-3 bg-border" />
+
+										<div class="flex items-center justify-between">
+											<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
+											<Switch
+												id="auto-save"
+												bind:checked={autoSave}
+												onCheckedChange={handleAutoSaveChange}
+											/>
+										</div>
+
+										<div class="flex items-center justify-between">
+											<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
+											<Switch
+												id="line-numbers"
+												bind:checked={lineNumbers}
+												onCheckedChange={handleLineNumbersChange}
+											/>
+										</div>
+									</div>
+								</div>
+							</PopoverContent>
+						</Popover>
+					</div>
+				</div>
+			</SheetContent>
 		</Sheet>
 	</div>
 {:else}
@@ -360,56 +329,178 @@
 			? 'var(--sidebar-expanded-width)'
 			: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 	>
-		{@render sidebarContent()}
+		<!-- Hamburger Menu and Title -->
+		<div class="relative flex items-center">
+			<SidebarButtonSlot
+				icon={Menu}
+				{isExpanded}
+				class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
+				onclick={handleToggle}
+				ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+			/>
+
+			<span
+				class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground italic transition-opacity duration-300 {isExpanded
+					? 'opacity-100'
+					: 'opacity-0'}"
+			>
+				Tonguetoquill
+			</span>
+		</div>
+
+		<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
+		<Separator class="bg-border" />
+
+		<!-- Menu Items -->
+		<div class="flex-1 overflow-hidden">
+			<div>
+				<SidebarButtonSlot
+					icon={Plus}
+					label="New Document"
+					{isExpanded}
+					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
+					onclick={handleNewFile}
+					ariaLabel="Create new document"
+				/>
+
+				{#if !isExpanded}
+					<Separator class="bg-border" />
+				{/if}
+
+				{#if documentStore.documents.length > 0 && isExpanded}
+					<Separator class="bg-border" />
+
+					<!-- Recents Section Header -->
+					<div
+						class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
+					>
+						<h3 class="text-xs text-muted-foreground">Recents</h3>
+					</div>
+
+					<!-- Scrollable Recent Items -->
+					<div
+						class="space-y-px overflow-x-hidden overflow-y-auto"
+						style="max-height: calc(100vh - 300px);"
+					>
+						{#each documentStore.documents as doc (doc.id)}
+							<DocumentListItem
+								document={doc}
+								isActive={doc.id === documentStore.activeDocumentId}
+								onSelect={handleFileSelect}
+								onDelete={handleDeleteFile}
+							/>
+						{/each}
+
+						<!-- Bottom gradient fade -->
+						<div
+							class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
+						></div>
+					</div>
+				{/if}
+			</div>
+		</div>
+
+		<!-- User Profile and Settings Section -->
+		<div class="space-y-1 border-t border-border">
+			<!-- User Profile Button -->
+			{#if user}
+				<SidebarButtonSlot
+					icon={User}
+					label={user.email}
+					{isExpanded}
+					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
+					title={user.email}
+					ariaLabel="User profile: {user.email}"
+				/>
+			{/if}
+
+			<!-- Settings Gear Button -->
+			<div class="sidebar-button-slot">
+				<Popover bind:open={popoverOpen}>
+					<PopoverTrigger
+						class="sidebar-slot-button {isExpanded
+							? 'sidebar-slot-button-full'
+							: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
+					>
+						<Settings class="sidebar-icon" />
+						{#if isExpanded}
+							<span>Settings</span>
+						{/if}
+					</PopoverTrigger>
+					<PopoverContent
+						side="right"
+						align="end"
+						class="w-64 border-border bg-surface-elevated p-0 text-foreground"
+					>
+						<div class="p-4">
+							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+
+							<div class="space-y-4">
+								<div class="flex items-center justify-between">
+									<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
+									<Switch
+										id="dark-mode"
+										bind:checked={isDarkMode}
+										onCheckedChange={handleDarkModeChange}
+									/>
+								</div>
+
+								<Separator class="my-3 bg-border" />
+
+								<div class="flex items-center justify-between">
+									<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
+									<Switch
+										id="auto-save"
+										bind:checked={autoSave}
+										onCheckedChange={handleAutoSaveChange}
+									/>
+								</div>
+
+								<div class="flex items-center justify-between">
+									<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
+									<Switch
+										id="line-numbers"
+										bind:checked={lineNumbers}
+										onCheckedChange={handleLineNumbersChange}
+									/>
+								</div>
+							</div>
+						</div>
+					</PopoverContent>
+				</Popover>
+			</div>
+		</div>
 	</div>
 {/if}
 
 <!-- Delete Confirmation Dialog -->
 <Dialog bind:open={deleteDialogOpen}>
-	{#snippet children()}
-		<DialogContent>
-			{#snippet children()}
-				<DialogHeader>
-					{#snippet children()}
-						<DialogTitle>
-							{#snippet children()}
-								Delete Document
-							{/snippet}
-						</DialogTitle>
-						<DialogDescription>
-							{#snippet children()}
-								Are you sure you want to delete this document? This action cannot be undone.
-							{/snippet}
-						</DialogDescription>
-					{/snippet}
-				</DialogHeader>
-				<DialogFooter>
-					{#snippet children()}
-						<Button
-							variant="ghost"
-							size="sm"
-							class="text-muted-foreground hover:bg-accent hover:text-foreground"
-							onclick={cancelDelete}
-						>
-							{#snippet children()}
-								Cancel
-							{/snippet}
-						</Button>
-						<Button
-							variant="default"
-							size="sm"
-							class="bg-red-600 text-white hover:bg-red-700"
-							onclick={confirmDelete}
-						>
-							{#snippet children()}
-								Delete
-							{/snippet}
-						</Button>
-					{/snippet}
-				</DialogFooter>
-			{/snippet}
-		</DialogContent>
-	{/snippet}
+	<DialogContent>
+		<DialogHeader>
+			<DialogTitle>Delete Document</DialogTitle>
+			<DialogDescription>
+				Are you sure you want to delete this document? This action cannot be undone.
+			</DialogDescription>
+		</DialogHeader>
+		<DialogFooter>
+			<Button
+				variant="ghost"
+				size="sm"
+				class="text-muted-foreground hover:bg-accent hover:text-foreground"
+				onclick={cancelDelete}
+			>
+				Cancel
+			</Button>
+			<Button
+				variant="default"
+				size="sm"
+				class="bg-red-600 text-white hover:bg-red-700"
+				onclick={confirmDelete}
+			>
+				Delete
+			</Button>
+		</DialogFooter>
+	</DialogContent>
 </Dialog>
 
 <style>

@@ -92,7 +92,7 @@
 		<div class="flex flex-1 flex-col">
 			<!-- Top Menu -->
 			<TopMenu
-				fileName={documentStore.activeDocument?.name || 'Untitled'}
+				fileName={documentStore.activeDocument?.name ?? ''}
 				onDownload={handleDownload}
 				saveStatus={autoSave.saveState.status}
 				saveError={autoSave.saveState.errorMessage}
