@@ -280,6 +280,19 @@ class QuillmarkServiceImpl implements QuillmarkService {
 		// The WASM engine may return errors with a `diagnostic` property
 		// or embed diagnostic information in the error structure
 		if (error && typeof error === 'object') {
+			// Handle Map objects from WASM
+			if (error instanceof Map) {
+				// Check if the Map has diagnostic structure (type: 'diagnostic')
+				if (error.get('type') === 'diagnostic') {
+					// Convert Map to plain object
+					const obj: Record<string, unknown> = {};
+					error.forEach((value, key) => {
+						obj[key] = value;
+					});
+					return this.normalizeDiagnostic(obj);
+				}
+			}
+
 			const err = error as Record<string, unknown>;
 
 			// Check for diagnostic property
