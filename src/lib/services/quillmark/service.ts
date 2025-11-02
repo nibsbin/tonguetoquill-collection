@@ -280,7 +280,7 @@ class QuillmarkServiceImpl implements QuillmarkService {
 		// The WASM engine may return errors with a `diagnostic` property
 		// or embed diagnostic information in the error structure
 		if (error && typeof error === 'object') {
-			const err = error as any;
+			const err = error as Record<string, unknown>;
 
 			// Check for diagnostic property
 			if (err.diagnostic) {
@@ -299,27 +299,28 @@ class QuillmarkServiceImpl implements QuillmarkService {
 	/**
 	 * Normalize WASM diagnostic to TypeScript type
 	 */
-	private normalizeDiagnostic(diagnostic: any): import('./types').QuillmarkDiagnostic {
+	private normalizeDiagnostic(diagnostic: unknown): import('./types').QuillmarkDiagnostic {
+		const d = diagnostic as Record<string, unknown>;
 		return {
-			severity: this.normalizeSeverity(diagnostic.severity),
-			code: diagnostic.code || undefined,
-			message: diagnostic.message || 'Unknown error',
-			location: diagnostic.primary
+			severity: this.normalizeSeverity(d.severity),
+			code: (d.code as string) || undefined,
+			message: (d.message as string) || 'Unknown error',
+			location: d.primary
 				? {
-						line: diagnostic.primary.line,
-						column: diagnostic.primary.column,
-						length: diagnostic.primary.length
+						line: (d.primary as Record<string, unknown>).line as number,
+						column: (d.primary as Record<string, unknown>).column as number,
+						length: (d.primary as Record<string, unknown>).length as number | undefined
 					}
 				: undefined,
-			hint: diagnostic.hint || undefined,
-			sourceChain: diagnostic.source_chain || diagnostic.sourceChain || []
+			hint: (d.hint as string) || undefined,
+			sourceChain: (d.source_chain as string[]) || (d.sourceChain as string[]) || []
 		};
 	}
 
 	/**
 	 * Normalize severity to lowercase TypeScript type
 	 */
-	private normalizeSeverity(severity: any): import('./types').DiagnosticSeverity {
+	private normalizeSeverity(severity: unknown): import('./types').DiagnosticSeverity {
 		if (typeof severity === 'string') {
 			const lower = severity.toLowerCase();
 			if (lower === 'error' || lower === 'warning' || lower === 'info') {
