@@ -6,6 +6,18 @@ import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig({
 	plugins: [wasm(), topLevelAwait(), tailwindcss(), sveltekit()],
+
+	// Add WASM support
+	optimizeDeps: {
+		exclude: ['@quillmark-test/wasm']
+	},
+
+	server: {
+		fs: {
+			allow: ['./node_modules/@quillmark-test/wasm']
+		}
+	},
+
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
