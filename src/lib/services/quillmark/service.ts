@@ -117,8 +117,14 @@ class QuillmarkServiceImpl implements QuillmarkService {
 
 			return exporters!.toBlob(result);
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('render_error', `Failed to render PDF: ${message}`);
+			const diagnostic = this.extractDiagnostic(error);
+
+			if (diagnostic) {
+				throw new QuillmarkError('render_error', diagnostic.message, diagnostic);
+			} else {
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				throw new QuillmarkError('render_error', `Failed to render PDF: ${message}`);
+			}
 		}
 	}
 
@@ -138,8 +144,21 @@ class QuillmarkServiceImpl implements QuillmarkService {
 			return result;
 		} catch (error) {
 			console.log('Error during renderForPreview:', error);
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
+			// Extract diagnostic information if available
+			const diagnostic = this.extractDiagnostic(error);
+
+			if (diagnostic) {
+				// Throw with diagnostic information
+				throw new QuillmarkError(
+					'render_error',
+					diagnostic.message || 'Failed to render preview',
+					diagnostic
+				);
+			} else {
+				// Fallback to generic error
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
+			}
 		}
 	}
 
@@ -163,8 +182,14 @@ class QuillmarkServiceImpl implements QuillmarkService {
 
 			exporters!.download(result, filename);
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('render_error', `Failed to download document: ${message}`);
+			const diagnostic = this.extractDiagnostic(error);
+
+			if (diagnostic) {
+				throw new QuillmarkError('render_error', diagnostic.message, diagnostic);
+			} else {
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				throw new QuillmarkError('render_error', `Failed to download document: ${message}`);
+			}
 		}
 	}
 
@@ -246,6 +271,62 @@ class QuillmarkServiceImpl implements QuillmarkService {
 				`Quill "${quillName}" not found. Available: ${available}`
 			);
 		}
+	}
+
+	/**
+	 * Extract diagnostic information from WASM error
+	 */
+	private extractDiagnostic(error: unknown): import('./types').QuillmarkDiagnostic | null {
+		// The WASM engine may return errors with a `diagnostic` property
+		// or embed diagnostic information in the error structure
+		if (error && typeof error === 'object') {
+			const err = error as any;
+
+			// Check for diagnostic property
+			if (err.diagnostic) {
+				return this.normalizeDiagnostic(err.diagnostic);
+			}
+
+			// Check if error itself is a diagnostic
+			if (err.severity && err.message) {
+				return this.normalizeDiagnostic(err);
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Normalize WASM diagnostic to TypeScript type
+	 */
+	private normalizeDiagnostic(diagnostic: any): import('./types').QuillmarkDiagnostic {
+		return {
+			severity: this.normalizeSeverity(diagnostic.severity),
+			code: diagnostic.code || undefined,
+			message: diagnostic.message || 'Unknown error',
+			location: diagnostic.primary
+				? {
+						line: diagnostic.primary.line,
+						column: diagnostic.primary.column,
+						length: diagnostic.primary.length
+					}
+				: undefined,
+			hint: diagnostic.hint || undefined,
+			sourceChain: diagnostic.source_chain || diagnostic.sourceChain || []
+		};
+	}
+
+	/**
+	 * Normalize severity to lowercase TypeScript type
+	 */
+	private normalizeSeverity(severity: any): import('./types').DiagnosticSeverity {
+		if (typeof severity === 'string') {
+			const lower = severity.toLowerCase();
+			if (lower === 'error' || lower === 'warning' || lower === 'info') {
+				return lower as import('./types').DiagnosticSeverity;
+			}
+		}
+		return 'error'; // Default to error
 	}
 }
 
