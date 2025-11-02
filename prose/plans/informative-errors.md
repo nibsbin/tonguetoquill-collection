@@ -76,15 +76,11 @@ export interface QuillmarkDiagnostic {
 export class QuillmarkError extends Error {
 	/** Error code identifying the type of error */
 	code: QuillmarkErrorCode;
-	
+
 	/** Optional diagnostic information for render errors */
 	diagnostic?: QuillmarkDiagnostic;
 
-	constructor(
-		code: QuillmarkErrorCode, 
-		message: string, 
-		diagnostic?: QuillmarkDiagnostic
-	) {
+	constructor(code: QuillmarkErrorCode, message: string, diagnostic?: QuillmarkDiagnostic) {
 		super(message);
 		this.name = 'QuillmarkError';
 		this.code = code;
@@ -94,6 +90,7 @@ export class QuillmarkError extends Error {
 ```
 
 **Testing:**
+
 - Type checking passes
 - Existing code compiles (backward compatible)
 - New diagnostic property is optional
@@ -119,18 +116,18 @@ private extractDiagnostic(error: unknown): QuillmarkDiagnostic | null {
 	// or embed diagnostic information in the error structure
 	if (error && typeof error === 'object') {
 		const err = error as any;
-		
+
 		// Check for diagnostic property
 		if (err.diagnostic) {
 			return this.normalizeDiagnostic(err.diagnostic);
 		}
-		
+
 		// Check if error itself is a diagnostic
 		if (err.severity && err.message) {
 			return this.normalizeDiagnostic(err);
 		}
 	}
-	
+
 	return null;
 }
 
@@ -178,7 +175,7 @@ async renderForPreview(markdown: string): Promise<RenderResult> {
 	} catch (error) {
 		// Extract diagnostic information if available
 		const diagnostic = this.extractDiagnostic(error);
-		
+
 		if (diagnostic) {
 			// Throw with diagnostic information
 			throw new QuillmarkError(
@@ -212,7 +209,7 @@ async renderToPDF(markdown: string, quillName: string): Promise<Blob> {
 		return exporters!.toBlob(result);
 	} catch (error) {
 		const diagnostic = this.extractDiagnostic(error);
-		
+
 		if (diagnostic) {
 			throw new QuillmarkError('render_error', diagnostic.message, diagnostic);
 		} else {
@@ -224,6 +221,7 @@ async renderToPDF(markdown: string, quillName: string): Promise<Blob> {
 ```
 
 **Testing:**
+
 - Unit tests for `extractDiagnostic` with various error formats
 - Unit tests for `normalizeDiagnostic` with WASM diagnostic structure
 - Unit tests for `normalizeSeverity` with different inputs
@@ -269,16 +267,15 @@ function extractErrorDisplay(error: unknown): ErrorDisplayState {
 			message: error.diagnostic.message,
 			hint: error.diagnostic.hint,
 			location: error.diagnostic.location,
-			sourceChain: error.diagnostic.sourceChain.length > 0 
-				? error.diagnostic.sourceChain 
-				: undefined
+			sourceChain:
+				error.diagnostic.sourceChain.length > 0 ? error.diagnostic.sourceChain : undefined
 		};
 	}
-	
+
 	if (error instanceof QuillmarkError) {
 		return { message: error.message };
 	}
-	
+
 	return { message: 'An unexpected error occurred while rendering' };
 }
 ```
@@ -296,7 +293,7 @@ let errorDisplay = $state<ErrorDisplayState | null>(null);
 ```typescript
 async function renderPreview(): Promise<void> {
 	// ... existing code ...
-	
+
 	try {
 		const result = await quillmarkService.renderForPreview(markdown);
 		renderResult = result;
@@ -423,6 +420,7 @@ Replace the existing error display block with:
 ```
 
 **Testing:**
+
 - Component renders with diagnostic information
 - Component handles errors without diagnostic (backward compatible)
 - All diagnostic fields display correctly when present
@@ -540,7 +538,7 @@ describe('QuillmarkService - Diagnostic Handling', () => {
 
 **Add Section:**
 
-```markdown
+````markdown
 ## Error Handling with Diagnostics
 
 When rendering fails, the service provides detailed diagnostic information:
@@ -566,6 +564,7 @@ interface QuillmarkDiagnostic {
 	sourceChain: string[];
 }
 ```
+````
 
 ### Usage Example
 
@@ -586,7 +585,8 @@ try {
 	}
 }
 ```
-```
+
+````
 
 ### 6. Type Checking and Linting
 
@@ -596,7 +596,7 @@ Run type checking and linting on all modified files:
 npm run check        # Type checking
 npm run lint         # ESLint
 npm run format       # Prettier
-```
+````
 
 Fix any issues found.
 
@@ -637,6 +637,7 @@ Verify all tests pass and build succeeds.
 **Decision:** Add `diagnostic` as optional property to existing `QuillmarkError` class.
 
 **Rationale:**
+
 - Backward compatible (existing error handling works)
 - Not all errors have diagnostics (e.g., initialization errors)
 - Allows gradual adoption
@@ -650,6 +651,7 @@ Verify all tests pass and build succeeds.
 **Decision:** Service layer extracts and normalizes diagnostics from WASM.
 
 **Rationale:**
+
 - Decouples UI from WASM internal structure
 - Provides type-safe interface to consumers
 - Handles different WASM error formats consistently
@@ -663,6 +665,7 @@ Verify all tests pass and build succeeds.
 **Decision:** Display code, message, hint, location, source chain when available.
 
 **Rationale:**
+
 - Provides complete information for debugging
 - Actionable guidance (hint) helps users fix issues
 - Location helps identify error source

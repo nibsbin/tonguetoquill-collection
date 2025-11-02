@@ -3,6 +3,7 @@
 This document describes how UI components display diagnostic error information to users when Quillmark rendering fails.
 
 > **Related**:
+>
 > - [DIAGNOSTICS.md](../quillmark/DIAGNOSTICS.md) for diagnostic structure
 > - [PREVIEW.md](../quillmark/PREVIEW.md) for Preview component
 > - [ACCESSIBILITY.md](./ACCESSIBILITY.md) for accessibility requirements
@@ -91,19 +92,18 @@ function extractErrorDisplay(error: unknown): ErrorDisplayState | null {
 			message: error.diagnostic.message,
 			hint: error.diagnostic.hint,
 			location: error.diagnostic.location,
-			sourceChain: error.diagnostic.sourceChain.length > 0 
-				? error.diagnostic.sourceChain 
-				: undefined
+			sourceChain:
+				error.diagnostic.sourceChain.length > 0 ? error.diagnostic.sourceChain : undefined
 		};
 	}
-	
+
 	// Fallback to basic error message
 	if (error instanceof QuillmarkError) {
 		return {
 			message: error.message
 		};
 	}
-	
+
 	// Unknown error
 	return {
 		message: 'An unexpected error occurred while rendering'
@@ -119,21 +119,21 @@ Update `Preview.svelte` to display diagnostic information:
 <script lang="ts">
 	import { quillmarkService } from '$lib/services/quillmark';
 	import { QuillmarkError } from '$lib/services/quillmark/types';
-	
+
 	interface Props {
 		markdown: string;
 	}
-	
+
 	let { markdown }: Props = $props();
-	
+
 	let loading = $state(false);
 	let errorDisplay = $state<ErrorDisplayState | null>(null);
 	let renderResult = $state<RenderResult | null>(null);
-	
+
 	async function renderPreview(): Promise<void> {
 		loading = true;
 		errorDisplay = null;
-		
+
 		try {
 			const result = await quillmarkService.renderForPreview(markdown);
 			renderResult = result;
@@ -161,17 +161,17 @@ Update `Preview.svelte` to display diagnostic information:
 				</svg>
 				<h3 class="error-title">Render Error</h3>
 			</div>
-			
+
 			{#if errorDisplay.code}
 				<div class="error-code">
 					<span class="code-badge">{errorDisplay.code}</span>
 				</div>
 			{/if}
-			
+
 			<div class="error-message">
 				{errorDisplay.message}
 			</div>
-			
+
 			{#if errorDisplay.hint}
 				<div class="error-hint">
 					<svg class="hint-icon" aria-hidden="true">
@@ -180,19 +180,18 @@ Update `Preview.svelte` to display diagnostic information:
 					<p>{errorDisplay.hint}</p>
 				</div>
 			{/if}
-			
+
 			{#if errorDisplay.location}
 				<div class="error-location">
 					<svg class="location-icon" aria-hidden="true">
 						<!-- Location pin icon -->
 					</svg>
 					<p>
-						Line {errorDisplay.location.line}, 
-						Column {errorDisplay.location.column}
+						Line {errorDisplay.location.line}, Column {errorDisplay.location.column}
 					</p>
 				</div>
 			{/if}
-			
+
 			{#if errorDisplay.sourceChain && errorDisplay.sourceChain.length > 0}
 				<details class="error-source-chain">
 					<summary>Error Context</summary>
@@ -219,17 +218,20 @@ Update `Preview.svelte` to display diagnostic information:
 ### Color Scheme
 
 **Error Display:**
+
 - Background: Light red (`bg-red-50` / `dark:bg-red-950`)
 - Border: Red (`border-red-200` / `dark:border-red-800`)
 - Text: Dark red (`text-red-900` / `dark:text-red-100`)
 - Icon: Red (`text-red-600` / `dark:text-red-400`)
 
 **Hint Display:**
+
 - Background: Light amber (`bg-amber-50` / `dark:bg-amber-950`)
 - Icon: Amber (`text-amber-600` / `dark:text-amber-400`)
 - Text: Dark amber (`text-amber-900` / `dark:text-amber-100`)
 
 **Location Display:**
+
 - Background: Light gray (`bg-gray-50` / `dark:bg-gray-900`)
 - Icon: Gray (`text-gray-600` / `dark:text-gray-400`)
 - Text: Dark gray (`text-gray-900` / `dark:text-gray-100`)
@@ -348,17 +350,13 @@ Update `Preview.svelte` to display diagnostic information:
 ### ARIA Attributes
 
 ```svelte
-<div 
-	class="error-display" 
-	role="alert" 
-	aria-live="assertive"
-	aria-atomic="true"
->
+<div class="error-display" role="alert" aria-live="assertive" aria-atomic="true">
 	<!-- Error content -->
 </div>
 ```
 
 **Rationale:**
+
 - `role="alert"` - Identifies as important message
 - `aria-live="assertive"` - Screen readers announce immediately
 - `aria-atomic="true"` - Read entire error, not just changes
@@ -366,6 +364,7 @@ Update `Preview.svelte` to display diagnostic information:
 ### Screen Reader Support
 
 **Announcements:**
+
 - Error appears: "Alert: Render Error. [code]. [message]. [hint]. [location]."
 - Error clears: "Preview updated" (via preview container's `aria-live="polite"`)
 
@@ -387,12 +386,14 @@ Update `Preview.svelte` to display diagnostic information:
 ### Mobile Considerations
 
 **Layout Adjustments:**
+
 - Reduce padding on small screens: `p-4` instead of `p-6`
 - Stack elements vertically (already flex-column)
 - Allow horizontal scrolling for long error codes/locations
 - Collapse source chain by default (already using `<details>`)
 
 **Touch Optimization:**
+
 - Adequate tap target for `<summary>` (min 44px height)
 - Scrollable error container for long messages
 - No hover states (rely on visible states)
@@ -424,18 +425,21 @@ Display error information in this priority order:
 ### Common Error Types
 
 **Syntax Errors:**
+
 - Code: `E001`, `typst::syntax`
 - Location: Usually available
 - Hint: Often available (e.g., "missing closing bracket")
 - Example: Markdown syntax error, invalid YAML frontmatter
 
 **Template Errors:**
+
 - Code: `E002`, `template::field`
 - Location: May not be available
 - Hint: Usually available (e.g., "field 'date' is required")
 - Example: Missing required field, invalid field type
 
 **Backend Errors:**
+
 - Code: Backend-specific (e.g., `typst::compile`)
 - Location: May be available
 - Hint: May be available
@@ -443,6 +447,7 @@ Display error information in this priority order:
 - Example: Typst compilation error, LaTeX error
 
 **Service Errors:**
+
 - Code: `not_initialized`, `quill_not_found`
 - No location (not source-related)
 - Hint: May suggest action (e.g., "refresh page")
@@ -453,6 +458,7 @@ Display error information in this priority order:
 ### Visual Tests
 
 **Component States:**
+
 - Error with all fields (code + message + hint + location + source chain)
 - Error with minimal fields (message only)
 - Error with code and message
@@ -461,6 +467,7 @@ Display error information in this priority order:
 - Long source chain (scrolling)
 
 **Responsive Tests:**
+
 - Mobile viewport (320px - 768px)
 - Tablet viewport (768px - 1024px)
 - Desktop viewport (1024px+)
@@ -468,11 +475,13 @@ Display error information in this priority order:
 ### Accessibility Tests
 
 **Screen Reader:**
+
 - Error announcement on render failure
 - Tab navigation through interactive elements
 - Details expand/collapse keyboard support
 
 **Keyboard Navigation:**
+
 - Focus management on error state
 - Scrolling with keyboard
 - No keyboard traps
@@ -480,6 +489,7 @@ Display error information in this priority order:
 ### Integration Tests
 
 **Error Scenarios:**
+
 1. Trigger syntax error → Verify diagnostic display
 2. Trigger template error → Verify hint display
 3. Trigger backend error → Verify source chain
@@ -493,6 +503,7 @@ Display error information in this priority order:
 **Decision:** Show error in Preview pane, not as toast/modal.
 
 **Rationale:**
+
 - Error is contextual to preview
 - User can see error while editing
 - Persists until fixed (not dismissed)
@@ -507,6 +518,7 @@ Display error information in this priority order:
 **Decision:** Use `<details>` element to collapse source chain by default.
 
 **Rationale:**
+
 - Reduces visual clutter for common errors
 - Advanced users can expand for context
 - Native HTML element (accessibility built-in)
@@ -520,6 +532,7 @@ Display error information in this priority order:
 **Decision:** Use monospace font for error codes and location info.
 
 **Rationale:**
+
 - Distinguishes technical info from prose
 - Easier to parse (line/column numbers)
 - Matches editor font (consistency)
@@ -530,6 +543,7 @@ Display error information in this priority order:
 **Decision:** Use both color and icons for error display.
 
 **Rationale:**
+
 - Color not sole indicator (accessibility)
 - Icons provide quick visual scanning
 - Color reinforces severity

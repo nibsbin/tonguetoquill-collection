@@ -2,7 +2,8 @@
 
 This document describes how the Quillmark service surfaces diagnostic information when rendering fails, and how consumers use this information to provide informative error messages.
 
-> **Related**: 
+> **Related**:
+>
 > - [SERVICE.md](./SERVICE.md) for service architecture
 > - [PREVIEW.md](./PREVIEW.md) for preview component integration
 
@@ -105,15 +106,11 @@ Update the `QuillmarkError` class to carry diagnostic information:
 export class QuillmarkError extends Error {
 	/** Error code identifying the type of error */
 	code: QuillmarkErrorCode;
-	
+
 	/** Optional diagnostic information for render errors */
 	diagnostic?: QuillmarkDiagnostic;
 
-	constructor(
-		code: QuillmarkErrorCode, 
-		message: string, 
-		diagnostic?: QuillmarkDiagnostic
-	) {
+	constructor(code: QuillmarkErrorCode, message: string, diagnostic?: QuillmarkDiagnostic) {
 		super(message);
 		this.name = 'QuillmarkError';
 		this.code = code;
@@ -145,7 +142,7 @@ async renderForPreview(markdown: string): Promise<RenderResult> {
 	} catch (error) {
 		// Check if error contains diagnostic information
 		const diagnostic = this.extractDiagnostic(error);
-		
+
 		if (diagnostic) {
 			// Render error with diagnostic information
 			throw new QuillmarkError(
@@ -169,18 +166,18 @@ private extractDiagnostic(error: unknown): QuillmarkDiagnostic | null {
 	// or embed diagnostic information in the error structure
 	if (error && typeof error === 'object') {
 		const err = error as any;
-		
+
 		// Check for diagnostic property
 		if (err.diagnostic) {
 			return this.normalizeDiagnostic(err.diagnostic);
 		}
-		
+
 		// Check if error itself is a diagnostic
 		if (err.severity && err.message) {
 			return this.normalizeDiagnostic(err);
 		}
 	}
-	
+
 	return null;
 }
 
@@ -228,6 +225,7 @@ When displaying errors, use this priority:
 **Decision:** Include `diagnostic` as optional property on `QuillmarkError`.
 
 **Rationale:**
+
 - Preserves existing error handling patterns
 - Backward compatible (diagnostic is optional)
 - All error information in one object
@@ -242,6 +240,7 @@ When displaying errors, use this priority:
 **Decision:** Make diagnostic optional on QuillmarkError.
 
 **Rationale:**
+
 - Not all errors have diagnostics (e.g., initialization errors)
 - Allows gradual adoption (existing code works without changes)
 - WASM errors may not always include diagnostic information
@@ -252,6 +251,7 @@ When displaying errors, use this priority:
 **Decision:** Convert WASM diagnostic format to TypeScript interface.
 
 **Rationale:**
+
 - Type safety for consumers
 - Consistent casing (snake_case → camelCase)
 - Handles different error formats from WASM
@@ -263,6 +263,7 @@ When displaying errors, use this priority:
 **Decision:** Include `sourceChain` array in diagnostic.
 
 **Rationale:**
+
 - Provides error context (e.g., "caused by X, which was caused by Y")
 - Useful for debugging template issues
 - Helps advanced users trace error origins
@@ -286,6 +287,7 @@ Potential improvements for future versions:
 ### Unit Tests
 
 **Service Layer:**
+
 - Test diagnostic extraction from WASM errors
 - Test diagnostic normalization (snake_case → camelCase)
 - Test QuillmarkError with and without diagnostic
@@ -293,6 +295,7 @@ Potential improvements for future versions:
 - Test error propagation to caller
 
 **Mock Scenarios:**
+
 - Typst syntax error with location
 - Template field validation error with hint
 - Backend compilation error with source chain
@@ -301,6 +304,7 @@ Potential improvements for future versions:
 ### Integration Tests
 
 **Full Error Flow:**
+
 1. Trigger render error with invalid markdown
 2. Verify diagnostic information extracted
 3. Verify error propagated to component
