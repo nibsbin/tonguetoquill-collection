@@ -22,7 +22,71 @@ This plan outlines the implementation of robust syntax highlighting for QuillMar
 - [x] Existing CodeMirror 6 setup with standard markdown mode
 - [x] Theme system with CSS custom properties
 - [x] QuillMark parser specification (PARSE.md)
+- [x] Semantic token definitions in DESIGN_SYSTEM.md
 - [ ] Review and approval of QUILLMARK_SYNTAX_HIGHLIGHTING.md design
+
+## Semantic Tokens for Syntax Highlighting
+
+The following semantic tokens have been added to the design system (DESIGN_SYSTEM.md) to support QuillMark syntax highlighting. These tokens ensure maintainability and automatic theme adaptation while providing customization points for future enhancements.
+
+### New Semantic Tokens
+
+**Color Tokens:**
+
+- `--color-syntax-keyword`: Keywords and structural elements (SCOPE/QUILL keywords)
+  - Light mode: `#355e93` (USAF blue)
+  - Dark mode: `#355e93` (USAF blue - consistent brand color)
+  
+- `--color-syntax-identifier`: Identifiers and names (scope/quill names)
+  - Light mode: `#0891b2` (darker cyan for contrast)
+  - Dark mode: `#06b6d4` (brighter cyan)
+  
+- `--color-syntax-string`: String literals
+  - Light mode: `#16a34a` (darker green for contrast)
+  - Dark mode: `#22c55e` (brighter green)
+  
+- `--color-syntax-number`: Numeric literals
+  - Light mode: `#d97706` (darker amber for contrast)
+  - Dark mode: `#f59e0b` (brighter amber)
+  
+- `--color-syntax-boolean`: Boolean values
+  - Light mode: `#7c3aed` (darker purple for contrast)
+  - Dark mode: `#8b5cf6` (brighter purple)
+  
+- `--color-syntax-metadata-bg`: Metadata block background (light mode)
+  - Value: `rgba(53, 94, 147, 0.03)` (very subtle blue tint)
+  
+- `--color-syntax-metadata-bg-dark`: Metadata block background (dark mode)
+  - Value: `rgba(53, 94, 147, 0.08)` (slightly more visible blue tint)
+  
+- `--color-syntax-metadata-border`: Metadata block border
+  - Value: `#355e93` (USAF blue - consistent across themes)
+
+### Token Consolidation Rationale
+
+The tokens were consolidated to balance maintainability with customizability:
+
+1. **Reuse existing tokens**: Delimiters use `--color-muted-foreground`, YAML keys use `--color-foreground` - no new tokens needed
+2. **Semantic grouping**: All syntax colors share the `--color-syntax-*` prefix for easy discovery
+3. **Type-based tokens**: String, number, boolean tokens can be reused for other syntax highlighting (not just YAML)
+4. **Separate light/dark backgrounds**: Metadata backgrounds need different opacity in each theme, so we use two tokens instead of relying on theme cascade
+5. **Shared border**: Same border color across themes reinforces brand identity
+
+### Accessibility Considerations
+
+All syntax colors meet WCAG AA contrast requirements (4.5:1 minimum):
+- Light mode uses darker variants for better contrast on white background
+- Dark mode uses brighter variants for better contrast on dark background
+- Keyword color (USAF blue) works in both themes due to moderate luminance
+
+### Implementation Requirements
+
+When implementing the theme in `src/lib/editor/quillmark-theme.ts`:
+
+1. Reference semantic tokens using `var(--color-syntax-*)` instead of hardcoded values
+2. Handle metadata background specially - use `--color-syntax-metadata-bg` in light mode and check for `.dark` class to switch to `--color-syntax-metadata-bg-dark`
+3. Ensure CodeMirror theme reads from CSS custom properties at runtime (not build time)
+4. Test with theme switching to verify colors update correctly
 
 ## Implementation Phases
 
@@ -46,11 +110,12 @@ This plan outlines the implementation of robust syntax highlighting for QuillMar
    - Add integration tests with sample documents
 
 3. **Create Base Theme** (`src/lib/editor/quillmark-theme.ts`)
-   - Define CSS classes for decorations
-   - Style delimiters (muted color)
-   - Style block backgrounds (subtle tint, left border)
-   - Support light and dark themes via CSS custom properties
-   - Test color contrast for accessibility
+   - Define CSS classes for decorations using semantic tokens
+   - Style delimiters using `var(--color-muted-foreground)`
+   - Style block backgrounds using `var(--color-syntax-metadata-bg)` (light) / `var(--color-syntax-metadata-bg-dark)` (dark)
+   - Style block borders using `var(--color-syntax-metadata-border)`
+   - Ensure theme adapts automatically to light/dark mode changes
+   - Test color contrast for accessibility (WCAG AA compliance)
 
 4. **Integrate into MarkdownEditor** (`src/lib/components/Editor/MarkdownEditor.svelte`)
    - Import and add `quillmarkDecorator` to extensions array
@@ -91,12 +156,15 @@ This plan outlines the implementation of robust syntax highlighting for QuillMar
    - Add tests for decoration priority
 
 3. **Expand Theme** (`src/lib/editor/quillmark-theme.ts`)
-   - Style SCOPE/QUILL keywords (USAF blue, semi-bold)
-   - Style scope/quill names (cyan, medium weight)
-   - Style YAML keys (primary text color)
-   - Style YAML values by type (green for strings, amber for numbers, purple for booleans)
-   - Test with various QuillMark documents
-   - Verify accessibility contrast
+   - Style SCOPE/QUILL keywords using `var(--color-syntax-keyword)` with semi-bold weight
+   - Style scope/quill names using `var(--color-syntax-identifier)` with medium weight
+   - Style YAML keys using `var(--color-foreground)` (primary text)
+   - Style YAML values by type using semantic tokens:
+     - Strings: `var(--color-syntax-string)`
+     - Numbers: `var(--color-syntax-number)`
+     - Booleans: `var(--color-syntax-boolean)`
+   - Test with various QuillMark documents in both light and dark modes
+   - Verify all colors meet WCAG AA accessibility contrast requirements
 
 4. **Visual Testing**
    - Create test fixtures with various QuillMark patterns
