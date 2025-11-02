@@ -153,6 +153,14 @@ export function findScopeQuillKeywords(from: number, to: number, doc: Text): Sco
 
 /**
  * Find YAML key-value pairs within a range
+ *
+ * Note: This is a simplified YAML parser that handles common patterns only.
+ * Limitations:
+ * - Does not support nested structures (lists, objects)
+ * - Does not support multi-line values
+ * - Does not support YAML anchors or references
+ * - Does not support complex data types (dates, null, etc.)
+ * - Boolean detection is limited to 'true' and 'false' (lowercase only)
  */
 export function findYamlPairs(from: number, to: number, doc: Text): YamlPair[] {
 	const text = doc.sliceString(from, to);
@@ -190,13 +198,12 @@ export function findYamlPairs(from: number, to: number, doc: Text): YamlPair[] {
 				valueType = 'boolean';
 			} else if (/^-?\d+(\.\d+)?$/.test(trimmedValue)) {
 				valueType = 'number';
-			} else if (
-				trimmedValue.startsWith('"') ||
-				trimmedValue.startsWith("'") ||
-				trimmedValue.length > 0
-			) {
+			} else if (trimmedValue.length > 0) {
+				// Default to string for non-empty values
+				// This handles quoted strings and unquoted text
 				valueType = 'string';
 			}
+			// If trimmedValue is empty, valueType remains 'unknown'
 
 			pairs.push({
 				keyFrom: keyStart,

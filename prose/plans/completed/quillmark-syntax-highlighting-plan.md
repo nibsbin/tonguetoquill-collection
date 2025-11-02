@@ -36,29 +36,22 @@ The following semantic tokens have been added to the design system (DESIGN_SYSTE
 - `--color-syntax-keyword`: Keywords and structural elements (SCOPE/QUILL keywords)
   - Light mode: `#355e93` (USAF blue)
   - Dark mode: `#355e93` (USAF blue - consistent brand color)
-  
 - `--color-syntax-identifier`: Identifiers and names (scope/quill names)
   - Light mode: `#0891b2` (darker cyan for contrast)
   - Dark mode: `#06b6d4` (brighter cyan)
-  
 - `--color-syntax-string`: String literals
   - Light mode: `#16a34a` (darker green for contrast)
   - Dark mode: `#22c55e` (brighter green)
-  
 - `--color-syntax-number`: Numeric literals
   - Light mode: `#d97706` (darker amber for contrast)
   - Dark mode: `#f59e0b` (brighter amber)
-  
 - `--color-syntax-boolean`: Boolean values
   - Light mode: `#7c3aed` (darker purple for contrast)
   - Dark mode: `#8b5cf6` (brighter purple)
-  
 - `--color-syntax-metadata-bg`: Metadata block background (light mode)
   - Value: `rgba(53, 94, 147, 0.03)` (very subtle blue tint)
-  
 - `--color-syntax-metadata-bg-dark`: Metadata block background (dark mode)
   - Value: `rgba(53, 94, 147, 0.08)` (slightly more visible blue tint)
-  
 - `--color-syntax-metadata-border`: Metadata block border
   - Value: `#355e93` (USAF blue - consistent across themes)
 
@@ -75,6 +68,7 @@ The tokens were consolidated to balance maintainability with customizability:
 ### Accessibility Considerations
 
 All syntax colors meet WCAG AA contrast requirements (4.5:1 minimum):
+
 - Light mode uses darker variants for better contrast on white background
 - Dark mode uses brighter variants for better contrast on dark background
 - Keyword color (USAF blue) works in both themes due to moderate luminance
@@ -126,6 +120,7 @@ When implementing the theme in `src/lib/editor/quillmark-theme.ts`:
 **Deliverable:** Metadata blocks are visually distinct from body content
 
 **Acceptance Criteria:**
+
 - `---` delimiters are highlighted in muted color
 - Metadata blocks have subtle background tint and left border
 - Horizontal rules (blank lines above and below) are NOT highlighted as metadata
@@ -174,6 +169,7 @@ When implementing the theme in `src/lib/editor/quillmark-theme.ts`:
 **Deliverable:** Full syntax highlighting for QuillMark constructs
 
 **Acceptance Criteria:**
+
 - SCOPE and QUILL keywords are prominently highlighted in USAF blue
 - Scope/quill names are clearly visible in cyan
 - YAML keys and values have appropriate colors
@@ -215,6 +211,7 @@ When implementing the theme in `src/lib/editor/quillmark-theme.ts`:
 **Deliverable:** Working code folding for metadata blocks
 
 **Acceptance Criteria:**
+
 - Click fold gutter to collapse/expand metadata blocks
 - Keyboard shortcuts toggle folding
 - Collapsed blocks show ellipsis or summary
@@ -251,6 +248,7 @@ When implementing the theme in `src/lib/editor/quillmark-theme.ts`:
 **Deliverable:** Context-aware auto-completion for QuillMark
 
 **Acceptance Criteria:**
+
 - Typing `SCOPE: ` triggers scope name suggestions
 - Typing `QUILL: ` triggers quill template suggestions
 - Suggestions show existing scope names (prevent typos)
@@ -296,6 +294,7 @@ src/lib/editor/quillmark-completion.test.ts
 ### Unit Tests
 
 For each module (`quillmark-patterns.ts`, `quillmark-folding.ts`, etc.):
+
 - Test with sample QuillMark documents
 - Test edge cases (no frontmatter, unclosed blocks, HR disambiguation)
 - Test performance with large documents (1000+ lines)
@@ -303,6 +302,7 @@ For each module (`quillmark-patterns.ts`, `quillmark-folding.ts`, etc.):
 ### Integration Tests
 
 For `MarkdownEditor.svelte`:
+
 - Mount component with QuillMark content
 - Verify decorations appear
 - Verify folding works
@@ -324,6 +324,7 @@ For `MarkdownEditor.svelte`:
 ## Dependencies
 
 **No new dependencies required.** All necessary packages are already installed:
+
 - `@codemirror/state`
 - `@codemirror/view`
 - `@codemirror/lang-markdown`
@@ -335,6 +336,7 @@ For `MarkdownEditor.svelte`:
 ### Risk 1: Performance with Large Documents
 
 **Mitigation:**
+
 - Use viewport-based decoration (only visible ranges)
 - Cache metadata block positions in StateField
 - Profile with 5000+ line documents
@@ -343,6 +345,7 @@ For `MarkdownEditor.svelte`:
 ### Risk 2: Complex Edge Cases
 
 **Mitigation:**
+
 - Start with simple patterns, iterate based on testing
 - Comprehensive test suite with edge cases
 - Graceful degradation (fall back to standard markdown)
@@ -351,6 +354,7 @@ For `MarkdownEditor.svelte`:
 ### Risk 3: Theme Inconsistencies
 
 **Mitigation:**
+
 - Use CSS custom properties from design system
 - Test in both light and dark themes
 - Validate color contrast with automated tools
@@ -361,20 +365,24 @@ For `MarkdownEditor.svelte`:
 ### Update MARKDOWN_EDITOR.md
 
 Remove or deprecate sections:
+
 - **Lines 125-180**: Custom Lezer grammar approach (deprecated)
 - **Lines 181-216**: Replace syntax highlighting section with reference to QUILLMARK_SYNTAX_HIGHLIGHTING.md
 
 Add cross-reference:
+
 - Link to QUILLMARK_SYNTAX_HIGHLIGHTING.md for syntax highlighting details
 
 ### Update INDEX.md
 
 Add reference to new design document:
+
 - List QUILLMARK_SYNTAX_HIGHLIGHTING.md in frontend designs index
 
 ## Success Metrics
 
 **MVP (Phase 1-2) Success:**
+
 - Metadata blocks are visually distinct from body content
 - SCOPE/QUILL keywords are prominently highlighted
 - YAML content has appropriate syntax colors
@@ -382,6 +390,7 @@ Add reference to new design document:
 - Passes accessibility contrast requirements (WCAG AA)
 
 **Full Implementation (Phase 1-4) Success:**
+
 - All QuillMark syntax is highlighted correctly
 - Code folding works for all metadata blocks
 - Auto-completion reduces typos and improves UX
@@ -393,6 +402,7 @@ Add reference to new design document:
 **Note:** Per agent instructions, we do NOT make time estimates. This section lists phases in order of priority.
 
 **Priority Order:**
+
 1. Phase 1 (Core) - Highest priority, enables basic visual differentiation
 2. Phase 2 (Keywords) - High priority, completes syntax highlighting
 3. Phase 3 (Folding) - Medium priority, improves usability

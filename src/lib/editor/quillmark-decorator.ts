@@ -45,6 +45,8 @@ class QuillMarkDecorator {
 		const blocks = findMetadataBlocks(doc);
 
 		// Only process visible blocks for performance
+		// Note: For documents with many blocks, this could be optimized with
+		// binary search or spatial indexing to find intersecting blocks more efficiently
 		for (const { from, to } of view.visibleRanges) {
 			for (const block of blocks) {
 				// Skip blocks outside visible range
