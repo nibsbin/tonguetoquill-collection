@@ -224,8 +224,12 @@
 			{/if}
 
 			<!-- Foreground: Error overlay -->
-			<div class="absolute inset-0 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
-				<div class="max-w-2xl rounded-lg border border-error-border bg-error-background p-6 shadow-xl">
+			<div
+				class="absolute inset-0 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm"
+			>
+				<div
+					class="max-w-2xl rounded-lg border border-error-border bg-error-background p-6 shadow-xl"
+				>
 					<!-- Error Header -->
 					<div class="mb-4 flex items-center gap-2">
 						<svg
@@ -263,7 +267,9 @@
 
 					<!-- Hint -->
 					{#if errorDisplay.hint}
-						<div class="mb-4 flex gap-2 rounded border-l-4 border-warning bg-warning-background p-3">
+						<div
+							class="mb-4 flex gap-2 rounded border-l-4 border-warning bg-warning-background p-3"
+						>
 							<svg
 								class="h-5 w-5 shrink-0 text-warning"
 								fill="none"
