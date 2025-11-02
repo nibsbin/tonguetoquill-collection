@@ -121,98 +121,72 @@ Per PARSE.md specifications:
 - Screen reader announcements
 - Focus management
 
-## Custom Language Mode
+## QuillMark Syntax Highlighting
 
-### Language Definition
+> **See:** [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md) for complete syntax highlighting design
 
-**Lezer Grammar Approach:**
+### Approach
 
-CodeMirror 6 uses Lezer for syntax parsing. The custom language mode extends the standard markdown grammar to recognize metadata blocks.
+The editor uses a **decoration-based highlighting approach** rather than custom Lezer grammar. This provides:
 
-**Grammar Structure:**
+- **Simplicity**: Pattern matching with regular expressions
+- **Robustness**: Falls back to standard markdown gracefully
+- **Maintainability**: Easy to understand and modify
+- **No build overhead**: Pure TypeScript, no grammar compilation
 
-- Extend base markdown tokens
-- Add metadata block token types
-- Recognize `SCOPE` and `QUILL` special keys
-- Parse YAML content within metadata blocks
-- Distinguish metadata delimiters from horizontal rules
+### Implementation
 
-**Token Types:**
+**Architecture:**
 
-- `MetadataDelimiter`: `---` markers for metadata blocks
-- `MetadataKey`: YAML keys within blocks
-- `MetadataValue`: YAML values
-- `ScopeKeyword`: Special `SCOPE` key
-- `QuillKeyword`: Special `QUILL` key
-- `ScopeName`: Value of SCOPE key
-- `QuillName`: Value of QUILL key
-- `BodyContent`: Markdown content between blocks
+```
+Standard Markdown Mode (base layer)
+    ↓
+QuillMark Decorator Plugin (enhancement layer)
+    ↓
+Custom Highlighting Theme (visual layer)
+```
 
-### Parser Strategy
+**Pattern Detection:**
 
-**Horizontal Rule Disambiguation:**
+- Metadata block detection (via `---` delimiters)
+- Horizontal rule disambiguation (blank lines above AND below)
+- SCOPE/QUILL keyword recognition
+- YAML content detection (keys, values, types)
 
-Per PARSE.md rules, `---` is a metadata delimiter UNLESS it has blank lines both above and below (then it's a markdown horizontal rule).
+**Decoration Strategy:**
 
-**Context-Aware Parsing:**
+- ViewPlugin scans visible viewport
+- Applies CSS classes to detected patterns
+- Theme defines colors for each class
+- Updates incrementally on document changes
 
-- Track previous line content
-- Track next line content
-- Classify `---` based on surrounding whitespace
-- Parse YAML content when in metadata context
-- Fall back to standard markdown for body content
-
-**Metadata Block Detection:**
-
-1. Encounter `---` at line start
-2. Check previous line: blank → possible HR
-3. Check next line: blank → HR, otherwise metadata
-4. If metadata, parse YAML until closing `---`
-5. Check for SCOPE or QUILL keys
-6. Extract scope/quill name values
-7. Continue until next metadata block or end of document
-
-**Global vs Scoped Blocks:**
-
-- First metadata block at document start without SCOPE/QUILL → global frontmatter
-- Blocks with SCOPE or QUILL anywhere in document → scoped/template blocks
-- Body content → standard markdown between blocks
-
-### Syntax Highlighting
-
-**Styling Strategy:**
-
-Use CodeMirror's highlighting system with custom tags for extended syntax.
-
-**Highlight Tags:**
-
-- `t.meta`: Metadata delimiter `---`
-- `t.keyword`: SCOPE and QUILL keywords
-- `t.propertyName`: YAML property keys
-- `t.string`: YAML string values
-- `t.number`: YAML numeric values
-- `t.bool`: YAML boolean values
-- `t.name`: Scope/quill names (values after SCOPE/QUILL)
-- Standard markdown tags for body content
-
-**Color Scheme:**
+**Visual Design:**
 
 Follows [DESIGN_SYSTEM.md - Theme System](./DESIGN_SYSTEM.md#theme-system):
 
 - Metadata delimiters: Muted text using `var(--color-muted-foreground)`
 - SCOPE/QUILL keywords: USAF blue accent (#355e93) - brand color
 - Scope/quill names: Bright cyan for differentiation
-- YAML keys: Secondary text color
-- YAML values: Primary text color
-- Standard markdown: Per markdown highlighting conventions using theme tokens
+- YAML keys: Primary text color
+- YAML values: Type-specific colors (green for strings, amber for numbers, purple for booleans)
+- Metadata blocks: Subtle background tint with USAF blue left border
 
-**Visual Differentiation:**
+### Implementation Status
 
-Metadata blocks visually distinguished from body content:
+See [prose/plans/quillmark-syntax-highlighting-plan.md](../../plans/quillmark-syntax-highlighting-plan.md) for implementation roadmap.
 
-- Subtle background tint for metadata regions using theme tokens
-- Left border accent in USAF blue for scoped blocks
-- Distinct styling for SCOPE vs QUILL vs global blocks
+---
+
+### Deprecated: Lezer Grammar Approach
+
+**Note:** An earlier version of this document proposed a custom Lezer grammar for QuillMark syntax. This approach has been **deprecated** due to:
+
+- High complexity and fragility
+- Difficult maintenance and debugging
+- Specialized knowledge required
+- Additional build tooling overhead
+
+The decoration-based approach (see [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md)) supersedes the Lezer grammar approach.
 
 ## Code Folding
 

@@ -70,9 +70,19 @@ Backend API integration patterns for authentication, document management, and da
 
 **CodeMirror 6 Markdown Editor**
 
-CodeMirror 6 integration with custom language mode for Quillmark's extended markdown syntax. Covers syntax highlighting, code folding, and intelligent editing features for inline metadata blocks.
+CodeMirror 6 integration with custom language mode for Quillmark's extended markdown syntax. Covers editor architecture, code folding, and intelligent editing features for inline metadata blocks.
 
-**Topics**: CodeMirror 6 architecture, custom language mode, extended markdown syntax (SCOPE/QUILL), folding strategy, syntax highlighting, auto-completion, accessibility, mobile optimization, performance
+**Topics**: CodeMirror 6 architecture, extended markdown syntax (SCOPE/QUILL), folding strategy, auto-completion, accessibility, mobile optimization, performance
+
+---
+
+### [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md)
+
+**QuillMark Syntax Highlighting Design**
+
+Robust, maintainable approach to syntax highlighting for QuillMark's extended markdown using decoration-based highlighting. Supersedes complex Lezer grammar approach.
+
+**Topics**: Decoration-based highlighting, pattern detection, metadata block identification, SCOPE/QUILL keyword highlighting, YAML syntax coloring, folding support, auto-completion, theme integration
 
 ---
 
@@ -183,9 +193,10 @@ The frontend integrates with backend services documented in `prose/designs/backe
 3. Review [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for component structure and testing
 4. Study [UI_COMPONENTS.md](./UI_COMPONENTS.md) for component behavior
 5. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
-6. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
-7. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
-8. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
+6. Review [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md) for syntax highlighting approach
+7. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
+8. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
+9. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
 
 ### Development Workflow
 
