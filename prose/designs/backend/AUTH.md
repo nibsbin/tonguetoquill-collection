@@ -1,6 +1,19 @@
 # Authentication Architecture
 
-This document covers user authentication and token management. Authentication is abstracted to support multiple deployment environments without changing application code.
+This document covers the high-level authentication architecture and token management strategy. For implementation details of the Login Service, see [LOGIN_SERVICE.md](./LOGIN_SERVICE.md).
+
+> **Implementation**: See [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) for the server/client service pattern and detailed API specification.
+
+## Overview
+
+The application uses **third-party authentication providers** exclusively. The application **never** manages passwords, login interfaces, or user credentials directly. All authentication flows are delegated to the provider (Supabase Auth or Keycloak).
+
+**Key Principles:**
+
+- **Provider-first**: All authentication handled by external services
+- **No password management**: Application never stores or validates passwords
+- **Token-based security**: JWT tokens for session management
+- **Minimal API surface**: Simple interface for frontend integration
 
 ## Providers
 
@@ -26,15 +39,21 @@ The authentication architecture is designed to support multiple providers throug
 - OAuth/OIDC flows for advanced integrations
 - Will be added post-MVP using the same abstraction layer
 
-Real authentication providers (Supabase/Keycloak) will natively handle:
+Real authentication providers (Supabase/Keycloak) natively handle:
 
-- User registration
+- User registration and account creation
+- Password storage and validation
 - Password reset flows
 - Email verification
-- Password policies and validation
+- Password policies and strength validation
 - Rate limiting and brute force protection
+- Session management and token rotation
 
-## Routes
+**The application never implements these features directly.**
+
+## API Routes
+
+For detailed API specifications, see [LOGIN_SERVICE.md](./LOGIN_SERVICE.md#api-routes).
 
 The backend exposes the following authentication-related routes:
 
@@ -150,3 +169,19 @@ Authentication errors will return standard HTTP status codes with JSON error det
   - `invalid_credentials`: Wrong username/password
   - `invalid_refresh_token`: Refresh token invalid or revoked
   - `validation_error`: Request validation failed
+
+## Service Architecture
+
+The Login Service follows the server/client pattern described in [SERVICES.md](./SERVICES.md):
+
+- **Server-side** (`$lib/server/services/auth/`): Provider implementations, token validation
+- **Client-side** (`$lib/services/auth/`): API communication, session management
+
+See [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) for complete implementation details.
+
+## Cross-References
+
+- [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) - Login Service implementation details
+- [SERVICES.md](./SERVICES.md) - Overall service architecture pattern
+- [../frontend/API_INTEGRATION.md](../frontend/API_INTEGRATION.md) - Frontend API integration
+- [../frontend/STATE_MANAGEMENT.md](../frontend/STATE_MANAGEMENT.md) - Session state management

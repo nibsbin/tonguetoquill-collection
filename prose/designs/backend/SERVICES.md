@@ -15,102 +15,23 @@ Services receive authenticated user context through middleware that validates JW
 
 ## Document Service
 
-### Server-Side (`$lib/server/services/documents/`)
+The Document Service manages document lifecycle operations (create, read, update, delete, list) with dual-mode architecture supporting both guest (localStorage) and authenticated (server-side) storage.
 
-```
-├── document-provider.ts         ← createDocumentService() factory
-├── document-mock-service.ts     ← In-memory implementation
-└── index.ts                     ← export { documentService }
-```
+**Architecture:**
 
-**Current Implementation (Phases 1-9):** Mock service only
-**Future (Phase 10+):** Add `document-supabase-service.ts` for database implementation
+- **Server-Side** (`$lib/server/services/documents/`): Provider implementations (mock, future database)
+- **Client-Side** (`$lib/services/documents/`): Unified client interface with mode-switching logic
 
-**Responsibilities**: Implement DocumentServiceContract, access databases (future), execute server-only business logic. Used exclusively by API route handlers.
+**Key Features:**
 
-### Client-Side (`$lib/services/documents/`)
+- Ownership-based authorization
+- PostgreSQL TOAST optimization for selective content loading
+- 0.5 MB content size limit
+- Metadata-only queries for performance
 
-```
-├── document-client.ts           ← Unified client interface
-├── document-browser-storage.ts  ← localStorage wrapper
-├── types.ts                     ← Shared types
-└── index.ts                     ← export { documentClient }
-```
+**Documentation:**
 
-**DocumentClient** abstracts all I/O operations:
-
-- Branches internally on guest vs authenticated mode
-- Guest: Uses `documentBrowserStorage` (localStorage)
-- Authenticated: Uses `fetch()` to call API routes
-- Provides simple async methods for stores/components
-
-```typescript
-// Stores delegate all I/O to client service
-async fetchDocuments() {
-  const documents = await documentClient.listDocuments();
-  this.setDocuments(documents);
-}
-```
-
-### API Specification
-
-All methods validate inputs and check authorization. Server-side implementation throws typed errors.
-
-**`createDocument(userId: UUID, name: String, content: String): DocumentMetadata`**
-
-- Validation: name (1-255 chars, trimmed), content (max 524,288 bytes)
-- Returns: Document metadata (id, name, owner_id, size, timestamps)
-- Errors: `ValidationError`, `ContentTooLargeError`
-
-**`getDocumentMetadata(userId: UUID, documentId: UUID): DocumentMetadata`**
-
-- Authorization: User must own document
-- Returns: Metadata without content (TOAST optimization skips loading content)
-- Errors: `NotFoundError`, `UnauthorizedError`
-
-**`getDocumentContent(userId: UUID, documentId: UUID): Document`**
-
-- Authorization: User must own document
-- Returns: Full document including content
-- Errors: `NotFoundError`, `UnauthorizedError`
-
-**`updateDocumentContent(userId: UUID, documentId: UUID, content: String): DocumentMetadata`**
-
-- Validation: content (max 524,288 bytes)
-- Returns: Updated metadata
-- Errors: `NotFoundError`, `UnauthorizedError`, `ValidationError`, `ContentTooLargeError`
-
-**`updateDocumentName(userId: UUID, documentId: UUID, name: String): DocumentMetadata`**
-
-- Validation: name (1-255 chars, trimmed)
-- Returns: Updated metadata
-- Errors: `NotFoundError`, `UnauthorizedError`, `ValidationError`
-
-**`deleteDocument(userId: UUID, documentId: UUID): void`**
-
-- Authorization: User must own document
-- Errors: `NotFoundError`, `UnauthorizedError`
-
-**`listUserDocuments(userId: UUID, limit: Integer, offset: Integer): List<DocumentMetadata>`**
-
-- Validation: limit (default 50, max 100), offset (default 0)
-- Returns: Metadata list ordered by created_at DESC
-- Query optimization: Selects only metadata fields, TOAST skips content
-
-### Performance
-
-Document queries use selective field selection with PostgreSQL TOAST:
-
-- **Metadata queries**: Only SELECT non-content fields, TOAST skips loading content
-- **Content queries**: SELECT all fields, TOAST fetches content as needed
-- Single table design maintained for simplicity while preserving optimal performance
-
-### Error Types
-
-- **`NotFoundError`** (404): Document does not exist
-- **`UnauthorizedError`** (403): User doesn't own document
-- **`ValidationError`** (400): Input validation failed (includes specific message)
-- **`ContentTooLargeError`** (413): Content exceeds 0.5 MB limit
+Full service specification available at [DOCUMENT_SERVICE.md](./DOCUMENT_SERVICE.md)
 
 ## Benefits
 
@@ -122,19 +43,13 @@ Document queries use selective field selection with PostgreSQL TOAST:
 
 ## Template Service
 
-### Client-Side (`$lib/services/templates/`)
+The Template Service provides read-only access to markdown templates stored in `tonguetoquill-collection/templates/`. Templates are packaged to `static/templates/` during build and served as static files.
 
-```
-├── types.ts          ← Type definitions
-├── service.ts        ← TemplateService implementation
-├── index.ts          ← export { templateService }
-├── template.test.ts  ← Unit tests
-└── README.md         ← Service documentation
-```
+**Architecture:**
 
-**Responsibilities**: Provide read-only access to markdown templates. Templates are sourced from `tonguetoquill-collection/templates/` and packaged to `static/templates/` during build. Designed to support future database-backed templates without breaking changes.
+- **Client-Side** (`$lib/services/templates/`): Singleton service with manifest caching
 
-**TemplateService** provides:
+**Key Features:**
 
 - Singleton pattern for manifest caching
 - Type-safe template metadata access
@@ -142,93 +57,52 @@ Document queries use selective field selection with PostgreSQL TOAST:
 - Production/development filtering
 - Future-ready abstraction for database migration
 
-```typescript
-// Initialize on app load
-await templateService.initialize();
+**Build Process:**
 
-// List templates for selector
-const templates = templateService.listTemplates(true); // production only
+- Source: `tonguetoquill-collection/templates/`
+- Build: `npm run pack:templates` copies to `static/templates/`
+- Runtime: Service fetches from `/templates/` (served from `static/templates/`)
 
-// Load template when selected
-const template = await templateService.getTemplate('usaf_template.md');
-```
+**Documentation:**
 
-### Build Process
+Full service specification available at [TEMPLATE_SERVICE.md](./TEMPLATE_SERVICE.md)
 
-Templates are packaged from source to static directory:
+## Login Service
 
-- **Source**: `tonguetoquill-collection/templates/`
-- **Build**: `npm run pack:templates` copies to `static/templates/`
-- **Runtime**: Service fetches from `/templates/` (served from `static/templates/`)
+The Login Service handles all authentication operations by delegating to third-party auth providers. The application never manages passwords, login interfaces, or user credentials directly.
 
-### API Specification
+**Architecture:**
 
-**`initialize(): Promise<void>`**
+- **Server-Side** (`$lib/server/services/auth/`): Provider implementations (mock, future Supabase/Keycloak)
+- **Client-Side** (`$lib/services/auth/`): Unified client interface for login/logout/session management
 
-- Loads template manifest from `/templates/templates.json`
-- Idempotent: Safe to call multiple times (only initializes once)
-- Errors: `TemplateError` with code `load_error` or `invalid_manifest`
+**Key Features:**
 
-**`isReady(): boolean`**
+- Third-party provider delegation (Supabase Auth, Keycloak)
+- JWT token management (access + refresh tokens)
+- HTTP-only cookie storage with Secure and SameSite=Strict flags
+- JWKS endpoint verification with 24-hour cache
+- Proactive token refresh (2 minutes before expiry)
 
-- Returns: `true` if service is initialized and ready
+**Current Implementation:**
 
-**`listTemplates(productionOnly?: boolean): TemplateMetadata[]`**
+- **Phases 1-9**: Mock provider for development
+- **Phase 10+**: Supabase Auth provider
+- **Post-MVP**: Keycloak provider option
 
-- Parameters: `productionOnly` (optional, default `false`)
-- Returns: Array of template metadata, filtered by production flag if requested
-- Errors: `TemplateError` with code `not_initialized`
+**Documentation:**
 
-**`getTemplateMetadata(filename: string): TemplateMetadata`**
-
-- Returns: Template metadata for the specified filename
-- Errors: `TemplateError` with code `not_initialized` or `not_found`
-
-**`getTemplate(filename: string): Promise<Template>`**
-
-- Returns: Full template with metadata and markdown content
-- Errors: `TemplateError` with code `not_initialized`, `not_found`, or `load_error`
-
-### Build Process
-
-Templates are packaged from source to static directory during build:
-
-**Source Files:**
-
-- Location: `tonguetoquill-collection/templates/`
-- Build command: `npm run pack:templates`
-
-**Runtime Paths:**
-
-- Manifest: `/templates/templates.json` (served from `static/templates/`)
-- Templates: `/templates/{filename}.md` (served from `static/templates/`)
-
-### Error Types
-
-- **`TemplateError`** - Custom error with typed error codes:
-  - `not_initialized` - Service not initialized before use
-  - `not_found` - Template not found in manifest
-  - `load_error` - Failed to load manifest or template file
-  - `invalid_manifest` - Manifest JSON is malformed
-
-### Future Database Support
-
-The service interface supports future migration to database-backed templates:
-
-1. **Phase 1 (Current)**: Static files only
-2. **Phase 2 (Future)**: Hybrid (database + static files)
-3. **Phase 3 (Future)**: Full database migration
-
-No breaking changes required to support database-backed templates.
-
-### Documentation
-
-Full service documentation available at:
-
-- [Template Service README](../../../src/lib/services/templates/README.md) - Usage and API reference
-- [Template Service Design](./TEMPLATE_SERVICE.md) - Complete design specification
+Full service specification available at [LOGIN_SERVICE.md](./LOGIN_SERVICE.md)
 
 ## Cross-References
+
+**Service-Specific Documentation:**
+
+- [DOCUMENT_SERVICE.md](./DOCUMENT_SERVICE.md) - Document service specification
+- [TEMPLATE_SERVICE.md](./TEMPLATE_SERVICE.md) - Template service specification
+- [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) - Login service specification
+
+**Related Architecture:**
 
 - [../frontend/ARCHITECTURE.md](../frontend/ARCHITECTURE.md) - Client architecture
 - [../frontend/STATE_MANAGEMENT.md](../frontend/STATE_MANAGEMENT.md) - Store patterns
