@@ -37,6 +37,7 @@ ComponentName/
 
 ```
 src/lib/components/
+├── DocumentInfoDialog.svelte
 ├── Sidebar/
 │   ├── Sidebar.svelte
 │   ├── Sidebar.svelte.test.ts
@@ -69,6 +70,8 @@ src/lib/components/
     ├── dropdown-menu.svelte
     └── ... (shadcn-svelte components)
 ```
+
+**Note**: `DocumentInfoDialog.svelte` is at the root level as a standalone dialog component (see [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md) for specification).
 
 ## Testing Strategy
 
