@@ -10,9 +10,10 @@
 		documentId: string;
 		autoSave: AutoSave;
 		onContentChange?: (content: string) => void;
+		onDocumentLoad?: (doc: { name: string; content: string }) => void;
 	}
 
-	let { documentId, autoSave, onContentChange }: Props = $props();
+	let { documentId, autoSave, onContentChange, onDocumentLoad }: Props = $props();
 
 	let content = $state('');
 	let initialContent = $state('');
@@ -107,6 +108,10 @@
 			debouncedContent = doc.content;
 			// Reset auto-save state when loading new document
 			autoSave.reset();
+			// Notify parent of document load (name + content)
+			if (onDocumentLoad) {
+				onDocumentLoad({ name: doc.name, content: doc.content });
+			}
 		} catch {
 			toast.error('Failed to load document');
 		} finally {

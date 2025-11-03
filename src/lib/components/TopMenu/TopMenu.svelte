@@ -26,6 +26,7 @@
 		saveStatus?: SaveStatus;
 		saveError?: string;
 		onDocumentInfo?: () => void;
+		onTitleChange?: (newTitle: string) => void;
 	};
 
 	let {
@@ -33,7 +34,8 @@
 		onDownload,
 		saveStatus = 'idle',
 		saveError,
-		onDocumentInfo
+		onDocumentInfo,
+		onTitleChange
 	}: TopMenuProps = $props();
 
 	import { documentStore } from '$lib/stores/documents.svelte';
@@ -62,8 +64,15 @@
 	async function commitEditing() {
 		isEditing = false;
 		const newName = (title || '').trim() || 'Untitled Document';
-		// update local title immediately so UI reflects the committed name
+		// Update local title immediately so UI reflects the committed name
 		title = newName;
+
+		// Notify parent of title change immediately (before async store update)
+		if (onTitleChange) {
+			onTitleChange(newName);
+		}
+
+		// Persist to store (async)
 		if (documentStore.activeDocumentId) {
 			try {
 				await documentStore.updateDocument(documentStore.activeDocumentId, { name: newName });

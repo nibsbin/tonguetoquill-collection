@@ -13,6 +13,7 @@
 	let autoSave = new AutoSave();
 	let showDocumentInfo = $state(false);
 	let documentContent = $state('');
+	let documentName = $state('');
 
 	onMount(async () => {
 		// Show classification message
@@ -66,6 +67,17 @@
 		documentContent = content;
 	}
 
+	function handleDocumentLoad(doc: { name: string; content: string }) {
+		// Document load: sync both name and initial content
+		documentName = doc.name;
+		documentContent = doc.content;
+	}
+
+	function handleTitleChange(newTitle: string) {
+		// Title rename: update name immediately
+		documentName = newTitle;
+	}
+
 	function handleDocumentInfo() {
 		showDocumentInfo = true;
 	}
@@ -92,11 +104,12 @@
 		<div class="flex flex-1 flex-col">
 			<!-- Top Menu -->
 			<TopMenu
-				fileName={documentStore.activeDocument?.name ?? ''}
+				fileName={documentName}
 				onDownload={handleDownload}
 				saveStatus={autoSave.saveState.status}
 				saveError={autoSave.saveState.errorMessage}
 				onDocumentInfo={handleDocumentInfo}
+				onTitleChange={handleTitleChange}
 			/>
 
 			<!-- Editor and Preview Area -->
@@ -120,6 +133,7 @@
 						documentId={documentStore.activeDocumentId}
 						{autoSave}
 						onContentChange={handleContentChange}
+						onDocumentLoad={handleDocumentLoad}
 					/>
 				{/if}
 			</div>
