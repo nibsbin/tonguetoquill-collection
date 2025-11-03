@@ -117,58 +117,18 @@ This document defines the UI integration for login and profile functionality in 
 **Purpose:** Allows guest users to sign in to their account
 
 **Structure:**
-```svelte
-<Dialog bind:open={signInModalOpen}>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Sign In</DialogTitle>
-      <DialogDescription>
-        Sign in to your Tonguetoquill account
-      </DialogDescription>
-    </DialogHeader>
-    
-    <!-- Sign in form -->
-    <form>
-      <div class="space-y-4">
-        <div>
-          <Label for="email">Email</Label>
-          <Input id="email" type="email" required />
-        </div>
-        <div>
-          <Label for="password">Password</Label>
-          <Input id="password" type="password" required />
-        </div>
-      </div>
-    </form>
-    
-    <DialogFooter>
-      <Button variant="ghost" onclick={closeSignInModal}>
-        Cancel
-      </Button>
-      <Button variant="default" onclick={handleSignIn}>
-        Sign In
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
-```
-
-**Fields:**
-- Email (text input, type="email")
-- Password (text input, type="password")
-
-**Actions:**
-- Cancel button (ghost variant)
-- Sign In button (default variant)
+- DialogHeader: "Sign In" title with description
+- Form fields: Email (type="email") and Password (type="password") inputs
+- DialogFooter: Cancel button (ghost variant) and Sign In button (default variant)
 
 **Behavior:**
 - On successful sign in: Close modal, update UI to logged-in state
-- On error: Display error message inline in modal
+- On error: Display error message inline in modal above form fields
 - On cancel: Close modal without action
 
 **Error Display:**
-- Show error message above form fields
-- Use destructive color scheme
+- Position: Above form fields
+- Styling: Destructive color scheme
 - Clear error on retry
 
 ### Profile Modal
@@ -178,47 +138,11 @@ This document defines the UI integration for login and profile functionality in 
 **Purpose:** Display basic account information for logged-in users
 
 **Structure:**
-```svelte
-<Dialog bind:open={profileModalOpen}>
-  <DialogContent>
-    <DialogHeader>
-      <DialogTitle>Account Information</DialogTitle>
-      <DialogDescription>
-        Your account details
-      </DialogDescription>
-    </DialogHeader>
-    
-    <!-- Account info display -->
-    <div class="space-y-4">
-      <div>
-        <Label class="text-muted-foreground">Email</Label>
-        <p class="text-foreground">{user.email}</p>
-      </div>
-      <div>
-        <Label class="text-muted-foreground">User ID</Label>
-        <p class="text-foreground font-mono text-sm">{user.id}</p>
-      </div>
-    </div>
-    
-    <DialogFooter>
-      <Button variant="ghost" onclick={handleSignOut}>
-        Sign Out
-      </Button>
-      <Button variant="default" onclick={closeProfileModal}>
-        Close
-      </Button>
-    </DialogFooter>
-  </DialogContent>
-</Dialog>
-```
-
-**Information Displayed:**
-- Email address
-- User ID (UUID format, monospace font)
-
-**Actions:**
-- Sign Out button (ghost variant, destructive action)
-- Close button (default variant)
+- DialogHeader: "Account Information" title with description
+- Content area displaying:
+  - Email address (with "Email" label)
+  - User ID in UUID format (with "User ID" label, monospace font)
+- DialogFooter: Sign Out button (ghost variant) and Close button (default variant)
 
 **Behavior:**
 - On sign out: Close modal, call loginClient.signOut(), update UI to guest state
@@ -228,118 +152,50 @@ This document defines the UI integration for login and profile functionality in 
 
 ### Client-Side Integration
 
-**Import:**
-```typescript
-import { loginClient } from '$lib/services/auth';
-```
+**Import:** Use `loginClient` from `$lib/services/auth`
 
 **Sign In Flow:**
-```typescript
-async function handleSignIn() {
-  try {
-    const result = await loginClient.signIn(email, password);
-    if (result.success) {
-      // Update user state
-      user = result.user;
-      // Close modal
-      signInModalOpen = false;
-      // Optional: Show success toast
-    }
-  } catch (error) {
-    // Display error in modal
-    errorMessage = error.message;
-  }
-}
-```
+- Call `loginClient.signIn(email, password)`
+- On success: Update user state, close modal, optionally show success toast
+- On error: Display error message in modal
 
 **Sign Out Flow:**
-```typescript
-async function handleSignOut() {
-  try {
-    await loginClient.signOut();
-    // Clear user state
-    user = null;
-    // Close modal
-    profileModalOpen = false;
-    // Optional: Show success toast
-  } catch (error) {
-    // Display error (likely network error)
-    console.error('Sign out failed:', error);
-  }
-}
-```
+- Call `loginClient.signOut()`
+- Clear user state
+- Close profile modal
+- Handle errors gracefully (usually network errors)
 
 **Check Authentication State:**
-```typescript
-onMount(async () => {
-  if (await loginClient.isAuthenticated()) {
-    const currentUser = await loginClient.getCurrentUser();
-    user = currentUser;
-  }
-});
-```
+- On component mount, call `loginClient.isAuthenticated()`
+- If authenticated, fetch current user with `loginClient.getCurrentUser()`
 
 ## State Management
 
 ### Reactive State Variables
 
-**In Sidebar Component:**
-```typescript
-let user = $state<{ email: string; id: string } | null>(null);
-let signInModalOpen = $state(false);
-let profileModalOpen = $state(false);
-let signInError = $state<string | null>(null);
-```
+**Modal State:**
+- `signInModalOpen`: Boolean controlling sign-in modal visibility
+- `profileModalOpen`: Boolean controlling profile modal visibility
+- `signInError`: String for error messages (nullable)
 
-**Derived State:**
-```typescript
-const isAuthenticated = $derived(user !== null);
-```
+**User State:**
+- `user`: Object with `{ email: string; id: string }` or null
+- Can be derived: `isAuthenticated = user !== null`
 
 ### User Prop
 
-The Sidebar component already accepts a `user` prop:
-```typescript
-type SidebarProps = {
-  user?: { email: string; id: string } | null;
-};
-
-let { user }: SidebarProps = $props();
-```
-
-This prop should be passed from the layout or page that loads the user session.
+The Sidebar component accepts a `user` prop of type `{ email: string; id: string } | null`, passed from the layout or page that loads the user session.
 
 ## Layout Integration
 
 ### Root Layout Responsibilities
 
-The root layout (`+layout.svelte` or `+layout.server.ts`) should:
-
+The root layout should:
 1. Check authentication status on page load
 2. Fetch current user if authenticated
 3. Pass user to Sidebar component
 
-**Example Pattern:**
-```typescript
-// +layout.server.ts
-import { authService } from '$lib/server/services/auth';
-
-export async function load({ cookies }) {
-  const token = cookies.get('access_token');
-  
-  if (token) {
-    try {
-      const user = await authService.getCurrentUser(token);
-      return { user };
-    } catch {
-      // Invalid token, user not authenticated
-      return { user: null };
-    }
-  }
-  
-  return { user: null };
-}
-```
+**Pattern:** Use server-side load function to check for access token in cookies, validate with authService, and return user object or null.
 
 ## Visual Design
 
