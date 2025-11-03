@@ -4,7 +4,13 @@
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-	import { foldKeymap, foldEffect, foldState, unfoldEffect, foldedRanges } from '@codemirror/language';
+	import {
+		foldKeymap,
+		foldEffect,
+		foldState,
+		unfoldEffect,
+		foldedRanges
+	} from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
 	import {
 		quillmarkDecorator,
