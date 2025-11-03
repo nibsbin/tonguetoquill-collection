@@ -92,7 +92,11 @@ class QuillMarkDecorator {
 		const keywords = findScopeQuillKeywords(block.contentFrom, block.contentTo, doc);
 		for (const keyword of keywords) {
 			const keywordMark = keyword.keyword === 'SCOPE' ? scopeKeywordMark : quillKeywordMark;
-			decorations.push({ from: keyword.keywordFrom, to: keyword.keywordTo, decoration: keywordMark });
+			decorations.push({
+				from: keyword.keywordFrom,
+				to: keyword.keywordTo,
+				decoration: keywordMark
+			});
 			decorations.push({ from: keyword.nameFrom, to: keyword.nameTo, decoration: scopeNameMark });
 		}
 
