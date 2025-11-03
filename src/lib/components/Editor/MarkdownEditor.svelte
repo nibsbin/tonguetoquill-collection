@@ -9,7 +9,8 @@
 		foldEffect,
 		foldState,
 		unfoldEffect,
-		foldedRanges
+		foldedRanges,
+		codeFolding
 	} from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
 	import {
@@ -76,7 +77,10 @@
 			quillmarkDecorator,
 			createQuillmarkTheme(),
 			quillmarkFoldService,
-			foldState
+			foldState,
+			codeFolding({
+				placeholderText: 'metadata'
+			})
 		];
 
 		// Conditionally add line numbers
