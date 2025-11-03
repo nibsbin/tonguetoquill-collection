@@ -4,8 +4,9 @@
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+	import { foldGutter, foldKeymap, foldCode, unfoldCode } from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
-	import { quillmarkDecorator, createQuillmarkTheme } from '$lib/editor';
+	import { quillmarkDecorator, createQuillmarkTheme, quillmarkFoldService } from '$lib/editor';
 
 	interface Props {
 		value: string;
@@ -28,6 +29,7 @@
 			keymap.of([
 				...defaultKeymap,
 				...historyKeymap,
+				...foldKeymap,
 				{
 					key: 'Mod-b',
 					run: () => {
@@ -61,7 +63,9 @@
 			EditorView.lineWrapping,
 			createEditorTheme(),
 			quillmarkDecorator,
-			createQuillmarkTheme()
+			createQuillmarkTheme(),
+			quillmarkFoldService,
+			foldGutter()
 		];
 
 		// Conditionally add line numbers
@@ -189,7 +193,15 @@
 	}
 
 	function handleToggleFrontmatter() {
-		console.log('Toggle frontmatter folding (not yet implemented)');
+		if (!editorView) return;
+
+		// Try to unfold first - if there's nothing to unfold, then fold
+		const unfoldResult = unfoldCode(editorView);
+		if (!unfoldResult) {
+			// Nothing was unfolded, so try to fold
+			foldCode(editorView);
+		}
+		editorView.focus();
 	}
 
 	function handleBulletList() {
