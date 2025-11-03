@@ -120,7 +120,6 @@
 	/* Syntax highlighting colors (dark mode) */
 	--color-syntax-keyword: #7aacd4;
 	--color-syntax-key: #3a85b6;
-	--color-syntax-identifier: #06b6d4;
 	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.08);
 
 	/* Error/Diagnostic colors */
