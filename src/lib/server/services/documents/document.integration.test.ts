@@ -18,11 +18,8 @@ describe('Document API Integration', () => {
 		authProvider.clearAllData();
 		documentService.clearAllData();
 
-		// Create a test user and get access token
-		const result = await authProvider.signUp({
-			email: 'test@example.com',
-			password: 'password123'
-		});
+		// Create a test user and get access token using OAuth-like flow
+		const result = await authProvider.exchangeCodeForTokens('test_auth_code');
 		userId = result.user.id;
 	});
 
@@ -116,12 +113,9 @@ describe('Document API Integration', () => {
 
 	describe('Authorization Flow', () => {
 		it('should verify ownership before operations', async () => {
-			// Create another user
-			const result2 = await authProvider.signUp({
-				email: 'other@example.com',
-				password: 'password123'
-			});
-			const otherUserId = result2.user.id;
+			// Create another user for testing
+			const otherUser = authProvider.createTestUser('other@example.com', 'OTHER123');
+			const otherUserId = otherUser.id;
 
 			// Create document as first user
 			const doc = await documentService.createDocument({

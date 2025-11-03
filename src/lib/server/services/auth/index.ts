@@ -13,11 +13,8 @@ import { getAuthService } from './auth-provider';
  * Export as authService for consistent API with document service
  */
 export const authService = {
-	get signUp() {
-		return getAuthService().signUp.bind(getAuthService());
-	},
-	get signIn() {
-		return getAuthService().signIn.bind(getAuthService());
+	get exchangeCodeForTokens() {
+		return getAuthService().exchangeCodeForTokens.bind(getAuthService());
 	},
 	get signOut() {
 		return getAuthService().signOut.bind(getAuthService());
@@ -27,12 +24,6 @@ export const authService = {
 	},
 	get getCurrentUser() {
 		return getAuthService().getCurrentUser.bind(getAuthService());
-	},
-	get resetPassword() {
-		return getAuthService().resetPassword.bind(getAuthService());
-	},
-	get verifyEmail() {
-		return getAuthService().verifyEmail.bind(getAuthService());
 	},
 	get validateToken() {
 		return getAuthService().validateToken.bind(getAuthService());
