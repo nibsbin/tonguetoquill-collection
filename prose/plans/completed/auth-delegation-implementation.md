@@ -28,7 +28,7 @@ This plan outlines the implementation of delegated authentication where the appl
 ### Out of Scope
 
 - OAuth provider integration (Google, GitHub) - Post-MVP
-- Multi-factor authentication - Post-MVP  
+- Multi-factor authentication - Post-MVP
 - Advanced session management UI - Post-MVP
 - Keycloak provider - Post-MVP
 
@@ -62,7 +62,7 @@ This plan outlines the implementation of delegated authentication where the appl
 **Changes to `src/lib/server/services/auth/auth-mock-provider.ts`:**
 
 - Remove `signUp()` implementation
-- Remove `signIn()` implementation  
+- Remove `signIn()` implementation
 - Remove `resetPassword()` implementation
 - Remove `verifyEmail()` implementation
 - Remove password storage and validation logic
@@ -80,6 +80,7 @@ This plan outlines the implementation of delegated authentication where the appl
 **Goal**: Remove login and registration pages
 
 **Files to Remove:**
+
 - `src/routes/(auth)/login/+page.svelte`
 - `src/routes/(auth)/register/+page.svelte`
 - `src/routes/(auth)/` directory (if now empty)
@@ -91,14 +92,17 @@ This plan outlines the implementation of delegated authentication where the appl
 **Goal**: Replace custom auth endpoints with OAuth flow
 
 **Routes to Remove:**
+
 - `src/routes/api/auth/register/+server.ts` - Use provider's hosted signup
 - `src/routes/api/auth/login/+server.ts` - Use provider's hosted login
 
 **Routes to Add:**
+
 - `src/routes/api/auth/login/+server.ts` - GET handler that redirects to provider
 - `src/routes/api/auth/callback/+server.ts` - Handle OAuth callback, exchange code for tokens
 
 **Routes to Keep (with updates):**
+
 - `src/routes/api/auth/logout/+server.ts` - Clear cookies
 - `src/routes/api/auth/refresh/+server.ts` - Refresh tokens
 - `src/routes/api/auth/me/+server.ts` - Get current user
@@ -125,6 +129,7 @@ This plan outlines the implementation of delegated authentication where the appl
 **New file: `src/lib/server/services/auth/auth-supabase-provider.ts`:**
 
 Implement `AuthContract` using Supabase Auth:
+
 - `exchangeCodeForTokens()` - Exchange OAuth code for tokens via Supabase API
 - `validateToken()` - Validate JWT using Supabase JWKS
 - `refreshSession()` - Refresh token via Supabase API
@@ -132,6 +137,7 @@ Implement `AuthContract` using Supabase Auth:
 - `signOut()` - Call Supabase logout endpoint (optional)
 
 **Update `src/lib/server/services/auth/auth-provider.ts`:**
+
 - Import SupabaseAuthProvider
 - Create Supabase provider when `USE_AUTH_MOCKS=false`
 
@@ -180,6 +186,7 @@ AUTH_REDIRECT_URI=http://localhost:5173/api/auth/callback
 **Goal**: Document the new OAuth flow
 
 **Files to Update:**
+
 - Add code examples to LOGIN_SERVICE.md showing OAuth flow
 - Update README.md with new auth setup instructions
 - Document environment variables
