@@ -59,6 +59,7 @@
 	--color-accent: #f4f4f5;
 	--color-accent-foreground: #18181b;
 	--color-destructive: #ef4444;
+	--color-destructive-hover: #dc2626;
 	--color-destructive-foreground: #fafafa;
 
 	/* UI elements */
@@ -109,6 +110,7 @@
 	--color-accent: #3f3f46;
 	--color-accent-foreground: #f4f4f5;
 	--color-destructive: #ef4444;
+	--color-destructive-hover: #dc2626;
 	--color-destructive-foreground: #fafafa;
 
 	/* UI elements */
@@ -155,6 +157,7 @@
 	--color-accent: var(--color-accent);
 	--color-accent-foreground: var(--color-accent-foreground);
 	--color-destructive: var(--color-destructive);
+	--color-destructive-hover: var(--color-destructive-hover);
 	--color-destructive-foreground: var(--color-destructive-foreground);
 
 	/* UI elements */

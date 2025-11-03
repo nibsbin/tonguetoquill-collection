@@ -494,7 +494,7 @@
 			<Button
 				variant="default"
 				size="sm"
-				class="bg-red-600 text-white hover:bg-red-700"
+				class="bg-destructive text-white hover:bg-(--color-destructive-hover)"
 				onclick={confirmDelete}
 			>
 				Delete
