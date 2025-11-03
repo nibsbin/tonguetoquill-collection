@@ -110,35 +110,3 @@
 		{/if}
 	</div>
 </aside>
-
-<Dialog bind:open={showDeleteDialog}>
-	<DialogContent>
-		<DialogHeader>
-			<DialogTitle>Delete Document</DialogTitle>
-			<DialogDescription>
-				Are you sure you want to delete this document? This action cannot be undone.
-			</DialogDescription>
-		</DialogHeader>
-		<DialogFooter>
-			<Button
-				variant="ghost"
-				size="sm"
-				class="text-muted-foreground hover:bg-accent hover:text-foreground"
-				onclick={() => {
-					showDeleteDialog = false;
-					documentToDelete = null;
-				}}
-			>
-				Cancel
-			</Button>
-			<Button
-				variant="default"
-				size="sm"
-				class="bg-red-600 text-white hover:bg-red-700"
-				onclick={handleDelete}
-			>
-				Delete
-			</Button>
-		</DialogFooter>
-	</DialogContent>
-</Dialog>
