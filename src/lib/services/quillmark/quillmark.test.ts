@@ -217,4 +217,203 @@ describe('QuillmarkService', () => {
 			expect(result.artifacts.length).toBe(1);
 		});
 	});
+
+	describe('diagnostic handling', () => {
+		beforeEach(async () => {
+			const mockManifest = {
+				quills: [{ name: 'taro', description: 'Test', backend: 'typst', exampleFile: 'taro.md' }]
+			};
+
+			(global.fetch as typeof fetch).mockImplementation((url: string) => {
+				if (url === '/quills/manifest.json') {
+					return Promise.resolve({
+						ok: true,
+						json: () => Promise.resolve(mockManifest)
+					} as Response);
+				}
+				if (url.endsWith('.zip')) {
+					return Promise.resolve({
+						ok: true,
+						blob: () => Promise.resolve(new Blob(['test']))
+					} as Response);
+				}
+				return Promise.reject(new Error('Not found'));
+			});
+
+			await quillmarkService.initialize();
+		});
+
+		it('should extract diagnostic from error with diagnostic property', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const wasmError = {
+				diagnostic: {
+					severity: 'Error',
+					code: 'E001',
+					message: 'Syntax error in template',
+					primary: { line: 42, column: 15, length: 5 },
+					hint: 'Check bracket syntax',
+					source_chain: ['template error', 'parsing failed']
+				}
+			};
+
+			vi.mocked(exporters.render).mockImplementation(() => {
+				throw wasmError;
+			});
+
+			try {
+				await quillmarkService.renderForPreview('# Test');
+				expect.fail('Should have thrown');
+			} catch (error) {
+				expect(error).toBeInstanceOf(QuillmarkError);
+				const qmError = error as QuillmarkError;
+				expect(qmError.diagnostic).toBeDefined();
+				expect(qmError.diagnostic?.code).toBe('E001');
+				expect(qmError.diagnostic?.message).toBe('Syntax error in template');
+				expect(qmError.diagnostic?.severity).toBe('error');
+				expect(qmError.diagnostic?.hint).toBe('Check bracket syntax');
+				expect(qmError.diagnostic?.location).toEqual({ line: 42, column: 15, length: 5 });
+				expect(qmError.diagnostic?.sourceChain).toEqual(['template error', 'parsing failed']);
+			}
+		});
+
+		it('should extract diagnostic when error is diagnostic itself', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const wasmError = {
+				severity: 'Warning',
+				message: 'Deprecated field usage',
+				hint: 'Use new syntax'
+			};
+
+			vi.mocked(exporters.render).mockImplementation(() => {
+				throw wasmError;
+			});
+
+			try {
+				await quillmarkService.renderForPreview('# Test');
+				expect.fail('Should have thrown');
+			} catch (error) {
+				expect(error).toBeInstanceOf(QuillmarkError);
+				const qmError = error as QuillmarkError;
+				expect(qmError.diagnostic).toBeDefined();
+				expect(qmError.diagnostic?.severity).toBe('warning');
+				expect(qmError.diagnostic?.message).toBe('Deprecated field usage');
+				expect(qmError.diagnostic?.hint).toBe('Use new syntax');
+				expect(qmError.diagnostic?.sourceChain).toEqual([]);
+			}
+		});
+
+		it('should handle errors without diagnostics', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+
+			vi.mocked(exporters.render).mockImplementation(() => {
+				throw new Error('Generic error');
+			});
+
+			try {
+				await quillmarkService.renderForPreview('# Test');
+				expect.fail('Should have thrown');
+			} catch (error) {
+				expect(error).toBeInstanceOf(QuillmarkError);
+				const qmError = error as QuillmarkError;
+				expect(qmError.diagnostic).toBeUndefined();
+				expect(qmError.message).toContain('Generic error');
+			}
+		});
+
+		it('should normalize severity to lowercase', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const wasmError = {
+				severity: 'Info',
+				message: 'Informational message'
+			};
+
+			vi.mocked(exporters.render).mockImplementation(() => {
+				throw wasmError;
+			});
+
+			try {
+				await quillmarkService.renderForPreview('# Test');
+				expect.fail('Should have thrown');
+			} catch (error) {
+				expect(error).toBeInstanceOf(QuillmarkError);
+				const qmError = error as QuillmarkError;
+				expect(qmError.diagnostic?.severity).toBe('info');
+			}
+		});
+
+		it('should handle diagnostic with camelCase sourceChain', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const wasmError = {
+				diagnostic: {
+					severity: 'Error',
+					message: 'Test error',
+					sourceChain: ['first', 'second']
+				}
+			};
+
+			vi.mocked(exporters.render).mockImplementation(() => {
+				throw wasmError;
+			});
+
+			try {
+				await quillmarkService.renderForPreview('# Test');
+				expect.fail('Should have thrown');
+			} catch (error) {
+				expect(error).toBeInstanceOf(QuillmarkError);
+				const qmError = error as QuillmarkError;
+				expect(qmError.diagnostic?.sourceChain).toEqual(['first', 'second']);
+			}
+		});
+
+		it('should attach diagnostic to renderToPDF errors', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const wasmError = {
+				diagnostic: {
+					severity: 'Error',
+					code: 'typst::compile',
+					message: 'Compilation failed',
+					hint: 'Check template syntax'
+				}
+			};
+
+			vi.mocked(exporters.render).mockImplementation(() => {
+				throw wasmError;
+			});
+
+			try {
+				await quillmarkService.renderToPDF('# Test', 'taro');
+				expect.fail('Should have thrown');
+			} catch (error) {
+				expect(error).toBeInstanceOf(QuillmarkError);
+				const qmError = error as QuillmarkError;
+				expect(qmError.diagnostic).toBeDefined();
+				expect(qmError.diagnostic?.code).toBe('typst::compile');
+				expect(qmError.diagnostic?.hint).toBe('Check template syntax');
+			}
+		});
+
+		it('should attach diagnostic to downloadDocument errors', async () => {
+			const { exporters } = await import('@quillmark-test/web');
+			const wasmError = {
+				diagnostic: {
+					severity: 'Error',
+					message: 'Download failed'
+				}
+			};
+
+			vi.mocked(exporters.render).mockImplementation(() => {
+				throw wasmError;
+			});
+
+			try {
+				await quillmarkService.downloadDocument('# Test', 'taro', 'test.pdf', 'pdf');
+				expect.fail('Should have thrown');
+			} catch (error) {
+				expect(error).toBeInstanceOf(QuillmarkError);
+				const qmError = error as QuillmarkError;
+				expect(qmError.diagnostic).toBeDefined();
+				expect(qmError.diagnostic?.message).toBe('Download failed');
+			}
+		});
+	});
 });

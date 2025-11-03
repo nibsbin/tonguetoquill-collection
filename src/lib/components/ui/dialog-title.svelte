@@ -11,7 +11,7 @@
 </script>
 
 <DialogPrimitive.Title
-	class={cn('text-lg leading-none font-semibold tracking-tight', className)}
+	class={cn('text-lg leading-none font-semibold tracking-tight text-foreground', className)}
 	{...restProps}
 >
 	{#if children}

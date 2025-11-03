@@ -1,7 +1,11 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
-	import { QuillmarkError, type RenderResult } from '$lib/services/quillmark/types';
+	import {
+		QuillmarkError,
+		type RenderResult
+		// type QuillmarkDiagnostic
+	} from '$lib/services/quillmark/types';
 
 	interface Props {
 		/** Markdown content to preview */
@@ -10,15 +14,51 @@
 
 	let { markdown }: Props = $props();
 
+	interface ErrorDisplayState {
+		code?: string;
+		message: string;
+		hint?: string;
+		location?: {
+			line: number;
+			column: number;
+		};
+		sourceChain?: string[];
+	}
+
 	// State
 	let loading = $state(false);
-	let error = $state<string | null>(null);
+	let errorDisplay = $state<ErrorDisplayState | null>(null);
 	let renderResult = $state<RenderResult | null>(null);
+	let lastSuccessfulResult = $state<RenderResult | null>(null);
 	let pdfObjectUrl = $state<string | null>(null);
+	let lastSuccessfulPdfUrl = $state<string | null>(null);
 	let svgPages = $state<string[]>([]);
+	let lastSuccessfulSvgPages = $state<string[]>([]);
 
 	// Debounce timer
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+	/**
+	 * Extract error display information from caught error
+	 */
+	function extractErrorDisplay(error: unknown): ErrorDisplayState {
+		if (error instanceof QuillmarkError && error.diagnostic) {
+			return {
+				code: error.diagnostic.code,
+				message: error.diagnostic.message,
+				hint: error.diagnostic.hint,
+				location: error.diagnostic.location,
+				sourceChain:
+					error.diagnostic.sourceChain.length > 0 ? error.diagnostic.sourceChain : undefined
+			};
+		}
+
+		if (error instanceof QuillmarkError) {
+			return { message: error.message };
+		}
+
+		return { message: 'An unexpected error occurred while rendering' };
+	}
 
 	/**
 	 * Render markdown using Quillmark service
@@ -36,7 +76,7 @@
 		}
 
 		loading = true;
-		error = null;
+		errorDisplay = null;
 
 		try {
 			// Render with Quillmark - engine auto-detects backend from content
@@ -62,21 +102,23 @@
 			} else {
 				svgPages = [];
 			}
-		} catch (err) {
-			if (err instanceof QuillmarkError) {
-				switch (err.code) {
-					case 'not_initialized':
-						error = 'Preview unavailable. Please refresh.';
-						break;
-					case 'render_error':
-						error = 'Failed to render preview. Check document syntax.';
-						break;
-					default:
-						error = 'An error occurred while rendering.';
+
+			// Save successful render state
+			lastSuccessfulResult = result;
+			lastSuccessfulSvgPages = svgPages;
+			if (pdfObjectUrl) {
+				// Clean up old successful PDF URL
+				if (lastSuccessfulPdfUrl) {
+					URL.revokeObjectURL(lastSuccessfulPdfUrl);
 				}
-			} else {
-				error = 'An unexpected error occurred.';
+				lastSuccessfulPdfUrl = pdfObjectUrl;
 			}
+
+			// Clear error on successful render
+			errorDisplay = null;
+		} catch (err) {
+			// Extract diagnostic information
+			errorDisplay = extractErrorDisplay(err);
 			console.error('Preview render error:', err);
 		} finally {
 			loading = false;
@@ -105,7 +147,7 @@
 				loading = true;
 				await quillmarkService.initialize();
 			} catch (err) {
-				error = 'Failed to initialize preview. Please refresh.';
+				errorDisplay = { message: 'Failed to initialize preview. Please refresh.' };
 				console.error('Quillmark initialization failed:', err);
 			} finally {
 				loading = false;
@@ -135,9 +177,12 @@
 			clearTimeout(debounceTimer);
 		}
 
-		// Clean up PDF object URL
+		// Clean up PDF object URLs
 		if (pdfObjectUrl) {
 			URL.revokeObjectURL(pdfObjectUrl);
+		}
+		if (lastSuccessfulPdfUrl) {
+			URL.revokeObjectURL(lastSuccessfulPdfUrl);
 		}
 	});
 </script>
@@ -156,24 +201,140 @@
 				<p class="text-muted-foreground">Rendering preview...</p>
 			</div>
 		</div>
-	{:else if error}
-		<div class="flex h-full items-center justify-center">
-			<div class="max-w-md rounded-lg bg-red-50 p-6 text-center dark:bg-red-950">
-				<svg
-					class="mx-auto mb-4 h-12 w-12 text-destructive dark:text-red-400"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
+	{:else if errorDisplay}
+		<!-- Show error overlay with last successful render in background -->
+		<div class="relative h-full">
+			<!-- Background: Last successful render (dimmed) -->
+			{#if lastSuccessfulResult?.outputFormat === 'svg' && lastSuccessfulSvgPages.length > 0}
+				<div class="preview-svg-container opacity-30 blur-sm">
+					{#each lastSuccessfulSvgPages as page, index (index)}
+						<div class="preview-svg-page">
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+							{@html page}
+						</div>
+					{/each}
+				</div>
+			{:else if lastSuccessfulResult?.outputFormat === 'pdf' && lastSuccessfulPdfUrl}
+				<iframe
+					src={lastSuccessfulPdfUrl}
+					title="PDF preview (last successful)"
+					class="h-full w-full border-0 opacity-30 blur-sm"
+					aria-label="PDF preview"
+				></iframe>
+			{/if}
+
+			<!-- Foreground: Error overlay -->
+			<div
+				class="absolute inset-0 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm"
+			>
+				<div
+					class="max-w-2xl rounded-lg border border-error-border bg-error-background p-6 shadow-xl"
 				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-					/>
-				</svg>
-				<h3 class="mb-2 text-lg font-semibold text-red-800 dark:text-red-300">Preview Error</h3>
-				<p class="text-red-700 dark:text-red-300">{error}</p>
+					<!-- Error Header -->
+					<div class="mb-4 flex items-center gap-2">
+						<svg
+							class="h-6 w-6 text-error"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							aria-hidden="true"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
+						</svg>
+						<h3 class="text-lg font-semibold text-error-foreground">Render Error</h3>
+					</div>
+
+					<!-- Error Code -->
+					{#if errorDisplay.code}
+						<div class="mb-3">
+							<span
+								class="inline-block rounded bg-error-border px-2 py-1 font-mono text-sm text-error-foreground"
+							>
+								{errorDisplay.code}
+							</span>
+						</div>
+					{/if}
+
+					<!-- Error Message -->
+					<p class="mb-4 text-error-foreground">
+						{errorDisplay.message}
+					</p>
+
+					<!-- Hint -->
+					{#if errorDisplay.hint}
+						<div
+							class="mb-4 flex gap-2 rounded border-l-4 border-warning bg-warning-background p-3"
+						>
+							<svg
+								class="h-5 w-5 shrink-0 text-warning"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+								/>
+							</svg>
+							<p class="text-sm text-warning-foreground">
+								{errorDisplay.hint}
+							</p>
+						</div>
+					{/if}
+
+					<!-- Location -->
+					{#if errorDisplay.location}
+						<div class="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
+							<svg
+								class="h-4 w-4"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+								/>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+								/>
+							</svg>
+							<span class="font-mono">
+								Line {errorDisplay.location.line}, Column {errorDisplay.location.column}
+							</span>
+						</div>
+					{/if}
+
+					<!-- Source Chain -->
+					{#if errorDisplay.sourceChain && errorDisplay.sourceChain.length > 0}
+						<details class="mt-4">
+							<summary
+								class="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground"
+							>
+								Error Context
+							</summary>
+							<ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+								{#each errorDisplay.sourceChain as source, idx (idx)}
+									<li>{source}</li>
+								{/each}
+							</ul>
+						</details>
+					{/if}
+				</div>
 			</div>
 		</div>
 	{:else if renderResult?.outputFormat === 'svg' && svgPages.length > 0}

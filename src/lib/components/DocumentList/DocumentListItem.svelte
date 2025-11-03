@@ -36,12 +36,10 @@
 			: 'text-muted-foreground hover:text-foreground'}"
 		onclick={handleSelect}
 	>
-		{#snippet children()}
-			<FileText class="sidebar-icon sidebar-icon-small" />
-			<span class="truncate transition-opacity duration-300">
-				{document.name}
-			</span>
-		{/snippet}
+		<FileText class="sidebar-icon sidebar-icon-small" />
+		<span class="truncate transition-opacity duration-300">
+			{document.name}
+		</span>
 	</Button>
 	<Button
 		variant="ghost"
@@ -50,8 +48,6 @@
 		onclick={handleDelete}
 		aria-label="Delete {document.name}"
 	>
-		{#snippet children()}
-			<Trash2 class="h-5 w-5" />
-		{/snippet}
+		<Trash2 class="h-5 w-5" />
 	</Button>
 </div>

@@ -117,8 +117,14 @@ class QuillmarkServiceImpl implements QuillmarkService {
 
 			return exporters!.toBlob(result);
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('render_error', `Failed to render PDF: ${message}`);
+			const diagnostic = this.extractDiagnostic(error);
+
+			if (diagnostic) {
+				throw new QuillmarkError('render_error', diagnostic.message, diagnostic);
+			} else {
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				throw new QuillmarkError('render_error', `Failed to render PDF: ${message}`);
+			}
 		}
 	}
 
@@ -138,8 +144,21 @@ class QuillmarkServiceImpl implements QuillmarkService {
 			return result;
 		} catch (error) {
 			console.log('Error during renderForPreview:', error);
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
+			// Extract diagnostic information if available
+			const diagnostic = this.extractDiagnostic(error);
+
+			if (diagnostic) {
+				// Throw with diagnostic information
+				throw new QuillmarkError(
+					'render_error',
+					diagnostic.message || 'Failed to render preview',
+					diagnostic
+				);
+			} else {
+				// Fallback to generic error
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
+			}
 		}
 	}
 
@@ -163,8 +182,14 @@ class QuillmarkServiceImpl implements QuillmarkService {
 
 			exporters!.download(result, filename);
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('render_error', `Failed to download document: ${message}`);
+			const diagnostic = this.extractDiagnostic(error);
+
+			if (diagnostic) {
+				throw new QuillmarkError('render_error', diagnostic.message, diagnostic);
+			} else {
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				throw new QuillmarkError('render_error', `Failed to download document: ${message}`);
+			}
 		}
 	}
 
@@ -246,6 +271,76 @@ class QuillmarkServiceImpl implements QuillmarkService {
 				`Quill "${quillName}" not found. Available: ${available}`
 			);
 		}
+	}
+
+	/**
+	 * Extract diagnostic information from WASM error
+	 */
+	private extractDiagnostic(error: unknown): import('./types').QuillmarkDiagnostic | null {
+		// The WASM engine may return errors with a `diagnostic` property
+		// or embed diagnostic information in the error structure
+		if (error && typeof error === 'object') {
+			// Handle Map objects from WASM
+			if (error instanceof Map) {
+				// Check if the Map has diagnostic structure (type: 'diagnostic')
+				if (error.get('type') === 'diagnostic') {
+					// Convert Map to plain object
+					const obj: Record<string, unknown> = {};
+					error.forEach((value, key) => {
+						obj[key] = value;
+					});
+					return this.normalizeDiagnostic(obj);
+				}
+			}
+
+			const err = error as Record<string, unknown>;
+
+			// Check for diagnostic property
+			if (err.diagnostic) {
+				return this.normalizeDiagnostic(err.diagnostic);
+			}
+
+			// Check if error itself is a diagnostic
+			if (err.severity && err.message) {
+				return this.normalizeDiagnostic(err);
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Normalize WASM diagnostic to TypeScript type
+	 */
+	private normalizeDiagnostic(diagnostic: unknown): import('./types').QuillmarkDiagnostic {
+		const d = diagnostic as Record<string, unknown>;
+		return {
+			severity: this.normalizeSeverity(d.severity),
+			code: (d.code as string) || undefined,
+			message: (d.message as string) || 'Unknown error',
+			location: d.primary
+				? {
+						line: (d.primary as Record<string, unknown>).line as number,
+						column: (d.primary as Record<string, unknown>).column as number,
+						length: (d.primary as Record<string, unknown>).length as number | undefined
+					}
+				: undefined,
+			hint: (d.hint as string) || undefined,
+			sourceChain: (d.source_chain as string[]) || (d.sourceChain as string[]) || []
+		};
+	}
+
+	/**
+	 * Normalize severity to lowercase TypeScript type
+	 */
+	private normalizeSeverity(severity: unknown): import('./types').DiagnosticSeverity {
+		if (typeof severity === 'string') {
+			const lower = severity.toLowerCase();
+			if (lower === 'error' || lower === 'warning' || lower === 'info') {
+				return lower as import('./types').DiagnosticSeverity;
+			}
+		}
+		return 'error'; // Default to error
 	}
 }
 

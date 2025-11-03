@@ -44,17 +44,14 @@
 		{title}
 		{disabled}
 	>
-		{#snippet children()}
-			{@const Icon = icon}
-			<Icon class="sidebar-icon" />
-			{#if label}
-				<span
-					class="truncate transition-opacity duration-300 {isExpanded
-						? 'opacity-100'
-						: 'opacity-0'}">{label}</span
-				>
-			{/if}
-		{/snippet}
+		{@const Icon = icon}
+		<Icon class="sidebar-icon" />
+		{#if label}
+			<span
+				class="truncate transition-opacity duration-300 {isExpanded ? 'opacity-100' : 'opacity-0'}"
+				>{label}</span
+			>
+		{/if}
 	</Button>
 </div>
 

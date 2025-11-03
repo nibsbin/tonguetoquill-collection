@@ -159,26 +159,9 @@
 		editorView.focus();
 	}
 
-	function insertAtCursor(text: string) {
-		if (!editorView) return;
-
-		const state = editorView.state;
-		const selection = state.selection.main;
-
-		const transaction = state.update({
-			changes: {
-				from: selection.from,
-				to: selection.to,
-				insert: text
-			},
-			selection: {
-				anchor: selection.from + text.length
-			}
-		});
-
-		editorView.dispatch(transaction);
-		editorView.focus();
-	}
+	// insertAtCursor removed: previously unused utility for inserting text at the
+	// editor cursor. Kept formatting helpers above; if insertion is needed later
+	// we can reintroduce a focused implementation then.
 
 	function handleBold() {
 		applyFormatting('**');
@@ -433,8 +416,9 @@
 	// Recreate editor when showLineNumbers or theme changes
 	$effect(() => {
 		// Track both showLineNumbers and isDarkTheme for reactivity
-		showLineNumbers;
-		isDarkTheme;
+		// use `void` to satisfy linters that disallow unused expressions
+		void showLineNumbers;
+		void isDarkTheme;
 
 		// Only recreate if editor already exists (not initial mount)
 		if (editorView && editorElement) {

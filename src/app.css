@@ -72,6 +72,18 @@
 	--color-syntax-key: #355e93;
 	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.03);
 	--color-syntax-metadata-border: #355e9300;
+	
+	/* Error/Diagnostic colors */
+	--color-error: #ef4444; /* red-500 base */
+	--color-error-foreground: #991b1b; /* red-800 dark text */
+	--color-error-background: #fef2f2; /* red-50 light bg */
+	--color-error-border: #fecaca; /* red-200 subtle border */
+
+	/* Warning/Hint colors */
+	--color-warning: #f59e0b; /* amber-500 base */
+	--color-warning-foreground: #78350f; /* amber-900 dark text */
+	--color-warning-background: #fffbeb; /* amber-50 light bg */
+	--color-warning-border: #fde68a; /* amber-200 subtle border */
 
 	/* Design tokens from mock project */
 	font-family: 'Lato', Arial, sans-serif;
@@ -112,6 +124,18 @@
 	--color-syntax-identifier: #06b6d4;
 	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.08);
 	--color-syntax-metadata-border: #355e93;
+
+	/* Error/Diagnostic colors */
+	--color-error: #ef4444; /* red-500 base (unchanged) */
+	--color-error-foreground: #fecaca; /* red-200 light text */
+	--color-error-background: #450a0a; /* red-950 dark bg */
+	--color-error-border: #991b1b; /* red-800 stronger border */
+
+	/* Warning/Hint colors */
+	--color-warning: #f59e0b; /* amber-500 base (unchanged) */
+	--color-warning-foreground: #fde68a; /* amber-200 light text */
+	--color-warning-background: #451a03; /* amber-950 dark bg */
+	--color-warning-border: #78350f; /* amber-800 stronger border */
 }
 
 /* Tailwind CSS Integration */
@@ -141,6 +165,18 @@
 	--color-border-hover: var(--color-border-hover);
 	--color-input: var(--color-input);
 	--color-ring: var(--color-ring);
+
+	/* Error/Diagnostic colors */
+	--color-error: var(--color-error);
+	--color-error-foreground: var(--color-error-foreground);
+	--color-error-background: var(--color-error-background);
+	--color-error-border: var(--color-error-border);
+
+	/* Warning/Hint colors */
+	--color-warning: var(--color-warning);
+	--color-warning-foreground: var(--color-warning-foreground);
+	--color-warning-background: var(--color-warning-background);
+	--color-warning-border: var(--color-warning-border);
 }
 
 body {
