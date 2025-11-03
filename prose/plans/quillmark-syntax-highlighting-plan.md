@@ -432,5 +432,79 @@ Add reference to new design document:
 
 ---
 
-_Plan Status: Ready for Implementation_
+## Implementation Status
+
+**Overall Status:** Partially Complete (Phases 1-2 ✅ | Phases 3-4 ❌)
+
+### ✅ Phase 1: Core Pattern Detection & Decoration - COMPLETE
+- Created [src/lib/editor/quillmark-patterns.ts](../../src/lib/editor/quillmark-patterns.ts) with pattern detection
+- Created [src/lib/editor/quillmark-decorator.ts](../../src/lib/editor/quillmark-decorator.ts) with ViewPlugin
+- Created [src/lib/editor/quillmark-theme.ts](../../src/lib/editor/quillmark-theme.ts) with semantic token styling
+- Integrated into [src/lib/components/Editor/MarkdownEditor.svelte](../../src/lib/components/Editor/MarkdownEditor.svelte)
+- Unit tests added in [src/lib/editor/quillmark-patterns.test.ts](../../src/lib/editor/quillmark-patterns.test.ts)
+- **Bug Fix:** Fixed critical decoration sorting crash (commit 91a7fc1) - restructured from sequential to collect-sort-add pattern
+
+**Acceptance Criteria Met:**
+- ✅ `---` delimiters highlighted in muted color
+- ✅ Metadata blocks have subtle background tint and left border
+- ✅ Horizontal rules correctly distinguished from metadata delimiters
+- ✅ No performance issues with large documents
+- ✅ Works in both light and dark modes
+
+### ✅ Phase 2: Keyword & YAML Highlighting - COMPLETE
+- Extended pattern detection with SCOPE/QUILL keyword detection
+- Extended pattern detection with YAML key/value detection
+- Enhanced decorator with keyword and YAML decorations
+- Expanded theme with syntax colors using semantic tokens
+
+**Acceptance Criteria Met:**
+- ✅ SCOPE and QUILL keywords highlighted in USAF blue
+- ✅ Scope/quill names highlighted in cyan
+- ✅ YAML keys and values have appropriate colors
+- ✅ Different value types use different colors
+- ✅ No visual glitches or overlapping highlights
+- ✅ All colors meet WCAG AA contrast requirements
+
+### ❌ Phase 3: Code Folding Support - NOT IMPLEMENTED
+**Status:** Stub implementation exists
+
+**What Exists:**
+- `handleToggleFrontmatter()` function in MarkdownEditor.svelte (logs "not yet implemented")
+- Toolbar button wired up but non-functional
+
+**What's Missing:**
+- ❌ `src/lib/editor/quillmark-folding.ts` module not created
+- ❌ Fold service not implemented
+- ❌ Fold gutter not integrated
+- ❌ No keyboard shortcuts for folding
+
+**To Complete:**
+1. Create `quillmark-folding.ts` with `findClosingDelimiter()` and fold service
+2. Configure `foldGutter()` from `@codemirror/language`
+3. Add fold service and gutter to editor extensions
+4. Implement `handleToggleFrontmatter()` to trigger folding at cursor position
+5. Add keyboard shortcuts (Ctrl/Cmd+Shift+[/])
+6. Add unit tests for fold detection
+
+### ❌ Phase 4: Auto-Completion - NOT IMPLEMENTED
+**Status:** Not started
+
+**What's Missing:**
+- ❌ `src/lib/editor/quillmark-completion.ts` module not created
+- ❌ No completion provider implemented
+- ❌ No integration with CodeMirror autocomplete
+
+**To Complete:**
+1. Create `quillmark-completion.ts` with completion provider
+2. Detect cursor position after `SCOPE: ` or `QUILL: `
+3. Extract existing scope names from document
+4. Fetch available quill templates from QuillmarkService
+5. Integrate into editor extensions
+6. Add unit tests
+
+---
+
+_Plan Status: Partially Complete (Core Syntax Highlighting ✅ | Folding & Completion ❌)_
 _Last Updated: 2025-11-02_
+_Implementation Completed: Phases 1-2 (2025-11-02)_
+_Remaining Work: Phases 3-4_
