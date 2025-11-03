@@ -315,8 +315,8 @@ export class MockAuthProvider implements AuthContract {
 			return;
 		}
 
-		// Mock: simulate sending email (just log)
-		console.log(`[MockAuthProvider] Password reset email sent to ${email}`);
+		// Mock: simulate sending email (no-op in mock)
+		// Password reset would be sent via email in production
 	}
 
 	/**

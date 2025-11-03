@@ -143,7 +143,6 @@ class QuillmarkServiceImpl implements QuillmarkService {
 
 			return result;
 		} catch (error) {
-			console.log('Error during renderForPreview:', error);
 			// Extract diagnostic information if available
 			const diagnostic = this.extractDiagnostic(error);
 
