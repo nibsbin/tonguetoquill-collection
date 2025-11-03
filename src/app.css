@@ -71,7 +71,6 @@
 	--color-syntax-keyword: #355e93;
 	--color-syntax-key: #355e93;
 	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.03);
-	--color-syntax-metadata-border: #355e9300;
 
 	/* Error/Diagnostic colors */
 	--color-error: #ef4444; /* red-500 base */
@@ -123,7 +122,6 @@
 	--color-syntax-key: #3a85b6;
 	--color-syntax-identifier: #06b6d4;
 	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.08);
-	--color-syntax-metadata-border: #355e93;
 
 	/* Error/Diagnostic colors */
 	--color-error: #ef4444; /* red-500 base (unchanged) */
