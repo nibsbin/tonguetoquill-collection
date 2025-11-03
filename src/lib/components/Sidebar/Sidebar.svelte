@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, Settings, User, Plus } from 'lucide-svelte';
+	import { Menu, Settings, User, Plus, LogIn, CircleUser } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
@@ -20,6 +20,7 @@
 	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { onMount } from 'svelte';
+	import { loginClient } from '$lib/services/auth';
 
 	type SidebarProps = {
 		user?: { email: string; id: string } | null;
@@ -36,6 +37,7 @@
 	let deleteDialogOpen = $state(false);
 	let documentToDelete = $state<string | null>(null);
 	let isDarkMode = $state(true);
+	let profileModalOpen = $state(false);
 
 	onMount(() => {
 		// Load dark mode preference from localStorage
@@ -159,6 +161,28 @@
 		localStorage.setItem('dark-mode', value.toString());
 		updateDarkMode(value);
 	}
+
+	function handleSignIn() {
+		loginClient.initiateLogin();
+	}
+
+	async function handleSignOut() {
+		try {
+			await loginClient.signOut();
+			profileModalOpen = false;
+			// Reload the page to clear user state
+			window.location.reload();
+		} catch (error) {
+			console.error('Sign out failed:', error);
+			// Still close modal and reload even on error to clear local state
+			profileModalOpen = false;
+			window.location.reload();
+		}
+	}
+
+	function handleProfileClick() {
+		profileModalOpen = true;
+	}
 </script>
 
 <!-- Note: the main sidebar content is rendered inside the mobile Sheet or the desktop sidebar below
@@ -250,14 +274,27 @@
 
 				<!-- User Profile and Settings Section -->
 				<div class="space-y-1 border-t border-border">
-					<!-- User Profile Button -->
+					<!-- Sign-In Button (Guest Mode) -->
+					{#if !user}
+						<SidebarButtonSlot
+							icon={LogIn}
+							label="Sign in"
+							{isExpanded}
+							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
+							onclick={handleSignIn}
+							ariaLabel="Sign in to your account"
+						/>
+					{/if}
+
+					<!-- User Profile Button (Logged-in Mode) -->
 					{#if user}
 						<SidebarButtonSlot
-							icon={User}
+							icon={CircleUser}
 							label={user.email}
 							{isExpanded}
 							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							title={user.email}
+							onclick={handleProfileClick}
 							ariaLabel="User profile: {user.email}"
 						/>
 					{/if}
@@ -402,14 +439,27 @@
 
 		<!-- User Profile and Settings Section -->
 		<div class="space-y-1 border-t border-border">
-			<!-- User Profile Button -->
+			<!-- Sign-In Button (Guest Mode) -->
+			{#if !user}
+				<SidebarButtonSlot
+					icon={LogIn}
+					label="Sign in"
+					{isExpanded}
+					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
+					onclick={handleSignIn}
+					ariaLabel="Sign in to your account"
+				/>
+			{/if}
+
+			<!-- User Profile Button (Logged-in Mode) -->
 			{#if user}
 				<SidebarButtonSlot
-					icon={User}
+					icon={CircleUser}
 					label={user.email}
 					{isExpanded}
 					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 					title={user.email}
+					onclick={handleProfileClick}
 					ariaLabel="User profile: {user.email}"
 				/>
 			{/if}
@@ -499,6 +549,39 @@
 			>
 				Delete
 			</Button>
+		</DialogFooter>
+	</DialogContent>
+</Dialog>
+
+<!-- Profile Modal -->
+<Dialog bind:open={profileModalOpen}>
+	<DialogContent class="max-w-md">
+		<DialogHeader>
+			<DialogTitle>Account Information</DialogTitle>
+			<DialogDescription>View your account details</DialogDescription>
+		</DialogHeader>
+		{#if user}
+			<div class="space-y-4">
+				<div>
+					<label class="text-sm font-medium text-muted-foreground">Email</label>
+					<p class="text-foreground">{user.email}</p>
+				</div>
+				<div>
+					<label class="text-sm font-medium text-muted-foreground">User ID</label>
+					<p class="font-mono text-sm text-foreground">{user.id}</p>
+				</div>
+			</div>
+		{/if}
+		<DialogFooter>
+			<Button
+				variant="ghost"
+				size="sm"
+				class="text-muted-foreground hover:bg-accent hover:text-foreground"
+				onclick={handleSignOut}
+			>
+				Sign Out
+			</Button>
+			<Button variant="default" size="sm" onclick={() => (profileModalOpen = false)}>Close</Button>
 		</DialogFooter>
 	</DialogContent>
 </Dialog>
