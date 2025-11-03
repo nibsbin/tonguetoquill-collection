@@ -466,7 +466,7 @@ Per [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md):
 
 **Preview Updates:**
 
-Coordinate with MarkdownPreview component:
+Coordinate with Preview component:
 
 - Debounced preview rendering (50-300ms)
 - Editor emits content change events

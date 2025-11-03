@@ -156,7 +156,7 @@ The new design maintains visual compatibility with the legacy React implementati
 - **Layout**: Collapsible sidebar, split editor/preview, top menu
 - **Typography**: System fonts for UI, monospace for editor, serif for preview
 - **Interactions**: 300ms transitions, hover states, toast notifications
-- **Components**: Sidebar, TopMenu, EditorToolbar, MarkdownEditor, MarkdownPreview
+- **Components**: Sidebar, TopMenu, EditorToolbar, MarkdownEditor, Preview
 
 ### Modernized Elements
 
