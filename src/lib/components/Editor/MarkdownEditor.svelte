@@ -5,6 +5,7 @@
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
+	import { quillmarkDecorator, createQuillmarkTheme } from '$lib/editor';
 
 	interface Props {
 		value: string;
@@ -58,7 +59,9 @@
 				}
 			}),
 			EditorView.lineWrapping,
-			createEditorTheme()
+			createEditorTheme(),
+			quillmarkDecorator,
+			createQuillmarkTheme()
 		];
 
 		// Conditionally add line numbers
@@ -331,7 +334,12 @@
 		if (editorView && editorElement) {
 			const currentValue = editorView.state.doc.toString();
 			editorView.destroy();
-			editorView = createEditor(currentValue);
+
+			// Use requestAnimationFrame to ensure CSS custom properties have updated
+			// before creating the new editor with theme extensions
+			requestAnimationFrame(() => {
+				editorView = createEditor(currentValue);
+			});
 		}
 	});
 </script>

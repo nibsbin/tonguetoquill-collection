@@ -67,6 +67,15 @@
 	--color-input: #e4e4e7;
 	--color-ring: #18181b;
 
+	/* Syntax highlighting colors (light mode) */
+	--color-syntax-keyword: #355e93;
+	--color-syntax-identifier: #0891b2;
+	--color-syntax-string: #16a34a;
+	--color-syntax-number: #d97706;
+	--color-syntax-boolean: #7c3aed;
+	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.03);
+	--color-syntax-metadata-border: #355e93;
+
 	/* Design tokens from mock project */
 	font-family: 'Lato', Arial, sans-serif;
 }
@@ -99,6 +108,15 @@
 	--color-border-hover: #52525b;
 	--color-input: #27272a;
 	--color-ring: #d4d4d8;
+
+	/* Syntax highlighting colors (dark mode) */
+	--color-syntax-keyword: #355e93;
+	--color-syntax-identifier: #06b6d4;
+	--color-syntax-string: #22c55e;
+	--color-syntax-number: #f59e0b;
+	--color-syntax-boolean: #8b5cf6;
+	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.08);
+	--color-syntax-metadata-border: #355e93;
 }
 
 /* Tailwind CSS Integration */
