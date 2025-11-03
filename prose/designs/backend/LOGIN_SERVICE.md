@@ -23,6 +23,7 @@ Following the server/client pattern from [SERVICES.md](./SERVICES.md):
 ### Server-Side (`$lib/server/services/auth/`)
 
 **File Structure:**
+
 ```
 ├── auth-provider.ts           ← createAuthService() factory
 ├── auth-mock-provider.ts      ← In-memory implementation for development
@@ -33,7 +34,8 @@ Following the server/client pattern from [SERVICES.md](./SERVICES.md):
 **Current Implementation (Phases 1-9):** Mock provider only  
 **Future (Phase 10+):** Add `auth-supabase-provider.ts` for Supabase integration
 
-**Responsibilities**: 
+**Responsibilities**:
+
 - Implement AuthServiceContract
 - Communicate with third-party auth providers
 - Validate and verify JWT tokens
@@ -43,6 +45,7 @@ Following the server/client pattern from [SERVICES.md](./SERVICES.md):
 ### Client-Side (`$lib/services/auth/`)
 
 **File Structure:**
+
 ```
 ├── login-client.ts            ← Unified client interface
 ├── types.ts                   ← Shared types
@@ -50,6 +53,7 @@ Following the server/client pattern from [SERVICES.md](./SERVICES.md):
 ```
 
 **Responsibilities:**
+
 - Simple async methods for login/logout/session management
 - Token storage in HTTP-only cookies
 - Communicate with API routes via `fetch()`
@@ -105,6 +109,7 @@ Authentication API endpoints:
 **Request/Response:** Accept JSON request bodies, return JSON responses with user and session data. Errors return standard error format with error code and message.
 
 **Future (Phase 10+):**
+
 - `POST /api/auth/reset-password` - Initiate password reset (proxies to provider)
 - `POST /api/auth/verify-email` - Request email verification (proxies to provider)
 - `GET /api/auth/callback` - OAuth callback handler (future Keycloak support)
@@ -145,6 +150,7 @@ API routes return consistent JSON error format with error code and human-readabl
 Development-only mock for rapid iteration. In-memory user storage with simulated JWT generation. No external dependencies.
 
 **Environment:**
+
 ```
 USE_AUTH_MOCKS=true
 MOCK_JWT_SECRET=dev_secret_key
@@ -155,6 +161,7 @@ MOCK_JWT_SECRET=dev_secret_key
 Production auth using Supabase managed service. Handles email verification, password reset flows, rate limiting, and brute force protection.
 
 **Environment:**
+
 ```
 USE_AUTH_MOCKS=false
 SUPABASE_URL=https://project.supabase.co
@@ -167,6 +174,7 @@ SUPABASE_JWT_SECRET=jwt_secret
 Self-hosted enterprise auth with advanced OAuth/OIDC flows, SSO integration, and fine-grained permissions.
 
 **Environment:**
+
 ```
 KEYCLOAK_URL=https://auth.example.com
 KEYCLOAK_REALM=tonguetoquill
@@ -179,6 +187,7 @@ KEYCLOAK_CLIENT_SECRET=secret
 ### Third-Party Provider Delegation
 
 The application **never** implements:
+
 - Password storage or validation
 - Login UI/forms (delegated to provider)
 - Password reset flows
@@ -187,6 +196,7 @@ The application **never** implements:
 - Password strength validation
 
 The application **does** implement:
+
 - JWT token validation from provider
 - Secure token storage (HTTP-only cookies)
 - Token refresh logic

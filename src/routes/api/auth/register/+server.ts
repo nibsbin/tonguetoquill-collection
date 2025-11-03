@@ -5,7 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getAuthProvider } from '$lib/services/auth';
+import { authService } from '$lib/server/services/auth';
 import { handleAuthError, setAuthCookies } from '$lib/utils/api';
 
 export const POST: RequestHandler = async (event) => {
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async (event) => {
 			);
 		}
 
-		const result = await getAuthProvider().signUp({
+		const result = await authService.signUp({
 			email,
 			password,
 			dodid,

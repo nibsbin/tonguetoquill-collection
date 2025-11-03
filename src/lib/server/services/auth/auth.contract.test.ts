@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MockAuthProvider } from './mock-provider';
-import { AuthError } from './types';
+import { MockAuthProvider } from './auth-mock-provider';
+import { AuthError } from '$lib/services/auth/types';
 
 describe('AuthContract - MockAuthProvider', () => {
 	let authProvider: MockAuthProvider;

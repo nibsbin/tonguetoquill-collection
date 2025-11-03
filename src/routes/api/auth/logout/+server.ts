@@ -5,7 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getAuthProvider } from '$lib/services/auth';
+import { authService } from '$lib/server/services/auth';
 import { clearAuthCookies, getAccessToken, handleAuthError } from '$lib/utils/api';
 
 export const POST: RequestHandler = async (event) => {
@@ -13,7 +13,7 @@ export const POST: RequestHandler = async (event) => {
 		const accessToken = getAccessToken(event);
 
 		if (accessToken) {
-			await getAuthProvider().signOut(accessToken);
+			await authService.signOut(accessToken);
 		}
 
 		// Clear authentication cookies

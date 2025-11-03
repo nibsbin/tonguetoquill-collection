@@ -5,7 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getAuthProvider } from '$lib/services/auth';
+import { authService } from '$lib/server/services/auth';
 import { handleAuthError, setAuthCookies } from '$lib/utils/api';
 
 export const POST: RequestHandler = async (event) => {
@@ -16,7 +16,7 @@ export const POST: RequestHandler = async (event) => {
 			return json({ error: 'unauthorized', message: 'No refresh token provided' }, { status: 401 });
 		}
 
-		const session = await getAuthProvider().refreshSession(refreshToken);
+		const session = await authService.refreshSession(refreshToken);
 
 		// Set new authentication cookies
 		setAuthCookies(event, session.access_token, session.refresh_token);

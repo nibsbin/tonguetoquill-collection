@@ -5,7 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getAuthProvider } from '$lib/services/auth';
+import { authService } from '$lib/server/services/auth';
 import { handleAuthError, setAuthCookies } from '$lib/utils/api';
 
 export const POST: RequestHandler = async (event) => {
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async (event) => {
 			);
 		}
 
-		const result = await getAuthProvider().signIn({ email, password });
+		const result = await authService.signIn({ email, password });
 
 		// Set authentication cookies
 		setAuthCookies(event, result.session.access_token, result.session.refresh_token);
