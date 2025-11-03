@@ -35,11 +35,11 @@ Instead of replacing the editor content, the loading state should:
 
 - Overlay a semi-transparent layer on the editor to indicate read-only state
 - Display a subtle loading spinner or indicator
-- Optionally show a "Loading..." message in a non-intrusive position
 - Keep the current content visible but dimmed
 
 **Implementation Approach:**
 
+- Use/add semantic tokens in `src/app.css` where appropriate
 - Use CSS opacity and pointer-events to create the "greyed out" effect
 - Position an overlay div with loading indicator
 - Maintain the editor component structure
@@ -195,7 +195,7 @@ When a user selects a different document while the current document has unsaved 
 **New Integration Point:**
 
 - On document switch, call `autoSave.saveNow()` to bypass debounce
-- Only save if document is dirty AND auto-save enabled
+- Only save if document is dirty
 - Don't block document switch on save completion
 - Silent save (no success toast)
 
