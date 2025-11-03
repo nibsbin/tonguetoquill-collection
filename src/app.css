@@ -72,7 +72,7 @@
 	--color-syntax-key: #355e93;
 	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.03);
 	--color-syntax-metadata-border: #355e9300;
-	
+
 	/* Error/Diagnostic colors */
 	--color-error: #ef4444; /* red-500 base */
 	--color-error-foreground: #991b1b; /* red-800 dark text */
