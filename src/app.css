@@ -67,6 +67,11 @@
 	--color-input: #e4e4e7;
 	--color-ring: #18181b;
 
+	/* Syntax highlighting colors (light mode) */
+	--color-syntax-keyword: #355e93;
+	--color-syntax-key: #355e93;
+	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.03);
+
 	/* Error/Diagnostic colors */
 	--color-error: #ef4444; /* red-500 base */
 	--color-error-foreground: #991b1b; /* red-800 dark text */
@@ -111,6 +116,11 @@
 	--color-border-hover: #52525b;
 	--color-input: #27272a;
 	--color-ring: #d4d4d8;
+
+	/* Syntax highlighting colors (dark mode) */
+	--color-syntax-keyword: #7aacd4;
+	--color-syntax-key: #3a85b6;
+	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.08);
 
 	/* Error/Diagnostic colors */
 	--color-error: #ef4444; /* red-500 base (unchanged) */

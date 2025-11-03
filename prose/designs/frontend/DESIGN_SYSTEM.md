@@ -57,6 +57,17 @@ All colors are defined as CSS custom properties in `src/app.css`, with separate 
 - `--color-editor-gutter-background`: Line number gutter background
 - `--color-editor-gutter-foreground`: Line number text
 
+**Syntax Highlighting Colors**:
+
+- `--color-syntax-keyword`: Keywords and important structural elements (SCOPE/QUILL keywords, function keywords)
+- `--color-syntax-identifier`: Identifiers and names (scope names, quill template names, variable names)
+- `--color-syntax-string`: String literals and text values
+- `--color-syntax-number`: Numeric literals
+- `--color-syntax-boolean`: Boolean values and constants
+- `--color-syntax-metadata-bg`: Background tint for metadata blocks (light mode)
+- `--color-syntax-metadata-bg-dark`: Background tint for metadata blocks (dark mode)
+- `--color-syntax-metadata-border`: Border color for metadata blocks
+
 **Dark Theme Values** (`.dark` class):
 
 - Background: #18181b (zinc-900)
@@ -64,6 +75,13 @@ All colors are defined as CSS custom properties in `src/app.css`, with separate 
 - Borders: #3f3f46 (zinc-700)
 - Muted Foreground: #71717a (zinc-500)
 - Foreground: #f4f4f5 (zinc-100)
+- Syntax Keyword: #355e93 (USAF blue)
+- Syntax Identifier: #06b6d4 (cyan)
+- Syntax String: #22c55e (green)
+- Syntax Number: #f59e0b (amber)
+- Syntax Boolean: #8b5cf6 (purple)
+- Syntax Metadata Background: rgba(53, 94, 147, 0.08)
+- Syntax Metadata Border: #355e93 (USAF blue)
 
 **Light Theme Values** (`:root`):
 
@@ -72,8 +90,17 @@ All colors are defined as CSS custom properties in `src/app.css`, with separate 
 - Borders: #e4e4e7 (light gray)
 - Muted Foreground: #71717a (gray)
 - Foreground: #09090b (near-black)
+- Syntax Keyword: #355e93 (USAF blue)
+- Syntax Identifier: #0891b2 (darker cyan for better contrast on light background)
+- Syntax String: #16a34a (darker green for better contrast)
+- Syntax Number: #d97706 (darker amber for better contrast)
+- Syntax Boolean: #7c3aed (darker purple for better contrast)
+- Syntax Metadata Background: rgba(53, 94, 147, 0.03)
+- Syntax Metadata Border: #355e93 (USAF blue)
 
 **Brand**: USAF Blue (#355e93) for accents and primary actions (preserved from legacy)
+
+**Note on Syntax Colors**: The syntax highlighting colors are chosen to provide good contrast in both light and dark themes while maintaining visual consistency. The keyword color uses the USAF blue brand color across both themes to reinforce visual identity. Other syntax colors are adjusted between light and dark modes to maintain WCAG AA contrast requirements (4.5:1 minimum for normal text).
 
 **Preview Section**: Uses `--color-background` which is white in light mode, dark in dark mode
 
