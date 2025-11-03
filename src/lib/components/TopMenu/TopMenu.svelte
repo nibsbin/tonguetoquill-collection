@@ -59,13 +59,18 @@
 		title = fileName;
 	}
 
-	function commitEditing() {
+	async function commitEditing() {
 		isEditing = false;
 		const newName = (title || '').trim() || 'Untitled Document';
 		// update local title immediately so UI reflects the committed name
 		title = newName;
 		if (documentStore.activeDocumentId) {
-			documentStore.updateDocument(documentStore.activeDocumentId, { name: newName });
+			try {
+				await documentStore.updateDocument(documentStore.activeDocumentId, { name: newName });
+			} catch (err) {
+				// Error is already handled by the store, just log for debugging
+				console.error('Failed to update document name:', err);
+			}
 		}
 	}
 
