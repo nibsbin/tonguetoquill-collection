@@ -13,6 +13,7 @@ import type {
 	UUID
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
+import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_JWT_SECRET } from '$env/static/private';
 
 /**
  * Supabase Authentication Provider
@@ -24,10 +25,9 @@ export class SupabaseAuthProvider implements AuthContract {
 	private jwtSecret: string;
 
 	constructor() {
-		// Use process.env directly to avoid SvelteKit type errors for optional variables
-		this.supabaseUrl = process.env.SUPABASE_URL || '';
-		this.supabaseKey = process.env.SUPABASE_ANON_KEY || '';
-		this.jwtSecret = process.env.SUPABASE_JWT_SECRET || '';
+		this.supabaseUrl = SUPABASE_URL || '';
+		this.supabaseKey = SUPABASE_ANON_KEY || '';
+		this.jwtSecret = SUPABASE_JWT_SECRET || '';
 
 		if (!this.supabaseUrl || !this.supabaseKey || !this.jwtSecret) {
 			throw new Error('Supabase configuration missing. Check environment variables.');

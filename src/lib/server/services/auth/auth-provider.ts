@@ -6,6 +6,7 @@
 import type { AuthContract } from '$lib/services/auth/types';
 import { MockAuthProvider } from './auth-mock-provider';
 import { SupabaseAuthProvider } from './auth-supabase-provider';
+import { USE_AUTH_MOCKS, MOCK_JWT_SECRET } from '$env/static/private';
 
 let cachedProvider: AuthContract | null = null;
 
@@ -13,9 +14,8 @@ let cachedProvider: AuthContract | null = null;
  * Create authentication service based on environment
  */
 export function createAuthService(): AuthContract {
-	// Use process.env directly to avoid SvelteKit type errors for optional variables
-	const useMocks = process.env.USE_AUTH_MOCKS === 'true';
-	const mockSecret = process.env.MOCK_JWT_SECRET || 'dev-secret-key';
+	const useMocks = USE_AUTH_MOCKS === 'true';
+	const mockSecret = MOCK_JWT_SECRET || 'dev-secret-key';
 
 	if (useMocks) {
 		return new MockAuthProvider(mockSecret);

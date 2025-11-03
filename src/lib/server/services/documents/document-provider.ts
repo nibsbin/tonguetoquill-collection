@@ -8,11 +8,12 @@ import { MockDocumentService } from './document-mock-service';
 
 let cachedService: DocumentServiceContract | null = null;
 
+import { USE_DB_MOCKS } from '$env/static/private';
 /**
  * Create document service based on environment
  */
 export function createDocumentService(): DocumentServiceContract {
-	const useMocks = process.env.USE_DB_MOCKS === 'true';
+	const useMocks = USE_DB_MOCKS === 'true';
 
 	if (useMocks) {
 		return new MockDocumentService();
