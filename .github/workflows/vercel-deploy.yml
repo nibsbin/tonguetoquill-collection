@@ -9,6 +9,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Add this line to skip the job if the actor is 'nibsbin'
+    if: github.actor != 'nibsbin'
     environment:
       name: ${{ github.ref_name == 'production' && 'deploy-production' || 'deploy-staging' }}
 
