@@ -4,9 +4,9 @@
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-	import { foldGutter, foldKeymap, foldCode, unfoldCode } from '@codemirror/language';
+	import { foldGutter, foldKeymap, foldEffect } from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
-	import { quillmarkDecorator, createQuillmarkTheme, quillmarkFoldService } from '$lib/editor';
+	import { quillmarkDecorator, createQuillmarkTheme, quillmarkFoldService, isMetadataDelimiter } from '$lib/editor';
 
 	interface Props {
 		value: string;
@@ -195,12 +195,40 @@
 	function handleToggleFrontmatter() {
 		if (!editorView) return;
 
-		// Try to unfold first - if there's nothing to unfold, then fold
-		const unfoldResult = unfoldCode(editorView);
-		if (!unfoldResult) {
-			// Nothing was unfolded, so try to fold
-			foldCode(editorView);
+		const state = editorView.state;
+		const doc = state.doc;
+		const effects = [];
+
+		// Find all metadata delimiters (opening delimiters for metadata blocks)
+		for (let lineNum = 1; lineNum <= doc.lines; lineNum++) {
+			if (isMetadataDelimiter(lineNum, doc)) {
+				// This is an opening delimiter
+				const line = doc.line(lineNum);
+
+				// Find the closing delimiter
+				let closingLineNum = null;
+				for (let j = lineNum + 1; j <= doc.lines; j++) {
+					if (isMetadataDelimiter(j, doc)) {
+						closingLineNum = j;
+						break;
+					}
+				}
+
+				// If we found a complete metadata block, fold it
+				if (closingLineNum !== null) {
+					const closingLine = doc.line(closingLineNum);
+					effects.push(foldEffect.of({ from: line.to, to: closingLine.from }));
+					// Skip to after the closing delimiter to avoid processing it
+					lineNum = closingLineNum;
+				}
+			}
 		}
+
+		// Apply all fold effects at once
+		if (effects.length > 0) {
+			editorView.dispatch({ effects });
+		}
+
 		editorView.focus();
 	}
 
