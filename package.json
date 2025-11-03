@@ -14,7 +14,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"test": "npm run test:unit -- --run && npm run test:component -- --run",
+		"test": "npm run test:unit -- --run && npm run test:component -- --run && npm run test:e2e",
 		"test:unit": "vitest --project server",
 		"test:component": "vitest --project client",
 		"test:e2e": "playwright test"
