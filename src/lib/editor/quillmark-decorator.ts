@@ -64,50 +64,67 @@ class QuillMarkDecorator {
 		block: MetadataBlock,
 		doc: import('@codemirror/state').Text
 	) {
-		// Decorate opening delimiter
-		const openLine = doc.lineAt(block.from);
-		builder.add(openLine.from, openLine.from, delimiterMark);
-		builder.add(openLine.from, openLine.to, blockMark);
+		// Collect all decorations to sort them before adding to builder
+		const decorations: Array<{ from: number; to: number; decoration: Decoration }> = [];
 
-		// Decorate all lines in the block
+		// Decorate opening delimiter line
+		const openLine = doc.lineAt(block.from);
+		decorations.push({ from: openLine.from, to: openLine.from, decoration: blockMark });
+		decorations.push({ from: openLine.from, to: openLine.to, decoration: delimiterMark });
+
+		// Decorate all content lines in the block
 		let pos = openLine.to;
 		while (pos < block.contentTo) {
 			const line = doc.lineAt(pos + 1);
 			if (line.from >= block.contentTo) break;
-			builder.add(line.from, line.from, blockMark);
+			decorations.push({ from: line.from, to: line.from, decoration: blockMark });
 			pos = line.to;
 		}
 
-		// Decorate closing delimiter if it exists
+		// Decorate closing delimiter line if it exists
 		if (block.contentTo < block.to) {
 			const closeLine = doc.lineAt(block.to);
-			builder.add(closeLine.from, closeLine.from, delimiterMark);
-			builder.add(closeLine.from, closeLine.to, blockMark);
+			decorations.push({ from: closeLine.from, to: closeLine.from, decoration: blockMark });
+			decorations.push({ from: closeLine.from, to: closeLine.to, decoration: delimiterMark });
 		}
 
 		// Decorate SCOPE/QUILL keywords within the block
 		const keywords = findScopeQuillKeywords(block.contentFrom, block.contentTo, doc);
 		for (const keyword of keywords) {
 			const keywordMark = keyword.keyword === 'SCOPE' ? scopeKeywordMark : quillKeywordMark;
-			builder.add(keyword.keywordFrom, keyword.keywordTo, keywordMark);
-			builder.add(keyword.nameFrom, keyword.nameTo, scopeNameMark);
+			decorations.push({ from: keyword.keywordFrom, to: keyword.keywordTo, decoration: keywordMark });
+			decorations.push({ from: keyword.nameFrom, to: keyword.nameTo, decoration: scopeNameMark });
 		}
 
 		// Decorate YAML key-value pairs
 		const yamlPairs = findYamlPairs(block.contentFrom, block.contentTo, doc);
 		for (const pair of yamlPairs) {
-			builder.add(pair.keyFrom, pair.keyTo, yamlKeyMark);
+			decorations.push({ from: pair.keyFrom, to: pair.keyTo, decoration: yamlKeyMark });
 
-			const valueMark =
-				pair.valueType === 'string'
-					? yamlStringMark
-					: pair.valueType === 'number'
-						? yamlNumberMark
-						: pair.valueType === 'boolean'
-							? yamlBooleanMark
-							: yamlStringMark; // Default to string for unknown types
+			// Only add value decoration if there's actually a value (not zero-width)
+			if (pair.valueFrom < pair.valueTo) {
+				const valueMark =
+					pair.valueType === 'string'
+						? yamlStringMark
+						: pair.valueType === 'number'
+							? yamlNumberMark
+							: pair.valueType === 'boolean'
+								? yamlBooleanMark
+								: yamlStringMark; // Default to string for unknown types
 
-			builder.add(pair.valueFrom, pair.valueTo, valueMark);
+				decorations.push({ from: pair.valueFrom, to: pair.valueTo, decoration: valueMark });
+			}
+		}
+
+		// Sort decorations by position (from, then to) before adding to builder
+		decorations.sort((a, b) => {
+			if (a.from !== b.from) return a.from - b.from;
+			return a.to - b.to;
+		});
+
+		// Add all decorations in sorted order
+		for (const { from, to, decoration } of decorations) {
+			builder.add(from, to, decoration);
 		}
 	}
 }

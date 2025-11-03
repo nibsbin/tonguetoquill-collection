@@ -334,7 +334,12 @@
 		if (editorView && editorElement) {
 			const currentValue = editorView.state.doc.toString();
 			editorView.destroy();
-			editorView = createEditor(currentValue);
+
+			// Use requestAnimationFrame to ensure CSS custom properties have updated
+			// before creating the new editor with theme extensions
+			requestAnimationFrame(() => {
+				editorView = createEditor(currentValue);
+			});
 		}
 	});
 </script>

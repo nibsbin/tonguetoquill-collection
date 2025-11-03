@@ -47,6 +47,8 @@ export interface YamlPair {
  * Check if a line containing `---` is a metadata delimiter or a horizontal rule.
  * A horizontal rule has blank lines both above AND below it.
  * A metadata delimiter does NOT have blank lines both above and below.
+ *
+ * Special case: If `---` is at line 1, it's always a frontmatter delimiter.
  */
 export function isMetadataDelimiter(lineNum: number, doc: Text): boolean {
 	if (lineNum < 1 || lineNum > doc.lines) return false;
@@ -61,11 +63,14 @@ export function isMetadataDelimiter(lineNum: number, doc: Text): boolean {
 	const afterDashes = lineText.slice(3).trim();
 	if (afterDashes.length > 0) return false;
 
+	// Special case: If at line 1, it's always frontmatter
+	if (lineNum === 1) return true;
+
 	// Check for horizontal rule (blank lines both above AND below)
 	const prevLine = lineNum > 1 ? doc.line(lineNum - 1).text.trim() : '';
 	const nextLine = lineNum < doc.lines ? doc.line(lineNum + 1).text.trim() : '';
 
-	const hasBlankAbove = lineNum === 1 || prevLine === '';
+	const hasBlankAbove = prevLine === '';
 	const hasBlankBelow = lineNum === doc.lines || nextLine === '';
 
 	// If blank lines both above and below, it's a horizontal rule, not metadata
@@ -178,8 +183,8 @@ export function findYamlPairs(from: number, to: number, doc: Text): YamlPair[] {
 			continue;
 		}
 
-		// Match YAML key: value pattern
-		const match = line.match(/^(\s*)([a-zA-Z_][a-zA-Z0-9_-]*):\s*(.+)$/);
+		// Match YAML key: value pattern (value is optional for multi-line structures)
+		const match = line.match(/^(\s*)([a-zA-Z_][a-zA-Z0-9_-]*):\s*(.*)$/);
 		if (match) {
 			const indent = match[1];
 			const key = match[2];
@@ -187,31 +192,43 @@ export function findYamlPairs(from: number, to: number, doc: Text): YamlPair[] {
 
 			const keyStart = currentPos + indent.length;
 			const keyEnd = keyStart + key.length;
-			const valueStart = currentPos + line.indexOf(value);
-			const valueEnd = valueStart + value.length;
 
-			// Determine value type
-			let valueType: 'string' | 'number' | 'boolean' | 'unknown' = 'unknown';
-			const trimmedValue = value.trim();
+			// Only add decoration if there's a value on the same line
+			if (value.trim().length > 0) {
+				const valueStart = currentPos + line.indexOf(value);
+				const valueEnd = valueStart + value.length;
 
-			if (trimmedValue === 'true' || trimmedValue === 'false') {
-				valueType = 'boolean';
-			} else if (/^-?\d+(\.\d+)?$/.test(trimmedValue)) {
-				valueType = 'number';
-			} else if (trimmedValue.length > 0) {
-				// Default to string for non-empty values
-				// This handles quoted strings and unquoted text
-				valueType = 'string';
+				// Determine value type
+				let valueType: 'string' | 'number' | 'boolean' | 'unknown' = 'unknown';
+				const trimmedValue = value.trim();
+
+				if (trimmedValue === 'true' || trimmedValue === 'false') {
+					valueType = 'boolean';
+				} else if (/^-?\d+(\.\d+)?$/.test(trimmedValue)) {
+					valueType = 'number';
+				} else if (trimmedValue.length > 0) {
+					// Default to string for non-empty values
+					// This handles quoted strings and unquoted text
+					valueType = 'string';
+				}
+
+				pairs.push({
+					keyFrom: keyStart,
+					keyTo: keyEnd,
+					valueFrom: valueStart,
+					valueTo: valueEnd,
+					valueType
+				});
+			} else {
+				// Key with no value (e.g., parent of a list) - just highlight the key
+				pairs.push({
+					keyFrom: keyStart,
+					keyTo: keyEnd,
+					valueFrom: keyEnd, // No value, so use keyEnd
+					valueTo: keyEnd, // Zero-width value
+					valueType: 'unknown'
+				});
 			}
-			// If trimmedValue is empty, valueType remains 'unknown'
-
-			pairs.push({
-				keyFrom: keyStart,
-				keyTo: keyEnd,
-				valueFrom: valueStart,
-				valueTo: valueEnd,
-				valueType
-			});
 		}
 
 		currentPos += line.length + 1; // +1 for newline
