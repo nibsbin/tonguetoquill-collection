@@ -95,30 +95,34 @@ class DocumentStore {
 			return;
 		}
 
-		// For guest mode, update directly without optimistic update
+		// Extract name from updates for DocumentClient
+		const clientUpdates: { name?: string } = {};
+		if (updates.name !== undefined) {
+			clientUpdates.name = updates.name;
+		}
+
+		// Helper function to merge server response with updates
+		const mergeWithServerResponse = (
+			doc: DocumentMetadata,
+			result: { content_size_bytes?: number; updated_at?: string }
+		) => ({
+			...doc,
+			...updates,
+			...(result.content_size_bytes !== undefined && {
+				content_size_bytes: result.content_size_bytes
+			}),
+			...(result.updated_at !== undefined && { updated_at: result.updated_at })
+		});
+
+		// For guest mode, persist first then update state
 		if (this.state.isGuest) {
 			try {
-				// Extract name from updates for DocumentClient
-				const clientUpdates: { name?: string } = {};
-				if (updates.name !== undefined) {
-					clientUpdates.name = updates.name;
-				}
-
 				// Call DocumentClient to persist
 				const result = await this.documentClient.updateDocument(id, clientUpdates);
 
 				// Update local state with both user updates and server response
 				this.state.documents = this.state.documents.map((doc) =>
-					doc.id === id
-						? {
-								...doc,
-								...updates,
-								...(result.content_size_bytes !== undefined && {
-									content_size_bytes: result.content_size_bytes
-								}),
-								...(result.updated_at !== undefined && { updated_at: result.updated_at })
-							}
-						: doc
+					doc.id === id ? mergeWithServerResponse(doc, result) : doc
 				);
 			} catch (err) {
 				this.setError(err instanceof Error ? err.message : 'Failed to update document');
@@ -136,26 +140,12 @@ class DocumentStore {
 		);
 
 		try {
-			// Extract name from updates for DocumentClient
-			const clientUpdates: { name?: string } = {};
-			if (updates.name !== undefined) {
-				clientUpdates.name = updates.name;
-			}
-
 			// Call DocumentClient to persist
 			const result = await this.documentClient.updateDocument(id, clientUpdates);
 
 			// Update local state with server response metadata
 			this.state.documents = this.state.documents.map((doc) =>
-				doc.id === id
-					? {
-							...doc,
-							...(result.content_size_bytes !== undefined && {
-								content_size_bytes: result.content_size_bytes
-							}),
-							...(result.updated_at !== undefined && { updated_at: result.updated_at })
-						}
-					: doc
+				doc.id === id ? mergeWithServerResponse(doc, result) : doc
 			);
 		} catch (err) {
 			// Rollback on error
