@@ -79,7 +79,22 @@
 			quillmarkFoldService,
 			foldState,
 			codeFolding({
-				placeholderText: 'metadata'
+				preparePlaceholder: (state, range) => range,
+				placeholderDOM: (view, onclick, prepared) => {
+					const element = document.createElement('span');
+
+					// Get the folded content from the prepared range
+					const foldedText = view.state.doc.sliceString(prepared.from, prepared.to);
+
+					// Extract the first line (trim whitespace)
+					const firstLine = foldedText.trim().split('\n')[0];
+
+					// Display first line followed by ellipsis, or just ellipsis if empty
+					element.textContent = firstLine ? `${firstLine}` : '…';
+					element.onclick = onclick;
+					element.className = 'cm-foldPlaceholder';
+					return element;
+				}
 			})
 		];
 
