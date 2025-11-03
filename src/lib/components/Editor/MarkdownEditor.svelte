@@ -92,23 +92,11 @@
 						.filter((line) => line.trim() !== '---');
 					const firstLine = contentLines[0] || '';
 
-					const openDelim = document.createElement('span');
-					openDelim.className = 'cm-quillmark-delimiter';
-					openDelim.textContent = '---';
-					wrapper.appendChild(openDelim);
-
 					if (firstLine) {
-						wrapper.appendChild(document.createTextNode(' '));
-						wrapper.appendChild(document.createTextNode(firstLine));
-						wrapper.appendChild(document.createTextNode(' '));
+						wrapper.textContent = `--- ${firstLine} ---`;
 					} else {
-						wrapper.appendChild(document.createTextNode(' '));
+						wrapper.textContent = '--- ---';
 					}
-
-					const closeDelim = document.createElement('span');
-					closeDelim.className = 'cm-quillmark-delimiter';
-					closeDelim.textContent = '---';
-					wrapper.appendChild(closeDelim);
 
 					return wrapper;
 				}
