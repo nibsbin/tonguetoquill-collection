@@ -169,12 +169,10 @@
 	async function handleSignOut() {
 		try {
 			await loginClient.signOut();
-			profileModalOpen = false;
-			// Reload the page to clear user state
-			window.location.reload();
 		} catch (error) {
 			console.error('Sign out failed:', error);
-			// Still close modal and reload even on error to clear local state
+		} finally {
+			// Always close modal and reload to clear state, even on error
 			profileModalOpen = false;
 			window.location.reload();
 		}
