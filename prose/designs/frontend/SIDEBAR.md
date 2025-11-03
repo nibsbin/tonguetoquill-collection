@@ -237,12 +237,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 
 ### Footer Section
 
-**User Profile Display**:
+**Authentication UI**:
 
-- Avatar/initials display (circular)
-- User name and secondary info (email or plan type)
-- Chevron/dropdown indicator for menu access
-- Layout: horizontal flex with proper alignment
+See [LOGIN_PROFILE_UI.md](./LOGIN_PROFILE_UI.md) for detailed authentication UI integration:
+
+- **Guest Mode**: Sign-in button with `log-in` icon
+- **Logged-in Mode**: User profile button with `circle-user` icon and user email
+- Position: Above settings button, under same divider
+- Clicking triggers authentication modals (sign-in or profile)
 
 **Settings**:
 
@@ -533,5 +535,6 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 - Current implementation: `src/lib/components/Sidebar.svelte`
 - Button slot component: `src/lib/components/SidebarButtonSlot.svelte`
 - Design system: `prose/designs/frontend/DESIGN_SYSTEM.md`
+- Login and profile UI: `prose/designs/frontend/LOGIN_PROFILE_UI.md`
 - Component library: shadcn-svelte
 - Icon library: lucide-svelte
