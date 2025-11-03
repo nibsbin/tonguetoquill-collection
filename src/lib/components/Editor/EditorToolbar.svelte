@@ -8,7 +8,7 @@
 		ListOrdered,
 		Link,
 		Save,
-		ChevronDown
+		ListCollapse
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
@@ -35,7 +35,7 @@
 			title="Toggle Frontmatter"
 		>
 			{#snippet children()}
-				<ChevronDown class="h-4 w-4" />
+				<ListCollapse class="h-4 w-4" />
 			{/snippet}
 		</Button>
 
