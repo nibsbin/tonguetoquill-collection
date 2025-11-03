@@ -64,21 +64,28 @@
 	async function commitEditing() {
 		isEditing = false;
 		const newName = (title || '').trim() || 'Untitled Document';
-		// Update local title immediately so UI reflects the committed name
+		// Update local title immediately
 		title = newName;
 
-		// Notify parent of title change immediately (before async store update)
+		// Notify parent of title change immediately (for TopMenu display)
 		if (onTitleChange) {
 			onTitleChange(newName);
 		}
 
-		// Persist to store (async)
+		// Persist to store (this will update sidebar reactively)
+		// Authenticated mode: optimistic update (immediate sidebar update)
+		// Guest mode: updates after localStorage write (slight delay)
 		if (documentStore.activeDocumentId) {
 			try {
 				await documentStore.updateDocument(documentStore.activeDocumentId, { name: newName });
 			} catch (err) {
 				// Error is already handled by the store, just log for debugging
 				console.error('Failed to update document name:', err);
+				// Revert local title on error
+				title = fileName;
+				if (onTitleChange) {
+					onTitleChange(fileName);
+				}
 			}
 		}
 	}
