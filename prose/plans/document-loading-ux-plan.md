@@ -18,7 +18,6 @@ This plan outlines the implementation steps for improving the document loading u
 **Desired Behavior:**
 
 - Editor remains visible but dimmed/greyed-out during loading
-- Loading spinner overlay provides feedback
 - Current document is auto-saved before switching if dirty and auto-save is enabled
 - Smoother, less disruptive transition
 
@@ -43,8 +42,6 @@ This plan outlines the implementation steps for improving the document loading u
 
 2. **Add overlay component structure**
    - Semi-transparent background
-   - Centered loading spinner
-   - "Loading document..." text
    - Absolute positioning over editor
 
 3. **Dim editor during loading**
@@ -275,17 +272,8 @@ This looks correct - no changes needed! The logic already:
 
 ### Nice to Have
 
-- Smooth fade transitions
 - Screen reader announcements
 - Loading timeout with error message
-
-## Rollback Plan
-
-If issues are discovered:
-
-1. Revert to previous "Loading Document..." full-screen approach
-2. Keep auto-save on switch (low risk)
-3. Address issues in follow-up PR
 
 ## Deployment Notes
 
