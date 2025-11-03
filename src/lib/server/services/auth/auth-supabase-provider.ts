@@ -13,7 +13,7 @@ import type {
 	UUID
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
-import { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_JWT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 /**
  * Supabase Authentication Provider
@@ -25,9 +25,9 @@ export class SupabaseAuthProvider implements AuthContract {
 	private jwtSecret: string;
 
 	constructor() {
-		this.supabaseUrl = SUPABASE_URL || '';
-		this.supabaseKey = SUPABASE_ANON_KEY || '';
-		this.jwtSecret = SUPABASE_JWT_SECRET || '';
+		this.supabaseUrl = env.SUPABASE_URL || '';
+		this.supabaseKey = env.SUPABASE_ANON_KEY || '';
+		this.jwtSecret = env.SUPABASE_JWT_SECRET || '';
 
 		if (!this.supabaseUrl || !this.supabaseKey || !this.jwtSecret) {
 			throw new Error('Supabase configuration missing. Check environment variables.');
