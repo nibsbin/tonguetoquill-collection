@@ -224,6 +224,8 @@ interface LocalStorageDocumentService {
 
 See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for complete auto-save specifications.
 
+See [DOCUMENT_LOADING_UX.md](./DOCUMENT_LOADING_UX.md) for auto-save behavior when switching documents.
+
 **Implementation**:
 
 - Debounced saves (7 seconds after last keystroke)
