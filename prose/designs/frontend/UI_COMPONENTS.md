@@ -472,8 +472,6 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 
 **Purpose**: Rendered markdown output display
 
-**Reference**: Visual design matches `prose/legacymock_project/components/MarkdownPreview.tsx` (legacy name)
-
 **Structure**:
 
 - Background: white (#ffffff) - contrasts with dark theme editor

@@ -116,48 +116,26 @@ Each component should have tests for:
 - States (loading, error, success)
 - Accessibility (ARIA labels, keyboard navigation, screen reader support)
 
-## Migration from Current Structure
+## Import Patterns
 
-The current flat structure in `src/lib/components/` will be reorganized into feature folders:
-
-**Original Flat Structure** → **Current Feature-Based Structure**:
-
-- `Sidebar.svelte` → `Sidebar/Sidebar.svelte` ✅ **Migrated**
-- `SidebarButtonSlot.svelte` → `Sidebar/SidebarButtonSlot.svelte` ✅ **Migrated**
-- `TopMenu.svelte` → `TopMenu/TopMenu.svelte` ✅ **Migrated**
-- `EditorToolbar.svelte` → `Editor/EditorToolbar.svelte` ✅ **Migrated**
-- `MarkdownEditor.svelte` → `Editor/MarkdownEditor.svelte` ✅ **Migrated**
-- `DocumentEditor.svelte` → `Editor/DocumentEditor.svelte` ✅ **Migrated**
-- `MarkdownPreview.svelte` → `Preview/Preview.svelte` ✅ **Migrated** (renamed to Preview)
-- `DocumentList.svelte` → `DocumentList/DocumentList.svelte` ✅ **Migrated**
-- `DocumentListItem.svelte` → `DocumentList/DocumentListItem.svelte` ✅ **Migrated**
-- `Toast.svelte` → ✅ **Removed** (replaced by shadcn-svelte Sonner)
-- `ui/*` → `ui/*` (unchanged)
-
-## Import Path Updates
-
-After reorganization, imports will change:
+Components can be imported using index files for convenience:
 
 ```typescript
-// Before
-import Sidebar from '$lib/components/Sidebar.svelte';
+// Feature folder exports (via index.ts)
+import { Sidebar, SidebarButtonSlot } from '$lib/components/Sidebar';
+import { DocumentList, DocumentListItem } from '$lib/components/DocumentList';
+import { Preview } from '$lib/components/Preview';
 
-// After
+// Or direct import
 import Sidebar from '$lib/components/Sidebar/Sidebar.svelte';
 ```
 
-Consider creating index files for convenience:
+Each feature folder includes an `index.ts` that exports its components:
 
 ```typescript
-// src/lib/components/Sidebar/index.ts
+// Example: src/lib/components/Sidebar/index.ts
 export { default as Sidebar } from './Sidebar.svelte';
 export { default as SidebarButtonSlot } from './SidebarButtonSlot.svelte';
-```
-
-Then imports become:
-
-```typescript
-import { Sidebar, SidebarButtonSlot } from '$lib/components/Sidebar';
 ```
 
 ## Benefits
