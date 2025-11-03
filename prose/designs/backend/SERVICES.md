@@ -228,6 +228,127 @@ Full service documentation available at:
 - [Template Service README](../../../src/lib/services/templates/README.md) - Usage and API reference
 - [Template Service Design](./TEMPLATE_SERVICE.md) - Complete design specification
 
+## Login Service
+
+### Server-Side (`$lib/server/services/auth/`)
+
+```
+├── auth-provider.ts              ← createAuthService() factory
+├── auth-mock-provider.ts         ← In-memory implementation
+└── index.ts                      ← export { authService }
+```
+
+**Current Implementation (Phases 1-9):** Mock service only
+**Future (Phase 10+):** Add `auth-supabase-provider.ts` for Supabase Auth integration
+
+**Responsibilities**: Implement AuthServiceContract, communicate with third-party auth providers, validate JWT tokens, execute server-only authentication logic. Used exclusively by API route handlers.
+
+### Client-Side (`$lib/services/auth/`)
+
+```
+├── login-client.ts               ← Unified client interface
+├── types.ts                      ← Shared types
+└── index.ts                      ← export { loginClient }
+```
+
+**LoginClient** abstracts all authentication operations:
+
+- Provides simple async methods for login/logout/session management
+- Handles token storage in HTTP-only cookies
+- Communicates with API routes via `fetch()`
+- Provides session state for components/stores
+
+```typescript
+// Components/stores use login client for auth operations
+async function handleLogin(email: string, password: string) {
+  const session = await loginClient.signIn(email, password);
+  // Session state updated automatically
+}
+```
+
+### API Specification
+
+All authentication is delegated to third-party providers. The application **never** manages passwords, login interfaces, or user credentials directly.
+
+**`signIn(email: String, password: String): Session`**
+
+- Delegates to auth provider for credential validation
+- Returns: Session with access token, refresh token, and user info
+- Errors: `AuthError` with code `invalid_credentials`
+
+**`signOut(accessToken: String): void`**
+
+- Invalidates session with auth provider
+- Errors: `AuthError` with code `unauthorized`
+
+**`refreshSession(refreshToken: String): Session`**
+
+- Obtains new access token from provider
+- Returns: Updated session with new tokens
+- Errors: `AuthError` with code `token_expired`, `invalid_token`
+
+**`getCurrentUser(accessToken: String): User | null`**
+
+- Validates token with provider and returns user info
+- Returns: User object or null if token invalid
+- Errors: `AuthError` with code `invalid_token`, `token_expired`
+
+**`validateToken(token: String): TokenPayload`**
+
+- Verifies JWT signature using provider's JWKS endpoint
+- Returns: Decoded token payload with user claims
+- Errors: `AuthError` with code `invalid_token`, `token_expired`
+
+### Token Management
+
+Authentication uses JWT tokens issued by the provider:
+
+- **Access tokens**: Short-lived (15 minutes), used for API requests
+- **Refresh tokens**: Long-lived (7 days), used to obtain new access tokens
+- **Storage**: HTTP-only cookies with Secure and SameSite=Strict flags
+- **Validation**: JWKS endpoint for signature verification (24-hour cache)
+
+**Token Refresh Strategy:**
+
+- Client proactively refreshes when ~2 minutes remain before expiry
+- Automatic retry on 401 errors with token refresh
+- Clock skew tolerance built-in
+
+### Error Types
+
+- **`AuthError`** - Custom error with typed error codes:
+  - `invalid_credentials` - Wrong email/password
+  - `user_not_found` - User doesn't exist
+  - `email_already_exists` - Duplicate email on signup
+  - `invalid_token` - Malformed or invalid JWT
+  - `token_expired` - Token past expiration
+  - `unauthorized` - Not authenticated
+  - `session_expired` - Session no longer valid
+
+### Third-Party Provider Integration
+
+**Current (Phases 1-9):** Mock provider for development
+- In-memory user storage
+- Simulated JWT generation
+- No external dependencies
+
+**Future (Phase 10+):** Supabase Auth provider
+- Managed authentication service
+- Email verification flows
+- Password reset flows
+- Built-in rate limiting and security
+
+**Post-MVP:** Keycloak provider option
+- Self-hosted authentication
+- OAuth/OIDC flows
+- Enterprise integrations
+
+### Documentation
+
+Full service documentation available at:
+
+- [Login Service Design](./LOGIN_SERVICE.md) - Complete design specification
+
 ## Cross-References
 
 - [../frontend/ARCHITECTURE.md](../frontend/ARCHITECTURE.md) - Client architecture
