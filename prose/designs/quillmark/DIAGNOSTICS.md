@@ -124,6 +124,7 @@ export class QuillmarkError extends Error {
 ### Render Error Handling
 
 Service error handling flow:
+
 1. Catch errors from WASM boundary
 2. Extract diagnostic information if available
 3. Create `QuillmarkError` with diagnostic attached
@@ -132,6 +133,7 @@ Service error handling flow:
 ### Diagnostic Extraction
 
 Service extracts diagnostics from WASM errors, handling:
+
 - Plain object errors with diagnostic property
 - Map objects from WASM (converted to plain objects)
 - Errors that are themselves diagnostics
@@ -139,6 +141,7 @@ Service extracts diagnostics from WASM errors, handling:
 ### Diagnostic Normalization
 
 Converts WASM diagnostic format to TypeScript interface:
+
 - Normalizes severity to lowercase
 - Handles snake_case to camelCase conversion
 - Provides defaults for missing fields
@@ -232,6 +235,7 @@ Potential improvements for future versions:
 ### Unit Tests
 
 Service layer testing:
+
 - Diagnostic extraction from various error formats (plain objects, Map objects)
 - Diagnostic normalization (snake_case → camelCase)
 - Severity normalization
@@ -244,6 +248,7 @@ Mock scenarios: Typst syntax errors, template validation errors, backend compila
 ### Integration Tests
 
 Full error flow testing:
+
 1. Trigger render error with invalid markdown
 2. Verify diagnostic extraction
 3. Verify error propagation to component

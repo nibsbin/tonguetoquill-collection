@@ -145,6 +145,7 @@ Service initialized in root layout or main page on mount.
 ### 3. Document Rendering
 
 Components request renders through service:
+
 - `renderForPreview()`: Auto-detects backend and format from frontmatter
 - `renderToPDF()`: Explicit PDF rendering for downloads
 - `downloadDocument()`: Render and trigger download

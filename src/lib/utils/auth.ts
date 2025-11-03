@@ -4,7 +4,7 @@
  */
 
 import type { RequestEvent } from '@sveltejs/kit';
-import { authProvider } from '$lib/services/auth';
+import { authService } from '$lib/server/services/auth';
 import { getAccessToken, errorResponse } from './api';
 import type { User } from '$lib/services/auth';
 
@@ -19,7 +19,7 @@ export async function requireAuth(event: RequestEvent): Promise<User> {
 		throw errorResponse('unauthorized', 'Authentication required', 401);
 	}
 
-	const user = await authProvider.getCurrentUser(accessToken);
+	const user = await authService.getCurrentUser(accessToken);
 
 	if (!user) {
 		throw errorResponse('unauthorized', 'Invalid or expired session', 401);
@@ -38,5 +38,5 @@ export async function optionalAuth(event: RequestEvent): Promise<User | null> {
 		return null;
 	}
 
-	return await authProvider.getCurrentUser(accessToken);
+	return await authService.getCurrentUser(accessToken);
 }

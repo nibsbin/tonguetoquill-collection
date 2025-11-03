@@ -41,19 +41,19 @@ describe('TemplateService', () => {
 	// Initialize service once for all tests
 	beforeAll(async () => {
 		(global.fetch as ReturnType<typeof vi.fn>).mockImplementation((url: string) => {
-			if (url === '/tonguetoquill-collection/templates/templates.json') {
+			if (url === '/templates/templates.json') {
 				return Promise.resolve({
 					ok: true,
 					json: () => Promise.resolve(MOCK_MANIFEST)
 				} as Response);
 			}
-			if (url === '/tonguetoquill-collection/templates/test.md') {
+			if (url === '/templates/test.md') {
 				return Promise.resolve({
 					ok: true,
 					text: () => Promise.resolve('# Test Template\n\nThis is a test template.')
 				} as Response);
 			}
-			if (url === '/tonguetoquill-collection/templates/prod.md') {
+			if (url === '/templates/prod.md') {
 				return Promise.resolve({
 					ok: true,
 					text: () => Promise.resolve('# Production Template')
@@ -88,14 +88,14 @@ describe('TemplateService', () => {
 		it('should be idempotent - calling initialize multiple times should not re-initialize', async () => {
 			const fetchMock = global.fetch as ReturnType<typeof vi.fn>;
 			const callCountBefore = fetchMock.mock.calls.filter(
-				(call) => call[0] === '/tonguetoquill-collection/templates/templates.json'
+				(call) => call[0] === '/templates/templates.json'
 			).length;
 
 			// Call initialize again
 			await templateService.initialize();
 
 			const callCountAfter = fetchMock.mock.calls.filter(
-				(call) => call[0] === '/tonguetoquill-collection/templates/templates.json'
+				(call) => call[0] === '/templates/templates.json'
 			).length;
 
 			// Should not have made additional fetch calls

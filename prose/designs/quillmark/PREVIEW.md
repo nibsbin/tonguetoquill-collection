@@ -78,6 +78,7 @@ The service returns a `RenderResult` object where:
 - `artifacts`: Array of artifacts (one per page for SVG, one for PDF)
 
 Components use helper functions to convert:
+
 - `resultToBlob(result)`: Convert to Blob (for PDF)
 - `resultToSVGPages(result)`: Get array of SVG strings (one per page)
 
@@ -90,6 +91,7 @@ Components use helper functions to convert:
 ### State Management
 
 Component maintains:
+
 - Loading status
 - Error state with diagnostic information
 - Current and last successful render results
@@ -125,6 +127,7 @@ Loading indicator shown during render. Progressive enhancement with previous ren
 ### Render Errors
 
 Service throws `QuillmarkError` with optional diagnostic information. Component extracts and displays:
+
 - Error code
 - Message
 - Hint (if available)
@@ -134,6 +137,7 @@ Service throws `QuillmarkError` with optional diagnostic information. Component 
 ### Fallback Strategy
 
 On render failure:
+
 1. Display error with diagnostic details (if available)
 2. Show previous successful render (if available)
 3. Allow user to fix markdown
@@ -146,6 +150,7 @@ On render failure:
 Backend and quill auto-detected from document frontmatter `QUILL` field. No manual template selection needed.
 
 Example frontmatter:
+
 ```yaml
 ---
 QUILL: usaf_memo
@@ -184,6 +189,7 @@ Preview region marked with appropriate ARIA attributes (`role="region"`, `aria-l
 ### Unit Tests
 
 Component testing focuses on:
+
 - Service integration
 - Display logic for SVG and PDF
 - Multi-page SVG handling
@@ -195,6 +201,7 @@ Component testing focuses on:
 ### Integration Tests
 
 Full workflow testing:
+
 1. Service initialization
 2. Markdown with QUILL frontmatter
 3. Preview updates after debounce

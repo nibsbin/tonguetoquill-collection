@@ -15,8 +15,8 @@ import type {
 	UUID,
 	ResetPasswordParams,
 	VerifyEmailParams
-} from './types';
-import { AuthError } from './types';
+} from '$lib/services/auth/types';
+import { AuthError } from '$lib/services/auth/types';
 
 interface StoredUser {
 	id: UUID;
@@ -47,7 +47,7 @@ export class MockAuthProvider implements AuthContract {
 	private secret: string;
 
 	// Session expiry times (in milliseconds)
-	private ACCESS_TOKEN_EXPIRY = 60 * 60 * 1000; // 1 hour
+	private ACCESS_TOKEN_EXPIRY = 15 * 60 * 1000; // 15 minutes (per design)
 	private REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 	constructor(secret?: string) {
@@ -315,8 +315,8 @@ export class MockAuthProvider implements AuthContract {
 			return;
 		}
 
-		// Mock: simulate sending email (just log)
-		console.log(`[MockAuthProvider] Password reset email sent to ${email}`);
+		// Mock: simulate sending email (no-op in mock)
+		// Password reset would be sent via email in production
 	}
 
 	/**
