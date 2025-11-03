@@ -7,16 +7,6 @@
 import type { User, Session } from './types';
 
 /**
- * API response type for authentication operations
- */
-interface AuthResponse {
-	user: User;
-	session: {
-		expires_at: number;
-	};
-}
-
-/**
  * Error response from API
  */
 interface ErrorResponse {
@@ -32,31 +22,14 @@ export class LoginClient {
 	/**
 	 * Initiate login by redirecting to auth provider
 	 * In mock mode, this redirects to a callback with a mock code
+	 * In production, this redirects to the provider's hosted login page
+	 *
+	 * The OAuth callback is handled server-side via GET /api/auth/callback
+	 * which exchanges the code for tokens and sets HTTP-only cookies
 	 */
 	async initiateLogin(): Promise<void> {
 		// Redirect to login endpoint which will handle the OAuth flow
 		window.location.href = '/api/auth/login';
-	}
-
-	/**
-	 * Handle OAuth callback and exchange code for tokens
-	 * This is called after the user returns from the provider
-	 */
-	async handleCallback(code: string): Promise<AuthResponse> {
-		const response = await fetch('/api/auth/callback', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ code })
-		});
-
-		if (!response.ok) {
-			const error: ErrorResponse = await response.json();
-			throw new Error(error.message || 'Failed to complete authentication');
-		}
-
-		return response.json();
 	}
 
 	/**
