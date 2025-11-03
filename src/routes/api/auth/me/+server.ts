@@ -5,7 +5,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { authProvider } from '$lib/services/auth';
+import { getAuthProvider } from '$lib/services/auth';
 import { getAccessToken, handleAuthError } from '$lib/utils/api';
 
 export const GET: RequestHandler = async (event) => {
@@ -16,7 +16,7 @@ export const GET: RequestHandler = async (event) => {
 			return json({ error: 'unauthorized', message: 'Not authenticated' }, { status: 401 });
 		}
 
-		const user = await authProvider.getCurrentUser(accessToken);
+		const user = await getAuthProvider().getCurrentUser(accessToken);
 
 		if (!user) {
 			return json({ error: 'unauthorized', message: 'Invalid session' }, { status: 401 });

@@ -94,6 +94,7 @@ class QuillmarkError extends Error {
 ### File Organization
 
 Service implementation located in `src/lib/services/quillmark/` with separation of concerns:
+
 - Type definitions
 - Service implementation
 - Helper functions
@@ -152,8 +153,9 @@ renderForPreview(markdown)
 ### Error Handling
 
 Defensive error handling with specific error codes:
+
 - `not_initialized` - Service not initialized
-- `quill_not_found` - Requested Quill doesn't exist  
+- `quill_not_found` - Requested Quill doesn't exist
 - `render_error` - Rendering failed
 - `load_error` - Initialization failed
 
@@ -176,6 +178,7 @@ Methods validate initialization state and quill existence before operations.
 ### Unit Tests
 
 Service layer testing focuses on:
+
 - Singleton pattern enforcement
 - Initialization lifecycle
 - Method precondition validation

@@ -194,10 +194,12 @@ Templates are packaged from source to static directory:
 Templates are packaged from source to static directory during build:
 
 **Source Files:**
+
 - Location: `tonguetoquill-collection/templates/`
 - Build command: `npm run pack:templates`
 
 **Runtime Paths:**
+
 - Manifest: `/templates/templates.json` (served from `static/templates/`)
 - Templates: `/templates/{filename}.md` (served from `static/templates/`)
 

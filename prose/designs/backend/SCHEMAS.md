@@ -30,6 +30,7 @@ CREATE INDEX idx_users_dodid ON Users(dodid) WHERE dodid IS NOT NULL;
 
 **DODID Field:**
 The `dodid` field is optional to support both military and non-military users:
+
 - Military users: DODID required for compliance and identity verification
 - Non-military users: DODID is NULL
 - When provided, DODID must be unique across all users

@@ -31,31 +31,3 @@ export function getAuthProvider(): AuthContract {
 	}
 	return cachedProvider;
 }
-
-// Export as authProvider for backwards compatibility
-export const authProvider = {
-	get signUp() {
-		return getAuthProvider().signUp.bind(getAuthProvider());
-	},
-	get signIn() {
-		return getAuthProvider().signIn.bind(getAuthProvider());
-	},
-	get signOut() {
-		return getAuthProvider().signOut.bind(getAuthProvider());
-	},
-	get refreshSession() {
-		return getAuthProvider().refreshSession.bind(getAuthProvider());
-	},
-	get getCurrentUser() {
-		return getAuthProvider().getCurrentUser.bind(getAuthProvider());
-	},
-	get resetPassword() {
-		return getAuthProvider().resetPassword.bind(getAuthProvider());
-	},
-	get verifyEmail() {
-		return getAuthProvider().verifyEmail.bind(getAuthProvider());
-	},
-	get validateToken() {
-		return getAuthProvider().validateToken.bind(getAuthProvider());
-	}
-};
