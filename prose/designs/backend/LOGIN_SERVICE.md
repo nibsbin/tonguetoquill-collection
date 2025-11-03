@@ -1,12 +1,21 @@
-# Login Service
+# Login Service and Authentication Architecture
 
-This document defines the Login Service for user authentication using third-party authentication providers. The service follows the server/client pattern established in [SERVICES.md](./SERVICES.md).
+This document defines the Login Service and overall authentication architecture for user authentication using third-party authentication providers. The service follows the server/client pattern established in [SERVICES.md](./SERVICES.md).
 
 > **Related**: [SERVICES.md](./SERVICES.md) for overall service architecture patterns
 
 ## Overview
 
-The Login Service provides authentication through third-party providers (Supabase Auth, Keycloak). The application **never** manages its own login interfaces, passwords, or user credentials directly. All authentication flows are delegated to the auth provider.
+The application uses **third-party authentication providers** exclusively. The application **never** manages passwords, login interfaces, or user credentials directly. All authentication flows are delegated to the provider (Supabase Auth or Keycloak).
+
+**Key Principles:**
+
+- **Provider-first**: All authentication handled by external services
+- **No password management**: Application never stores or validates passwords
+- **Token-based security**: JWT tokens for session management
+- **Minimal API surface**: Simple interface for frontend integration
+
+The Login Service provides this authentication. The application **never** manages its own login interfaces, passwords, or user credentials directly. All authentication flows are delegated to the auth provider.
 
 **Key Characteristics:**
 
@@ -15,6 +24,59 @@ The Login Service provides authentication through third-party providers (Supabas
 - **Minimal API**: Simple interface for frontend integration
 - **Provider abstraction**: Support for multiple providers (Supabase, Keycloak)
 - **Token-based**: JWT tokens for session management
+
+## Authentication Providers
+
+The authentication architecture is designed to support multiple providers through an abstraction layer.
+
+Real authentication providers (Supabase/Keycloak) natively handle:
+
+- User registration and account creation
+- Password storage and validation
+- Password reset flows
+- Email verification
+- Password policies and strength validation
+- Rate limiting and brute force protection
+- Session management and token rotation
+
+**The application never implements these features directly.**
+
+### Mock Provider (Phases 1-9)
+
+Development-only mock for rapid iteration. In-memory user storage with simulated JWT generation. No external dependencies. Enables rapid development without external dependencies.
+
+**Environment:**
+
+```
+USE_AUTH_MOCKS=true
+MOCK_JWT_SECRET=dev_secret_key
+```
+
+### Supabase Provider (Phase 10+)
+
+Production auth using Supabase managed service. Handles email verification, password reset flows, rate limiting, and brute force protection.
+
+**Environment:**
+
+```
+USE_AUTH_MOCKS=false
+SUPABASE_URL=https://project.supabase.co
+SUPABASE_ANON_KEY=public_key
+SUPABASE_JWT_SECRET=jwt_secret
+```
+
+### Keycloak Provider (Post-MVP)
+
+Self-hosted enterprise auth with advanced OAuth/OIDC flows, SSO integration, and fine-grained permissions. Will be added post-MVP using the same abstraction layer.
+
+**Environment:**
+
+```
+KEYCLOAK_URL=https://auth.example.com
+KEYCLOAK_REALM=tonguetoquill
+KEYCLOAK_CLIENT_ID=web_client
+KEYCLOAK_CLIENT_SECRET=secret
+```
 
 ## Architecture
 
@@ -31,7 +93,7 @@ Following the server/client pattern from [SERVICES.md](./SERVICES.md):
 └── index.ts                   ← export { authService }
 ```
 
-**Current Implementation (Phases 1-9):** Mock provider only  
+**Current Implementation (Phases 1-9):** Mock provider only
 **Future (Phase 10+):** Add `auth-supabase-provider.ts` for Supabase integration
 
 **Responsibilities**:
@@ -114,73 +176,84 @@ Authentication API endpoints:
 - `POST /api/auth/verify-email` - Request email verification (proxies to provider)
 - `GET /api/auth/callback` - OAuth callback handler (future Keycloak support)
 
-## Token Management
+## Token and Session Management
 
-### Token Lifecycle
+Sessions will be managed using JWTs (JSON Web Tokens) issued by the authentication provider.
 
-Provider issues access token (15 min) and refresh token (7 days) on login. Tokens stored in HTTP-only cookies with Secure and SameSite=Strict flags. Client proactively refreshes when ~2 min remain before expiry.
+### Token Lifecycle and Handling
 
-### Token Validation
+Provider issues access token (15 min) and refresh token (7 days) on login. Tokens stored in HTTP-only cookies with Secure and SameSite=Strict flags.
 
-Server validates JWT signature using provider's JWKS endpoint, checks expiration, and validates required claims (sub, email, exp, iat). JWKS keys cached for 24 hours for performance.
+- **Access tokens**: Short-lived (15 minutes), used for authenticating API requests.
+- **Refresh tokens**: Long-lived (7 days), used to obtain new access tokens.
+- Token rotation and server-side validation are handled by the provider.
 
-### Cookie Configuration
+**Token Refresh Strategy:**
 
-Tokens stored with security attributes: httpOnly (prevents JavaScript access), secure (HTTPS-only), sameSite strict (CSRF protection), scoped path and domain.
+- Client proactively refreshes access tokens when \~2 minutes remain before expiry.
+- Additionally, handle 401 Unauthorized responses as fallback (for clock skew, edge cases).
+- Automatic retry with refreshed token on 401 errors.
+
+### Cookie Configuration (Client Storage)
+
+Tokens will be stored in HTTP-only cookies with the following security attributes:
+
+- `HttpOnly`: Prevents JavaScript access (prevents XSS)
+- `Secure`: HTTPS-only transmission
+- `SameSite=Strict`: Prevents CSRF attacks
+- Scoped `Path` and `Domain` as appropriate
+
+### Token Validation (Protected Routes)
+
+All protected API endpoints will validate tokens by:
+
+- Verifying JWT signature using the provider's JWKS (JSON Web Key Set) endpoint
+- Checking token expiration timestamp
+- Validating required claims
+
+**JWKS Endpoint:**
+
+- Provider's public keys retrieved from `/.well-known/jwks.json`
+- Keys cached locally for 24 hours to reduce external calls
+- Cache invalidated on signature verification failures
+- Automatic key rotation support via key ID (kid) header
+
+**Required JWT Claims:**
+
+- `sub`: Subject (user ID) - UUID format
+- `email`: User's email
+- `exp`: Token expiration timestamp
+- `iat`: Issued at timestamp
+- `iss`: Issuer - verifies token is from correct auth provider
+- `role`: User role
+- `aud`: Audience
 
 ## Error Handling
 
-Custom `AuthError` class with typed error codes:
+Custom `AuthError` class with typed error codes. API routes return a consistent JSON error format:
+
+```json
+{
+	"error": "error_code",
+	"message": "Human-readable error message"
+}
+```
+
+Standard HTTP status codes: 400 (bad request), 401 (unauthorized), 403 (forbidden), 500 (provider error).
+
+**Common Error Codes:**
 
 - `invalid_credentials` - Wrong email/password
 - `user_not_found` - User doesn't exist
 - `email_already_exists` - Duplicate email on signup
 - `invalid_token` - Malformed or invalid token
-- `token_expired` - Token past expiration
+- `token_expired` - Token past expiration (client should refresh)
 - `unauthorized` - Not authenticated
 - `session_expired` - Session no longer valid
+- `invalid_refresh_token`: Refresh token invalid or revoked
+- `insufficient_permissions`: Valid token but insufficient permissions
+- `validation_error`: Request validation failed
 - `network_error` - Provider unreachable
-
-API routes return consistent JSON error format with error code and human-readable message. Standard HTTP status codes: 400 (bad request), 401 (unauthorized), 403 (forbidden), 500 (provider error).
-
-## Provider Configuration
-
-### Mock Provider (Phases 1-9)
-
-Development-only mock for rapid iteration. In-memory user storage with simulated JWT generation. No external dependencies.
-
-**Environment:**
-
-```
-USE_AUTH_MOCKS=true
-MOCK_JWT_SECRET=dev_secret_key
-```
-
-### Supabase Provider (Phase 10+)
-
-Production auth using Supabase managed service. Handles email verification, password reset flows, rate limiting, and brute force protection.
-
-**Environment:**
-
-```
-USE_AUTH_MOCKS=false
-SUPABASE_URL=https://project.supabase.co
-SUPABASE_ANON_KEY=public_key
-SUPABASE_JWT_SECRET=jwt_secret
-```
-
-### Keycloak Provider (Post-MVP)
-
-Self-hosted enterprise auth with advanced OAuth/OIDC flows, SSO integration, and fine-grained permissions.
-
-**Environment:**
-
-```
-KEYCLOAK_URL=https://auth.example.com
-KEYCLOAK_REALM=tonguetoquill
-KEYCLOAK_CLIENT_ID=web_client
-KEYCLOAK_CLIENT_SECRET=secret
-```
 
 ## Security Considerations
 
@@ -234,6 +307,5 @@ These features may be added post-MVP.
 ## Cross-References
 
 - [SERVICES.md](./SERVICES.md) - Overall service architecture
-- [AUTH.md](./AUTH.md) - Detailed authentication architecture
 - [../frontend/API_INTEGRATION.md](../frontend/API_INTEGRATION.md) - Frontend API integration patterns
 - [../frontend/STATE_MANAGEMENT.md](../frontend/STATE_MANAGEMENT.md) - Session state management

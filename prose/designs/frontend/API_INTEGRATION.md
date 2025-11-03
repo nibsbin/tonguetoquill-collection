@@ -4,7 +4,7 @@
 
 Tonguetoquill integrates with a RESTful backend API for authentication, document management, and user profiles. The frontend handles API communication, error handling, and state synchronization while maintaining a responsive user experience.
 
-For authentication details, see [prose/designs/backend/AUTH.md](../backend/AUTH.md).
+For authentication details, see [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md).
 
 ## API Architecture
 
@@ -51,7 +51,7 @@ For authentication details, see [prose/designs/backend/AUTH.md](../backend/AUTH.
 
 ## Authentication Integration
 
-See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for complete authentication architecture and specifications.
+See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for complete authentication architecture and specifications.
 
 ### Login Flow
 
@@ -86,7 +86,7 @@ See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for complete authenticat
 
 ### Session Management
 
-See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refresh specifications.
+See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for session timeout and refresh specifications.
 
 **Features**:
 
