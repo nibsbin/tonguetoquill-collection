@@ -76,10 +76,85 @@ class DocumentStore {
 		this.state.documents = [document, ...this.state.documents];
 	}
 
-	updateDocument(id: string, updates: Partial<DocumentMetadata>) {
+	async updateDocument(id: string, updates: Partial<DocumentMetadata>) {
+		// Find the document to update
+		const documentToUpdate = this.state.documents.find((doc) => doc.id === id);
+		if (!documentToUpdate) {
+			throw new Error('Document not found');
+		}
+
+		// Determine if this update requires persistence (i.e., has `name` update)
+		const requiresPersistence = updates.name !== undefined;
+
+		if (!requiresPersistence) {
+			// For metadata-only updates (e.g., content_size_bytes, updated_at from auto-save),
+			// just update local state without calling DocumentClient
+			this.state.documents = this.state.documents.map((doc) =>
+				doc.id === id ? { ...doc, ...updates } : doc
+			);
+			return;
+		}
+
+		// Extract name from updates for DocumentClient
+		const clientUpdates: { name?: string } = {};
+		if (updates.name !== undefined) {
+			clientUpdates.name = updates.name;
+		}
+
+		// Helper function to merge server response with updates
+		const mergeWithServerResponse = (
+			doc: DocumentMetadata,
+			result: { content_size_bytes?: number; updated_at?: string }
+		) => ({
+			...doc,
+			...updates,
+			...(result.content_size_bytes !== undefined && {
+				content_size_bytes: result.content_size_bytes
+			}),
+			...(result.updated_at !== undefined && { updated_at: result.updated_at })
+		});
+
+		// For guest mode, persist first then update state
+		if (this.state.isGuest) {
+			try {
+				// Call DocumentClient to persist
+				const result = await this.documentClient.updateDocument(id, clientUpdates);
+
+				// Update local state with both user updates and server response
+				this.state.documents = this.state.documents.map((doc) =>
+					doc.id === id ? mergeWithServerResponse(doc, result) : doc
+				);
+			} catch (err) {
+				this.setError(err instanceof Error ? err.message : 'Failed to update document');
+				throw err;
+			}
+			return;
+		}
+
+		// Authenticated mode: use optimistic update
+		const previousDocument = { ...documentToUpdate };
+
+		// Optimistically update local state
 		this.state.documents = this.state.documents.map((doc) =>
 			doc.id === id ? { ...doc, ...updates } : doc
 		);
+
+		try {
+			// Call DocumentClient to persist
+			const result = await this.documentClient.updateDocument(id, clientUpdates);
+
+			// Update local state with server response metadata
+			this.state.documents = this.state.documents.map((doc) =>
+				doc.id === id ? mergeWithServerResponse(doc, result) : doc
+			);
+		} catch (err) {
+			// Rollback on error
+			this.state.documents = this.state.documents.map((doc) =>
+				doc.id === id ? previousDocument : doc
+			);
+			this.setError(err instanceof Error ? err.message : 'Failed to update document');
+			throw err;
+		}
 	}
 
 	removeDocument(id: string) {
