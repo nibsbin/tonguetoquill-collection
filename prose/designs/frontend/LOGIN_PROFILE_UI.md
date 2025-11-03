@@ -5,6 +5,7 @@
 This document defines the UI integration for login and profile functionality in the sidebar. The design supports two distinct states: **Guest Mode** (not authenticated) and **Logged-in Mode** (authenticated), with appropriate UI elements and modals for each state.
 
 > **Related Documents:**
+>
 > - [SIDEBAR.md](./SIDEBAR.md) - Sidebar design patterns and structure
 > - [LOGIN_SERVICE.md](../../designs/backend/LOGIN_SERVICE.md) - Authentication service details
 > - [AUTH.md](../../designs/backend/AUTH.md) - Authentication architecture
@@ -23,18 +24,21 @@ This document defines the UI integration for login and profile functionality in 
 ### Guest Mode (Not Authenticated)
 
 **Collapsed Sidebar:**
+
 - Display `log-in` icon from lucide-svelte
 - Position above settings button
 - Same visual treatment as settings button
 - Clicking opens sign-in modal
 
 **Expanded Sidebar:**
+
 - Display `log-in` icon + "Sign in" text
 - Position above settings button, under same divider
 - Same visual treatment as settings button
 - Clicking opens sign-in modal
 
 **Visual Hierarchy:**
+
 ```
 ┌─────────────────────────────┐
 │  ...                        │
@@ -49,12 +53,14 @@ This document defines the UI integration for login and profile functionality in 
 ### Logged-in Mode (Authenticated)
 
 **Collapsed Sidebar:**
+
 - Display `circle-user` icon from lucide-svelte
 - Position above settings button
 - Same visual treatment as settings button
 - Clicking opens profile modal
 
 **Expanded Sidebar:**
+
 - Display `circle-user` icon + user's name/email
 - Position above settings button, under same divider
 - Same visual treatment as settings button
@@ -62,6 +68,7 @@ This document defines the UI integration for login and profile functionality in 
 - Clicking opens profile modal
 
 **Visual Hierarchy:**
+
 ```
 ┌─────────────────────────────┐
 │  ...                        │
@@ -80,6 +87,7 @@ This document defines the UI integration for login and profile functionality in 
 **Component Type:** SidebarButtonSlot
 
 **Props:**
+
 - `icon`: `LogIn` from lucide-svelte
 - `label`: "Sign in" (shown when expanded)
 - `isExpanded`: Sidebar expansion state
@@ -87,11 +95,13 @@ This document defines the UI integration for login and profile functionality in 
 - `ariaLabel`: "Sign in to your account"
 
 **Styling:**
+
 - Same classes as settings button
 - `text-muted-foreground hover:bg-accent hover:text-foreground`
 - `active:scale-[0.985]` for press feedback
 
 **Behavior:**
+
 - On click: Calls `loginClient.initiateLogin()` which redirects to OAuth provider
 - No modal - user leaves application to authenticate on provider's page
 - User returns via OAuth callback after successful authentication
@@ -101,6 +111,7 @@ This document defines the UI integration for login and profile functionality in 
 **Component Type:** SidebarButtonSlot
 
 **Props:**
+
 - `icon`: `CircleUser` from lucide-svelte
 - `label`: User's display name or email
 - `isExpanded`: Sidebar expansion state
@@ -108,6 +119,7 @@ This document defines the UI integration for login and profile functionality in 
 - `ariaLabel`: "User profile: {user.email}"
 
 **Styling:**
+
 - Same classes as settings button
 - `text-muted-foreground hover:bg-accent hover:text-foreground`
 - `active:scale-[0.985]` for press feedback
@@ -122,6 +134,7 @@ This document defines the UI integration for login and profile functionality in 
 **Purpose:** Display basic account information for logged-in users
 
 **Structure:**
+
 - DialogHeader: "Account Information" title with description
 - Content area displaying:
   - Email address (with "Email" label)
@@ -129,6 +142,7 @@ This document defines the UI integration for login and profile functionality in 
 - DialogFooter: Sign Out button (ghost variant) and Close button (default variant)
 
 **Behavior:**
+
 - On sign out: Close modal, call loginClient.signOut(), update UI to guest state
 - On close: Close modal without action
 
@@ -139,6 +153,7 @@ This document defines the UI integration for login and profile functionality in 
 **Import:** Use `loginClient` from `$lib/services/auth`
 
 **Sign In Flow (OAuth Delegation):**
+
 - Call `loginClient.initiateLogin()` - redirects to provider's hosted auth page
 - User authenticates on provider's page (email, password, MFA, etc.)
 - Provider redirects back to `/api/auth/callback` with OAuth code
@@ -147,12 +162,14 @@ This document defines the UI integration for login and profile functionality in 
 - **No custom forms needed** - provider handles all credential collection
 
 **Sign Out Flow:**
+
 - Call `loginClient.signOut()`
 - Clear user state
 - Close profile modal
 - Handle errors gracefully (usually network errors)
 
 **Check Authentication State:**
+
 - On component mount, call `loginClient.isAuthenticated()`
 - If authenticated, fetch current user with `loginClient.getCurrentUser()`
 
@@ -161,9 +178,11 @@ This document defines the UI integration for login and profile functionality in 
 ### Reactive State Variables
 
 **Modal State:**
+
 - `profileModalOpen`: Boolean controlling profile modal visibility
 
 **User State:**
+
 - `user`: Object with `{ email: string; id: string }` or null
 - Can be derived: `isAuthenticated = user !== null`
 
@@ -178,6 +197,7 @@ The Sidebar component accepts a `user` prop of type `{ email: string; id: string
 ### Root Layout Responsibilities
 
 The root layout should:
+
 1. Check authentication status on page load
 2. Fetch current user if authenticated
 3. Pass user to Sidebar component
@@ -189,6 +209,7 @@ The root layout should:
 ### Button Appearance
 
 **Consistent with Settings Button:**
+
 - Same height and padding
 - Same icon size (24px / var(--sidebar-icon-size))
 - Same hover effects (bg-accent, text-foreground)
@@ -196,18 +217,21 @@ The root layout should:
 - Same text truncation behavior
 
 **Icon Choice:**
+
 - Guest mode: `LogIn` icon (arrow entering door)
 - Logged-in: `CircleUser` icon (user avatar silhouette)
 
 ### Modal Appearance (Profile Modal Only)
 
 **Follows Design System:**
+
 - Background: `bg-surface-elevated`
 - Text: `text-foreground`
 - Borders: `border-border`
 - Buttons use shadcn-svelte Button component
 
 **Size:**
+
 - Width: 400px (max-w-md)
 - Centered on screen
 - Mobile: Full width with padding
@@ -219,19 +243,23 @@ The root layout should:
 ### ARIA Labels
 
 **Sign In Button:**
+
 - `aria-label="Sign in to your account"`
 
 **Profile Button:**
+
 - `aria-label="User profile: {user.email}"`
 
 ### Keyboard Navigation
 
 **Profile Modal:**
+
 - Focus trap within modal when open
 - Escape key closes modal
 - Tab cycles through buttons
 
 **Buttons:**
+
 - Keyboard focusable
 - Visible focus ring
 - Enter/Space activates
@@ -239,10 +267,12 @@ The root layout should:
 ### Screen Reader Support
 
 **State Announcements:**
+
 - "Signed in as {email}" when user returns from OAuth provider
 - "Signed out" on sign out
 
 **Navigation:**
+
 - "Redirecting to sign in page" when initiating OAuth flow
 
 ## Mobile Considerations
@@ -250,6 +280,7 @@ The root layout should:
 ### Sheet Integration
 
 Both buttons work identically in mobile sheet as in desktop sidebar:
+
 - Same button structure
 - Same redirect behavior (sign in) and modal behavior (profile)
 - Profile modal appears centered over sheet
@@ -265,11 +296,13 @@ Both buttons work identically in mobile sheet as in desktop sidebar:
 ### Sign In Errors (OAuth Provider)
 
 **Delegation:** All sign-in errors handled by OAuth provider's hosted page
+
 - Invalid credentials: Provider displays error
 - MFA failures: Provider displays error
 - Account issues: Provider displays error
 
 **Application Responsibilities:**
+
 - Handle OAuth callback errors (rare, usually provider issues)
 - Display generic error if callback fails: "Sign in failed. Please try again."
 
@@ -278,6 +311,7 @@ Both buttons work identically in mobile sheet as in desktop sidebar:
 **Display Location:** Toast notification (sign out errors are rare)
 
 **Error Handling:**
+
 - Clear local session state even on error
 - Show toast: "Sign out may not have completed. Please try again."
 
