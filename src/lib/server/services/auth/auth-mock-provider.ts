@@ -1,6 +1,7 @@
 /**
  * Mock Authentication Provider
  * Implements AuthContract using in-memory storage for development
+ * Simulates OAuth-like token issuance without password handling
  */
 
 import { webcrypto as crypto } from 'node:crypto';
@@ -8,41 +9,28 @@ import type {
 	AuthContract,
 	AuthResult,
 	Session,
-	SignInParams,
-	SignUpParams,
 	TokenPayload,
 	User,
-	UUID,
-	ResetPasswordParams,
-	VerifyEmailParams
+	UUID
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
 
 interface StoredUser {
 	id: UUID;
 	email: string;
-	password: string; // In mock, we store plaintext (never do this in production!)
 	dodid?: string | null;
 	profile: Record<string, unknown>;
 	created_at: string;
 	updated_at: string;
-	email_verified: boolean;
-}
-
-interface StoredSession {
-	access_token: string;
-	refresh_token: string;
-	expires_at: number;
-	user_id: UUID;
 }
 
 /**
  * Mock Authentication Provider
  * Uses in-memory Map storage and simple JWT-like tokens
+ * Simulates OAuth-like flow without password handling
  */
 export class MockAuthProvider implements AuthContract {
 	private users: Map<UUID, StoredUser> = new Map();
-	private sessions: Map<string, StoredSession> = new Map(); // keyed by access_token
 	private emailIndex: Map<string, UUID> = new Map(); // email -> user_id mapping
 	private secret: string;
 
@@ -52,6 +40,27 @@ export class MockAuthProvider implements AuthContract {
 
 	constructor(secret?: string) {
 		this.secret = secret || process.env.MOCK_JWT_SECRET || 'dev-secret-key';
+		this.initializeDefaultUser();
+	}
+
+	/**
+	 * Initialize default test user for development
+	 */
+	private initializeDefaultUser(): void {
+		const userId = '00000000-0000-0000-0000-000000000001' as UUID;
+		const now = new Date().toISOString();
+
+		const defaultUser: StoredUser = {
+			id: userId,
+			email: 'asdf@asdf.com',
+			dodid: '1234567890',
+			profile: {},
+			created_at: now,
+			updated_at: now
+		};
+
+		this.users.set(userId, defaultUser);
+		this.emailIndex.set(defaultUser.email, userId);
 	}
 
 	/**
@@ -60,14 +69,6 @@ export class MockAuthProvider implements AuthContract {
 	private async simulateDelay(): Promise<void> {
 		const delay = Math.random() * 200 + 100; // 100-300ms
 		await new Promise((resolve) => setTimeout(resolve, delay));
-	}
-
-	/**
-	 * Validate email format
-	 */
-	private validateEmail(email: string): boolean {
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		return emailRegex.test(email);
 	}
 
 	/**
@@ -129,69 +130,25 @@ export class MockAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Create a new user account
+	 * Exchange OAuth authorization code for tokens
+	 * In mock: Accept any code and return tokens for default user
+	 * This simulates what a real OAuth provider would do
 	 */
-	async signUp(params: SignUpParams): Promise<AuthResult> {
+	async exchangeCodeForTokens(code: string): Promise<AuthResult> {
 		await this.simulateDelay();
 
-		// Validate email
-		if (!this.validateEmail(params.email)) {
-			throw new AuthError('invalid_email', 'Invalid email format', 400);
+		// Mock: Accept any non-empty code
+		if (!code || code.trim() === '') {
+			throw new AuthError('invalid_token', 'Invalid authorization code', 400);
 		}
 
-		// Check if email already exists
-		if (this.emailIndex.has(params.email.toLowerCase())) {
-			throw new AuthError('email_already_exists', 'Email already registered', 400);
-		}
-
-		// Create user
-		const userId = crypto.randomUUID();
-		const now = new Date().toISOString();
-
-		const user: StoredUser = {
-			id: userId,
-			email: params.email.toLowerCase(),
-			password: params.password, // Mock: storing plaintext (never in production!)
-			dodid: params.dodid || null,
-			profile: params.profile || {},
-			created_at: now,
-			updated_at: now,
-			email_verified: false // Mock: assume unverified initially
-		};
-
-		this.users.set(userId, user);
-		this.emailIndex.set(user.email, userId);
-
-		// Create session
-		const session = await this.createSession(userId);
-
-		return {
-			user: this.toPublicUser(user),
-			session
-		};
-	}
-
-	/**
-	 * Authenticate user and create session
-	 */
-	async signIn(params: SignInParams): Promise<AuthResult> {
-		await this.simulateDelay();
-
-		const email = params.email.toLowerCase();
-		const userId = this.emailIndex.get(email);
-
-		if (!userId) {
-			throw new AuthError('invalid_credentials', 'Invalid email or password', 401);
-		}
-
+		// For development, always return the default user
+		// In a real implementation, this would exchange the code with the provider
+		const userId = '00000000-0000-0000-0000-000000000001' as UUID;
 		const user = this.users.get(userId);
-		if (!user) {
-			throw new AuthError('user_not_found', 'User not found', 404);
-		}
 
-		// Check password (plaintext comparison in mock)
-		if (user.password !== params.password) {
-			throw new AuthError('invalid_credentials', 'Invalid email or password', 401);
+		if (!user) {
+			throw new AuthError('unknown_error', 'Default user not found', 500);
 		}
 
 		// Create session
@@ -209,7 +166,7 @@ export class MockAuthProvider implements AuthContract {
 	private async createSession(userId: UUID): Promise<Session> {
 		const user = this.users.get(userId);
 		if (!user) {
-			throw new AuthError('user_not_found', 'User not found', 404);
+			throw new AuthError('unknown_error', 'User not found', 404);
 		}
 
 		const now = Math.floor(Date.now() / 1000);
@@ -238,15 +195,6 @@ export class MockAuthProvider implements AuthContract {
 		};
 		const refreshToken = this.generateToken(refreshTokenPayload);
 
-		// Store session
-		const storedSession: StoredSession = {
-			access_token: accessToken,
-			refresh_token: refreshToken,
-			expires_at: accessTokenExpiry,
-			user_id: userId
-		};
-		this.sessions.set(accessToken, storedSession);
-
 		return {
 			access_token: accessToken,
 			refresh_token: refreshToken,
@@ -256,11 +204,12 @@ export class MockAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Invalidate session
+	 * Invalidate session (no-op in mock since tokens are stateless)
 	 */
 	async signOut(accessToken: string): Promise<void> {
 		await this.simulateDelay();
-		this.sessions.delete(accessToken);
+		// Mock: No-op since we don't track sessions in mock
+		// In production, would invalidate the session in the provider
 	}
 
 	/**
@@ -301,43 +250,6 @@ export class MockAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Initiate password reset flow (mock: just log it)
-	 */
-	async resetPassword(params: ResetPasswordParams): Promise<void> {
-		await this.simulateDelay();
-
-		const email = params.email.toLowerCase();
-		const userId = this.emailIndex.get(email);
-
-		if (!userId) {
-			// In production, don't reveal if email exists
-			// In mock, we'll silently succeed
-			return;
-		}
-
-		// Mock: simulate sending email (no-op in mock)
-		// Password reset would be sent via email in production
-	}
-
-	/**
-	 * Confirm email verification (mock: just mark as verified)
-	 */
-	async verifyEmail(params: VerifyEmailParams): Promise<void> {
-		await this.simulateDelay();
-
-		// Mock: assume token is user_id for simplicity
-		const userId = params.token as UUID;
-		const user = this.users.get(userId);
-
-		if (!user) {
-			throw new AuthError('invalid_token', 'Invalid verification token', 400);
-		}
-
-		user.email_verified = true;
-		user.updated_at = new Date().toISOString();
-	}
-
-	/**
 	 * Convert StoredUser to public User interface
 	 */
 	private toPublicUser(user: StoredUser): User {
@@ -359,11 +271,35 @@ export class MockAuthProvider implements AuthContract {
 	}
 
 	/**
+	 * Helper method for testing: create additional users for multi-user tests
+	 * This simulates what would happen if multiple users authenticated via the provider
+	 */
+	createTestUser(email: string, dodid?: string): User {
+		const userId = crypto.randomUUID();
+		const now = new Date().toISOString();
+
+		const user: StoredUser = {
+			id: userId,
+			email: email.toLowerCase(),
+			dodid: dodid || null,
+			profile: {},
+			created_at: now,
+			updated_at: now
+		};
+
+		this.users.set(userId, user);
+		this.emailIndex.set(user.email, userId);
+
+		return this.toPublicUser(user);
+	}
+
+	/**
 	 * Helper method for testing: clear all data
 	 */
 	clearAllData(): void {
 		this.users.clear();
-		this.sessions.clear();
 		this.emailIndex.clear();
+		// Reinitialize default user after clearing
+		this.initializeDefaultUser();
 	}
 }

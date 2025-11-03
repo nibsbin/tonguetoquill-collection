@@ -67,25 +67,55 @@ npm run dev -- --open
 src/
 ├── lib/                 # Reusable components, services, stores, utilities
 │   ├── components/      # Svelte UI components
-│   ├── services/        # Authentication and document service providers
+│   ├── services/        # Client-side services (auth client)
+│   ├── server/          # Server-side services (auth provider, document service)
 │   ├── stores/          # State management
 │   └── utils/           # Helper functions
 ├── routes/              # Route-based pages and API endpoints
 │   ├── (app)/           # Authenticated application routes
-│   ├── (auth)/          # Login, registration pages
 │   ├── (marketing)/     # Public pages
 │   └── api/             # API endpoints (server routes)
+│       └── auth/        # OAuth callback and auth endpoints
 └── hooks.server.ts      # Server-side middleware (authentication)
 ```
+
+## Authentication
+
+The application uses **OAuth-based authentication** with delegated auth to external providers:
+
+- **Mock Provider (Development)**: Simulates OAuth flow for local development
+- **Supabase Provider (Production)**: Real OAuth integration with Supabase-hosted auth pages
+
+**Authentication Flow:**
+
+1. User clicks login → redirected to provider's hosted login page
+2. Provider authenticates user and redirects back with OAuth code
+3. Application exchanges code for JWT tokens
+4. Tokens stored in secure HTTP-only cookies
+
+The application **never sees or handles passwords** - all password management is delegated to the auth provider.
 
 ## Environment Variables
 
 See `.env.example` for required environment variables. Key variables:
 
+**Development (Mock Provider):**
+
 - `USE_AUTH_MOCKS=true` - Enable mock authentication provider
 - `USE_DB_MOCKS=true` - Enable mock document service
 - `MOCK_JWT_SECRET` - Secret key for mock JWT generation (dev only)
-- `PUBLIC_APP_NAME` - Application name (client-accessible)
+- `AUTH_REDIRECT_URI` - OAuth callback URL (e.g., http://localhost:5173/api/auth/callback)
+
+**Production (Supabase Provider):**
+
+- `USE_AUTH_MOCKS=false` - Use real Supabase authentication
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
+- `SUPABASE_JWT_SECRET` - Supabase JWT secret for token validation
+
+**Client-Accessible:**
+
+- `PUBLIC_APP_NAME` - Application name
 
 ## Mock Provider Strategy
 
