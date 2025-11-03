@@ -52,6 +52,29 @@ export class MockAuthProvider implements AuthContract {
 
 	constructor(secret?: string) {
 		this.secret = secret || process.env.MOCK_JWT_SECRET || 'dev-secret-key';
+		this.initializeDefaultUser();
+	}
+
+	/**
+	 * Initialize default test user for development
+	 */
+	private initializeDefaultUser(): void {
+		const userId = '00000000-0000-0000-0000-000000000001' as UUID;
+		const now = new Date().toISOString();
+
+		const defaultUser: StoredUser = {
+			id: userId,
+			email: 'asdf@asdf.com',
+			password: 'asdf',
+			dodid: '1234567890',
+			profile: {},
+			created_at: now,
+			updated_at: now,
+			email_verified: true
+		};
+
+		this.users.set(userId, defaultUser);
+		this.emailIndex.set(defaultUser.email, userId);
 	}
 
 	/**
