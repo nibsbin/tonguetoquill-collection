@@ -140,38 +140,16 @@ Add to `package.json`:
 
 ### 2. Application Initialization
 
-Initialize service in root layout or main page:
-
-```typescript
-import { quillmarkService } from '$lib/services/quillmark';
-
-onMount(async () => {
-	await quillmarkService.initialize();
-});
-```
+Service initialized in root layout or main page on mount.
 
 ### 3. Document Rendering
 
-Components can request renders through the service:
+Components request renders through service:
+- `renderForPreview()`: Auto-detects backend and format from frontmatter
+- `renderToPDF()`: Explicit PDF rendering for downloads
+- `downloadDocument()`: Render and trigger download
 
-```typescript
-import { quillmarkService } from '$lib/services/quillmark';
-
-// Render for preview (auto-detects format)
-const { format, data } = await quillmarkService.renderForPreview(markdown, 'usaf_memo');
-if (format === 'pdf') {
-	// Display PDF blob
-	const url = URL.createObjectURL(data as Blob);
-	embedElement.src = url;
-} else {
-	// Display SVG string
-	previewElement.innerHTML = data as string;
-}
-
-// Render to specific format for download
-const pdfBlob = await quillmarkService.renderToPDF(markdown, 'usaf_memo');
-const svgString = await quillmarkService.renderToSVG(markdown, 'taro');
-```
+Helper functions available for extracting data from `RenderResult`.
 
 ## Security Considerations
 
@@ -214,3 +192,7 @@ These may be considered in future iterations.
 - [Quillmark Documentation](https://quillmark.readthedocs.io/en/latest/)
 - [tonguetoquill-collection Repository](https://github.com/nibsbin/tonguetoquill-collection)
 - [Markdown Parsing Design](./PARSE.md)
+
+---
+
+_Document Status: Implemented - Reflects Current Codebase_

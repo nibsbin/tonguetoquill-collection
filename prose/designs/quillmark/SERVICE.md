@@ -37,23 +37,12 @@ interface QuillmarkService {
 	renderToPDF(markdown: string, quillName: string): Promise<Blob>;
 
 	/**
-	 * Render markdown to SVG string
+	 * Render markdown for preview with auto-detected format and backend
+	 * Does not specify quill or output format - allows engine to auto-detect based on content
 	 * @param markdown - Markdown content to render
-	 * @param quillName - Name of Quill template to use
-	 * @returns SVG as string
+	 * @returns RenderResult from Quillmark engine
 	 */
-	renderToSVG(markdown: string, quillName: string): Promise<string>;
-
-	/**
-	 * Render markdown for preview (auto-detects format based on backend)
-	 * @param markdown - Markdown content to render
-	 * @param quillName - Name of Quill template to use
-	 * @returns Object with format and data (Blob for PDF, string for SVG)
-	 */
-	renderForPreview(
-		markdown: string,
-		quillName: string
-	): Promise<{ format: 'pdf' | 'svg'; data: Blob | string }>;
+	renderForPreview(markdown: string): Promise<RenderResult>;
 
 	/**
 	 * Download rendered document
@@ -102,58 +91,17 @@ class QuillmarkError extends Error {
 
 ## Implementation
 
-### File Location
+### File Organization
 
-```
-src/lib/services/quillmark/
-├── index.ts              # Service exports
-├── types.ts              # TypeScript types and interfaces
-├── service.ts            # QuillmarkService implementation
-├── quillmark.test.ts     # Unit tests
-└── README.md             # Service documentation
-```
+Service implementation located in `src/lib/services/quillmark/` with separation of concerns:
+- Type definitions
+- Service implementation
+- Helper functions
+- Tests and documentation
 
 ### Singleton Pattern
 
-The service uses a singleton pattern to ensure only one Quillmark engine instance exists:
-
-```typescript
-class QuillmarkServiceImpl implements QuillmarkService {
-	private static instance: QuillmarkServiceImpl | null = null;
-	private engine: Quillmark | null = null;
-	private manifest: QuillManifest | null = null;
-	private initialized = false;
-
-	private constructor() {}
-
-	static getInstance(): QuillmarkServiceImpl {
-		if (!QuillmarkServiceImpl.instance) {
-			QuillmarkServiceImpl.instance = new QuillmarkServiceImpl();
-		}
-		return QuillmarkServiceImpl.instance;
-	}
-
-	async initialize(): Promise<void> {
-		if (this.initialized) return;
-
-		// Load manifest
-		this.manifest = await this.loadManifest();
-
-		// Create engine
-		this.engine = new Quillmark();
-
-		// Preload all Quills
-		await this.preloadQuills();
-
-		this.initialized = true;
-	}
-
-	// ... other methods
-}
-
-// Export singleton instance
-export const quillmarkService = QuillmarkServiceImpl.getInstance();
-```
+Single engine instance per application lifecycle to avoid re-initialization overhead and maintain consistent state.
 
 ### Initialization Flow
 
@@ -183,7 +131,7 @@ renderToPDF(markdown, quillName)
   ├─> validateQuillExists(quillName)
   │
   └─> exporters.render(engine, markdown, {
-        quill: quillName,
+        quillName: quillName,
         format: 'pdf'
       })
 ```
@@ -191,143 +139,78 @@ renderToPDF(markdown, quillName)
 **Auto-Format Rendering (Preview):**
 
 ```
-renderForPreview(markdown, quillName)
+renderForPreview(markdown)
   │
   ├─> validateInitialized()
-  ├─> validateQuillExists(quillName)
   │
-  ├─> exporters.render(engine, markdown, {
-  │     quillName: quillName
-  │     // No format specified - uses backend default
-  │   })
-  │
-  └─> Check result.outputFormat
-      ├─> if 'pdf': return { format: 'pdf', data: exporters.toBlob(result) }
-      └─> if 'svg': return { format: 'svg', data: new TextDecoder().decode(result.artifacts[0].bytes) }
+  └─> exporters.render(engine, markdown, {
+        // No quillName or format specified - engine auto-detects backend
+      })
+      └─> Returns RenderResult with outputFormat and artifacts
 ```
 
 ### Error Handling
 
-The service implements defensive error handling:
+Defensive error handling with specific error codes:
+- `not_initialized` - Service not initialized
+- `quill_not_found` - Requested Quill doesn't exist  
+- `render_error` - Rendering failed
+- `load_error` - Initialization failed
 
-1. **Not Initialized**: Throw `QuillmarkError` with code `not_initialized`
-2. **Quill Not Found**: Throw `QuillmarkError` with code `quill_not_found`
-3. **Render Errors**: Catch and wrap with code `render_error`
-4. **Load Errors**: Catch and wrap with code `load_error`
-
-Errors include descriptive messages for debugging.
+Errors include diagnostic information when available from WASM engine.
 
 ## State Management
 
 ### Internal State
 
-- `engine`: Quillmark WASM instance (null until initialized)
-- `manifest`: Loaded manifest data (null until initialized)
-- `initialized`: Boolean flag for initialization status
+- WASM engine instance (lazy-loaded)
+- Quill manifest metadata
+- Initialization status flag
 
 ### State Validation
 
-Methods validate state before executing:
-
-```typescript
-private validateInitialized(): void {
-  if (!this.initialized || !this.engine) {
-    throw new QuillmarkError('not_initialized', 'Service not initialized');
-  }
-}
-
-private validateQuillExists(quillName: string): void {
-  const exists = this.manifest?.quills.some(q => q.name === quillName);
-  if (!exists) {
-    throw new QuillmarkError('quill_not_found', `Quill "${quillName}" not found`);
-  }
-}
-```
+Methods validate initialization state and quill existence before operations.
 
 ## Testing Strategy
 
 ### Unit Tests
 
-Test file: `src/lib/services/quillmark/quillmark.test.ts`
-
-**Test Cases:**
-
-1. Singleton pattern enforcement
-2. Initialization success path
-3. Initialization error handling
-4. Render methods require initialization
-5. Render methods validate Quill existence
-6. PDF rendering success
-7. SVG rendering success
-8. Download method invocation
-9. Available Quills list retrieval
-
-### Mock Strategy
-
-Use vitest mocks for external dependencies:
-
-- Mock `@quillmark-test/web` module
-- Mock `fetch()` for manifest and zip files
-- Verify proper delegation to Quillmark APIs
+Service layer testing focuses on:
+- Singleton pattern enforcement
+- Initialization lifecycle
+- Method precondition validation
+- Error handling and propagation
+- Mock WASM dependencies
 
 ### Integration Tests
 
-Integration tests are **out of scope** for this phase. The service relies on the `@quillmark-test/web` library being tested independently.
+Out of scope - relies on `@quillmark-test/web` library testing.
 
 ## Usage Examples
 
 ### Application Initialization
 
 ```typescript
-// src/routes/+layout.svelte or +page.svelte
-import { onMount } from 'svelte';
-import { quillmarkService } from '$lib/services/quillmark';
-
-onMount(async () => {
-	try {
-		await quillmarkService.initialize();
-		console.log('Quillmark ready');
-	} catch (error) {
-		console.error('Failed to initialize Quillmark:', error);
-	}
-});
+// Initialize service once on app load
+await quillmarkService.initialize();
 ```
 
 ### Rendering Documents
 
 ```typescript
-import { quillmarkService } from '$lib/services/quillmark';
+// Render to PDF for download
+const pdfBlob = await quillmarkService.renderToPDF(markdown, 'usaf_memo');
 
-// Render to PDF and download
-async function downloadPDF() {
-	try {
-		await quillmarkService.downloadDocument(markdown, 'usaf_memo', 'my-memo.pdf', 'pdf');
-	} catch (error) {
-		console.error('Render failed:', error);
-	}
-}
-
-// Render to SVG for preview
-async function updatePreview() {
-	try {
-		const svg = await quillmarkService.renderToSVG(markdown, 'taro');
-		previewElement.innerHTML = svg;
-	} catch (error) {
-		console.error('Preview failed:', error);
-	}
-}
+// Render for preview with auto-detection
+const result = await quillmarkService.renderForPreview(markdown);
+// Use helper functions to extract data based on result.outputFormat
 ```
 
 ### Listing Available Quills
 
 ```typescript
-import { quillmarkService } from '$lib/services/quillmark';
-
 const quills = quillmarkService.getAvailableQuills();
-// Returns: [
-//   { name: 'taro', description: '...', backend: 'typst', exampleFile: 'taro.md' },
-//   { name: 'usaf_memo', description: '...', backend: 'typst', exampleFile: 'usaf_memo.md' }
-// ]
+// Returns array of QuillMetadata objects
 ```
 
 ## Dependencies
@@ -347,9 +230,11 @@ const quills = quillmarkService.getAvailableQuills();
 
 - ✅ Single engine instance (singleton)
 - ✅ Preload all Quills on initialization
-- ✅ PDF and SVG rendering
+- ✅ PDF rendering with explicit quill selection
+- ✅ Auto-detection for preview (no quill selection needed)
 - ✅ Download functionality
 - ✅ Type-safe API
+- ✅ Helper functions for RenderResult conversion
 
 ### Out of Scope
 
@@ -377,7 +262,7 @@ These features may be added in future iterations as needed.
 - **Simplicity**: Avoid complex lazy-loading logic
 - **Acceptable Cost**: ~3-5 Quills = ~1-2MB total (minimal)
 
-### Why toBlob() and TextDecoder?
+### Why resultToBlob() and Helper Functions?
 
 For preview rendering, we use different approaches for different formats:
 
@@ -390,18 +275,20 @@ For preview rendering, we use different approaches for different formats:
 
 **For SVG:**
 
-- **Direct Decoding**: Use `TextDecoder` to decode Uint8Array to UTF-8 string
+- **Helper Functions**: Use `resultToSVGPages()` to get array of SVG strings (one per page)
+- **Multi-page Support**: Handles documents with multiple pages correctly
+- **TextDecoder + toArrayBuffer**: Uses `exporters.toArrayBuffer(artifact)` to get ArrayBuffer, then `TextDecoder` to decode to UTF-8 string
 - **Standard API**: TextDecoder is a standard web API
-- **Simplicity**: Straightforward conversion without wrapper functions
 - **Efficiency**: No unnecessary intermediate conversions
 
-The Quillmark library doesn't provide a dedicated SVG string conversion function, so we use the standard TextDecoder approach to decode the bytes from `result.artifacts[0].bytes`.
+The service provides helper functions `resultToSVGPages()` and `artifactToSVGString()` for consumers to convert `RenderResult` artifacts to strings.
 
-### Why Auto-Format for Preview?
+### Why Auto-Detect for Preview?
 
-The `renderForPreview()` method doesn't specify a format, allowing the Quillmark backend to choose:
+The `renderForPreview()` method doesn't specify a quill name or format, allowing the Quillmark engine to auto-detect based on document content:
 
-- **Backend Intelligence**: Typst backend defaults to SVG (best for preview), PDF backend to PDF
+- **Backend Intelligence**: Engine auto-detects backend from document frontmatter (QUILL field)
+- **Format Selection**: Backend chooses optimal format (Typst→SVG, PDF backend→PDF)
 - **Flexibility**: Different backends may support different formats
 - **Performance**: Backend can choose most efficient format for preview
 - **User Experience**: Always get the best preview format without manual selection
@@ -443,3 +330,7 @@ These should be evaluated based on user needs and performance data.
 - [Quillmark WASM API](https://quillmark.readthedocs.io/en/latest/)
 - [Frontend Architecture](../frontend/ARCHITECTURE.md)
 - [Service Pattern](../backend/SERVICES.md)
+
+---
+
+_Document Status: Implemented - Reflects Current Codebase_
