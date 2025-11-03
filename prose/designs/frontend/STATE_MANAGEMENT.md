@@ -111,7 +111,7 @@ See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-sa
 
 **LocalStorage Document Service**:
 
-Implemented in `src/lib/services/documents/localstorage-service.ts`, provides the same interface as the API-based service but stores documents in browser localStorage.
+Implemented in `src/lib/services/documents/document-browser-storage.ts`, provides the same interface as the API-based service but stores documents in browser localStorage.
 
 ```typescript
 interface LocalStorageDocumentService {

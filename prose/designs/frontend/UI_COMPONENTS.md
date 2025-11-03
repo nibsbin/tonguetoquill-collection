@@ -42,7 +42,7 @@ Tonguetoquill uses **shadcn-svelte** as the foundational component library:
 Custom components are only created when shadcn-svelte doesn't provide the specific functionality needed:
 
 - **MarkdownEditor** - CodeMirror 6 integration
-- **MarkdownPreview** - Rendered markdown output
+- **Preview** - Rendered markdown output (in `Preview/Preview.svelte`)
 - **DocumentEditor** - Container managing editor/preview state
 - **DocumentList** - Document sidebar (uses shadcn Card components)
 
@@ -466,11 +466,13 @@ Buttons show tooltips with keyboard shortcuts using shadcn-svelte's Tooltip comp
 
 ---
 
-### MarkdownPreview Component
+### Preview Component
+
+**Implementation**: `Preview/Preview.svelte`
 
 **Purpose**: Rendered markdown output display
 
-**Reference**: Visual design matches `prose/legacymock_project/components/MarkdownPreview.tsx`
+**Reference**: Visual design matches `prose/legacymock_project/components/MarkdownPreview.tsx` (legacy name)
 
 **Structure**:
 

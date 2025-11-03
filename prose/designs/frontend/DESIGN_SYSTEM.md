@@ -583,12 +583,12 @@ This ensures compile-time validation of token usage and prevents typos in token 
 
 #### Custom Components to Replace
 
-1. **Dialog.svelte** → Replace with shadcn-svelte Dialog component
+1. **Dialog.svelte** → ✅ **Replaced** with shadcn-svelte Dialog component
    - **Reasoning**: shadcn-svelte provides a more feature-rich, accessible dialog with better keyboard navigation, focus trapping, and animation support
    - **Components needed**: dialog, dialog-content, dialog-header, dialog-title, dialog-description
-2. **Toast.svelte** → Keep as-is (svelte-sonner wrapper)
-   - **Reasoning**: svelte-sonner is already well-integrated and provides excellent toast functionality. The wrapper is minimal and just configures the toaster.
-   - **Action**: Update wrapper to use theme tokens for consistency
+2. **Toast.svelte** → ✅ **Removed** (replaced by shadcn-svelte Sonner)
+   - **Reasoning**: svelte-sonner is already well-integrated and provides excellent toast functionality via shadcn-svelte
+   - **Action**: Toast notifications now use svelte-sonner directly, no custom wrapper needed
 
 #### shadcn-svelte Components to Add
 

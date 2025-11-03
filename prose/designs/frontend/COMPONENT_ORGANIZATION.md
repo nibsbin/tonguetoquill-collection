@@ -22,15 +22,15 @@ Each feature folder contains:
 
 ```
 ComponentName/
-├── ComponentName.svelte       # Component implementation
-├── style.css                  # Component-specific styles (optional)
-└── ComponentName.svelte.ts    # Component tests
+├── ComponentName.svelte            # Component implementation
+├── style.css                       # Component-specific styles (optional)
+└── ComponentName.svelte.test.ts    # Component tests
 ```
 
 **Notes**:
 
 - `style.css` is optional - only create if component needs styles beyond Tailwind classes
-- Tests use `.svelte.ts` extension and are co-located with components
+- Tests use `.svelte.test.ts` extension and are co-located with components
 - Follow vitest and vitest-browser-svelte testing patterns
 
 ## Directory Structure
@@ -39,27 +39,30 @@ ComponentName/
 src/lib/components/
 ├── Sidebar/
 │   ├── Sidebar.svelte
-│   ├── Sidebar.svelte.ts
+│   ├── Sidebar.svelte.test.ts
 │   ├── SidebarButtonSlot.svelte
-│   └── SidebarButtonSlot.svelte.ts
+│   ├── SidebarButtonSlot.svelte.test.ts
+│   └── index.ts
 ├── TopMenu/
 │   ├── TopMenu.svelte
-│   └── TopMenu.svelte.ts
+│   └── TopMenu.svelte.test.ts
 ├── Editor/
 │   ├── EditorToolbar.svelte
-│   ├── EditorToolbar.svelte.ts
+│   ├── EditorToolbar.svelte.test.ts
 │   ├── MarkdownEditor.svelte
-│   ├── MarkdownEditor.svelte.ts
+│   ├── MarkdownEditor.svelte.test.ts
 │   ├── DocumentEditor.svelte
-│   └── DocumentEditor.svelte.ts
+│   └── DocumentEditor.svelte.test.ts
 ├── Preview/
-│   ├── MarkdownPreview.svelte
-│   └── MarkdownPreview.svelte.ts
+│   ├── Preview.svelte
+│   ├── Preview.svelte.test.ts
+│   └── index.ts
 ├── DocumentList/
 │   ├── DocumentList.svelte
-│   ├── DocumentList.svelte.ts
+│   ├── DocumentList.svelte.test.ts
 │   ├── DocumentListItem.svelte
-│   └── DocumentListItem.svelte.ts
+│   ├── DocumentListItem.svelte.test.ts
+│   └── index.ts
 └── ui/
     ├── button.svelte
     ├── dialog.svelte
@@ -71,10 +74,10 @@ src/lib/components/
 
 ### Test Location
 
-Tests are co-located with components using the `.svelte.ts` extension:
+Tests are co-located with components using the `.svelte.test.ts` extension:
 
 - Component: `ComponentName.svelte`
-- Tests: `ComponentName.svelte.ts`
+- Tests: `ComponentName.svelte.test.ts`
 
 ### Testing Framework
 
@@ -114,18 +117,18 @@ Each component should have tests for:
 
 The current flat structure in `src/lib/components/` will be reorganized into feature folders:
 
-**Current** → **New**:
+**Original Flat Structure** → **Current Feature-Based Structure**:
 
-- `Sidebar.svelte` → `Sidebar/Sidebar.svelte`
-- `SidebarButtonSlot.svelte` → `Sidebar/SidebarButtonSlot.svelte`
-- `TopMenu.svelte` → `TopMenu/TopMenu.svelte`
-- `EditorToolbar.svelte` → `Editor/EditorToolbar.svelte`
-- `MarkdownEditor.svelte` → `Editor/MarkdownEditor.svelte`
-- `DocumentEditor.svelte` → `Editor/DocumentEditor.svelte`
-- `MarkdownPreview.svelte` → `Preview/MarkdownPreview.svelte`
-- `DocumentList.svelte` → `DocumentList/DocumentList.svelte`
-- `DocumentListItem.svelte` → `DocumentList/DocumentListItem.svelte`
-- `Toast.svelte` → (replaced by shadcn-svelte Sonner, can be removed)
+- `Sidebar.svelte` → `Sidebar/Sidebar.svelte` ✅ **Migrated**
+- `SidebarButtonSlot.svelte` → `Sidebar/SidebarButtonSlot.svelte` ✅ **Migrated**
+- `TopMenu.svelte` → `TopMenu/TopMenu.svelte` ✅ **Migrated**
+- `EditorToolbar.svelte` → `Editor/EditorToolbar.svelte` ✅ **Migrated**
+- `MarkdownEditor.svelte` → `Editor/MarkdownEditor.svelte` ✅ **Migrated**
+- `DocumentEditor.svelte` → `Editor/DocumentEditor.svelte` ✅ **Migrated**
+- `MarkdownPreview.svelte` → `Preview/Preview.svelte` ✅ **Migrated** (renamed to Preview)
+- `DocumentList.svelte` → `DocumentList/DocumentList.svelte` ✅ **Migrated**
+- `DocumentListItem.svelte` → `DocumentList/DocumentListItem.svelte` ✅ **Migrated**
+- `Toast.svelte` → ✅ **Removed** (replaced by shadcn-svelte Sonner)
 - `ui/*` → `ui/*` (unchanged)
 
 ## Import Path Updates
