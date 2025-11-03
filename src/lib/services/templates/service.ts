@@ -100,7 +100,7 @@ class TemplateServiceImpl implements TemplateService {
 
 		try {
 			// Fetch template content
-			const response = await fetch(`/tonguetoquill-collection/templates/${filename}`);
+			const response = await fetch(`/templates/${filename}`);
 			if (!response.ok) {
 				throw new Error(`Failed to load template: ${response.statusText}`);
 			}
@@ -121,7 +121,7 @@ class TemplateServiceImpl implements TemplateService {
 	 * Load manifest from static files
 	 */
 	private async loadManifest(): Promise<TemplateManifest> {
-		const response = await fetch('/tonguetoquill-collection/templates/templates.json');
+		const response = await fetch('/templates/templates.json');
 		if (!response.ok) {
 			throw new Error(`Failed to load manifest: ${response.statusText}`);
 		}
