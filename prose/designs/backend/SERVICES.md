@@ -20,11 +20,13 @@ Services receive authenticated user context through middleware that validates JW
 ```
 ├── document-provider.ts         ← createDocumentService() factory
 ├── document-mock-service.ts     ← In-memory implementation
-├── document-supabase-service.ts ← Database implementation
 └── index.ts                     ← export { documentService }
 ```
 
-**Responsibilities**: Implement DocumentServiceContract, access databases, execute server-only business logic. Used exclusively by API route handlers.
+**Current Implementation (Phases 1-9):** Mock service only
+**Future (Phase 10+):** Add `document-supabase-service.ts` for database implementation
+
+**Responsibilities**: Implement DocumentServiceContract, access databases (future), execute server-only business logic. Used exclusively by API route handlers.
 
 ### Client-Side (`$lib/services/documents/`)
 
