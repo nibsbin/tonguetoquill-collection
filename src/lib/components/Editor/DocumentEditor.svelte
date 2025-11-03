@@ -5,7 +5,6 @@
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
 	import { Preview } from '$lib/components/Preview';
-	import { Loader2 } from 'lucide-svelte';
 
 	interface Props {
 		documentId: string;
@@ -163,7 +162,7 @@
 
 <div class="relative flex h-full flex-1 flex-col" aria-busy={loading}>
 	<!-- Editor content (dimmed when loading) -->
-	<div class={loading ? 'pointer-events-none opacity-50' : ''}>
+	<div class="flex h-full flex-1 flex-col {loading ? 'pointer-events-none opacity-50' : ''}">
 		<!-- Mobile Tab Switcher (< 768px) -->
 		{#if isMobile}
 			<div class="flex border-b border-border bg-surface-elevated">
@@ -216,14 +215,4 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- Loading overlay (shown when loading) -->
-	{#if loading}
-		<div class="absolute inset-0 flex items-center justify-center bg-background/50">
-			<div class="flex flex-col items-center gap-3">
-				<Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
-				<p class="text-sm text-muted-foreground">Loading document...</p>
-			</div>
-		</div>
-	{/if}
 </div>
