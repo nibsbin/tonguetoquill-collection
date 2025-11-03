@@ -2,9 +2,7 @@
 
 This plan outlines the implementation of delegated authentication where the application **only** handles token validation and storage, while authentication UI and flows are completely delegated to external providers.
 
-> **Related Designs**: 
-> - [../designs/backend/AUTH.md](../designs/backend/AUTH.md) - Authentication philosophy and architecture
-> - [../designs/backend/LOGIN_SERVICE.md](../designs/backend/LOGIN_SERVICE.md) - Service implementation details
+> **Related Design**: [../designs/backend/LOGIN_SERVICE.md](../designs/backend/LOGIN_SERVICE.md) - Authentication architecture and service implementation
 
 ## Objectives
 

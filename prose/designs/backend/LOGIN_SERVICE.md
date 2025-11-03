@@ -4,6 +4,14 @@ This document defines the Login Service and overall authentication architecture 
 
 > **Related**: [SERVICES.md](./SERVICES.md) for overall service architecture patterns
 
+## Philosophy
+
+**Delegate Everything to the Provider**
+
+The application takes a **radical delegation** approach to authentication: the entire authentication flow is handled by external providers (Supabase, Keycloak). The application's role is minimal and focused solely on token management.
+
+**Guiding Principle:** The application should never see, store, or validate user passwords.
+
 ## Overview
 
 The application uses **third-party authentication providers** exclusively for all authentication. The application delegates the entire authentication flow to the provider's hosted UI and backend services.
@@ -33,6 +41,41 @@ The application uses **third-party authentication providers** exclusively for al
 - **No custom auth UI**: Users redirected to provider-hosted sign-in/sign-up pages
 - **Token-based security**: Application only validates JWT tokens from provider
 - **Minimal API surface**: Simple token management endpoints only
+
+## Authentication Flow
+
+### Initial Authentication
+
+1. User clicks "Login" in application
+2. Application **redirects** to provider's hosted login page
+3. User enters credentials on **provider's page** (not ours)
+4. Provider validates credentials (we never see them)
+5. Provider redirects back to application with OAuth code
+6. Application exchanges code for tokens via provider API
+7. Application stores tokens in HTTP-only cookies
+8. User is authenticated
+
+### Subsequent Requests
+
+1. Browser automatically sends auth cookies with requests
+2. Application validates JWT signature using provider's public keys (JWKS)
+3. Application extracts user info from validated token
+4. Application performs authorization checks (if needed)
+5. Application serves the request
+
+### Token Refresh
+
+1. Access token expires after 15 minutes
+2. Application uses refresh token to get new access token from provider
+3. Application updates cookies with new tokens
+4. User session continues seamlessly
+
+### Logout
+
+1. User clicks "Logout"
+2. Application clears auth cookies
+3. Application optionally notifies provider (for audit logs)
+4. User is logged out
 
 ## Authentication Providers
 
@@ -119,12 +162,6 @@ Following the server/client pattern from [SERVICES.md](./SERVICES.md):
 - Execute server-only token validation logic
 - Used exclusively by API route handlers and middleware
 
-**Not Responsible For:**
-- User registration (delegated to provider)
-- Login UI/forms (delegated to provider)
-- Password validation (delegated to provider)
-- Password reset (delegated to provider)
-
 ### Client-Side (`$lib/services/auth/`)
 
 **File Structure:**
@@ -143,11 +180,6 @@ Following the server/client pattern from [SERVICES.md](./SERVICES.md):
 - Token refresh before expiration
 - Logout (clear cookies)
 - Provide session state for components/stores
-
-**Not Responsible For:**
-- Rendering login/signup forms (delegated to provider)
-- Password validation (delegated to provider)
-- User registration flows (delegated to provider)
 
 ## Data Model
 
@@ -173,12 +205,6 @@ The server-side service is **minimal** and focused only on token validation:
 - `getCurrentUser()` - Extract user info from validated token
 - `refreshSession()` - Exchange refresh token for new access token (via provider API)
 
-**Removed (delegated to provider):**
-- ~~`signUp()`~~ - User creation handled by provider's hosted UI
-- ~~`signIn()`~~ - Authentication handled by provider's hosted UI
-- ~~`resetPassword()`~~ - Password reset handled by provider
-- ~~`verifyEmail()`~~ - Email verification handled by provider
-
 ### Client-Side Interface
 
 Minimal interface for token and session management:
@@ -189,11 +215,6 @@ Minimal interface for token and session management:
 - `getCurrentUser()` - Get user from current session
 - `isAuthenticated()` - Check if valid session exists
 - `getSession()` - Get current session or null
-
-**Removed (delegated to provider):**
-- ~~Custom login forms~~ - Use provider-hosted pages
-- ~~Custom registration forms~~ - Use provider-hosted pages
-- ~~Password validation~~ - Handled by provider
 
 ## API Routes
 
@@ -209,12 +230,6 @@ Minimal interface for token and session management:
 - Callback endpoint receives OAuth code/token and sets HTTP-only cookies
 - Other endpoints return JSON with user and session data
 - Errors return standard error format with error code and message
-
-**Removed (delegated to provider):**
-- ~~`POST /api/auth/register`~~ - Registration via provider's hosted UI
-- ~~`POST /api/auth/login`~~ - Login via provider's hosted UI  
-- ~~`POST /api/auth/reset-password`~~ - Password reset via provider
-- ~~`POST /api/auth/verify-email`~~ - Email verification via provider
 
 ## Token and Session Management
 
@@ -290,12 +305,48 @@ Standard HTTP status codes: 400 (bad request), 401 (unauthorized), 403 (forbidde
 - `invalid_refresh_token` - Refresh token invalid or revoked
 - `network_error` - Provider unreachable
 
-**Removed (no longer relevant):**
-- ~~`invalid_credentials`~~ - Not applicable (provider handles login)
-- ~~`user_not_found`~~ - Not applicable (provider handles login)
-- ~~`email_already_exists`~~ - Not applicable (provider handles registration)
-- ~~`weak_password`~~ - Not applicable (provider validates passwords)
-- ~~`invalid_email`~~ - Not applicable (provider validates emails)
+## Security Model
+
+### What We Protect Against
+
+- **XSS Attacks**: HTTP-only cookies prevent JavaScript access to tokens
+- **CSRF Attacks**: SameSite=Strict cookies prevent cross-site requests
+- **Token Theft**: Short-lived access tokens limit exposure window
+- **Man-in-the-Middle**: HTTPS-only transmission (Secure flag)
+
+### What Provider Protects Against
+
+- **Password Breaches**: Provider stores hashed passwords with proper salting
+- **Brute Force**: Provider implements rate limiting and account lockouts
+- **Credential Stuffing**: Provider detects and blocks automated attacks
+- **User Enumeration**: Provider prevents attackers from discovering valid emails
+- **Weak Passwords**: Provider enforces password strength requirements
+
+## Design Benefits
+
+### Security Benefits
+
+1. **No Password Exposure**: Application code never handles passwords
+2. **Professional Security**: Providers employ security experts and maintain certifications
+3. **Automatic Updates**: Provider handles security patches and protocol updates
+4. **Reduced Attack Surface**: Minimal auth code means fewer vulnerabilities
+5. **Compliance**: Providers maintain SOC 2, ISO 27001, and other certifications
+
+### Maintainability Benefits
+
+1. **Less Code**: No custom auth forms, password validation, or reset flows
+2. **Fewer Tests**: Token validation is the only auth logic to test
+3. **No Auth Migrations**: Provider handles database schema changes
+4. **Simpler Updates**: No need to track auth-related security advisories
+5. **Clear Separation**: Auth logic completely separate from business logic
+
+### User Experience Benefits
+
+1. **Professional UI**: Provider-hosted pages are polished and accessible
+2. **Consistent Experience**: Users get familiar OAuth/OIDC flows
+3. **Mobile Optimized**: Provider pages work well on all devices
+4. **Social Login Ready**: Easy to add Google, GitHub, etc. (provider handles)
+5. **Password Managers**: Provider forms work with password managers
 
 ## Security Considerations
 
@@ -336,6 +387,40 @@ HTTP-only cookies prevent XSS attacks. Secure flag ensures HTTPS-only transmissi
 **Phase 10+:** Supabase Auth integration with provider-hosted UI, OAuth callbacks, and token validation.
 
 **Post-MVP:** OAuth providers (Google, Microsoft, GitHub) via Supabase or Keycloak, Keycloak self-hosted option, MFA/2FA support (provider-managed), role-based access control (RBAC), session management UI, activity logging.
+
+## Why This Approach?
+
+### Traditional Auth (What We're Avoiding)
+
+Traditional approach requires implementing:
+- Custom login/signup forms
+- Password hashing (bcrypt/argon2)
+- Password validation logic
+- Password reset token generation
+- Email sending infrastructure
+- Rate limiting middleware
+- Session management
+- CSRF protection
+- Account recovery flows
+- Email verification flows
+
+**Total complexity: ~1000s of lines of code + ongoing security maintenance**
+
+### Delegated Auth (Our Approach)
+
+Our approach requires:
+- OAuth redirect handling
+- JWT token validation
+- Cookie management
+- Token refresh logic
+
+**Total complexity: ~100s of lines of code + minimal maintenance**
+
+### The Trade-off
+
+We give up **control** over the auth UI/UX in exchange for **security**, **simplicity**, and **maintainability**.
+
+This is the right trade-off for most applications.
 
 ## Design Decisions
 
