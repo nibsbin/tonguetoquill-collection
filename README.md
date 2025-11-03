@@ -113,10 +113,6 @@ See `.env.example` for required environment variables. Key variables:
 - `SUPABASE_ANON_KEY` - Supabase anonymous key
 - `SUPABASE_JWT_SECRET` - Supabase JWT secret for token validation
 
-**Client-Accessible:**
-
-- `PUBLIC_APP_NAME` - Application name
-
 ## Mock Provider Strategy
 
 Phases 1-9 use **mock providers** to enable fast, parallel AI agent development without external dependencies. Real Supabase integration occurs in Phase 10.
