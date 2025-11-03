@@ -1,11 +1,48 @@
-import { ViewPlugin, Decoration, type DecorationSet, type EditorView } from '@codemirror/view';
+import { ViewPlugin, Decoration, type DecorationSet, type EditorView, WidgetType } from '@codemirror/view';
 import { RangeSetBuilder } from '@codemirror/state';
+import { foldEffect, foldedRanges } from '@codemirror/language';
 import {
 	findMetadataBlocks,
 	findScopeQuillKeywords,
 	findYamlPairs,
 	type MetadataBlock
 } from './quillmark-patterns';
+import { findClosingDelimiter } from './quillmark-folding';
+
+/**
+ * Widget for clickable opening delimiter that triggers folding
+ */
+class FoldableDelimiterWidget extends WidgetType {
+	constructor(private lineNumber: number) {
+		super();
+	}
+
+	toDOM(view: EditorView): HTMLElement {
+		const span = document.createElement('span');
+		span.className = 'cm-quillmark-delimiter';
+		span.textContent = '---';
+		span.style.cursor = 'pointer';
+		span.onclick = (e) => {
+			e.preventDefault();
+			const state = view.state;
+			const doc = state.doc;
+			const line = doc.line(this.lineNumber);
+
+			// Find the closing delimiter
+			const closingLineNum = findClosingDelimiter(this.lineNumber, state);
+			if (closingLineNum !== null) {
+				const closingLine = doc.line(closingLineNum);
+				const foldTo = closingLine.to < doc.length ? closingLine.to + 1 : closingLine.to;
+
+				// Fold the block
+				view.dispatch({
+					effects: foldEffect.of({ from: line.from, to: foldTo })
+				});
+			}
+		};
+		return span;
+	}
+}
 
 /**
  * Decoration marks for QuillMark syntax elements
@@ -60,7 +97,7 @@ class QuillMarkDecorator {
 				// Skip blocks outside visible range
 				if (block.to < from || block.from > to) continue;
 
-				this.collectBlockDecorations(allDecorations, block, doc);
+				this.collectBlockDecorations(allDecorations, block, doc, view);
 			}
 		}
 
@@ -89,10 +126,21 @@ class QuillMarkDecorator {
 			isLine: boolean;
 		}>,
 		block: MetadataBlock,
-		doc: import('@codemirror/state').Text
+		doc: import('@codemirror/state').Text,
+		view: EditorView
 	) {
 		// Collect all decorations for this block
 		// We need to track the type to ensure line decorations come before mark decorations
+
+		// Check if this block is currently folded
+		const folded = foldedRanges(view.state);
+		let isFolded = false;
+		folded.between(block.from, block.to, (from) => {
+			if (from === block.from) {
+				isFolded = true;
+				return false;
+			}
+		});
 
 		// Decorate opening delimiter line
 		const openLine = doc.lineAt(block.from);
@@ -102,12 +150,18 @@ class QuillMarkDecorator {
 			decoration: blockMark,
 			isLine: true
 		});
-		decorations.push({
-			from: openLine.from,
-			to: openLine.to,
-			decoration: delimiterMark,
-			isLine: false
-		});
+
+		// Only replace the opening delimiter with a clickable widget if not folded
+		if (!isFolded) {
+			decorations.push({
+				from: openLine.from,
+				to: openLine.to,
+				decoration: Decoration.replace({
+					widget: new FoldableDelimiterWidget(openLine.number)
+				}),
+				isLine: false
+			});
+		}
 
 		// Decorate all content lines in the block
 		let pos = openLine.to;
