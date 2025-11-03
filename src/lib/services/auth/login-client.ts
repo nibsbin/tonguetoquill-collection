@@ -4,7 +4,7 @@
  * Communicates with API routes via fetch()
  */
 
-import type { User, Session, SignUpParams, SignInParams } from './types';
+import type { User, Session } from './types';
 
 /**
  * API response type for authentication operations
@@ -30,40 +30,30 @@ interface ErrorResponse {
  */
 export class LoginClient {
 	/**
-	 * Sign up a new user
+	 * Initiate login by redirecting to auth provider
+	 * In mock mode, this redirects to a callback with a mock code
 	 */
-	async signUp(params: SignUpParams): Promise<AuthResponse> {
-		const response = await fetch('/api/auth/register', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(params)
-		});
-
-		if (!response.ok) {
-			const error: ErrorResponse = await response.json();
-			throw new Error(error.message || 'Failed to sign up');
-		}
-
-		return response.json();
+	async initiateLogin(): Promise<void> {
+		// Redirect to login endpoint which will handle the OAuth flow
+		window.location.href = '/api/auth/login';
 	}
 
 	/**
-	 * Sign in an existing user
+	 * Handle OAuth callback and exchange code for tokens
+	 * This is called after the user returns from the provider
 	 */
-	async signIn(params: SignInParams): Promise<AuthResponse> {
-		const response = await fetch('/api/auth/login', {
+	async handleCallback(code: string): Promise<AuthResponse> {
+		const response = await fetch('/api/auth/callback', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(params)
+			body: JSON.stringify({ code })
 		});
 
 		if (!response.ok) {
 			const error: ErrorResponse = await response.json();
-			throw new Error(error.message || 'Failed to sign in');
+			throw new Error(error.message || 'Failed to complete authentication');
 		}
 
 		return response.json();
