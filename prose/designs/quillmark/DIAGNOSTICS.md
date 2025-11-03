@@ -165,6 +165,19 @@ private extractDiagnostic(error: unknown): QuillmarkDiagnostic | null {
 	// The WASM engine may return errors with a `diagnostic` property
 	// or embed diagnostic information in the error structure
 	if (error && typeof error === 'object') {
+		// Handle Map objects from WASM
+		if (error instanceof Map) {
+			// Check if the Map has diagnostic structure (type: 'diagnostic')
+			if (error.get('type') === 'diagnostic') {
+				// Convert Map to plain object
+				const obj: Record<string, unknown> = {};
+				error.forEach((value, key) => {
+					obj[key] = value;
+				});
+				return this.normalizeDiagnostic(obj);
+			}
+		}
+
 		const err = error as any;
 
 		// Check for diagnostic property
@@ -186,7 +199,7 @@ private extractDiagnostic(error: unknown): QuillmarkDiagnostic | null {
  */
 private normalizeDiagnostic(diagnostic: any): QuillmarkDiagnostic {
 	return {
-		severity: diagnostic.severity?.toLowerCase() || 'error',
+		severity: this.normalizeSeverity(diagnostic.severity),
 		code: diagnostic.code || undefined,
 		message: diagnostic.message || 'Unknown error',
 		location: diagnostic.primary ? {
@@ -197,6 +210,19 @@ private normalizeDiagnostic(diagnostic: any): QuillmarkDiagnostic {
 		hint: diagnostic.hint || undefined,
 		sourceChain: diagnostic.source_chain || diagnostic.sourceChain || []
 	};
+}
+
+/**
+ * Normalize severity to lowercase TypeScript type
+ */
+private normalizeSeverity(severity: unknown): DiagnosticSeverity {
+	if (typeof severity === 'string') {
+		const lower = severity.toLowerCase();
+		if (lower === 'error' || lower === 'warning' || lower === 'info') {
+			return lower as DiagnosticSeverity;
+		}
+	}
+	return 'error'; // Default to error
 }
 ```
 
@@ -248,13 +274,14 @@ When displaying errors, use this priority:
 
 ### Why Normalize Diagnostic?
 
-**Decision:** Convert WASM diagnostic format to TypeScript interface.
+**Decision:** Convert WASM diagnostic format to TypeScript interface, with support for Map objects.
 
 **Rationale:**
 
 - Type safety for consumers
 - Consistent casing (snake_case → camelCase)
-- Handles different error formats from WASM
+- Handles different error formats from WASM (plain objects and Map objects)
+- Handles severity normalization with dedicated function
 - Allows defensive programming (null checks, defaults)
 - Decouples UI from WASM internal structure
 
@@ -288,8 +315,9 @@ Potential improvements for future versions:
 
 **Service Layer:**
 
-- Test diagnostic extraction from WASM errors
+- Test diagnostic extraction from WASM errors (both plain objects and Map objects)
 - Test diagnostic normalization (snake_case → camelCase)
+- Test severity normalization with dedicated function
 - Test QuillmarkError with and without diagnostic
 - Test fallback to generic error message
 - Test error propagation to caller
@@ -300,6 +328,7 @@ Potential improvements for future versions:
 - Template field validation error with hint
 - Backend compilation error with source chain
 - Generic error without diagnostic
+- Map-based diagnostic from WASM
 
 ### Integration Tests
 
@@ -319,4 +348,4 @@ Potential improvements for future versions:
 
 ---
 
-_Document Status: Design - Ready for Planning_
+_Document Status: Implemented - Reflects Current Codebase_
