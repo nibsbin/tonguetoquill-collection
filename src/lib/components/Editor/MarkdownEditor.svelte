@@ -6,7 +6,12 @@
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 	import { foldGutter, foldKeymap, foldEffect } from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
-	import { quillmarkDecorator, createQuillmarkTheme, quillmarkFoldService, isMetadataDelimiter } from '$lib/editor';
+	import {
+		quillmarkDecorator,
+		createQuillmarkTheme,
+		quillmarkFoldService,
+		isMetadataDelimiter
+	} from '$lib/editor';
 
 	interface Props {
 		value: string;
