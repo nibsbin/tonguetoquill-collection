@@ -17,9 +17,9 @@ Services receive authenticated user context through middleware that validates JW
 
 **Service-Specific Documentation:**
 
+- [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) - Login service and authentication architecture
 - [DOCUMENT_SERVICE.md](./DOCUMENT_SERVICE.md) - Document service specification
 - [TEMPLATE_SERVICE.md](./TEMPLATE_SERVICE.md) - Template service specification
-- [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) - Login service specification
 
 **Related Architecture:**
 
