@@ -38,6 +38,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 **Note:** No sign-in modal needed - OAuth provider handles authentication UI
 
 **Files to Modify:**
+
 - `src/lib/components/Sidebar/Sidebar.svelte`
 
 #### Task 2.2: Add Sign-In Button (Guest Mode)
@@ -53,6 +54,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 **Behavior:** Button redirects to provider-hosted auth page (no modal)
 
 **Files to Modify:**
+
 - `src/lib/components/Sidebar/Sidebar.svelte`
 
 #### Task 2.3: Add Profile Button (Logged-in Mode)
@@ -66,6 +68,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 - [ ] Apply same styling as settings button
 
 **Files to Modify:**
+
 - `src/lib/components/Sidebar/Sidebar.svelte`
 
 ### Phase 3: Modal Implementation
@@ -80,6 +83,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 - [ ] Style information display
 
 **Files to Modify:**
+
 - `src/lib/components/Sidebar/Sidebar.svelte`
 
 ### Phase 4: Authentication Integration
@@ -93,6 +97,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
   - User returns via `/api/auth/callback` after authenticating
 
 **Files to Modify:**
+
 - `src/lib/components/Sidebar/Sidebar.svelte`
 
 #### Task 4.2: Connect Sign-Out Flow
@@ -104,6 +109,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
   - Handle errors gracefully
 
 **Files to Modify:**
+
 - `src/lib/components/Sidebar/Sidebar.svelte`
 
 #### Task 4.3: Check Initial Auth State
@@ -114,6 +120,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 - [ ] Handle loading state appropriately
 
 **Files to Modify:**
+
 - `src/lib/components/Sidebar/Sidebar.svelte`
 
 ### Phase 5: Mobile Sheet Integration
@@ -124,6 +131,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 - [ ] Test touch interactions
 
 **Files to Verify:**
+
 - `src/lib/components/Sidebar/Sidebar.svelte` (mobile sheet section)
 
 ### Phase 6: Testing and Validation
@@ -197,6 +205,7 @@ None (all changes are modifications to existing files)
 ### Manual Testing Checklist
 
 **Guest Mode:**
+
 - [ ] Sign-in button displays in collapsed sidebar
 - [ ] Sign-in button displays with text in expanded sidebar
 - [ ] Clicking sign-in button redirects to OAuth provider
@@ -204,6 +213,7 @@ None (all changes are modifications to existing files)
 - [ ] After authenticating, redirected back to app as logged-in user
 
 **Logged-in Mode:**
+
 - [ ] Profile button displays in collapsed sidebar
 - [ ] Profile button displays with user email in expanded sidebar
 - [ ] Clicking profile button opens modal
@@ -212,14 +222,17 @@ None (all changes are modifications to existing files)
 - [ ] Sign out button signs out and closes modal
 
 **OAuth Flow:**
+
 - [ ] Successful authentication on provider redirects back
 - [ ] Failed authentication shows error on provider page
 - [ ] Callback error handling works correctly
 
 **Mobile:**
+
 - [ ] All above tests work in mobile sheet
 
 **Accessibility:**
+
 - [ ] All buttons keyboard focusable
 - [ ] Profile modal traps focus
 - [ ] Escape closes profile modal
@@ -231,6 +244,7 @@ None (all changes are modifications to existing files)
 ### Matches LOGIN_PROFILE_UI.md ✅
 
 All implementation follows the design specification:
+
 - Button placement (above settings, under divider)
 - Icon choice (LogIn for guest, CircleUser for logged-in)
 - OAuth redirect approach (no custom forms)

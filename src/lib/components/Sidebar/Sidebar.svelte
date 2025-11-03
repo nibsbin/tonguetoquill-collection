@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, Settings, User, Plus, LogIn, CircleUser } from 'lucide-svelte';
+	import { Menu, Settings, Plus, LogIn, CircleUser } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
