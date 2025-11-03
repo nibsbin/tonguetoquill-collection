@@ -6,15 +6,16 @@
 
 ## Overview
 
-This plan implements the login and profile UI integration in the sidebar, supporting both guest mode (with sign-in button) and logged-in mode (with profile button). The implementation adds minimal UI changes to the existing sidebar structure.
+This plan implements the login and profile UI integration in the sidebar, supporting both guest mode (with sign-in button) and logged-in mode (with profile button). The implementation uses OAuth delegation - users are redirected to the auth provider's hosted page for authentication, eliminating the need for custom login forms.
 
 ## Design Goals
 
 1. **Minimal Changes**: Add only necessary UI elements to existing sidebar
-2. **Consistent Patterns**: Use existing SidebarButtonSlot and shadcn-svelte components
-3. **Mobile Support**: Work seamlessly in both desktop sidebar and mobile sheet
-4. **Authentication Integration**: Connect to existing loginClient service
-5. **Accessibility**: Proper ARIA labels and keyboard navigation
+2. **OAuth Delegation**: Redirect to provider for authentication (no custom forms)
+3. **Consistent Patterns**: Use existing SidebarButtonSlot and shadcn-svelte components
+4. **Mobile Support**: Work seamlessly in both desktop sidebar and mobile sheet
+5. **Authentication Integration**: Connect to existing loginClient service
+6. **Accessibility**: Proper ARIA labels and keyboard navigation
 
 ## Implementation Tasks
 
@@ -30,11 +31,11 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 #### Task 2.1: Add Icons and State
 
 - [ ] Import `LogIn` and `CircleUser` icons from lucide-svelte
-- [ ] Add modal state variables:
-  - `signInModalOpen` - Controls sign-in modal visibility
+- [ ] Add modal state variable:
   - `profileModalOpen` - Controls profile modal visibility
-  - `signInError` - Stores sign-in error messages
 - [ ] Add derived state: `isAuthenticated` based on user prop
+
+**Note:** No sign-in modal needed - OAuth provider handles authentication UI
 
 **Files to Modify:**
 - `src/lib/components/Sidebar/Sidebar.svelte`
@@ -45,9 +46,11 @@ This plan implements the login and profile UI integration in the sidebar, suppor
   - Icon: `LogIn`
   - Label: "Sign in"
   - Position: Above settings button, under same divider
-  - Click handler: Opens sign-in modal
+  - Click handler: Calls `loginClient.initiateLogin()` to redirect to OAuth provider
 - [ ] Add conditional rendering: Show only when `!user`
 - [ ] Apply same styling as settings button
+
+**Behavior:** Button redirects to provider-hosted auth page (no modal)
 
 **Files to Modify:**
 - `src/lib/components/Sidebar/Sidebar.svelte`
@@ -67,25 +70,7 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 
 ### Phase 3: Modal Implementation
 
-#### Task 3.1: Create Sign-In Modal
-
-- [ ] Import shadcn-svelte Input component
-- [ ] Create Dialog structure for sign-in
-  - DialogHeader with title and description
-  - Email input field
-  - Password input field
-  - Error message display area
-  - DialogFooter with Cancel and Sign In buttons
-- [ ] Implement form validation
-- [ ] Add email/password state variables
-
-**Files to Modify:**
-- `src/lib/components/Sidebar/Sidebar.svelte`
-
-**New Components to Add (if needed):**
-- May need to add Input component from shadcn-svelte
-
-#### Task 3.2: Create Profile Modal
+#### Task 3.1: Create Profile Modal
 
 - [ ] Create Dialog structure for profile
   - DialogHeader with title and description
@@ -99,14 +84,13 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 
 ### Phase 4: Authentication Integration
 
-#### Task 4.1: Connect Sign-In Flow
+#### Task 4.1: Connect Sign-In Flow (OAuth Redirect)
 
 - [ ] Import `loginClient` from `$lib/services/auth`
-- [ ] Implement `handleSignIn()` function
-  - Call `loginClient.signIn(email, password)`
-  - On success: Update user state, close modal
-  - On error: Display error message in modal
-- [ ] Clear error on modal close
+- [ ] Implement sign-in button click handler
+  - Call `loginClient.initiateLogin()` - redirects to OAuth provider
+  - No modal, no form - provider handles authentication
+  - User returns via `/api/auth/callback` after authenticating
 
 **Files to Modify:**
 - `src/lib/components/Sidebar/Sidebar.svelte`
@@ -134,9 +118,9 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 
 ### Phase 5: Mobile Sheet Integration
 
-- [ ] Verify sign-in button works in mobile sheet
+- [ ] Verify sign-in button works in mobile sheet (redirects to OAuth provider)
 - [ ] Verify profile button works in mobile sheet
-- [ ] Ensure modals display correctly over sheet
+- [ ] Ensure profile modal displays correctly over sheet
 - [ ] Test touch interactions
 
 **Files to Verify:**
@@ -146,21 +130,22 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 
 #### Task 6.1: Manual Testing
 
-- [ ] Test guest mode → sign in → logged-in mode flow
+- [ ] Test guest mode → click sign in → redirect to OAuth provider
+- [ ] Test OAuth provider authentication → callback → logged-in mode
 - [ ] Test logged-in mode → sign out → guest mode flow
-- [ ] Test sign-in with invalid credentials
-- [ ] Test sign-in with network error
+- [ ] Test OAuth callback error handling
 - [ ] Test mobile sheet integration
-- [ ] Test keyboard navigation in modals
+- [ ] Test keyboard navigation in profile modal
 - [ ] Test screen reader announcements
 
 #### Task 6.2: Verify Accessibility
 
 - [ ] Check ARIA labels on buttons
-- [ ] Verify focus trap in modals
+- [ ] Verify focus trap in profile modal
 - [ ] Test keyboard navigation (Tab, Enter, Escape)
 - [ ] Verify visible focus indicators
 - [ ] Test with screen reader (if possible)
+- [ ] Verify redirect announcement for OAuth flow
 
 #### Task 6.3: Build and Lint
 
@@ -180,34 +165,32 @@ This plan implements the login and profile UI integration in the sidebar, suppor
 
 1. **`src/lib/components/Sidebar/Sidebar.svelte`**
    - Add icons import (LogIn, CircleUser)
-   - Add modal state variables
-   - Add sign-in button (guest mode)
+   - Add profile modal state variable
+   - Add sign-in button (guest mode) - redirects to OAuth provider
    - Add profile button (logged-in mode)
-   - Add sign-in modal
    - Add profile modal
    - Add authentication handlers
-
-2. **`src/lib/components/ui/input.svelte`** (if not exists)
-   - Add shadcn-svelte Input component
 
 ### Files to Create
 
 None (all changes are modifications to existing files)
+
+**Note:** No Input component needed - OAuth provider handles credential collection
 
 ## Dependencies
 
 ### Existing Dependencies (Already Available)
 
 - `lucide-svelte` - For LogIn and CircleUser icons ✅
-- `shadcn-svelte Dialog` - For modals ✅
+- `shadcn-svelte Dialog` - For profile modal ✅
 - `shadcn-svelte Button` - For buttons ✅
 - `loginClient` from `$lib/services/auth` - For authentication ✅
 
-### Potentially Missing Dependencies
+### OAuth Provider Dependencies
 
-- `shadcn-svelte Input` - For form fields
-  - Check if exists: `src/lib/components/ui/input.svelte`
-  - If missing, add from shadcn-svelte CLI
+- Auth provider (Supabase/Keycloak) configured with OAuth endpoints
+- Provider handles all authentication UI and flows
+- No additional UI dependencies needed in application
 
 ## Testing Strategy
 
@@ -216,11 +199,9 @@ None (all changes are modifications to existing files)
 **Guest Mode:**
 - [ ] Sign-in button displays in collapsed sidebar
 - [ ] Sign-in button displays with text in expanded sidebar
-- [ ] Clicking sign-in button opens modal
-- [ ] Modal contains email and password fields
-- [ ] Cancel button closes modal
-- [ ] Sign in with valid credentials works
-- [ ] Sign in with invalid credentials shows error
+- [ ] Clicking sign-in button redirects to OAuth provider
+- [ ] OAuth provider displays authentication page
+- [ ] After authenticating, redirected back to app as logged-in user
 
 **Logged-in Mode:**
 - [ ] Profile button displays in collapsed sidebar
@@ -230,14 +211,20 @@ None (all changes are modifications to existing files)
 - [ ] Close button closes modal
 - [ ] Sign out button signs out and closes modal
 
+**OAuth Flow:**
+- [ ] Successful authentication on provider redirects back
+- [ ] Failed authentication shows error on provider page
+- [ ] Callback error handling works correctly
+
 **Mobile:**
 - [ ] All above tests work in mobile sheet
 
 **Accessibility:**
 - [ ] All buttons keyboard focusable
-- [ ] Modals trap focus
-- [ ] Escape closes modals
+- [ ] Profile modal traps focus
+- [ ] Escape closes profile modal
 - [ ] ARIA labels present
+- [ ] OAuth redirect announced to screen readers
 
 ## Design Adherence
 
@@ -246,8 +233,9 @@ None (all changes are modifications to existing files)
 All implementation follows the design specification:
 - Button placement (above settings, under divider)
 - Icon choice (LogIn for guest, CircleUser for logged-in)
-- Modal structure (shadcn-svelte Dialog)
-- Authentication integration (loginClient)
+- OAuth redirect approach (no custom forms)
+- Profile modal structure (shadcn-svelte Dialog)
+- Authentication integration (loginClient.initiateLogin())
 - State management (reactive variables)
 - Accessibility (ARIA labels, keyboard nav)
 
@@ -259,17 +247,17 @@ This implementation should have zero deviations from the design document.
 
 ### Potential Adjustments
 
-If Input component is missing:
-- Add it from shadcn-svelte: `npx shadcn-svelte@latest add input`
-- Alternative: Use basic HTML input with proper styling
+None needed - OAuth delegation eliminates need for custom form components
 
 ## Acceptance Criteria
 
 - [ ] Sign-in button visible in guest mode
+- [ ] Sign-in button redirects to OAuth provider (no modal)
 - [ ] Profile button visible in logged-in mode
-- [ ] Sign-in modal functional with form
 - [ ] Profile modal displays account info
-- [ ] Authentication flows work correctly
+- [ ] OAuth authentication flow works correctly
+- [ ] Callback handling works correctly
+- [ ] Sign-out flow works correctly
 - [ ] Mobile sheet integration works
 - [ ] No visual regressions in sidebar
 - [ ] All accessibility requirements met
@@ -282,21 +270,19 @@ Per LOGIN_PROFILE_UI.md future enhancements:
 
 ### Post-MVP Features
 
-1. **Registration Flow**
-   - Create account modal
-   - Link from sign-in modal
-
-2. **Password Reset**
-   - Forgot password flow
-   - Reset password modal
-
-3. **Profile Editing**
-   - Edit email/password
+1. **Profile Editing**
+   - Edit email/password via provider settings page
    - Profile picture
 
-4. **Social Sign-In**
-   - OAuth provider buttons
-   - Provider integration
+2. **Social Sign-In**
+   - OAuth providers (Google, GitHub, etc.)
+   - Configured on auth provider side
+
+3. **Session Management**
+   - Display active sessions
+   - Sign out other sessions
+
+**Note:** Registration, password reset, and email verification are **delegated to the OAuth provider**. Users access these features via the provider's hosted pages, not through custom UI in our application.
 
 ## Cross-References
 
@@ -307,4 +293,4 @@ Per LOGIN_PROFILE_UI.md future enhancements:
 
 ## Conclusion
 
-This plan provides a minimal-change approach to adding login and profile UI to the sidebar. By leveraging existing components (SidebarButtonSlot, shadcn-svelte Dialog) and patterns, the implementation maintains consistency while adding essential authentication UI.
+This plan provides a minimal-change approach to adding login and profile UI to the sidebar using OAuth delegation. By redirecting to the auth provider's hosted pages for authentication, we eliminate the need for custom forms while maintaining a clean, professional user experience. The implementation leverages existing components (SidebarButtonSlot, shadcn-svelte Dialog) and patterns for consistency.

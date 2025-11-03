@@ -83,13 +83,18 @@ This document defines the UI integration for login and profile functionality in 
 - `icon`: `LogIn` from lucide-svelte
 - `label`: "Sign in" (shown when expanded)
 - `isExpanded`: Sidebar expansion state
-- `onclick`: Opens sign-in modal
+- `onclick`: Redirects to provider-hosted auth page via `loginClient.initiateLogin()`
 - `ariaLabel`: "Sign in to your account"
 
 **Styling:**
 - Same classes as settings button
 - `text-muted-foreground hover:bg-accent hover:text-foreground`
 - `active:scale-[0.985]` for press feedback
+
+**Behavior:**
+- On click: Calls `loginClient.initiateLogin()` which redirects to OAuth provider
+- No modal - user leaves application to authenticate on provider's page
+- User returns via OAuth callback after successful authentication
 
 ### User Profile Button (Logged-in Mode)
 
@@ -109,27 +114,6 @@ This document defines the UI integration for login and profile functionality in 
 - Text truncates with `overflow-hidden text-ellipsis`
 
 ## Modal Dialogs
-
-### Sign In Modal
-
-**Component:** shadcn-svelte Dialog
-
-**Purpose:** Allows guest users to sign in to their account
-
-**Structure:**
-- DialogHeader: "Sign In" title with description
-- Form fields: Email (type="email") and Password (type="password") inputs
-- DialogFooter: Cancel button (ghost variant) and Sign In button (default variant)
-
-**Behavior:**
-- On successful sign in: Close modal, update UI to logged-in state
-- On error: Display error message inline in modal above form fields
-- On cancel: Close modal without action
-
-**Error Display:**
-- Position: Above form fields
-- Styling: Destructive color scheme
-- Clear error on retry
 
 ### Profile Modal
 
@@ -154,10 +138,13 @@ This document defines the UI integration for login and profile functionality in 
 
 **Import:** Use `loginClient` from `$lib/services/auth`
 
-**Sign In Flow:**
-- Call `loginClient.signIn(email, password)`
-- On success: Update user state, close modal, optionally show success toast
-- On error: Display error message in modal
+**Sign In Flow (OAuth Delegation):**
+- Call `loginClient.initiateLogin()` - redirects to provider's hosted auth page
+- User authenticates on provider's page (email, password, MFA, etc.)
+- Provider redirects back to `/api/auth/callback` with OAuth code
+- Callback handler exchanges code for tokens and sets HTTP-only cookies
+- User is redirected back to application, now authenticated
+- **No custom forms needed** - provider handles all credential collection
 
 **Sign Out Flow:**
 - Call `loginClient.signOut()`
@@ -174,13 +161,13 @@ This document defines the UI integration for login and profile functionality in 
 ### Reactive State Variables
 
 **Modal State:**
-- `signInModalOpen`: Boolean controlling sign-in modal visibility
 - `profileModalOpen`: Boolean controlling profile modal visibility
-- `signInError`: String for error messages (nullable)
 
 **User State:**
 - `user`: Object with `{ email: string; id: string }` or null
 - Can be derived: `isAuthenticated = user !== null`
+
+**Note:** No sign-in modal needed since authentication is delegated to provider
 
 ### User Prop
 
@@ -212,19 +199,20 @@ The root layout should:
 - Guest mode: `LogIn` icon (arrow entering door)
 - Logged-in: `CircleUser` icon (user avatar silhouette)
 
-### Modal Appearance
+### Modal Appearance (Profile Modal Only)
 
 **Follows Design System:**
 - Background: `bg-surface-elevated`
 - Text: `text-foreground`
 - Borders: `border-border`
-- Inputs use shadcn-svelte Input component
 - Buttons use shadcn-svelte Button component
 
 **Size:**
 - Width: 400px (max-w-md)
 - Centered on screen
 - Mobile: Full width with padding
+
+**Note:** No sign-in modal - users authenticate on provider-hosted pages
 
 ## Accessibility
 
@@ -238,11 +226,10 @@ The root layout should:
 
 ### Keyboard Navigation
 
-**Modals:**
+**Profile Modal:**
 - Focus trap within modal when open
 - Escape key closes modal
-- Tab cycles through form fields and buttons
-- Enter submits form (sign in modal)
+- Tab cycles through buttons
 
 **Buttons:**
 - Keyboard focusable
@@ -252,8 +239,11 @@ The root layout should:
 ### Screen Reader Support
 
 **State Announcements:**
-- "Signed in as {email}" on successful sign in
+- "Signed in as {email}" when user returns from OAuth provider
 - "Signed out" on sign out
+
+**Navigation:**
+- "Redirecting to sign in page" when initiating OAuth flow
 
 ## Mobile Considerations
 
@@ -261,9 +251,9 @@ The root layout should:
 
 Both buttons work identically in mobile sheet as in desktop sidebar:
 - Same button structure
-- Same modal behavior
-- Modals appear centered over sheet
-- Sheet closes on successful sign in/out (optional)
+- Same redirect behavior (sign in) and modal behavior (profile)
+- Profile modal appears centered over sheet
+- Sheet closes on successful sign out (optional)
 
 ### Touch Targets
 
@@ -272,20 +262,16 @@ Both buttons work identically in mobile sheet as in desktop sidebar:
 
 ## Error Handling
 
-### Sign In Errors
+### Sign In Errors (OAuth Provider)
 
-**Display Location:** Inline in sign-in modal above form
+**Delegation:** All sign-in errors handled by OAuth provider's hosted page
+- Invalid credentials: Provider displays error
+- MFA failures: Provider displays error
+- Account issues: Provider displays error
 
-**Error Types:**
-- Invalid credentials: "Invalid email or password"
-- Network error: "Unable to connect. Please try again."
-- Server error: "An error occurred. Please try again later."
-
-**Error Styling:**
-- Text color: `text-destructive`
-- Background: `bg-destructive/10`
-- Border: `border-destructive`
-- Icon: Alert triangle
+**Application Responsibilities:**
+- Handle OAuth callback errors (rare, usually provider issues)
+- Display generic error if callback fails: "Sign in failed. Please try again."
 
 ### Sign Out Errors
 
@@ -299,42 +285,36 @@ Both buttons work identically in mobile sheet as in desktop sidebar:
 
 **Post-MVP Features:**
 
-1. **Registration Flow**
-   - Add "Create account" link in sign-in modal
-   - Separate registration modal
-
-2. **Password Reset**
-   - Add "Forgot password" link in sign-in modal
-   - Password reset flow modal
-
-3. **Profile Editing**
-   - Allow changing email
-   - Allow changing password
+1. **Profile Editing**
+   - Allow changing email (via provider settings page)
+   - Allow changing password (via provider settings page)
    - Profile picture upload
 
-4. **Session Management**
+2. **Session Management**
    - Display active sessions
    - Ability to sign out other sessions
 
-5. **Social Sign-In**
+3. **Social Sign-In (Provider Configuration)**
    - OAuth providers (Google, GitHub, Microsoft)
-   - Social login buttons in sign-in modal
+   - Configured on auth provider (Supabase/Keycloak)
+   - Application automatically supports when provider enables
+
+**Note:** Registration, password reset, and email verification are **delegated to the OAuth provider** and accessed via provider-hosted pages. The application does not implement these flows.
 
 ## Implementation Checklist
 
 - [ ] Add `LogIn` and `CircleUser` icons to Sidebar imports
-- [ ] Add state variables for modals and errors
+- [ ] Add state variables for profile modal
 - [ ] Create sign-in button using SidebarButtonSlot (guest mode)
+  - [ ] Button calls `loginClient.initiateLogin()` to redirect to OAuth provider
 - [ ] Create profile button using SidebarButtonSlot (logged-in mode)
 - [ ] Position buttons above settings, under same divider
-- [ ] Implement sign-in modal with form
 - [ ] Implement profile modal with account info
-- [ ] Connect sign-in flow to loginClient
 - [ ] Connect sign-out flow to loginClient
 - [ ] Handle authentication state in layout
-- [ ] Test guest mode → sign in → logged-in mode flow
+- [ ] Test guest mode → OAuth redirect → provider auth → callback → logged-in mode flow
 - [ ] Test logged-in mode → sign out → guest mode flow
-- [ ] Test error handling for sign in
+- [ ] Test OAuth callback error handling
 - [ ] Test mobile sheet integration
 - [ ] Verify accessibility (keyboard nav, ARIA labels)
 
