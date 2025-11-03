@@ -559,16 +559,16 @@
 			<DialogDescription>View your account details</DialogDescription>
 		</DialogHeader>
 		{#if user}
-			<div class="space-y-4">
+			<dl class="space-y-4">
 				<div>
-					<label class="text-sm font-medium text-muted-foreground">Email</label>
-					<p class="text-foreground">{user.email}</p>
+					<dt class="text-sm font-medium text-muted-foreground">Email</dt>
+					<dd class="text-foreground">{user.email}</dd>
 				</div>
 				<div>
-					<label class="text-sm font-medium text-muted-foreground">User ID</label>
-					<p class="font-mono text-sm text-foreground">{user.id}</p>
+					<dt class="text-sm font-medium text-muted-foreground">User ID</dt>
+					<dd class="font-mono text-sm text-foreground">{user.id}</dd>
 				</div>
-			</div>
+			</dl>
 		{/if}
 		<DialogFooter>
 			<Button
