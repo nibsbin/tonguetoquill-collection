@@ -20,11 +20,13 @@ Services receive authenticated user context through middleware that validates JW
 ```
 ├── document-provider.ts         ← createDocumentService() factory
 ├── document-mock-service.ts     ← In-memory implementation
-├── document-supabase-service.ts ← Database implementation
 └── index.ts                     ← export { documentService }
 ```
 
-**Responsibilities**: Implement DocumentServiceContract, access databases, execute server-only business logic. Used exclusively by API route handlers.
+**Current Implementation (Phases 1-9):** Mock service only
+**Future (Phase 10+):** Add `document-supabase-service.ts` for database implementation
+
+**Responsibilities**: Implement DocumentServiceContract, access databases (future), execute server-only business logic. Used exclusively by API route handlers.
 
 ### Client-Side (`$lib/services/documents/`)
 
@@ -130,7 +132,7 @@ Document queries use selective field selection with PostgreSQL TOAST:
 └── README.md         ← Service documentation
 ```
 
-**Responsibilities**: Provide read-only access to markdown templates stored in `tonguetoquill-collection/templates/` with metadata from `templates.json`. Designed to support future database-backed templates without breaking changes.
+**Responsibilities**: Provide read-only access to markdown templates. Templates are sourced from `tonguetoquill-collection/templates/` and packaged to `static/templates/` during build. Designed to support future database-backed templates without breaking changes.
 
 **TemplateService** provides:
 
@@ -151,11 +153,19 @@ const templates = templateService.listTemplates(true); // production only
 const template = await templateService.getTemplate('usaf_template.md');
 ```
 
+### Build Process
+
+Templates are packaged from source to static directory:
+
+- **Source**: `tonguetoquill-collection/templates/`
+- **Build**: `npm run pack:templates` copies to `static/templates/`
+- **Runtime**: Service fetches from `/templates/` (served from `static/templates/`)
+
 ### API Specification
 
 **`initialize(): Promise<void>`**
 
-- Loads template manifest from `/tonguetoquill-collection/templates/templates.json`
+- Loads template manifest from `/templates/templates.json`
 - Idempotent: Safe to call multiple times (only initializes once)
 - Errors: `TemplateError` with code `load_error` or `invalid_manifest`
 
@@ -179,12 +189,17 @@ const template = await templateService.getTemplate('usaf_template.md');
 - Returns: Full template with metadata and markdown content
 - Errors: `TemplateError` with code `not_initialized`, `not_found`, or `load_error`
 
-### Static File Paths
+### Build Process
 
-Templates are accessed via URL paths:
+Templates are packaged from source to static directory during build:
 
-- Manifest: `/tonguetoquill-collection/templates/templates.json`
-- Templates: `/tonguetoquill-collection/templates/{filename}.md`
+**Source Files:**
+- Location: `tonguetoquill-collection/templates/`
+- Build command: `npm run pack:templates`
+
+**Runtime Paths:**
+- Manifest: `/templates/templates.json` (served from `static/templates/`)
+- Templates: `/templates/{filename}.md` (served from `static/templates/`)
 
 ### Error Types
 

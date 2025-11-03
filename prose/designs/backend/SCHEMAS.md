@@ -1,6 +1,11 @@
 # Schemas
 
-This document outlines the database schemas used in the backend of the application. Each schema represents a different entity and its relationships with other entities.
+This document outlines the database schemas for the application. The schemas are currently implemented in mock providers (Phases 1-9) and will be migrated to PostgreSQL/Supabase in Phase 10+.
+
+## Implementation Status
+
+**Current (Phases 1-9):** Mock providers using in-memory storage with schema-compliant data structures
+**Future (Phase 10+):** PostgreSQL database via Supabase
 
 ## Users
 
@@ -10,7 +15,7 @@ The Users table stores core identity information and flexible profile data.
 CREATE TABLE Users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) NOT NULL UNIQUE,
-    dodid VARCHAR(10) NOT NULL UNIQUE,
+    dodid VARCHAR(10) UNIQUE,  -- Optional: Military ID for DoD users
     profile JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -19,9 +24,15 @@ CREATE TABLE Users (
 -- Index for email lookups
 CREATE INDEX idx_users_email ON Users(email);
 
--- Index for DODID lookups
-CREATE INDEX idx_users_dodid ON Users(dodid);
+-- Index for DODID lookups (where not null)
+CREATE INDEX idx_users_dodid ON Users(dodid) WHERE dodid IS NOT NULL;
 ```
+
+**DODID Field:**
+The `dodid` field is optional to support both military and non-military users:
+- Military users: DODID required for compliance and identity verification
+- Non-military users: DODID is NULL
+- When provided, DODID must be unique across all users
 
 **Profile JSONB Field:**
 The `profile` field stores flexible user profile data that may evolve over time:

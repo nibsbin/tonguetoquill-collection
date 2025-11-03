@@ -4,22 +4,29 @@ This document covers user authentication and token management. Authentication is
 
 ## Providers
 
-The authentication architecture is designed to support multiple providers through an abstraction layer. For MVP, we will implement Supabase Auth exclusively, with the architecture prepared for future Keycloak support.
+The authentication architecture is designed to support multiple providers through an abstraction layer.
 
-**MVP Provider: Supabase Auth**
+**Current Implementation: Mock Provider (Phases 1-9)**
+
+- In-memory authentication for development and testing
+- Simulates JWT token generation and validation
+- Enables rapid development without external dependencies
+- Configured via `USE_AUTH_MOCKS=true` environment variable
+
+**Future Provider: Supabase Auth (Phase 10+)**
 
 - Managed authentication service (serverless)
 - Handles user registration, login, password management
 - Built-in email verification and password reset flows
 - Native rate limiting and brute force protection
 
-**Future Provider: Keycloak**
+**Future Provider: Keycloak (Post-MVP)**
 
 - Self-hosted authentication for enterprise deployments
 - OAuth/OIDC flows for advanced integrations
 - Will be added post-MVP using the same abstraction layer
 
-Both providers natively handle:
+Real authentication providers (Supabase/Keycloak) will natively handle:
 
 - User registration
 - Password reset flows
@@ -29,16 +36,21 @@ Both providers natively handle:
 
 ## Routes
 
-The backend will expose the following authentication-related routes:
+The backend exposes the following authentication-related routes:
 
-- `POST /auth/register`: Create a new user account (proxies to auth provider)
-- `POST /auth/login`: Authenticate a user and issue tokens
-- `POST /auth/refresh`: Refresh access tokens using a valid refresh token
-- `POST /auth/logout`: Invalidate the user's refresh token
-- `POST /auth/reset-password`: Initiate password reset flow (proxies to auth provider)
-- `POST /auth/verify-email`: Request email verification (proxies to auth provider)
-- `GET /auth/me`: Get current authenticated user information
-- `GET /auth/callback`: OAuth callback handler (stub for future Keycloak support)
+**Currently Implemented (Phases 1-9):**
+
+- `POST /api/auth/register`: Create a new user account
+- `POST /api/auth/login`: Authenticate a user and issue tokens
+- `POST /api/auth/refresh`: Refresh access tokens using a valid refresh token
+- `POST /api/auth/logout`: Invalidate the user's refresh token
+- `GET /api/auth/me`: Get current authenticated user information
+
+**Planned for Phase 10+ (Supabase Integration):**
+
+- `POST /api/auth/reset-password`: Initiate password reset flow (proxies to auth provider)
+- `POST /api/auth/verify-email`: Request email verification (proxies to auth provider)
+- `GET /api/auth/callback`: OAuth callback handler (for future Keycloak support)
 
 ## Session Management
 
@@ -89,14 +101,19 @@ All protected API endpoints will validate tokens by:
 
 ## Deployment Configurations
 
-Provider selection via environment variable (MVP: Supabase only):
+Provider selection via environment variable:
 
-- `AUTH_PROVIDER=supabase` → Use Supabase adapter (MVP)
-- `AUTH_PROVIDER=keycloak` → Use Keycloak adapter (future)
+**Current (Phases 1-9):**
 
-All provider-specific configuration (URLs, keys, secrets) set through environment variables.
+- `USE_AUTH_MOCKS=true` → Use mock authentication provider (development)
+- `MOCK_JWT_SECRET`: Secret key for mock JWT generation (development only)
 
-**Supabase Configuration:**
+**Future (Phase 10+):**
+
+- `USE_AUTH_MOCKS=false` → Use real authentication provider
+- Provider-specific configuration via additional environment variables
+
+**Supabase Configuration (Phase 10+):**
 
 - `SUPABASE_URL`: Supabase project URL
 - `SUPABASE_ANON_KEY`: Anonymous/public API key
