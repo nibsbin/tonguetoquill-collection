@@ -121,3 +121,7 @@ The parser validates:
 - Reserved field names in scopes → error
 - Invalid scope name syntax → warning
 - Both SCOPE and QUILL in same block → error
+
+---
+
+_Document Status: Specification - Describes Quillmark Format_
