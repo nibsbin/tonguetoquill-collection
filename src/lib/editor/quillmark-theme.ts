@@ -31,7 +31,8 @@ export function createQuillmarkTheme(): Extension {
 			// Fold placeholder (metadata) - match delimiter color and block background
 			'.cm-foldPlaceholder': {
 				backgroundColor: getCssVar('--color-syntax-metadata-bg'),
-				paddingLeft: '0px'
+				paddingLeft: '0px',
+				border: 'none'
 			},
 
 			// SCOPE and QUILL keywords
@@ -42,28 +43,28 @@ export function createQuillmarkTheme(): Extension {
 
 			// Scope/quill name values
 			'.cm-quillmark-scope-name': {
-				color: getCssVar('--color-syntax-identifier'),
+				color: getCssVar('--color-foreground'),
 				fontWeight: '500'
 			},
 
 			// YAML keys
 			'.cm-quillmark-yaml-key': {
-				color: getCssVar('--color-foreground')
+				color: getCssVar('--color-syntax-key')
 			},
 
 			// YAML string values
 			'.cm-quillmark-yaml-string': {
-				color: getCssVar('--color-syntax-string')
+				color: getCssVar('--color-foreground')
 			},
 
 			// YAML number values
 			'.cm-quillmark-yaml-number': {
-				color: getCssVar('--color-syntax-number')
+				color: getCssVar('--color-foreground')
 			},
 
 			// YAML boolean values
 			'.cm-quillmark-yaml-bool': {
-				color: getCssVar('--color-syntax-boolean')
+				color: getCssVar('--color-foreground')
 			}
 		},
 		{ dark: isDark }
