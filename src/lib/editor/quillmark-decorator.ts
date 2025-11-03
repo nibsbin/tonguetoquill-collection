@@ -1,4 +1,10 @@
-import { ViewPlugin, Decoration, type DecorationSet, type EditorView, WidgetType } from '@codemirror/view';
+import {
+	ViewPlugin,
+	Decoration,
+	type DecorationSet,
+	type EditorView,
+	WidgetType
+} from '@codemirror/view';
 import { RangeSetBuilder } from '@codemirror/state';
 import { foldEffect, foldedRanges } from '@codemirror/language';
 import {
