@@ -81,19 +81,36 @@
 			codeFolding({
 				preparePlaceholder: (state, range) => range,
 				placeholderDOM: (view, onclick, prepared) => {
-					const element = document.createElement('span');
+					const wrapper = document.createElement('span');
+					wrapper.className = 'cm-foldPlaceholder';
+					wrapper.onclick = onclick;
 
-					// Get the folded content from the prepared range
 					const foldedText = view.state.doc.sliceString(prepared.from, prepared.to);
+					const contentLines = foldedText
+						.trim()
+						.split('\n')
+						.filter((line) => line.trim() !== '---');
+					const firstLine = contentLines[0] || '';
 
-					// Extract the first line (trim whitespace)
-					const firstLine = foldedText.trim().split('\n')[0];
+					const openDelim = document.createElement('span');
+					openDelim.className = 'cm-quillmark-delimiter';
+					openDelim.textContent = '---';
+					wrapper.appendChild(openDelim);
 
-					// Display first line followed by ellipsis, or just ellipsis if empty
-					element.textContent = firstLine ? `${firstLine}` : '…';
-					element.onclick = onclick;
-					element.className = 'cm-foldPlaceholder';
-					return element;
+					if (firstLine) {
+						wrapper.appendChild(document.createTextNode(' '));
+						wrapper.appendChild(document.createTextNode(firstLine));
+						wrapper.appendChild(document.createTextNode(' '));
+					} else {
+						wrapper.appendChild(document.createTextNode(' '));
+					}
+
+					const closeDelim = document.createElement('span');
+					closeDelim.className = 'cm-quillmark-delimiter';
+					closeDelim.textContent = '---';
+					wrapper.appendChild(closeDelim);
+
+					return wrapper;
 				}
 			})
 		];
@@ -247,11 +264,10 @@
 					}
 				}
 
-				// If we found a complete metadata block, save it
 				if (closingLineNum !== null) {
 					const closingLine = doc.line(closingLineNum);
-					metadataBlocks.push({ from: line.to, to: closingLine.from });
-					// Skip to after the closing delimiter to avoid processing it
+					const foldTo = closingLine.to < doc.length ? closingLine.to + 1 : closingLine.to;
+					metadataBlocks.push({ from: line.from, to: foldTo });
 					lineNum = closingLineNum;
 				}
 			}

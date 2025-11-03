@@ -50,12 +50,11 @@ export const quillmarkFoldService = foldService.of((state, from, to) => {
 
 	const closingLine = doc.line(closingLineNum);
 
-	// Return the foldable range
-	// from: start of opening delimiter line
-	// to: end of closing delimiter line
-	// This will fold the entire metadata block including both delimiters
+	// Fold entire metadata block including both delimiters and trailing newline
+	const foldTo = closingLine.to < doc.length ? closingLine.to + 1 : closingLine.to;
+
 	return {
 		from: line.from,
-		to: closingLine.to
+		to: foldTo
 	};
 });
