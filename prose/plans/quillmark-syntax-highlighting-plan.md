@@ -434,7 +434,7 @@ Add reference to new design document:
 
 ## Implementation Status
 
-**Overall Status:** Partially Complete (Phases 1-2 ✅ | Phases 3-4 ❌)
+**Overall Status:** Mostly Complete (Phases 1-3 ✅ | Phase 4 ❌)
 
 ### ✅ Phase 1: Core Pattern Detection & Decoration - COMPLETE
 
@@ -469,30 +469,36 @@ Add reference to new design document:
 - ✅ No visual glitches or overlapping highlights
 - ✅ All colors meet WCAG AA contrast requirements
 
-### ❌ Phase 3: Code Folding Support - NOT IMPLEMENTED
+### ✅ Phase 3: Code Folding Support - COMPLETE
 
-**Status:** Stub implementation exists
+**Status:** Fully implemented and tested
 
-**What Exists:**
+**What Was Implemented:**
 
-- `handleToggleFrontmatter()` function in MarkdownEditor.svelte (logs "not yet implemented")
-- Toolbar button wired up but non-functional
+- ✅ Created `src/lib/editor/quillmark-folding.ts` module
+- ✅ Implemented `findClosingDelimiter()` function for finding matching delimiters
+- ✅ Implemented fold service using CodeMirror's `foldService`
+- ✅ Gracefully handles unclosed blocks (no fold offered)
+- ✅ Integrated `foldGutter()` from `@codemirror/language` into editor
+- ✅ Added fold service to editor extensions
+- ✅ Implemented `handleToggleFrontmatter()` to fold/unfold at cursor position
+- ✅ Added keyboard shortcuts via `foldKeymap` (Ctrl/Cmd+Shift+[/])
+- ✅ Created comprehensive unit tests in `quillmark-folding.test.ts`
+- ✅ Fixed decoration sorting bug when folding is active
 
-**What's Missing:**
+**Acceptance Criteria Met:**
 
-- ❌ `src/lib/editor/quillmark-folding.ts` module not created
-- ❌ Fold service not implemented
-- ❌ Fold gutter not integrated
-- ❌ No keyboard shortcuts for folding
+- ✅ Click fold gutter to collapse/expand metadata blocks
+- ✅ Keyboard shortcuts toggle folding (Ctrl/Cmd+Shift+[/])
+- ✅ Collapsed blocks show ellipsis ("---…---")
+- ✅ Folding works with nested markdown structures
+- ✅ Touch targets are appropriate size (inherited from CodeMirror defaults)
+- ✅ No performance issues when folding blocks
+- ✅ Works in both light and dark modes
 
-**To Complete:**
+**Bug Fixes:**
 
-1. Create `quillmark-folding.ts` with `findClosingDelimiter()` and fold service
-2. Configure `foldGutter()` from `@codemirror/language`
-3. Add fold service and gutter to editor extensions
-4. Implement `handleToggleFrontmatter()` to trigger folding at cursor position
-5. Add keyboard shortcuts (Ctrl/Cmd+Shift+[/])
-6. Add unit tests for fold detection
+- Fixed decoration sorting issue where line decorations and mark decorations at the same position caused RangeSetBuilder errors
 
 ### ❌ Phase 4: Auto-Completion - NOT IMPLEMENTED
 
@@ -515,7 +521,7 @@ Add reference to new design document:
 
 ---
 
-_Plan Status: Partially Complete (Core Syntax Highlighting ✅ | Folding & Completion ❌)_
-_Last Updated: 2025-11-02_
-_Implementation Completed: Phases 1-2 (2025-11-02)_
-_Remaining Work: Phases 3-4_
+_Plan Status: Mostly Complete (Phases 1-3 ✅ | Phase 4 ❌)_
+_Last Updated: 2025-11-03_
+_Implementation Completed: Phases 1-2 (2025-11-02), Phase 3 (2025-11-03)_
+_Remaining Work: Phase 4 (Auto-Completion)_

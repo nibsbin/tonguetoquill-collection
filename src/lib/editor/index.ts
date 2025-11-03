@@ -5,4 +5,6 @@
 
 export { quillmarkDecorator } from './quillmark-decorator';
 export { createQuillmarkTheme } from './quillmark-theme';
-export * from './quillmark-patterns';
+export { quillmarkFoldService, findClosingDelimiter } from './quillmark-folding';
+export { isMetadataDelimiter, findMetadataBlocks } from './quillmark-patterns';
+export type * from './quillmark-patterns';

@@ -44,6 +44,14 @@ class QuillMarkDecorator {
 		// Find all metadata blocks
 		const blocks = findMetadataBlocks(doc);
 
+		// Collect all decorations from all visible blocks first
+		const allDecorations: Array<{
+			from: number;
+			to: number;
+			decoration: Decoration;
+			isLine: boolean;
+		}> = [];
+
 		// Only process visible blocks for performance
 		// Note: For documents with many blocks, this could be optimized with
 		// binary search or spatial indexing to find intersecting blocks more efficiently
@@ -52,40 +60,79 @@ class QuillMarkDecorator {
 				// Skip blocks outside visible range
 				if (block.to < from || block.from > to) continue;
 
-				this.decorateBlock(builder, block, doc);
+				this.collectBlockDecorations(allDecorations, block, doc);
 			}
+		}
+
+		// Sort all decorations by position before adding to builder
+		allDecorations.sort((a, b) => {
+			if (a.from !== b.from) return a.from - b.from;
+			if (a.to !== b.to) return a.to - b.to;
+			// Line decorations (isLine=true) should come before mark decorations (isLine=false)
+			if (a.isLine !== b.isLine) return a.isLine ? -1 : 1;
+			return 0;
+		});
+
+		// Add all decorations in sorted order
+		for (const { from, to, decoration } of allDecorations) {
+			builder.add(from, to, decoration);
 		}
 
 		return builder.finish();
 	}
 
-	decorateBlock(
-		builder: RangeSetBuilder<Decoration>,
+	collectBlockDecorations(
+		decorations: Array<{
+			from: number;
+			to: number;
+			decoration: Decoration;
+			isLine: boolean;
+		}>,
 		block: MetadataBlock,
 		doc: import('@codemirror/state').Text
 	) {
-		// Collect all decorations to sort them before adding to builder
-		const decorations: Array<{ from: number; to: number; decoration: Decoration }> = [];
+		// Collect all decorations for this block
+		// We need to track the type to ensure line decorations come before mark decorations
 
 		// Decorate opening delimiter line
 		const openLine = doc.lineAt(block.from);
-		decorations.push({ from: openLine.from, to: openLine.from, decoration: blockMark });
-		decorations.push({ from: openLine.from, to: openLine.to, decoration: delimiterMark });
+		decorations.push({
+			from: openLine.from,
+			to: openLine.from,
+			decoration: blockMark,
+			isLine: true
+		});
+		decorations.push({
+			from: openLine.from,
+			to: openLine.to,
+			decoration: delimiterMark,
+			isLine: false
+		});
 
 		// Decorate all content lines in the block
 		let pos = openLine.to;
 		while (pos < block.contentTo) {
 			const line = doc.lineAt(pos + 1);
 			if (line.from >= block.contentTo) break;
-			decorations.push({ from: line.from, to: line.from, decoration: blockMark });
+			decorations.push({ from: line.from, to: line.from, decoration: blockMark, isLine: true });
 			pos = line.to;
 		}
 
 		// Decorate closing delimiter line if it exists
 		if (block.contentTo < block.to) {
 			const closeLine = doc.lineAt(block.to);
-			decorations.push({ from: closeLine.from, to: closeLine.from, decoration: blockMark });
-			decorations.push({ from: closeLine.from, to: closeLine.to, decoration: delimiterMark });
+			decorations.push({
+				from: closeLine.from,
+				to: closeLine.from,
+				decoration: blockMark,
+				isLine: true
+			});
+			decorations.push({
+				from: closeLine.from,
+				to: closeLine.to,
+				decoration: delimiterMark,
+				isLine: false
+			});
 		}
 
 		// Decorate SCOPE/QUILL keywords within the block
@@ -95,15 +142,26 @@ class QuillMarkDecorator {
 			decorations.push({
 				from: keyword.keywordFrom,
 				to: keyword.keywordTo,
-				decoration: keywordMark
+				decoration: keywordMark,
+				isLine: false
 			});
-			decorations.push({ from: keyword.nameFrom, to: keyword.nameTo, decoration: scopeNameMark });
+			decorations.push({
+				from: keyword.nameFrom,
+				to: keyword.nameTo,
+				decoration: scopeNameMark,
+				isLine: false
+			});
 		}
 
 		// Decorate YAML key-value pairs
 		const yamlPairs = findYamlPairs(block.contentFrom, block.contentTo, doc);
 		for (const pair of yamlPairs) {
-			decorations.push({ from: pair.keyFrom, to: pair.keyTo, decoration: yamlKeyMark });
+			decorations.push({
+				from: pair.keyFrom,
+				to: pair.keyTo,
+				decoration: yamlKeyMark,
+				isLine: false
+			});
 
 			// Only add value decoration if there's actually a value (not zero-width)
 			if (pair.valueFrom < pair.valueTo) {
@@ -116,19 +174,13 @@ class QuillMarkDecorator {
 								? yamlBooleanMark
 								: yamlStringMark; // Default to string for unknown types
 
-				decorations.push({ from: pair.valueFrom, to: pair.valueTo, decoration: valueMark });
+				decorations.push({
+					from: pair.valueFrom,
+					to: pair.valueTo,
+					decoration: valueMark,
+					isLine: false
+				});
 			}
-		}
-
-		// Sort decorations by position (from, then to) before adding to builder
-		decorations.sort((a, b) => {
-			if (a.from !== b.from) return a.from - b.from;
-			return a.to - b.to;
-		});
-
-		// Add all decorations in sorted order
-		for (const { from, to, decoration } of decorations) {
-			builder.add(from, to, decoration);
 		}
 	}
 }

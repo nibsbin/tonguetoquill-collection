@@ -4,8 +4,20 @@
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+	import {
+		foldKeymap,
+		foldEffect,
+		foldState,
+		unfoldEffect,
+		foldedRanges
+	} from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
-	import { quillmarkDecorator, createQuillmarkTheme } from '$lib/editor';
+	import {
+		quillmarkDecorator,
+		createQuillmarkTheme,
+		quillmarkFoldService,
+		isMetadataDelimiter
+	} from '$lib/editor';
 
 	interface Props {
 		value: string;
@@ -28,6 +40,7 @@
 			keymap.of([
 				...defaultKeymap,
 				...historyKeymap,
+				...foldKeymap,
 				{
 					key: 'Mod-b',
 					run: () => {
@@ -61,7 +74,9 @@
 			EditorView.lineWrapping,
 			createEditorTheme(),
 			quillmarkDecorator,
-			createQuillmarkTheme()
+			createQuillmarkTheme(),
+			quillmarkFoldService,
+			foldState
 		];
 
 		// Conditionally add line numbers
@@ -189,7 +204,75 @@
 	}
 
 	function handleToggleFrontmatter() {
-		console.log('Toggle frontmatter folding (not yet implemented)');
+		if (!editorView) return;
+
+		const state = editorView.state;
+		const doc = state.doc;
+		const effects = [];
+
+		// Get currently folded ranges
+		const folded = foldedRanges(state);
+		const metadataBlocks = [];
+
+		// Find all metadata blocks
+		for (let lineNum = 1; lineNum <= doc.lines; lineNum++) {
+			if (isMetadataDelimiter(lineNum, doc)) {
+				const line = doc.line(lineNum);
+
+				// Find the closing delimiter
+				let closingLineNum = null;
+				for (let j = lineNum + 1; j <= doc.lines; j++) {
+					if (isMetadataDelimiter(j, doc)) {
+						closingLineNum = j;
+						break;
+					}
+				}
+
+				// If we found a complete metadata block, save it
+				if (closingLineNum !== null) {
+					const closingLine = doc.line(closingLineNum);
+					metadataBlocks.push({ from: line.to, to: closingLine.from });
+					// Skip to after the closing delimiter to avoid processing it
+					lineNum = closingLineNum;
+				}
+			}
+		}
+
+		// Check if ALL metadata blocks are currently folded
+		let allFolded = metadataBlocks.length > 0;
+		for (const block of metadataBlocks) {
+			let isFolded = false;
+			folded.between(block.from, block.to, (from, to) => {
+				if (from === block.from && to === block.to) {
+					isFolded = true;
+					return false;
+				}
+			});
+			if (!isFolded) {
+				allFolded = false;
+				break;
+			}
+		}
+
+		// Toggle: if ALL are folded, unfold all. Otherwise (if any are expanded), fold all.
+		if (allFolded) {
+			// Unfold all metadata blocks
+			for (const block of metadataBlocks) {
+				effects.push(unfoldEffect.of({ from: block.from, to: block.to }));
+			}
+		} else {
+			// Fold all metadata blocks
+			for (const block of metadataBlocks) {
+				effects.push(foldEffect.of({ from: block.from, to: block.to }));
+			}
+		}
+
+		// Apply all effects at once
+		if (effects.length > 0) {
+			editorView.dispatch({ effects });
+		}
+
+		editorView.focus();
 	}
 
 	function handleBulletList() {

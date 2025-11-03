@@ -8,7 +8,7 @@
 		ListOrdered,
 		Link,
 		Save,
-		ChevronDown
+		ListCollapse
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Separator from '$lib/components/ui/separator.svelte';
@@ -26,16 +26,16 @@
 	class="match-height flex min-h-11 items-center justify-between gap-1 border-b border-border bg-surface-elevated px-2"
 >
 	<div class="flex items-center gap-1">
-		<!-- Frontmatter Toggle Button (stub) -->
+		<!-- Toggle Metadata Blocks Button -->
 		<Button
 			variant="ghost"
 			size="sm"
 			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('toggleFrontmatter')}
-			title="Toggle Frontmatter"
+			title="Toggle All Metadata"
 		>
 			{#snippet children()}
-				<ChevronDown class="h-4 w-4" />
+				<ListCollapse class="h-4 w-4" />
 			{/snippet}
 		</Button>
 
