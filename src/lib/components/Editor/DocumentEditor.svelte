@@ -160,12 +160,9 @@
 	});
 </script>
 
-{#if loading}
-	<div class="flex h-full items-center justify-center bg-background">
-		<p class="text-muted-foreground">Loading document...</p>
-	</div>
-{:else}
-	<div class="flex h-full flex-1 flex-col">
+<div class="relative flex h-full flex-1 flex-col" aria-busy={loading}>
+	<!-- Editor content (dimmed when loading) -->
+	<div class="flex h-full flex-1 flex-col {loading ? 'pointer-events-none opacity-50' : ''}">
 		<!-- Mobile Tab Switcher (< 768px) -->
 		{#if isMobile}
 			<div class="flex border-b border-border bg-surface-elevated">
@@ -218,4 +215,4 @@
 			</div>
 		</div>
 	</div>
-{/if}
+</div>
