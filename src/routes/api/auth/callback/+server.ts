@@ -26,12 +26,12 @@ export const GET: RequestHandler = async (event) => {
 		// Redirect to home page after successful authentication
 		throw redirect(302, '/');
 	} catch (error) {
-		// If it's already a redirect, re-throw it
+		// If it's already a redirect, re-throw it without logging
 		if (error instanceof Response && error.status >= 300 && error.status < 400) {
 			throw error;
 		}
 
-		// Otherwise, redirect to home with error
+		// Otherwise, log the actual error and redirect to home with error flag
 		console.error('Authentication callback error:', error);
 		throw redirect(302, '/?auth_error=true');
 	}
