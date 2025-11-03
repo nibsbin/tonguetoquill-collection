@@ -9,7 +9,7 @@ This document describes the integration of live Quillmark rendering into the Pre
 
 ## Overview
 
-The Preview component will be enhanced to support live Quillmark rendering. The preview will display professional PDF/SVG output with **automatic backend detection** based on document content, providing a true WYSIWYG experience for document creation.
+The Preview component displays live Quillmark rendering with **automatic backend detection** based on document content. The preview displays professional PDF/SVG output determined by the document's frontmatter, providing a true WYSIWYG experience for document creation.
 
 ## Architecture
 
@@ -24,9 +24,9 @@ The Preview component will be enhanced to support live Quillmark rendering. The 
 **QuillmarkService:**
 
 - Render markdown using Quillmark engine
-- **Auto-detect appropriate backend from document content**
+- **Auto-detect backend and quill from document frontmatter (QUILL field)**
 - Auto-detect optimal preview format (SVG or PDF)
-- Return format + data for flexible display
+- Return RenderResult with format and artifacts
 
 ### Preview Layout
 
@@ -51,12 +51,13 @@ markdown
   │
   ├─> quillmarkService.renderForPreview(markdown)
   │   │
-  │   ├─> Engine auto-detects backend from content
+  │   ├─> Engine auto-detects backend and quill from document frontmatter
   │   └─> Backend auto-selects format (SVG/PDF)
+  │   └─> Returns RenderResult
   │
-  ├─> Check result.format
-  │   ├─> if 'svg': Display inline SVG
-  │   └─> if 'pdf': Display in <embed> or <iframe>
+  ├─> Check result.outputFormat
+  │   ├─> if 'svg': Use resultToSVGPages(result) to get array of SVG strings
+  │   └─> if 'pdf': Use resultToBlob(result) to get Blob
   │
   └─> Update preview element
 ```
@@ -65,16 +66,20 @@ markdown
 
 The service calls `exporters.render(engine, markdown, {})` **without** specifying a quill name or format. The Quillmark engine:
 
-1. **Auto-detects backend** based on document content markers
+1. **Auto-detects backend and quill** from document frontmatter (QUILL field in YAML)
 2. **Auto-selects format** based on backend capabilities:
    - **Typst backend**: Defaults to SVG (optimal for inline preview)
    - **PDF backend**: Defaults to PDF (only supported format)
    - **Future backends**: May support other formats
 
-The service returns `{ format, data }` where:
+The service returns a `RenderResult` object where:
 
-- `format`: 'pdf' | 'svg' (from `RenderResult.outputFormat`)
-- `data`: `Blob` (for PDF) or `string` (for SVG)
+- `outputFormat`: 'pdf' | 'svg' (indicates the format chosen by backend)
+- `artifacts`: Array of artifacts (one per page for SVG, one for PDF)
+
+Components use helper functions to convert:
+- `resultToBlob(result)`: Convert to Blob (for PDF)
+- `resultToSVGPages(result)`: Get array of SVG strings (one per page)
 
 ## Component Interface
 
@@ -92,9 +97,13 @@ interface PreviewProps {
 ```typescript
 interface PreviewState {
 	loading: boolean;
-	error: string | null;
-	renderFormat: 'pdf' | 'svg' | null;
-	renderData: Blob | string | null;
+	error: ErrorDisplayState | null;
+	renderResult: RenderResult | null;
+	lastSuccessfulResult: RenderResult | null;
+	pdfObjectUrl: string | null;
+	lastSuccessfulPdfUrl: string | null;
+	svgPages: string[];
+	lastSuccessfulSvgPages: string[];
 }
 ```
 
@@ -102,12 +111,16 @@ interface PreviewState {
 
 ### SVG Display
 
-SVG content is injected directly into the DOM:
+SVG content is injected directly into the DOM, with support for multi-page documents:
 
 ```svelte
-{#if renderFormat === 'svg'}
+{#if renderResult?.outputFormat === 'svg'}
 	<div class="svg-preview">
-		{@html renderData}
+		{#each svgPages as page}
+			<div class="svg-page">
+				{@html page}
+			</div>
+		{/each}
 	</div>
 {/if}
 ```
@@ -126,9 +139,9 @@ SVG content is injected directly into the DOM:
 PDF blob is displayed using `<embed>` element:
 
 ```svelte
-{#if renderFormat === 'pdf'}
+{#if renderResult?.outputFormat === 'pdf' && pdfObjectUrl}
 	<embed
-		src={URL.createObjectURL(renderData)}
+		src={pdfObjectUrl}
 		type="application/pdf"
 		class="pdf-preview"
 		aria-label="PDF preview"
@@ -180,16 +193,21 @@ Show loading indicator during render:
 ```typescript
 try {
 	const result = await quillmarkService.renderForPreview(markdown);
-	// Display result
+	// Process result
 } catch (error) {
 	if (error instanceof QuillmarkError) {
-		switch (error.code) {
-			case 'not_initialized':
-				showError('Preview unavailable. Please refresh.');
-				break;
-			case 'render_error':
-				showError('Failed to render preview. Check document syntax.');
-				break;
+		if (error.diagnostic) {
+			// Display detailed diagnostic information
+			errorDisplay = {
+				code: error.diagnostic.code,
+				message: error.diagnostic.message,
+				hint: error.diagnostic.hint,
+				location: error.diagnostic.location,
+				sourceChain: error.diagnostic.sourceChain
+			};
+		} else {
+			// Display simple error message
+			errorDisplay = { message: error.message };
 		}
 	}
 }
@@ -199,44 +217,26 @@ try {
 
 If Quillmark rendering fails:
 
-1. Show error message in preview pane
-2. Keep template selector enabled
-3. Allow user to change templates or fix markdown
+1. Display error message in preview pane with diagnostic details (if available)
+2. Show previous successful render (if available)
+3. Allow user to fix markdown
 4. Don't crash the entire component
 
 ## User Experience
 
-### Template Selection
+### Backend Detection
 
-Template selector for choosing the Quill template:
+The backend and quill are automatically detected from the document's frontmatter:
 
-```svelte
-<select bind:value={quillName}>
-	{#each availableQuills as quill}
-		<option value={quill.name}>{quill.description}</option>
-	{/each}
-</select>
+```markdown
+---
+QUILL: usaf_memo
+---
+
+# Document Content
 ```
 
-**Template List:**
-
-- Fetched from `quillmarkService.getAvailableQuills()`
-- Show description for clarity
-- Default to first available template
-
-### State Persistence
-
-Remember user's template selection:
-
-```typescript
-// Save to localStorage
-localStorage.setItem('preview-quill', quillName);
-
-// Restore on mount
-onMount(() => {
-	quillName = localStorage.getItem('preview-quill') ?? availableQuills[0]?.name;
-});
-```
+The `QUILL` field in the frontmatter determines which quill template to use. No manual template selection is needed in the UI.
 
 ## Integration Points
 
@@ -249,10 +249,9 @@ onMount(async () => {
 	if (!quillmarkService.isReady()) {
 		try {
 			await quillmarkService.initialize();
-			availableQuills = quillmarkService.getAvailableQuills();
 		} catch (error) {
 			console.error('Quillmark initialization failed:', error);
-			showError('Failed to initialize preview. Please refresh.');
+			errorDisplay = { message: 'Failed to initialize preview. Please refresh.' };
 		}
 	}
 });
@@ -264,20 +263,7 @@ Preview receives markdown from the editor:
 
 ```svelte
 <MarkdownEditor {markdown} on:change={(e) => (markdown = e.detail)} />
-<Preview {markdown} quillName="usaf_memo" />
-```
-
-### 3. TopMenu Integration
-
-Show template selector in TopMenu:
-
-```svelte
-<!-- TopMenu.svelte -->
-<Select bind:value={selectedQuill}>
-	{#each quills as quill}
-		<option value={quill.name}>{quill.description}</option>
-	{/each}
-</Select>
+<Preview {markdown} />
 ```
 
 ## Accessibility
@@ -331,26 +317,28 @@ Native `<embed>` element provides:
 
 - Calls service with correct parameters
 - Displays SVG and PDF correctly
+- Handles multi-page SVG documents
 - Handles loading states
-- Shows error messages on failure
+- Shows error messages with diagnostic details on failure
 - Debounces render calls
-- Switches templates correctly
+- Cleans up PDF object URLs properly
 
 **Mock Service:**
 
 - Mock `quillmarkService.renderForPreview()` in tests
 - Test both SVG and PDF return formats
+- Test multi-page SVG handling
 - Simulate errors and timeouts
+- Test diagnostic information display
 
 ### Integration Tests
 
 **Full Workflow:**
 
 1. Initialize Quillmark service
-2. Select template
-3. Type markdown in editor
-4. Verify preview updates after debounce
-5. Verify correct format displayed
+2. Type markdown in editor with QUILL frontmatter
+3. Verify preview updates after debounce
+4. Verify correct format displayed based on backend
 
 ### Visual Regression
 
@@ -387,8 +375,9 @@ Native `<embed>` element provides:
 - [Integration Architecture](./INTEGRATION.md)
 - [Preview Component](../frontend/UI_COMPONENTS.md)
 - [Preview Component Current Implementation](../../../src/lib/components/Preview/Preview.svelte)
+- [Quillmark Service Implementation](../../../src/lib/services/quillmark/service.ts)
 - [@quillmark-test/web Exporters API](https://www.npmjs.com/package/@quillmark-test/web)
 
 ---
 
-_Document Status: Draft - Pending Implementation_
+_Document Status: Implemented - Reflects Current Codebase_

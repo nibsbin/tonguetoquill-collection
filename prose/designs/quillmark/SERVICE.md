@@ -37,23 +37,12 @@ interface QuillmarkService {
 	renderToPDF(markdown: string, quillName: string): Promise<Blob>;
 
 	/**
-	 * Render markdown to SVG string
+	 * Render markdown for preview with auto-detected format and backend
+	 * Does not specify quill or output format - allows engine to auto-detect based on content
 	 * @param markdown - Markdown content to render
-	 * @param quillName - Name of Quill template to use
-	 * @returns SVG as string
+	 * @returns RenderResult from Quillmark engine
 	 */
-	renderToSVG(markdown: string, quillName: string): Promise<string>;
-
-	/**
-	 * Render markdown for preview (auto-detects format based on backend)
-	 * @param markdown - Markdown content to render
-	 * @param quillName - Name of Quill template to use
-	 * @returns Object with format and data (Blob for PDF, string for SVG)
-	 */
-	renderForPreview(
-		markdown: string,
-		quillName: string
-	): Promise<{ format: 'pdf' | 'svg'; data: Blob | string }>;
+	renderForPreview(markdown: string): Promise<RenderResult>;
 
 	/**
 	 * Download rendered document
@@ -183,7 +172,7 @@ renderToPDF(markdown, quillName)
   ├─> validateQuillExists(quillName)
   │
   └─> exporters.render(engine, markdown, {
-        quill: quillName,
+        quillName: quillName,
         format: 'pdf'
       })
 ```
@@ -191,19 +180,14 @@ renderToPDF(markdown, quillName)
 **Auto-Format Rendering (Preview):**
 
 ```
-renderForPreview(markdown, quillName)
+renderForPreview(markdown)
   │
   ├─> validateInitialized()
-  ├─> validateQuillExists(quillName)
   │
-  ├─> exporters.render(engine, markdown, {
-  │     quillName: quillName
-  │     // No format specified - uses backend default
-  │   })
-  │
-  └─> Check result.outputFormat
-      ├─> if 'pdf': return { format: 'pdf', data: exporters.toBlob(result) }
-      └─> if 'svg': return { format: 'svg', data: new TextDecoder().decode(result.artifacts[0].bytes) }
+  └─> exporters.render(engine, markdown, {
+        // No quillName or format specified - engine auto-detects backend
+      })
+      └─> Returns RenderResult with outputFormat and artifacts
 ```
 
 ### Error Handling
@@ -307,11 +291,19 @@ async function downloadPDF() {
 	}
 }
 
-// Render to SVG for preview
+// Render for preview with auto-detection
 async function updatePreview() {
 	try {
-		const svg = await quillmarkService.renderToSVG(markdown, 'taro');
-		previewElement.innerHTML = svg;
+		const result = await quillmarkService.renderForPreview(markdown);
+		
+		if (result.outputFormat === 'pdf') {
+			const blob = resultToBlob(result);
+			const url = URL.createObjectURL(blob);
+			embedElement.src = url;
+		} else if (result.outputFormat === 'svg') {
+			const pages = resultToSVGPages(result);
+			// Display SVG pages
+		}
 	} catch (error) {
 		console.error('Preview failed:', error);
 	}
@@ -347,9 +339,11 @@ const quills = quillmarkService.getAvailableQuills();
 
 - ✅ Single engine instance (singleton)
 - ✅ Preload all Quills on initialization
-- ✅ PDF and SVG rendering
+- ✅ PDF rendering with explicit quill selection
+- ✅ Auto-detection for preview (no quill selection needed)
 - ✅ Download functionality
 - ✅ Type-safe API
+- ✅ Helper functions for RenderResult conversion
 
 ### Out of Scope
 
@@ -377,7 +371,7 @@ These features may be added in future iterations as needed.
 - **Simplicity**: Avoid complex lazy-loading logic
 - **Acceptable Cost**: ~3-5 Quills = ~1-2MB total (minimal)
 
-### Why toBlob() and TextDecoder?
+### Why resultToBlob() and Helper Functions?
 
 For preview rendering, we use different approaches for different formats:
 
@@ -390,18 +384,20 @@ For preview rendering, we use different approaches for different formats:
 
 **For SVG:**
 
-- **Direct Decoding**: Use `TextDecoder` to decode Uint8Array to UTF-8 string
+- **Helper Functions**: Use `resultToSVGPages()` to get array of SVG strings (one per page)
+- **Multi-page Support**: Handles documents with multiple pages correctly
+- **TextDecoder + toArrayBuffer**: Uses `exporters.toArrayBuffer(artifact)` to get ArrayBuffer, then `TextDecoder` to decode to UTF-8 string
 - **Standard API**: TextDecoder is a standard web API
-- **Simplicity**: Straightforward conversion without wrapper functions
 - **Efficiency**: No unnecessary intermediate conversions
 
-The Quillmark library doesn't provide a dedicated SVG string conversion function, so we use the standard TextDecoder approach to decode the bytes from `result.artifacts[0].bytes`.
+The service provides helper functions `resultToSVGPages()` and `artifactToSVGString()` for consumers to convert `RenderResult` artifacts to strings.
 
-### Why Auto-Format for Preview?
+### Why Auto-Detect for Preview?
 
-The `renderForPreview()` method doesn't specify a format, allowing the Quillmark backend to choose:
+The `renderForPreview()` method doesn't specify a quill name or format, allowing the Quillmark engine to auto-detect based on document content:
 
-- **Backend Intelligence**: Typst backend defaults to SVG (best for preview), PDF backend to PDF
+- **Backend Intelligence**: Engine auto-detects backend from document frontmatter (QUILL field)
+- **Format Selection**: Backend chooses optimal format (Typst→SVG, PDF backend→PDF)
 - **Flexibility**: Different backends may support different formats
 - **Performance**: Backend can choose most efficient format for preview
 - **User Experience**: Always get the best preview format without manual selection

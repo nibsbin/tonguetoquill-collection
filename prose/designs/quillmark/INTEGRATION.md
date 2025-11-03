@@ -155,22 +155,28 @@ onMount(async () => {
 Components can request renders through the service:
 
 ```typescript
-import { quillmarkService } from '$lib/services/quillmark';
+import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
 
-// Render for preview (auto-detects format)
-const { format, data } = await quillmarkService.renderForPreview(markdown, 'usaf_memo');
-if (format === 'pdf') {
+// Render for preview (auto-detects backend and format from frontmatter)
+const result = await quillmarkService.renderForPreview(markdown);
+if (result.outputFormat === 'pdf') {
 	// Display PDF blob
-	const url = URL.createObjectURL(data as Blob);
+	const blob = resultToBlob(result);
+	const url = URL.createObjectURL(blob);
 	embedElement.src = url;
-} else {
-	// Display SVG string
-	previewElement.innerHTML = data as string;
+} else if (result.outputFormat === 'svg') {
+	// Display SVG pages
+	const pages = resultToSVGPages(result);
+	pages.forEach(page => {
+		const div = document.createElement('div');
+		div.innerHTML = page;
+		previewElement.appendChild(div);
+	});
 }
 
 // Render to specific format for download
 const pdfBlob = await quillmarkService.renderToPDF(markdown, 'usaf_memo');
-const svgString = await quillmarkService.renderToSVG(markdown, 'taro');
+await quillmarkService.downloadDocument(markdown, 'taro', 'output.svg', 'svg');
 ```
 
 ## Security Considerations
