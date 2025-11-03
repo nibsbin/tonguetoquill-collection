@@ -437,6 +437,7 @@ Add reference to new design document:
 **Overall Status:** Partially Complete (Phases 1-2 ✅ | Phases 3-4 ❌)
 
 ### ✅ Phase 1: Core Pattern Detection & Decoration - COMPLETE
+
 - Created [src/lib/editor/quillmark-patterns.ts](../../src/lib/editor/quillmark-patterns.ts) with pattern detection
 - Created [src/lib/editor/quillmark-decorator.ts](../../src/lib/editor/quillmark-decorator.ts) with ViewPlugin
 - Created [src/lib/editor/quillmark-theme.ts](../../src/lib/editor/quillmark-theme.ts) with semantic token styling
@@ -445,6 +446,7 @@ Add reference to new design document:
 - **Bug Fix:** Fixed critical decoration sorting crash (commit 91a7fc1) - restructured from sequential to collect-sort-add pattern
 
 **Acceptance Criteria Met:**
+
 - ✅ `---` delimiters highlighted in muted color
 - ✅ Metadata blocks have subtle background tint and left border
 - ✅ Horizontal rules correctly distinguished from metadata delimiters
@@ -452,12 +454,14 @@ Add reference to new design document:
 - ✅ Works in both light and dark modes
 
 ### ✅ Phase 2: Keyword & YAML Highlighting - COMPLETE
+
 - Extended pattern detection with SCOPE/QUILL keyword detection
 - Extended pattern detection with YAML key/value detection
 - Enhanced decorator with keyword and YAML decorations
 - Expanded theme with syntax colors using semantic tokens
 
 **Acceptance Criteria Met:**
+
 - ✅ SCOPE and QUILL keywords highlighted in USAF blue
 - ✅ Scope/quill names highlighted in cyan
 - ✅ YAML keys and values have appropriate colors
@@ -466,19 +470,23 @@ Add reference to new design document:
 - ✅ All colors meet WCAG AA contrast requirements
 
 ### ❌ Phase 3: Code Folding Support - NOT IMPLEMENTED
+
 **Status:** Stub implementation exists
 
 **What Exists:**
+
 - `handleToggleFrontmatter()` function in MarkdownEditor.svelte (logs "not yet implemented")
 - Toolbar button wired up but non-functional
 
 **What's Missing:**
+
 - ❌ `src/lib/editor/quillmark-folding.ts` module not created
 - ❌ Fold service not implemented
 - ❌ Fold gutter not integrated
 - ❌ No keyboard shortcuts for folding
 
 **To Complete:**
+
 1. Create `quillmark-folding.ts` with `findClosingDelimiter()` and fold service
 2. Configure `foldGutter()` from `@codemirror/language`
 3. Add fold service and gutter to editor extensions
@@ -487,14 +495,17 @@ Add reference to new design document:
 6. Add unit tests for fold detection
 
 ### ❌ Phase 4: Auto-Completion - NOT IMPLEMENTED
+
 **Status:** Not started
 
 **What's Missing:**
+
 - ❌ `src/lib/editor/quillmark-completion.ts` module not created
 - ❌ No completion provider implemented
 - ❌ No integration with CodeMirror autocomplete
 
 **To Complete:**
+
 1. Create `quillmark-completion.ts` with completion provider
 2. Detect cursor position after `SCOPE: ` or `QUILL: `
 3. Extract existing scope names from document
