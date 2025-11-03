@@ -27,15 +27,15 @@ export function createQuillmarkTheme(): Extension {
 				backgroundColor: getCssVar('--color-syntax-metadata-bg'),
 				borderLeft: `2px solid ${getCssVar('--color-syntax-metadata-border')}`,
 				paddingLeft: '12px',
-				marginLeft: '-14px'
 			},
 
 			// Fold placeholder (metadata) - match delimiter color and block background
 			'.cm-foldPlaceholder': {
+				display: 'inline-block',
 				color: getCssVar('--color-muted-foreground'),
 				backgroundColor: getCssVar('--color-syntax-metadata-bg'),
-				border: 'none',
-				padding: '0'
+				borderLeft: `2px solid ${getCssVar('--color-syntax-metadata-border')}`,
+				paddingLeft: '12px',
 			},
 
 			// SCOPE and QUILL keywords
