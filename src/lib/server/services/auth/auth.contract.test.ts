@@ -15,106 +15,42 @@ describe('AuthContract - MockAuthProvider', () => {
 		authProvider.clearAllData();
 	});
 
-	describe('signUp', () => {
-		it('should create a new user account', async () => {
-			const result = await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123',
-				dodid: 'DOD123456'
-			});
+	describe('exchangeCodeForTokens', () => {
+		it('should exchange valid code for tokens', async () => {
+			const result = await authProvider.exchangeCodeForTokens('valid_auth_code');
 
 			expect(result.user).toBeDefined();
-			expect(result.user.email).toBe('test@example.com');
-			expect(result.user.dodid).toBe('DOD123456');
+			expect(result.user.email).toBe('asdf@asdf.com'); // Default user
 			expect(result.user.id).toBeDefined();
 			expect(result.session).toBeDefined();
 			expect(result.session.access_token).toBeDefined();
 			expect(result.session.refresh_token).toBeDefined();
 		});
 
-		it('should reject duplicate email addresses', async () => {
-			await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123'
-			});
-
-			await expect(
-				authProvider.signUp({
-					email: 'test@example.com',
-					password: 'different'
-				})
-			).rejects.toThrow(AuthError);
+		it('should reject empty authorization code', async () => {
+			await expect(authProvider.exchangeCodeForTokens('')).rejects.toThrow(AuthError);
 		});
 
-		it('should reject invalid email format', async () => {
-			await expect(
-				authProvider.signUp({
-					email: 'invalid-email',
-					password: 'password123'
-				})
-			).rejects.toThrow(AuthError);
+		it('should reject whitespace-only code', async () => {
+			await expect(authProvider.exchangeCodeForTokens('   ')).rejects.toThrow(AuthError);
 		});
 
-		it('should normalize email to lowercase', async () => {
-			const result = await authProvider.signUp({
-				email: 'TEST@EXAMPLE.COM',
-				password: 'password123'
-			});
-
-			expect(result.user.email).toBe('test@example.com');
-		});
-	});
-
-	describe('signIn', () => {
-		beforeEach(async () => {
-			await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123'
-			});
-		});
-
-		it('should authenticate user with correct credentials', async () => {
-			const result = await authProvider.signIn({
-				email: 'test@example.com',
-				password: 'password123'
-			});
-
+		it('should accept any non-empty code in mock mode', async () => {
+			// Mock accepts any non-empty code for development
+			const result = await authProvider.exchangeCodeForTokens('any_valid_string');
 			expect(result.user).toBeDefined();
-			expect(result.user.email).toBe('test@example.com');
-			expect(result.session).toBeDefined();
-		});
-
-		it('should reject incorrect password', async () => {
-			await expect(
-				authProvider.signIn({
-					email: 'test@example.com',
-					password: 'wrongpassword'
-				})
-			).rejects.toThrow(AuthError);
-		});
-
-		it('should reject non-existent email', async () => {
-			await expect(
-				authProvider.signIn({
-					email: 'nonexistent@example.com',
-					password: 'password123'
-				})
-			).rejects.toThrow(AuthError);
 		});
 	});
 
 	describe('getCurrentUser', () => {
 		it('should return user from valid access token', async () => {
-			const { session, user: signedUpUser } = await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123'
-			});
+			const { session, user: authUser } = await authProvider.exchangeCodeForTokens('test_code');
 
 			const user = await authProvider.getCurrentUser(session.access_token);
 
 			expect(user).toBeDefined();
-			expect(user?.id).toBe(signedUpUser.id);
-			expect(user?.email).toBe(signedUpUser.email);
+			expect(user?.id).toBe(authUser.id);
+			expect(user?.email).toBe(authUser.email);
 		});
 
 		it('should return null for invalid token', async () => {
@@ -125,15 +61,12 @@ describe('AuthContract - MockAuthProvider', () => {
 
 	describe('validateToken', () => {
 		it('should validate and decode valid token', async () => {
-			const { session } = await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123'
-			});
+			const { session } = await authProvider.exchangeCodeForTokens('test_code');
 
 			const payload = await authProvider.validateToken(session.access_token);
 
 			expect(payload).toBeDefined();
-			expect(payload.email).toBe('test@example.com');
+			expect(payload.email).toBe('asdf@asdf.com');
 			expect(payload.role).toBe('authenticated');
 			expect(payload.aud).toBe('authenticated');
 		});
@@ -143,10 +76,7 @@ describe('AuthContract - MockAuthProvider', () => {
 		});
 
 		it('should reject token with invalid signature', async () => {
-			const { session } = await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123'
-			});
+			const { session } = await authProvider.exchangeCodeForTokens('test_code');
 
 			// Modify token to invalidate signature
 			const parts = session.access_token.split('.');
@@ -157,27 +87,21 @@ describe('AuthContract - MockAuthProvider', () => {
 	});
 
 	describe('signOut', () => {
-		it('should invalidate session', async () => {
-			const { session } = await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123'
-			});
+		it('should complete without error', async () => {
+			const { session } = await authProvider.exchangeCodeForTokens('test_code');
 
-			await authProvider.signOut(session.access_token);
+			await expect(authProvider.signOut(session.access_token)).resolves.not.toThrow();
+		});
 
-			// Session should still be valid for getCurrentUser (tokens are stateless)
-			// In production with real DB, sessions would be tracked
-			const user = await authProvider.getCurrentUser(session.access_token);
-			expect(user).toBeDefined(); // Mock doesn't track session invalidation
+		it('should accept any token string', async () => {
+			// Mock signOut is a no-op, so it accepts any string
+			await expect(authProvider.signOut('any_token')).resolves.not.toThrow();
 		});
 	});
 
 	describe('refreshSession', () => {
 		it('should create new session from refresh token', async () => {
-			const { session: originalSession } = await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123'
-			});
+			const { session: originalSession } = await authProvider.exchangeCodeForTokens('test_code');
 
 			// Wait a bit to ensure different timestamps
 			await new Promise((resolve) => setTimeout(resolve, 1100)); // Wait > 1 second for different exp
@@ -191,25 +115,6 @@ describe('AuthContract - MockAuthProvider', () => {
 
 		it('should reject invalid refresh token', async () => {
 			await expect(authProvider.refreshSession('invalid-token')).rejects.toThrow(AuthError);
-		});
-	});
-
-	describe('resetPassword', () => {
-		it('should not throw for existing email', async () => {
-			await authProvider.signUp({
-				email: 'test@example.com',
-				password: 'password123'
-			});
-
-			await expect(
-				authProvider.resetPassword({ email: 'test@example.com' })
-			).resolves.not.toThrow();
-		});
-
-		it('should not throw for non-existing email (security)', async () => {
-			await expect(
-				authProvider.resetPassword({ email: 'nonexistent@example.com' })
-			).resolves.not.toThrow();
 		});
 	});
 });

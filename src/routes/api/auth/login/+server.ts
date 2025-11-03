@@ -1,37 +1,19 @@
 /**
- * POST /api/auth/login
- * User login endpoint
+ * GET /api/auth/login
+ * Initiates OAuth flow by redirecting to provider
+ * In mock mode, simulates OAuth by redirecting to callback with a mock code
  */
 
-import { json } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { authService } from '$lib/server/services/auth';
-import { handleAuthError, setAuthCookies } from '$lib/utils/api';
 
-export const POST: RequestHandler = async (event) => {
-	try {
-		const body = await event.request.json();
-		const { email, password } = body;
+export const GET: RequestHandler = async () => {
+	// In mock mode, simulate OAuth flow by generating a mock authorization code
+	// and redirecting to our callback endpoint
+	// In production with Supabase, this would redirect to Supabase's hosted login page
 
-		if (!email || !password) {
-			return json(
-				{ error: 'validation_error', message: 'Email and password are required' },
-				{ status: 400 }
-			);
-		}
+	const mockAuthCode = 'mock_auth_code_' + Date.now();
 
-		const result = await authService.signIn({ email, password });
-
-		// Set authentication cookies
-		setAuthCookies(event, result.session.access_token, result.session.refresh_token);
-
-		return json({
-			user: result.user,
-			session: {
-				expires_at: result.session.expires_at
-			}
-		});
-	} catch (error) {
-		return handleAuthError(error);
-	}
+	// Redirect to callback with the mock code
+	throw redirect(302, `/api/auth/callback?code=${mockAuthCode}`);
 };

@@ -2,6 +2,8 @@
 
 This document defines the Login Service and overall authentication architecture for user authentication using third-party authentication providers. The service follows the server/client pattern established in [SERVICES.md](./SERVICES.md).
 
+> **Status**: ✅ **IMPLEMENTED** - OAuth delegation architecture implemented in Phase 9. See [Implementation Plan](../../plans/auth-delegation-implementation.md) for details.
+>
 > **Related**: [SERVICES.md](./SERVICES.md) for overall service architecture patterns
 
 ## Philosophy
@@ -226,7 +228,8 @@ Minimal interface for token and session management:
 - `POST /api/auth/refresh` - Refresh access token using refresh token
 - `GET /api/auth/me` - Get current authenticated user from token
 
-**Request/Response:** 
+**Request/Response:**
+
 - Callback endpoint receives OAuth code/token and sets HTTP-only cookies
 - Other endpoints return JSON with user and session data
 - Errors return standard error format with error code and message
@@ -355,6 +358,7 @@ Standard HTTP status codes: 400 (bad request), 401 (unauthorized), 403 (forbidde
 The application **delegates everything** to the provider:
 
 **Provider handles (100% delegated):**
+
 - Login UI and forms (provider-hosted pages)
 - Registration UI and forms (provider-hosted pages)
 - Password storage and hashing
@@ -365,6 +369,7 @@ The application **delegates everything** to the provider:
 - User enumeration prevention
 
 **Application handles (minimal responsibilities):**
+
 - JWT token validation using provider's JWKS
 - Secure token storage (HTTP-only cookies)
 - Token refresh logic
@@ -375,6 +380,7 @@ The application **delegates everything** to the provider:
 HTTP-only cookies prevent XSS attacks. Secure flag ensures HTTPS-only transmission. SameSite=Strict provides CSRF protection. Short access token expiry (15 min) limits exposure. JWKS signature verification validates provider tokens.
 
 **The application NEVER:**
+
 - Sees user passwords
 - Validates passwords
 - Stores passwords (even hashed)
@@ -393,6 +399,7 @@ HTTP-only cookies prevent XSS attacks. Secure flag ensures HTTPS-only transmissi
 ### Traditional Auth (What We're Avoiding)
 
 Traditional approach requires implementing:
+
 - Custom login/signup forms
 - Password hashing (bcrypt/argon2)
 - Password validation logic
@@ -409,6 +416,7 @@ Traditional approach requires implementing:
 ### Delegated Auth (Our Approach)
 
 Our approach requires:
+
 - OAuth redirect handling
 - JWT token validation
 - Cookie management
@@ -424,7 +432,8 @@ This is the right trade-off for most applications.
 
 ## Design Decisions
 
-**Why Third-Party Auth Only?** 
+**Why Third-Party Auth Only?**
+
 - Security experts handle all password management
 - Providers maintain security certifications and compliance
 - Built-in features like email verification, password reset, and OAuth
@@ -433,24 +442,28 @@ This is the right trade-off for most applications.
 - Eliminates entire categories of security vulnerabilities
 
 **Why Provider-Hosted UI?**
+
 - No risk of password exposure in application code
 - Consistent, professionally designed auth experience
 - Automatic updates to UI and security features
 - Eliminates need to maintain custom forms
 - Built-in accessibility and mobile optimization
 
-**Why Minimal API?** 
+**Why Minimal API?**
+
 - Fewer surface areas for bugs
 - Less code to test and update
 - Clear separation of concerns between auth and application logic
 - Reduced attack surface
 
-**Why HTTP-only Cookies?** 
+**Why HTTP-only Cookies?**
+
 - XSS attacks cannot steal tokens
 - Browser automatically sends with requests
 - Well-understood security model
 
-**Why Separate Login Service?** 
+**Why Separate Login Service?**
+
 - Clear naming ("Login" more intuitive than "Auth")
 - Focused API for token management only
 - Future-ready for separation from authorization/permissions logic
@@ -458,7 +471,8 @@ This is the right trade-off for most applications.
 
 ## Constraints and Limitations
 
-**Current Scope:** 
+**Current Scope:**
+
 - OAuth callback handling
 - Token validation and refresh
 - Session management (token storage in cookies)
@@ -466,7 +480,8 @@ This is the right trade-off for most applications.
 - Mock provider (dev)
 - Supabase provider (Phase 10+)
 
-**Out of Scope (Delegated to Provider):** 
+**Out of Scope (Delegated to Provider):**
+
 - User registration UI (use provider-hosted pages)
 - Login UI (use provider-hosted pages)
 - Password reset UI (use provider-hosted pages)
@@ -476,6 +491,7 @@ This is the right trade-off for most applications.
 - Brute force protection (provider handles)
 
 **Future (Post-MVP):**
+
 - OAuth providers (Google, GitHub) via Supabase/Keycloak
 - Multi-factor authentication (MFA) - provider-managed
 - Role-based permissions
