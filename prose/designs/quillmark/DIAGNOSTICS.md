@@ -123,108 +123,26 @@ export class QuillmarkError extends Error {
 
 ### Render Error Handling
 
-When the WASM engine throws an error during rendering, the service should:
+Service error handling flow:
+1. Catch errors from WASM boundary
+2. Extract diagnostic information if available
+3. Create `QuillmarkError` with diagnostic attached
+4. Throw to caller
 
-1. **Catch the error** from the WASM boundary
-2. **Extract diagnostic information** if available
-3. **Create QuillmarkError** with diagnostic attached
-4. **Throw to caller** for handling
+### Diagnostic Extraction
 
-### Example Implementation
+Service extracts diagnostics from WASM errors, handling:
+- Plain object errors with diagnostic property
+- Map objects from WASM (converted to plain objects)
+- Errors that are themselves diagnostics
 
-```typescript
-async renderForPreview(markdown: string): Promise<RenderResult> {
-	this.validateInitialized();
+### Diagnostic Normalization
 
-	try {
-		const result = exporters!.render(this.engine!, markdown, {});
-		return result;
-	} catch (error) {
-		// Check if error contains diagnostic information
-		const diagnostic = this.extractDiagnostic(error);
-
-		if (diagnostic) {
-			// Render error with diagnostic information
-			throw new QuillmarkError(
-				'render_error',
-				diagnostic.message || 'Failed to render preview',
-				diagnostic
-			);
-		} else {
-			// Generic render error
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
-		}
-	}
-}
-
-/**
- * Extract diagnostic information from WASM error
- */
-private extractDiagnostic(error: unknown): QuillmarkDiagnostic | null {
-	// The WASM engine may return errors with a `diagnostic` property
-	// or embed diagnostic information in the error structure
-	if (error && typeof error === 'object') {
-		// Handle Map objects from WASM
-		if (error instanceof Map) {
-			// Check if the Map has diagnostic structure (type: 'diagnostic')
-			if (error.get('type') === 'diagnostic') {
-				// Convert Map to plain object
-				const obj: Record<string, unknown> = {};
-				error.forEach((value, key) => {
-					obj[key] = value;
-				});
-				return this.normalizeDiagnostic(obj);
-			}
-		}
-
-		const err = error as any;
-
-		// Check for diagnostic property
-		if (err.diagnostic) {
-			return this.normalizeDiagnostic(err.diagnostic);
-		}
-
-		// Check if error itself is a diagnostic
-		if (err.severity && err.message) {
-			return this.normalizeDiagnostic(err);
-		}
-	}
-
-	return null;
-}
-
-/**
- * Normalize WASM diagnostic to TypeScript type
- */
-private normalizeDiagnostic(diagnostic: any): QuillmarkDiagnostic {
-	return {
-		severity: this.normalizeSeverity(diagnostic.severity),
-		code: diagnostic.code || undefined,
-		message: diagnostic.message || 'Unknown error',
-		location: diagnostic.primary ? {
-			line: diagnostic.primary.line,
-			column: diagnostic.primary.column,
-			length: diagnostic.primary.length
-		} : undefined,
-		hint: diagnostic.hint || undefined,
-		sourceChain: diagnostic.source_chain || diagnostic.sourceChain || []
-	};
-}
-
-/**
- * Normalize severity to lowercase TypeScript type
- */
-private normalizeSeverity(severity: unknown): DiagnosticSeverity {
-	if (typeof severity === 'string') {
-		const lower = severity.toLowerCase();
-		if (lower === 'error' || lower === 'warning' || lower === 'info') {
-			return lower as DiagnosticSeverity;
-		}
-	}
-	return 'error'; // Default to error
-}
-```
+Converts WASM diagnostic format to TypeScript interface:
+- Normalizes severity to lowercase
+- Handles snake_case to camelCase conversion
+- Provides defaults for missing fields
+- Type-safe for consumers
 
 ## Error Propagation
 
@@ -313,30 +231,22 @@ Potential improvements for future versions:
 
 ### Unit Tests
 
-**Service Layer:**
+Service layer testing:
+- Diagnostic extraction from various error formats (plain objects, Map objects)
+- Diagnostic normalization (snake_case → camelCase)
+- Severity normalization
+- QuillmarkError with and without diagnostic
+- Fallback to generic error message
+- Error propagation
 
-- Test diagnostic extraction from WASM errors (both plain objects and Map objects)
-- Test diagnostic normalization (snake_case → camelCase)
-- Test severity normalization with dedicated function
-- Test QuillmarkError with and without diagnostic
-- Test fallback to generic error message
-- Test error propagation to caller
-
-**Mock Scenarios:**
-
-- Typst syntax error with location
-- Template field validation error with hint
-- Backend compilation error with source chain
-- Generic error without diagnostic
-- Map-based diagnostic from WASM
+Mock scenarios: Typst syntax errors, template validation errors, backend compilation errors, generic errors.
 
 ### Integration Tests
 
-**Full Error Flow:**
-
+Full error flow testing:
 1. Trigger render error with invalid markdown
-2. Verify diagnostic information extracted
-3. Verify error propagated to component
+2. Verify diagnostic extraction
+3. Verify error propagation to component
 4. Verify UI displays diagnostic details
 
 ## References

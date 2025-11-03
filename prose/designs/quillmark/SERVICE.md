@@ -91,58 +91,17 @@ class QuillmarkError extends Error {
 
 ## Implementation
 
-### File Location
+### File Organization
 
-```
-src/lib/services/quillmark/
-├── index.ts              # Service exports
-├── types.ts              # TypeScript types and interfaces
-├── service.ts            # QuillmarkService implementation
-├── quillmark.test.ts     # Unit tests
-└── README.md             # Service documentation
-```
+Service implementation located in `src/lib/services/quillmark/` with separation of concerns:
+- Type definitions
+- Service implementation
+- Helper functions
+- Tests and documentation
 
 ### Singleton Pattern
 
-The service uses a singleton pattern to ensure only one Quillmark engine instance exists:
-
-```typescript
-class QuillmarkServiceImpl implements QuillmarkService {
-	private static instance: QuillmarkServiceImpl | null = null;
-	private engine: Quillmark | null = null;
-	private manifest: QuillManifest | null = null;
-	private initialized = false;
-
-	private constructor() {}
-
-	static getInstance(): QuillmarkServiceImpl {
-		if (!QuillmarkServiceImpl.instance) {
-			QuillmarkServiceImpl.instance = new QuillmarkServiceImpl();
-		}
-		return QuillmarkServiceImpl.instance;
-	}
-
-	async initialize(): Promise<void> {
-		if (this.initialized) return;
-
-		// Load manifest
-		this.manifest = await this.loadManifest();
-
-		// Create engine
-		this.engine = new Quillmark();
-
-		// Preload all Quills
-		await this.preloadQuills();
-
-		this.initialized = true;
-	}
-
-	// ... other methods
-}
-
-// Export singleton instance
-export const quillmarkService = QuillmarkServiceImpl.getInstance();
-```
+Single engine instance per application lifecycle to avoid re-initialization overhead and maintain consistent state.
 
 ### Initialization Flow
 
@@ -192,134 +151,66 @@ renderForPreview(markdown)
 
 ### Error Handling
 
-The service implements defensive error handling:
+Defensive error handling with specific error codes:
+- `not_initialized` - Service not initialized
+- `quill_not_found` - Requested Quill doesn't exist  
+- `render_error` - Rendering failed
+- `load_error` - Initialization failed
 
-1. **Not Initialized**: Throw `QuillmarkError` with code `not_initialized`
-2. **Quill Not Found**: Throw `QuillmarkError` with code `quill_not_found`
-3. **Render Errors**: Catch and wrap with code `render_error`
-4. **Load Errors**: Catch and wrap with code `load_error`
-
-Errors include descriptive messages for debugging.
+Errors include diagnostic information when available from WASM engine.
 
 ## State Management
 
 ### Internal State
 
-- `engine`: Quillmark WASM instance (null until initialized)
-- `manifest`: Loaded manifest data (null until initialized)
-- `initialized`: Boolean flag for initialization status
+- WASM engine instance (lazy-loaded)
+- Quill manifest metadata
+- Initialization status flag
 
 ### State Validation
 
-Methods validate state before executing:
-
-```typescript
-private validateInitialized(): void {
-  if (!this.initialized || !this.engine) {
-    throw new QuillmarkError('not_initialized', 'Service not initialized');
-  }
-}
-
-private validateQuillExists(quillName: string): void {
-  const exists = this.manifest?.quills.some(q => q.name === quillName);
-  if (!exists) {
-    throw new QuillmarkError('quill_not_found', `Quill "${quillName}" not found`);
-  }
-}
-```
+Methods validate initialization state and quill existence before operations.
 
 ## Testing Strategy
 
 ### Unit Tests
 
-Test file: `src/lib/services/quillmark/quillmark.test.ts`
-
-**Test Cases:**
-
-1. Singleton pattern enforcement
-2. Initialization success path
-3. Initialization error handling
-4. Render methods require initialization
-5. Render methods validate Quill existence
-6. PDF rendering success
-7. SVG rendering success
-8. Download method invocation
-9. Available Quills list retrieval
-
-### Mock Strategy
-
-Use vitest mocks for external dependencies:
-
-- Mock `@quillmark-test/web` module
-- Mock `fetch()` for manifest and zip files
-- Verify proper delegation to Quillmark APIs
+Service layer testing focuses on:
+- Singleton pattern enforcement
+- Initialization lifecycle
+- Method precondition validation
+- Error handling and propagation
+- Mock WASM dependencies
 
 ### Integration Tests
 
-Integration tests are **out of scope** for this phase. The service relies on the `@quillmark-test/web` library being tested independently.
+Out of scope - relies on `@quillmark-test/web` library testing.
 
 ## Usage Examples
 
 ### Application Initialization
 
 ```typescript
-// src/routes/+layout.svelte or +page.svelte
-import { onMount } from 'svelte';
-import { quillmarkService } from '$lib/services/quillmark';
-
-onMount(async () => {
-	try {
-		await quillmarkService.initialize();
-		console.log('Quillmark ready');
-	} catch (error) {
-		console.error('Failed to initialize Quillmark:', error);
-	}
-});
+// Initialize service once on app load
+await quillmarkService.initialize();
 ```
 
 ### Rendering Documents
 
 ```typescript
-import { quillmarkService } from '$lib/services/quillmark';
-
-// Render to PDF and download
-async function downloadPDF() {
-	try {
-		await quillmarkService.downloadDocument(markdown, 'usaf_memo', 'my-memo.pdf', 'pdf');
-	} catch (error) {
-		console.error('Render failed:', error);
-	}
-}
+// Render to PDF for download
+const pdfBlob = await quillmarkService.renderToPDF(markdown, 'usaf_memo');
 
 // Render for preview with auto-detection
-async function updatePreview() {
-	try {
-		const result = await quillmarkService.renderForPreview(markdown);
-		
-		if (result.outputFormat === 'pdf') {
-			const blob = resultToBlob(result);
-			const url = URL.createObjectURL(blob);
-			embedElement.src = url;
-		} else if (result.outputFormat === 'svg') {
-			const pages = resultToSVGPages(result);
-			// Display SVG pages
-		}
-	} catch (error) {
-		console.error('Preview failed:', error);
-	}
-}
+const result = await quillmarkService.renderForPreview(markdown);
+// Use helper functions to extract data based on result.outputFormat
 ```
 
 ### Listing Available Quills
 
 ```typescript
-import { quillmarkService } from '$lib/services/quillmark';
-
 const quills = quillmarkService.getAvailableQuills();
-// Returns: [
-//   { name: 'taro', description: '...', backend: 'typst', exampleFile: 'taro.md' },
-//   { name: 'usaf_memo', description: '...', backend: 'typst', exampleFile: 'usaf_memo.md' }
-// ]
+// Returns array of QuillMetadata objects
 ```
 
 ## Dependencies

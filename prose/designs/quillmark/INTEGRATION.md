@@ -140,44 +140,16 @@ Add to `package.json`:
 
 ### 2. Application Initialization
 
-Initialize service in root layout or main page:
-
-```typescript
-import { quillmarkService } from '$lib/services/quillmark';
-
-onMount(async () => {
-	await quillmarkService.initialize();
-});
-```
+Service initialized in root layout or main page on mount.
 
 ### 3. Document Rendering
 
-Components can request renders through the service:
+Components request renders through service:
+- `renderForPreview()`: Auto-detects backend and format from frontmatter
+- `renderToPDF()`: Explicit PDF rendering for downloads
+- `downloadDocument()`: Render and trigger download
 
-```typescript
-import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
-
-// Render for preview (auto-detects backend and format from frontmatter)
-const result = await quillmarkService.renderForPreview(markdown);
-if (result.outputFormat === 'pdf') {
-	// Display PDF blob
-	const blob = resultToBlob(result);
-	const url = URL.createObjectURL(blob);
-	embedElement.src = url;
-} else if (result.outputFormat === 'svg') {
-	// Display SVG pages
-	const pages = resultToSVGPages(result);
-	pages.forEach(page => {
-		const div = document.createElement('div');
-		div.innerHTML = page;
-		previewElement.appendChild(div);
-	});
-}
-
-// Render to specific format for download
-const pdfBlob = await quillmarkService.renderToPDF(markdown, 'usaf_memo');
-await quillmarkService.downloadDocument(markdown, 'taro', 'output.svg', 'svg');
-```
+Helper functions available for extracting data from `RenderResult`.
 
 ## Security Considerations
 
