@@ -44,6 +44,14 @@ class QuillMarkDecorator {
 		// Find all metadata blocks
 		const blocks = findMetadataBlocks(doc);
 
+		// Collect all decorations from all visible blocks first
+		const allDecorations: Array<{
+			from: number;
+			to: number;
+			decoration: Decoration;
+			isLine: boolean;
+		}> = [];
+
 		// Only process visible blocks for performance
 		// Note: For documents with many blocks, this could be optimized with
 		// binary search or spatial indexing to find intersecting blocks more efficiently
@@ -52,26 +60,39 @@ class QuillMarkDecorator {
 				// Skip blocks outside visible range
 				if (block.to < from || block.from > to) continue;
 
-				this.decorateBlock(builder, block, doc);
+				this.collectBlockDecorations(allDecorations, block, doc);
 			}
+		}
+
+		// Sort all decorations by position before adding to builder
+		allDecorations.sort((a, b) => {
+			if (a.from !== b.from) return a.from - b.from;
+			if (a.to !== b.to) return a.to - b.to;
+			// Line decorations (isLine=true) should come before mark decorations (isLine=false)
+			if (a.isLine !== b.isLine) return a.isLine ? -1 : 1;
+			return 0;
+		});
+
+		// Add all decorations in sorted order
+		for (const { from, to, decoration } of allDecorations) {
+			builder.add(from, to, decoration);
 		}
 
 		return builder.finish();
 	}
 
-	decorateBlock(
-		builder: RangeSetBuilder<Decoration>,
-		block: MetadataBlock,
-		doc: import('@codemirror/state').Text
-	) {
-		// Collect all decorations to sort them before adding to builder
-		// We need to track the type to ensure line decorations come before mark decorations
-		const decorations: Array<{
+	collectBlockDecorations(
+		decorations: Array<{
 			from: number;
 			to: number;
 			decoration: Decoration;
 			isLine: boolean;
-		}> = [];
+		}>,
+		block: MetadataBlock,
+		doc: import('@codemirror/state').Text
+	) {
+		// Collect all decorations for this block
+		// We need to track the type to ensure line decorations come before mark decorations
 
 		// Decorate opening delimiter line
 		const openLine = doc.lineAt(block.from);
@@ -160,21 +181,6 @@ class QuillMarkDecorator {
 					isLine: false
 				});
 			}
-		}
-
-		// Sort decorations by position (from, then to, then line decorations first)
-		// Line decorations must come before mark decorations at the same position
-		decorations.sort((a, b) => {
-			if (a.from !== b.from) return a.from - b.from;
-			if (a.to !== b.to) return a.to - b.to;
-			// Line decorations (isLine=true) should come before mark decorations (isLine=false)
-			if (a.isLine !== b.isLine) return a.isLine ? -1 : 1;
-			return 0;
-		});
-
-		// Add all decorations in sorted order
-		for (const { from, to, decoration } of decorations) {
-			builder.add(from, to, decoration);
 		}
 	}
 }
