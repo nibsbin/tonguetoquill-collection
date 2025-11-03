@@ -24,6 +24,8 @@ interface StoredUser {
 	updated_at: string;
 }
 
+import { MOCK_JWT_SECRET } from '$env/static/private';
+
 /**
  * Mock Authentication Provider
  * Uses in-memory Map storage and simple JWT-like tokens
@@ -39,7 +41,7 @@ export class MockAuthProvider implements AuthContract {
 	private REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 	constructor(secret?: string) {
-		this.secret = secret || process.env.MOCK_JWT_SECRET || 'dev-secret-key';
+		this.secret = secret || MOCK_JWT_SECRET || 'dev-secret-key';
 		this.initializeDefaultUser();
 	}
 
