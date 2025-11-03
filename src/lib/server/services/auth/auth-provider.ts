@@ -5,6 +5,7 @@
 
 import type { AuthContract } from '$lib/services/auth/types';
 import { MockAuthProvider } from './auth-mock-provider';
+import { USE_AUTH_MOCKS, MOCK_JWT_SECRET } from '$env/static/private';
 
 let cachedProvider: AuthContract | null = null;
 
@@ -12,10 +13,10 @@ let cachedProvider: AuthContract | null = null;
  * Create authentication service based on environment
  */
 export function createAuthService(): AuthContract {
-	const useMocks = process.env.USE_AUTH_MOCKS === 'true';
+	const useMocks = USE_AUTH_MOCKS === 'true';
 
 	if (useMocks) {
-		return new MockAuthProvider(process.env.MOCK_JWT_SECRET);
+		return new MockAuthProvider(MOCK_JWT_SECRET);
 	}
 
 	// TODO: Phase 10 - Implement SupabaseAuthProvider
