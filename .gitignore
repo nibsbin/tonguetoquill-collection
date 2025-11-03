@@ -8,6 +8,8 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
+/static/templates
+/static/quills
 
 # OS
 .DS_Store
@@ -25,3 +27,5 @@ vite.config.ts.timestamp-*
 
 prompts
 .idea
+
+AGENTS.md

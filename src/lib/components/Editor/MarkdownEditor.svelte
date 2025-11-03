@@ -4,7 +4,21 @@
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+	import {
+		foldKeymap,
+		foldEffect,
+		foldState,
+		unfoldEffect,
+		foldedRanges,
+		codeFolding
+	} from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
+	import {
+		quillmarkDecorator,
+		createQuillmarkTheme,
+		quillmarkFoldService,
+		isMetadataDelimiter
+	} from '$lib/editor';
 
 	interface Props {
 		value: string;
@@ -27,6 +41,7 @@
 			keymap.of([
 				...defaultKeymap,
 				...historyKeymap,
+				...foldKeymap,
 				{
 					key: 'Mod-b',
 					run: () => {
@@ -58,7 +73,34 @@
 				}
 			}),
 			EditorView.lineWrapping,
-			createEditorTheme()
+			createEditorTheme(),
+			quillmarkDecorator,
+			createQuillmarkTheme(),
+			quillmarkFoldService,
+			foldState,
+			codeFolding({
+				preparePlaceholder: (state, range) => range,
+				placeholderDOM: (view, onclick, prepared) => {
+					const wrapper = document.createElement('span');
+					wrapper.className = 'cm-foldPlaceholder';
+					wrapper.onclick = onclick;
+
+					const foldedText = view.state.doc.sliceString(prepared.from, prepared.to);
+					const contentLines = foldedText
+						.trim()
+						.split('\n')
+						.filter((line) => line.trim() !== '---');
+					const firstLine = contentLines[0] || '';
+
+					if (firstLine) {
+						wrapper.textContent = `--- ${firstLine} ---`;
+					} else {
+						wrapper.textContent = '--- ---';
+					}
+
+					return wrapper;
+				}
+			})
 		];
 
 		// Conditionally add line numbers
@@ -117,26 +159,9 @@
 		editorView.focus();
 	}
 
-	function insertAtCursor(text: string) {
-		if (!editorView) return;
-
-		const state = editorView.state;
-		const selection = state.selection.main;
-
-		const transaction = state.update({
-			changes: {
-				from: selection.from,
-				to: selection.to,
-				insert: text
-			},
-			selection: {
-				anchor: selection.from + text.length
-			}
-		});
-
-		editorView.dispatch(transaction);
-		editorView.focus();
-	}
+	// insertAtCursor removed: previously unused utility for inserting text at the
+	// editor cursor. Kept formatting helpers above; if insertion is needed later
+	// we can reintroduce a focused implementation then.
 
 	function handleBold() {
 		applyFormatting('**');
@@ -186,7 +211,74 @@
 	}
 
 	function handleToggleFrontmatter() {
-		console.log('Toggle frontmatter folding (not yet implemented)');
+		if (!editorView) return;
+
+		const state = editorView.state;
+		const doc = state.doc;
+		const effects = [];
+
+		// Get currently folded ranges
+		const folded = foldedRanges(state);
+		const metadataBlocks = [];
+
+		// Find all metadata blocks
+		for (let lineNum = 1; lineNum <= doc.lines; lineNum++) {
+			if (isMetadataDelimiter(lineNum, doc)) {
+				const line = doc.line(lineNum);
+
+				// Find the closing delimiter
+				let closingLineNum = null;
+				for (let j = lineNum + 1; j <= doc.lines; j++) {
+					if (isMetadataDelimiter(j, doc)) {
+						closingLineNum = j;
+						break;
+					}
+				}
+
+				if (closingLineNum !== null) {
+					const closingLine = doc.line(closingLineNum);
+					const foldTo = closingLine.to < doc.length ? closingLine.to + 1 : closingLine.to;
+					metadataBlocks.push({ from: line.from, to: foldTo });
+					lineNum = closingLineNum;
+				}
+			}
+		}
+
+		// Check if ALL metadata blocks are currently folded
+		let allFolded = metadataBlocks.length > 0;
+		for (const block of metadataBlocks) {
+			let isFolded = false;
+			folded.between(block.from, block.to, (from, to) => {
+				if (from === block.from && to === block.to) {
+					isFolded = true;
+					return false;
+				}
+			});
+			if (!isFolded) {
+				allFolded = false;
+				break;
+			}
+		}
+
+		// Toggle: if ALL are folded, unfold all. Otherwise (if any are expanded), fold all.
+		if (allFolded) {
+			// Unfold all metadata blocks
+			for (const block of metadataBlocks) {
+				effects.push(unfoldEffect.of({ from: block.from, to: block.to }));
+			}
+		} else {
+			// Fold all metadata blocks
+			for (const block of metadataBlocks) {
+				effects.push(foldEffect.of({ from: block.from, to: block.to }));
+			}
+		}
+
+		// Apply all effects at once
+		if (effects.length > 0) {
+			editorView.dispatch({ effects });
+		}
+
+		editorView.focus();
 	}
 
 	function handleBulletList() {
@@ -324,17 +416,23 @@
 	// Recreate editor when showLineNumbers or theme changes
 	$effect(() => {
 		// Track both showLineNumbers and isDarkTheme for reactivity
-		showLineNumbers;
-		isDarkTheme;
+		// use `void` to satisfy linters that disallow unused expressions
+		void showLineNumbers;
+		void isDarkTheme;
 
 		// Only recreate if editor already exists (not initial mount)
 		if (editorView && editorElement) {
 			const currentValue = editorView.state.doc.toString();
 			editorView.destroy();
-			editorView = createEditor(currentValue);
+
+			// Use requestAnimationFrame to ensure CSS custom properties have updated
+			// before creating the new editor with theme extensions
+			requestAnimationFrame(() => {
+				editorView = createEditor(currentValue);
+			});
 		}
 	});
 </script>
 
 <!-- Editor -->
-<div class="h-full overflow-hidden bg-editor-background" bind:this={editorElement}></div>
+<div class="bg-editor-background h-full overflow-hidden" bind:this={editorElement}></div>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	/* eslint-disable svelte/no-navigation-without-resolve */
 	import { onMount } from 'svelte';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { documentStore } from '$lib/stores/documents.svelte';
@@ -93,7 +92,7 @@
 		<div class="flex flex-1 flex-col">
 			<!-- Top Menu -->
 			<TopMenu
-				fileName={documentStore.activeDocument?.name || 'Untitled'}
+				fileName={documentStore.activeDocument?.name ?? ''}
 				onDownload={handleDownload}
 				saveStatus={autoSave.saveState.status}
 				saveError={autoSave.saveState.errorMessage}

@@ -57,6 +57,17 @@ All colors are defined as CSS custom properties in `src/app.css`, with separate 
 - `--color-editor-gutter-background`: Line number gutter background
 - `--color-editor-gutter-foreground`: Line number text
 
+**Syntax Highlighting Colors**:
+
+- `--color-syntax-keyword`: Keywords and important structural elements (SCOPE/QUILL keywords, function keywords)
+- `--color-syntax-identifier`: Identifiers and names (scope names, quill template names, variable names)
+- `--color-syntax-string`: String literals and text values
+- `--color-syntax-number`: Numeric literals
+- `--color-syntax-boolean`: Boolean values and constants
+- `--color-syntax-metadata-bg`: Background tint for metadata blocks (light mode)
+- `--color-syntax-metadata-bg-dark`: Background tint for metadata blocks (dark mode)
+- `--color-syntax-metadata-border`: Border color for metadata blocks
+
 **Dark Theme Values** (`.dark` class):
 
 - Background: #18181b (zinc-900)
@@ -64,6 +75,13 @@ All colors are defined as CSS custom properties in `src/app.css`, with separate 
 - Borders: #3f3f46 (zinc-700)
 - Muted Foreground: #71717a (zinc-500)
 - Foreground: #f4f4f5 (zinc-100)
+- Syntax Keyword: #355e93 (USAF blue)
+- Syntax Identifier: #06b6d4 (cyan)
+- Syntax String: #22c55e (green)
+- Syntax Number: #f59e0b (amber)
+- Syntax Boolean: #8b5cf6 (purple)
+- Syntax Metadata Background: rgba(53, 94, 147, 0.08)
+- Syntax Metadata Border: #355e93 (USAF blue)
 
 **Light Theme Values** (`:root`):
 
@@ -72,8 +90,17 @@ All colors are defined as CSS custom properties in `src/app.css`, with separate 
 - Borders: #e4e4e7 (light gray)
 - Muted Foreground: #71717a (gray)
 - Foreground: #09090b (near-black)
+- Syntax Keyword: #355e93 (USAF blue)
+- Syntax Identifier: #0891b2 (darker cyan for better contrast on light background)
+- Syntax String: #16a34a (darker green for better contrast)
+- Syntax Number: #d97706 (darker amber for better contrast)
+- Syntax Boolean: #7c3aed (darker purple for better contrast)
+- Syntax Metadata Background: rgba(53, 94, 147, 0.03)
+- Syntax Metadata Border: #355e93 (USAF blue)
 
 **Brand**: USAF Blue (#355e93) for accents and primary actions (preserved from legacy)
+
+**Note on Syntax Colors**: The syntax highlighting colors are chosen to provide good contrast in both light and dark themes while maintaining visual consistency. The keyword color uses the USAF blue brand color across both themes to reinforce visual identity. Other syntax colors are adjusted between light and dark modes to maintain WCAG AA contrast requirements (4.5:1 minimum for normal text).
 
 **Preview Section**: Uses `--color-background` which is white in light mode, dark in dark mode
 
@@ -177,6 +204,12 @@ Automatically adapts to system `prefers-contrast: high` media query:
 - Small buttons: 28px (h-7, icon-only toolbar buttons)
 - Medium buttons: 32px (h-8)
 - Standard buttons: 40px (h-10)
+
+### Header & Sidebar alignment (note)
+
+- The top-menu left/document-title area is intentionally set to a predictable height to ensure visual alignment with the left sidebar slots. In the implementation this is set to `3.1rem` for the left area and the global token `--top-menu-height` is derived from `--sidebar-collapsed-width` so the header and collapsed sidebar keep matched baselines.
+- A small utility class `.top-menu-strong-border` was added to centralize a slightly heavier bottom divider (1.5px) for the top menu so visual weight can be themed in one place.
+- The sidebar slot container (`.sidebar-button-slot`) now uses `box-sizing: border-box` so declared slot heights include padding. Additionally, the first slot (the hamburger slot) uses slightly reduced vertical padding to align its bottom with the top-menu baseline. These changes make slot heights predictable and reduce the need for per-slot manual offsets.
 
 **Reference**: Sidebar dimensions updated per sidebar redesign (October 2025)
 
@@ -516,16 +549,11 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 
 #### Theme Switching Mechanism
 
-**Library**: Use `mode-watcher` library (already in dependencies) for theme state management.
-
 **Theme Store** (`src/lib/stores/theme.svelte.ts`):
 
 - Export theme utilities: current mode, toggle function, explicit setters for light/dark/system
-- Integrates with mode-watcher's API for consistent behavior
 
 **Root Layout Integration**: Initialize ModeWatcher component in root layout to enable theme detection and switching throughout the application.
-
-**Persistence**: Theme preference automatically persisted to localStorage by mode-watcher.
 
 #### Component Migration Strategy
 
@@ -610,7 +638,6 @@ This design supports a phased implementation approach (detailed in the plan docu
 
 - [Tailwind CSS 4.0 Theme Configuration](https://tailwindcss.com/docs/theme)
 - [shadcn-svelte Theming](https://www.shadcn-svelte.com/docs/theming)
-- [mode-watcher Documentation](https://mode-watcher.svecosystem.com/)
 - [CodeMirror Theming Guide](https://codemirror.net/examples/styling/)
 - [WCAG 2.1 Color Contrast Guidelines](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html)
 
