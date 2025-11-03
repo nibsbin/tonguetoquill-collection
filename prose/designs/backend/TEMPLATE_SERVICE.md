@@ -19,7 +19,7 @@ The Template Service provides read-only access to markdown templates stored in `
 
 ### Template Metadata Structure
 
-From `tonguetoquill-collection/templates/templates.json`:
+Individual template entry from the manifest:
 
 ```json
 {
@@ -29,6 +29,29 @@ From `tonguetoquill-collection/templates/templates.json`:
 	"production": true
 }
 ```
+
+### Manifest File Format
+
+The `templates.json` file in `tonguetoquill-collection/templates/` is a direct array of template metadata:
+
+```json
+[
+	{
+		"name": "U.S. Air Force Memo",
+		"description": "AFH 33-337 compliant official memorandum for the U.S. Air Force.",
+		"file": "usaf_template.md",
+		"production": true
+	},
+	{
+		"name": "U.S. Space Force Memo",
+		"description": "Official memorandum template for the U.S. Space Force.",
+		"file": "ussf_template.md",
+		"production": true
+	}
+]
+```
+
+The service implementation wraps this array in a `TemplateManifest` object internally for type safety.
 
 ### TypeScript Interfaces
 
@@ -197,7 +220,7 @@ export const templateService = TemplateServiceImpl.getInstance();
 initialize()
   │
   └─> loadManifest()
-      └─> fetch('/tonguetoquill-collection/templates/templates.json')
+      └─> fetch('/templates/templates.json')
           └─> Parse and validate JSON structure
 ```
 
@@ -209,7 +232,7 @@ getTemplate(filename)
   ├─> validateInitialized()
   ├─> getTemplateMetadata(filename)
   │
-  └─> fetch(`/tonguetoquill-collection/templates/${filename}`)
+  └─> fetch(`/templates/${filename}`)
       └─> return { metadata, content }
 ```
 
