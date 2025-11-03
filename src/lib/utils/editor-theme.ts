@@ -22,11 +22,11 @@ export function createEditorTheme(): Extension {
 				fontFamily: 'ui-monospace, monospace'
 			},
 			'.cm-content': {
-				padding: '16px 0',
+				padding: '8px 0',
 				color: styles.getPropertyValue('--color-foreground').trim()
 			},
 			'.cm-line': {
-				padding: '0 16px'
+				padding: '0 8px'
 			},
 			'.cm-cursor, .cm-dropCursor': {
 				borderLeftColor: styles.getPropertyValue('--color-foreground').trim()
