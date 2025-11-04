@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { toast } from 'svelte-sonner';
 	import { rulerStore } from '$lib/stores/ruler.svelte';
+	import { X } from 'lucide-svelte';
 
 	interface Props {
 		/** The container element that holds the SVG to measure */
@@ -158,32 +158,6 @@
 	});
 
 	/**
-	 * Show instructions toast when ruler becomes active
-	 */
-	$effect(() => {
-		if (rulerStore.isActive) {
-			// Show instructional toast using toast.info
-			const id = toast.info('Ruler Mode Active', {
-				description:
-					'Click and drag to measure distances. Hold Shift to snap to horizontal/vertical. Press Esc to exit.',
-				duration: Infinity,
-				position: 'bottom-center',
-				action: {
-					label: 'Exit',
-					onClick: () => {
-						exitRulerMode();
-					}
-				}
-			});
-
-			// Cleanup when ruler is deactivated or component unmounts
-			return () => {
-				toast.dismiss(id);
-			};
-		}
-	});
-
-	/**
 	 * Add/remove event listeners based on drawing state
 	 */
 	$effect(() => {
@@ -256,6 +230,27 @@
 				</g>
 			</svg>
 		{/if}
+
+		<!-- Custom instruction banner -->
+		<div class="ruler-instructions">
+			<div class="ruler-instructions-content">
+				<div class="ruler-instructions-text">
+					<strong>Ruler Mode Active</strong>
+					<span>
+						Click and drag to measure distances. Hold <kbd>Shift</kbd> to snap. Press
+						<kbd>Esc</kbd> to exit.
+					</span>
+				</div>
+				<button
+					class="ruler-instructions-close"
+					onclick={exitRulerMode}
+					aria-label="Exit ruler mode"
+					type="button"
+				>
+					<X size={18} />
+				</button>
+			</div>
+		</div>
 	</div>
 {/if}
 
@@ -317,5 +312,119 @@
 		stroke-linejoin: round;
 		stroke-linecap: round;
 		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+	}
+
+	/* Custom instruction banner */
+	.ruler-instructions {
+		position: absolute;
+		bottom: 1.5rem;
+		left: 50%;
+		transform: translateX(-50%);
+		z-index: 40;
+		pointer-events: auto;
+		animation: slideUp 0.3s ease-out;
+	}
+
+	.ruler-instructions-content {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.875rem 1.25rem;
+		background: rgba(30, 41, 59, 0.95);
+		backdrop-filter: blur(8px);
+		border: 1px solid rgba(99, 102, 241, 0.3);
+		border-radius: 0.75rem;
+		box-shadow:
+			0 4px 6px -1px rgba(0, 0, 0, 0.3),
+			0 2px 4px -1px rgba(0, 0, 0, 0.2),
+			0 0 0 1px rgba(99, 102, 241, 0.1);
+		min-width: 400px;
+		max-width: 600px;
+	}
+
+	.ruler-instructions-text {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		color: white;
+		font-size: 0.875rem;
+		line-height: 1.4;
+	}
+
+	.ruler-instructions-text strong {
+		font-weight: 600;
+		font-size: 0.9375rem;
+		color: rgb(165, 180, 252);
+	}
+
+	.ruler-instructions-text span {
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.ruler-instructions-text kbd {
+		display: inline-block;
+		padding: 0.125rem 0.375rem;
+		background: rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 0.25rem;
+		font-family:
+			ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		color: rgb(165, 180, 252);
+	}
+
+	.ruler-instructions-close {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		padding: 0;
+		background: rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 0.5rem;
+		color: white;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.ruler-instructions-close:hover {
+		background: rgba(239, 68, 68, 0.2);
+		border-color: rgb(239, 68, 68);
+		color: rgb(252, 165, 165);
+	}
+
+	.ruler-instructions-close:active {
+		transform: scale(0.95);
+	}
+
+	@keyframes slideUp {
+		from {
+			opacity: 0;
+			transform: translateX(-50%) translateY(1rem);
+		}
+		to {
+			opacity: 1;
+			transform: translateX(-50%) translateY(0);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.ruler-instructions-content {
+			min-width: auto;
+			max-width: calc(100vw - 2rem);
+			padding: 0.75rem 1rem;
+		}
+
+		.ruler-instructions-text {
+			font-size: 0.8125rem;
+		}
+
+		.ruler-instructions-text strong {
+			font-size: 0.875rem;
+		}
 	}
 </style>
