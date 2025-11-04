@@ -52,7 +52,7 @@
 	{#if children}
 		<!-- Custom trigger mode: Render snippet content -->
 		{@render children()}
-	{:else}
+	{:else if icon}
 		<!-- Standard button mode: Render Button component -->
 		<Button
 			{variant}
