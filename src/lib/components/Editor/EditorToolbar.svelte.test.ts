@@ -36,11 +36,12 @@ describe('EditorToolbar', () => {
 
 	it('should not show save button when manual save not provided', async () => {
 		const onFormat = vi.fn();
-		render(EditorToolbar, {
+		const { container } = render(EditorToolbar, {
 			onFormat,
 			isDirty: false
 		});
-		const saveButton = page.queryByRole('button', { name: 'Save' });
-		expect(saveButton).toBeNull();
+		// Save button should not be rendered when onManualSave is not provided
+		const saveButtons = container.querySelectorAll('[title="Save"]');
+		expect(saveButtons.length).toBe(0);
 	});
 });
