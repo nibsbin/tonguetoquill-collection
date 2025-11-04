@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { rulerStore } from '$lib/stores/ruler.svelte';
 	import { X } from 'lucide-svelte';
+	import Button from '$lib/components/ui/button.svelte';
 
 	interface Props {
 		/** The container element that holds the SVG to measure */
@@ -232,23 +233,31 @@
 		{/if}
 
 		<!-- Custom instruction banner -->
-		<div class="ruler-instructions">
+		<div class="ruler-instructions group">
 			<div class="ruler-instructions-content">
 				<div class="ruler-instructions-text">
-					<strong>Ruler Mode Active</strong>
-					<span>
-						Click and drag to measure distances. Hold <kbd>Shift</kbd> to snap. Press
-						<kbd>Esc</kbd> to exit.
+					<strong class="font-semibold text-accent-foreground">Ruler Mode Active</strong>
+					<span class="text-muted-foreground">
+						Click and drag to measure distances. Hold <kbd
+							class="rounded-sm border border-border bg-muted px-1.5 py-0.5 font-mono text-xs font-medium text-accent-foreground"
+							>Shift</kbd
+						>
+						to snap. Press
+						<kbd
+							class="rounded-sm border border-border bg-muted px-1.5 py-0.5 font-mono text-xs font-medium text-accent-foreground"
+							>Esc</kbd
+						> to exit.
 					</span>
 				</div>
-				<button
-					class="ruler-instructions-close"
+				<Button
+					variant="ghost"
+					size="icon"
+					class="h-8 w-8 shrink-0 hover:bg-destructive/20 hover:text-destructive"
 					onclick={exitRulerMode}
 					aria-label="Exit ruler mode"
-					type="button"
 				>
 					<X size={18} />
-				</button>
+				</Button>
 			</div>
 		</div>
 	</div>
@@ -268,7 +277,7 @@
 	}
 
 	.ruler-overlay.active {
-		background-color: rgba(99, 102, 241, 0.02);
+		background-color: color-mix(in srgb, var(--color-accent) 15%, transparent);
 	}
 
 	.ruler-svg {
@@ -279,35 +288,35 @@
 	}
 
 	.ruler-line {
-		stroke: rgb(99, 102, 241);
+		stroke: var(--color-primary);
 		stroke-width: 2;
 		stroke-dasharray: 6 3;
 		filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 	}
 
 	.ruler-point {
-		stroke: white;
+		stroke: var(--color-background);
 		stroke-width: 2;
 		filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
 	}
 
 	.start-point {
-		fill: rgb(34, 197, 94);
+		fill: #22c55e; /* green-500 for consistency */
 	}
 
 	.end-point {
-		fill: rgb(239, 68, 68);
+		fill: var(--color-destructive);
 	}
 
 	.ruler-text {
-		fill: rgb(30, 27, 75);
+		fill: var(--color-foreground);
 		font-family:
 			ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 		font-size: 15px;
 		font-weight: 600;
 		pointer-events: none;
 		paint-order: stroke fill;
-		stroke: white;
+		stroke: var(--color-background);
 		stroke-width: 4;
 		stroke-linejoin: round;
 		stroke-linecap: round;
@@ -323,6 +332,12 @@
 		z-index: 40;
 		pointer-events: auto;
 		animation: slideUp 0.3s ease-out;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	/* Make banner semi-transparent on hover to see content behind */
+	.ruler-instructions.group:hover {
+		opacity: 0.3;
 	}
 
 	.ruler-instructions-content {
@@ -330,16 +345,15 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 0.875rem 1.25rem;
-		background: rgba(30, 41, 59, 0.95);
-		backdrop-filter: blur(8px);
-		border: 1px solid rgba(99, 102, 241, 0.3);
-		border-radius: 0.75rem;
+		background: var(--color-surface-elevated);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
 		box-shadow:
-			0 4px 6px -1px rgba(0, 0, 0, 0.3),
-			0 2px 4px -1px rgba(0, 0, 0, 0.2),
-			0 0 0 1px rgba(99, 102, 241, 0.1);
+			0 4px 6px -1px rgba(0, 0, 0, 0.1),
+			0 2px 4px -1px rgba(0, 0, 0, 0.06);
 		min-width: 400px;
 		max-width: 600px;
+		transition: opacity 0.2s ease-in-out;
 	}
 
 	.ruler-instructions-text {
@@ -347,58 +361,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
-		color: white;
 		font-size: 0.875rem;
 		line-height: 1.4;
-	}
-
-	.ruler-instructions-text strong {
-		font-weight: 600;
-		font-size: 0.9375rem;
-		color: rgb(165, 180, 252);
-	}
-
-	.ruler-instructions-text span {
-		color: rgba(255, 255, 255, 0.9);
-	}
-
-	.ruler-instructions-text kbd {
-		display: inline-block;
-		padding: 0.125rem 0.375rem;
-		background: rgba(255, 255, 255, 0.1);
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		border-radius: 0.25rem;
-		font-family:
-			ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
-		font-size: 0.8125rem;
-		font-weight: 500;
-		color: rgb(165, 180, 252);
-	}
-
-	.ruler-instructions-close {
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		padding: 0;
-		background: rgba(255, 255, 255, 0.1);
-		border: 1px solid rgba(255, 255, 255, 0.2);
-		border-radius: 0.5rem;
-		color: white;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.ruler-instructions-close:hover {
-		background: rgba(239, 68, 68, 0.2);
-		border-color: rgb(239, 68, 68);
-		color: rgb(252, 165, 165);
-	}
-
-	.ruler-instructions-close:active {
-		transform: scale(0.95);
 	}
 
 	@keyframes slideUp {
@@ -421,10 +385,6 @@
 
 		.ruler-instructions-text {
 			font-size: 0.8125rem;
-		}
-
-		.ruler-instructions-text strong {
-			font-size: 0.875rem;
 		}
 	}
 </style>
