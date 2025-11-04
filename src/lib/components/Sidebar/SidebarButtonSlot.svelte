@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ComponentType } from 'svelte';
+	import type { ComponentType, Snippet } from 'svelte';
 	import Button from '$lib/components/ui/button.svelte';
 
 	type SidebarButtonSlotProps = {
@@ -12,6 +12,7 @@
 		ariaLabel?: string;
 		title?: string;
 		disabled?: boolean;
+		children?: Snippet;
 	};
 
 	let {
@@ -23,7 +24,8 @@
 		onclick,
 		ariaLabel,
 		title,
-		disabled = false
+		disabled = false,
+		children
 	}: SidebarButtonSlotProps = $props();
 </script>
 
@@ -47,9 +49,9 @@
 	   - Label text fades in/out with opacity transition
 -->
 <div class="sidebar-button-slot">
-	{#if $$slots.default}
-		<!-- Custom trigger mode: Render slot content -->
-		<slot />
+	{#if children}
+		<!-- Custom trigger mode: Render snippet content -->
+		{@render children()}
 	{:else}
 		<!-- Standard button mode: Render Button component -->
 		<Button
