@@ -129,15 +129,18 @@ export class SupabaseAuthProvider implements AuthContract {
 				throw new AuthError('invalid_token', 'Token validation failed', 401);
 			}
 
-			// Extract payload information
-			// Note: Supabase has already verified the signature
+			// Decode JWT to extract actual claims
+			// Supabase has already verified the signature, so we can safely decode
+			const jwtPayload = this.decodeJWT(token);
+
+			// Extract payload information from verified token
 			const payload: TokenPayload = {
 				sub: data.user.id,
 				email: data.user.email || '',
-				exp: Math.floor(Date.now() / 1000) + 900, // Estimated, library handles actual validation
-				iat: Math.floor(Date.now() / 1000),
-				role: 'authenticated',
-				aud: 'authenticated'
+				exp: jwtPayload.exp,
+				iat: jwtPayload.iat,
+				role: jwtPayload.role || 'authenticated',
+				aud: jwtPayload.aud || 'authenticated'
 			};
 
 			return payload;
@@ -261,5 +264,24 @@ export class SupabaseAuthProvider implements AuthContract {
 		}
 
 		return new AuthError('unknown_error', message, 500);
+	}
+
+	/**
+	 * Decode JWT payload without verification
+	 * Note: This is safe because Supabase has already verified the signature
+	 */
+	private decodeJWT(token: string): any {
+		const parts = token.split('.');
+		if (parts.length !== 3) {
+			throw new AuthError('invalid_token', 'Invalid token format', 401);
+		}
+
+		try {
+			// Decode the payload (second part) from base64url
+			const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+			return payload;
+		} catch (error) {
+			throw new AuthError('invalid_token', 'Failed to decode token payload', 401);
+		}
 	}
 }
