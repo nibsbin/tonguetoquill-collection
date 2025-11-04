@@ -26,3 +26,8 @@ prompts
 .idea
 
 AGENTS.md
+
+# Supabase
+.branches
+.temp
+.env.local
