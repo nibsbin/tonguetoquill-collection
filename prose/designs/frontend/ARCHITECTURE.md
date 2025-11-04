@@ -15,16 +15,12 @@ Tonguetoquill is a professional single-page application built with SvelteKit 5, 
 
 ## Routing Architecture
 
-### Route Groups and URL Structure
+### Route Structure
 
-**Important**: Route groups use parentheses `(groupname)` to organize routes **without affecting the URL path**.
+The application uses a simple, flat route structure without route groups:
 
-Example:
-
-- `src/routes/(auth)/login/+page.svelte` → URL is `/login` (not `/auth/login`)
-- `src/routes/(auth)/register/+page.svelte` → URL is `/register` (not `/auth/register`)
-
-The parentheses create a folder for organization but are removed from the final URL.
+- `src/routes/+page.svelte` → Main application at `/`
+- `src/routes/api/*` → API endpoints for backend communication
 
 ### Main Routes
 
@@ -32,14 +28,16 @@ The parentheses create a folder for organization but are removed from the final 
 
 - Guest users can explore the app and create documents (stored in browser localStorage only)
 - Authenticated users get full functionality with server persistence
-- Shows login/register prompts for features requiring authentication
-- Login/register buttons visible in header for guests
+- Shows authentication prompt banner for features requiring authentication
+- Login button visible in top menu for guests
 
-**Auth Routes**:
+**Authentication Flow**:
 
-- `/login` - Login page (from `(auth)/login/+page.svelte`)
-- `/register` - Registration page (from `(auth)/register/+page.svelte`)
-- After authentication, redirect back to `/` with full features unlocked
+- Authentication uses OAuth delegation via `/api/auth/login`
+- Users click login → redirected to auth provider's hosted page
+- Provider authenticates and redirects to `/api/auth/callback` with OAuth code
+- Application exchanges code for JWT tokens stored in HTTP-only cookies
+- After authentication, user returned to `/` with full features unlocked
 
 ### Guest Mode vs Authenticated Mode
 
@@ -69,7 +67,16 @@ The parentheses create a folder for organization but are removed from the final 
 
 ### Component Organization
 
-Components are organized by feature in `src/lib/components/`. See [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for detailed structure, testing patterns, and file naming conventions.
+Components are organized by feature in `src/lib/components/`:
+
+- **DocumentList/**: Document list and item components
+- **Editor/**: Markdown editor components (DocumentEditor, MarkdownEditor, EditorToolbar)
+- **Preview/**: Document preview components
+- **Sidebar/**: Sidebar navigation and drawer components
+- **TopMenu/**: Top menu bar component
+- **ui/**: Reusable UI primitives from shadcn-svelte (Button, Dialog, Dropdown, etc.)
+
+See [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for detailed structure, testing patterns, and file naming conventions.
 
 ### Component Hierarchy
 
@@ -81,7 +88,8 @@ Components are organized by feature in `src/lib/components/`. See [COMPONENT_ORG
 
 - Parent to child via props
 - Child to parent via callbacks/events
-- Cross-component via global stores
+- Cross-component via global stores (documentStore, toastStore)
+- Notifications via svelte-sonner (Toaster component)
 
 ## State Management
 
@@ -99,11 +107,11 @@ SvelteKit 5 provides reactive primitives for component state, derived values, an
 
 ### Global Stores
 
-Application-wide state for:
+Application-wide state using Svelte 5 runes (`$state`, `$derived`, `$effect`):
 
-- Authentication status
-- User preferences
-- Document management
+- **documentStore**: Document list, active document, loading states
+- **toastStore**: Toast notifications (wrapper around svelte-sonner)
+- Authentication state managed via server-side session (HTTP-only cookies)
 
 ### Form State
 
@@ -116,27 +124,31 @@ Server-side validation with progressive enhancement:
 
 ### API Routes
 
-RESTful endpoints for:
+RESTful API endpoints in `src/routes/api/`:
 
-- Document operations
-- User management
-- Settings
+**Authentication** (`/api/auth/*`):
 
-### Form Actions
+- `GET /api/auth/login` - Initiate OAuth flow
+- `GET /api/auth/callback` - OAuth callback handler
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/logout` - Sign out
+- `POST /api/auth/refresh` - Refresh token
 
-Handle server-side:
+**Documents** (`/api/documents/*`):
 
-- Form validation
-- Database operations
-- File handling
-- Authentication
+- `GET /api/documents` - List user documents
+- `POST /api/documents` - Create document
+- `GET /api/documents/[id]` - Get document with content
+- `PUT /api/documents/[id]` - Update document
+- `DELETE /api/documents/[id]` - Delete document
+- `GET /api/documents/[id]/metadata` - Get metadata only
 
 ### Session Management
 
-- HTTP-only cookies for tokens
-- Automatic token refresh
-- Protected route verification
-- Redirect handling
+- JWT tokens stored in HTTP-only cookies (`access_token`, `refresh_token`)
+- Automatic token refresh via `/api/auth/refresh`
+- Protected routes verified via `requireAuth()` utility
+- Guest mode fallback for unauthenticated users
 
 ## Progressive Enhancement
 
@@ -148,10 +160,10 @@ Handle server-side:
 
 ### Enhancement Patterns
 
-- Forms submit via HTTP POST by default
-- Enhanced with optimistic UI and validation
+- API communication via fetch() for authenticated users
+- Guest mode uses localStorage for client-side persistence
 - Navigation server-rendered, client-enhanced
-- Loading states added progressively
+- Loading states added progressively with Svelte transitions
 
 ## Performance Strategy
 
@@ -165,7 +177,8 @@ Handle server-side:
 
 - SSR for initial page load
 - Client hydration for interactivity
-- Debounced updates for live preview
+- Debounced updates for auto-save (4 seconds)
+- Live preview updates with Quillmark integration
 
 ### Data Fetching
 
@@ -205,10 +218,11 @@ Breakpoints: 640px (mobile), 768px (tablet), 1024px (desktop), 1280px+ (large)
 
 ### Authentication Security
 
-- JWT in HTTP-only cookies
-- Automatic token refresh
-- Session management
-- Attack prevention (CSRF, XSS, injection)
+- OAuth-based authentication (delegated to provider)
+- JWT tokens in HTTP-only cookies (never exposed to JavaScript)
+- Automatic token refresh before expiration
+- Session management with guest mode fallback
+- Attack prevention (CSRF via SameSite cookies, XSS via automatic escaping)
 
 ## Build & Deployment
 
