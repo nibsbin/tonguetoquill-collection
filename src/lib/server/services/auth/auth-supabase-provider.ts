@@ -30,15 +30,15 @@ export class SupabaseAuthProvider implements AuthContract {
 	private supabase: SupabaseClient;
 
 	constructor() {
-		const supabaseUrl = env.PUBLIC_SUPABASE_URL || env.SUPABASE_URL || '';
-		const supabaseKey = env.SUPABASE_PUBLISHABLE_KEY || env.SUPABASE_ANON_KEY || '';
+		const supabaseUrl = env.PUBLIC_SUPABASE_URL || '';
+		const supabase_publishable_key = env.SUPABASE_PUBLISHABLE_KEY || '';
 
-		if (!supabaseUrl || !supabaseKey) {
+		if (!supabaseUrl || !supabase_publishable_key) {
 			throw new Error('Supabase configuration missing. Check environment variables.');
 		}
 
 		// Create Supabase client
-		this.supabase = createClient(supabaseUrl, supabaseKey, {
+		this.supabase = createClient(supabaseUrl, supabase_publishable_key, {
 			auth: {
 				autoRefreshToken: false, // We handle refresh manually
 				persistSession: false, // Server-side, no persistence needed
