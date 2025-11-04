@@ -242,8 +242,6 @@
 					Ruler Tool
 				</DropdownMenuItem>
 
-				<DropdownMenuSeparator class="bg-border" />
-
 				<!-- Group 2: Info & Help -->
 				<DropdownMenuItem
 					class="border-t border-border text-foreground/80 focus:bg-accent focus:text-foreground"
