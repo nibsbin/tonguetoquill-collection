@@ -123,6 +123,21 @@ export class MockAuthProvider implements AuthContract {
 	}
 
 	/**
+	 * Get the OAuth login URL for mock provider
+	 * Returns a callback URL with a mock authorization code
+	 */
+	async getLoginUrl(redirectUri: string): Promise<string> {
+		await this.simulateDelay();
+
+		// Generate a mock authorization code
+		const mockAuthCode = 'mock_auth_code_' + Date.now();
+
+		// Return the callback URL with the mock code
+		// In mock mode, we skip the actual login page and go straight to callback
+		return `${redirectUri}?code=${mockAuthCode}`;
+	}
+
+	/**
 	 * Exchange OAuth authorization code for tokens
 	 * In mock: Accept any code and return tokens for default user
 	 * This simulates what a real OAuth provider would do

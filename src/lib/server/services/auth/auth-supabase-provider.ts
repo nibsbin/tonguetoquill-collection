@@ -14,6 +14,7 @@ import type {
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
 import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
 import {
 	createClient,
 	type SupabaseClient,
@@ -28,10 +29,14 @@ import {
  */
 export class SupabaseAuthProvider implements AuthContract {
 	private supabase: SupabaseClient;
+	private authMethod: 'email' | 'github';
 
 	constructor() {
-		const supabaseUrl = env.PUBLIC_SUPABASE_URL || '';
-		const supabasePublishableKey = env.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
+		const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL || '';
+		const supabasePublishableKey = publicEnv.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
+
+		// Get auth method from environment (default to email for development)
+		this.authMethod = (env.SUPABASE_AUTH_METHOD as 'email' | 'github') || 'email';
 
 		if (!supabaseUrl || !supabasePublishableKey) {
 			throw new Error('Supabase configuration missing. Check environment variables.');
@@ -45,6 +50,40 @@ export class SupabaseAuthProvider implements AuthContract {
 				detectSessionInUrl: false // Server-side, no URL detection
 			}
 		});
+	}
+
+	/**
+	 * Get the OAuth login URL for Supabase provider
+	 * Returns the Supabase hosted UI URL for authentication
+	 * Supports both email magic link and GitHub OAuth
+	 */
+	async getLoginUrl(redirectUri: string): Promise<string> {
+		if (this.authMethod === 'github') {
+			// Use GitHub OAuth
+			const { data, error } = await this.supabase.auth.signInWithOAuth({
+				provider: 'github',
+				options: {
+					redirectTo: redirectUri,
+					skipBrowserRedirect: true // We want the URL, not to redirect immediately
+				}
+			});
+
+			if (error || !data.url) {
+				throw new AuthError('network_error', 'Failed to generate GitHub login URL', 500);
+			}
+
+			return data.url;
+		} else {
+			// For email-based auth, we need to redirect to a login page
+			// that collects the email and sends a magic link
+			// Since we're using server-side flow, we'll use Supabase's built-in email OTP
+			// The client will need to handle this differently
+			throw new AuthError(
+				'unknown_error',
+				'Email-based auth requires client-side implementation with OTP',
+				500
+			);
+		}
 	}
 
 	/**
