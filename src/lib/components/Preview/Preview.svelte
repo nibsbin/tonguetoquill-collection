@@ -6,6 +6,7 @@
 		type RenderResult
 		// type QuillmarkDiagnostic
 	} from '$lib/services/quillmark/types';
+	import { RulerOverlay } from '$lib/components/RulerOverlay';
 
 	interface Props {
 		/** Markdown content to preview */
@@ -37,6 +38,9 @@
 
 	// Debounce timer
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+	// Container element for ruler overlay
+	let previewContainer = $state<HTMLElement | null>(null);
 
 	/**
 	 * Extract error display information from caught error
@@ -188,7 +192,8 @@
 </script>
 
 <div
-	class="h-full overflow-auto bg-background"
+	bind:this={previewContainer}
+	class="preview-wrapper h-full overflow-auto bg-background"
 	role="region"
 	aria-label="Document preview"
 	aria-live="polite"
@@ -358,9 +363,16 @@
 			<p class="text-muted-foreground">No preview available</p>
 		</div>
 	{/if}
+
+	<!-- Ruler Overlay -->
+	<RulerOverlay containerElement={previewContainer} />
 </div>
 
 <style>
+	.preview-wrapper {
+		position: relative;
+	}
+
 	.preview-svg-container {
 		padding: 0.5rem;
 		display: flex;
