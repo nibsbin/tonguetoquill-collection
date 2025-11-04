@@ -31,8 +31,15 @@ export const GET: RequestHandler = async (event) => {
 			throw error;
 		}
 
-		// Otherwise, log the actual error and redirect to home with error flag
+		// Otherwise, log the actual error with details and redirect to home with error flag
 		console.error('Authentication callback error:', error);
+		if (error instanceof Error) {
+			console.error('Error details:', {
+				name: error.name,
+				message: error.message,
+				stack: error.stack
+			});
+		}
 		throw redirect(302, '/?auth_error=true');
 	}
 };

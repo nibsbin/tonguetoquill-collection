@@ -242,7 +242,7 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 See [LOGIN_PROFILE_UI.md](./LOGIN_PROFILE_UI.md) for detailed authentication UI integration:
 
 - **Guest Mode**: Sign-in button with `log-in` icon
-- **Logged-in Mode**: User profile button with `circle-user` icon and user email
+- **Logged-in Mode**: User profile button with user icon and user email
 - Position: Above settings button, under same divider
 - Clicking triggers authentication modals (sign-in or profile)
 

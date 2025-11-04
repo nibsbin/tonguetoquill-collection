@@ -82,6 +82,13 @@ export class AuthError extends Error {
  */
 export interface AuthContract {
 	/**
+	 * Get the OAuth login URL for this provider
+	 * Returns the URL to redirect users to for authentication
+	 * @param redirectUri - The callback URL to return to after authentication
+	 */
+	getLoginUrl(redirectUri: string): Promise<string>;
+
+	/**
 	 * Exchange OAuth authorization code for tokens
 	 * This is called after the user authenticates with the provider
 	 */
