@@ -46,11 +46,7 @@
 
 {#if open}
 	<!-- Backdrop - only covers the preview pane -->
-	<div
-		class="absolute inset-0 z-40 bg-black/50 backdrop-blur-sm"
-		onclick={handleBackdropClick}
-		role="presentation"
-	>
+	<div class="absolute inset-0 z-40 bg-black/40" onclick={handleBackdropClick} role="presentation">
 		<!-- Dialog Content - centered in preview pane -->
 		<div
 			class="absolute top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-background p-6 shadow-lg"
