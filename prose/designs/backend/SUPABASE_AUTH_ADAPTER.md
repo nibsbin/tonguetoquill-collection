@@ -75,8 +75,8 @@ We use a **custom adapter** approach with `@supabase/supabase-js` core library t
 
 **Configuration:**
 - `SUPABASE_URL`: Project URL (e.g., https://xyz.supabase.co)
-- `SUPABASE_ANON_KEY`: Public anonymous key for API access
-- `SUPABASE_SERVICE_ROLE_KEY` (optional): For admin operations
+- `SUPABASE_PUBLISHABLE_KEY`: Public anonymous key for API access
+- `SUPABASE_SECRET_KEY` (optional): For admin operations
 
 **KISS Approach:**
 - Single client instance (singleton pattern)
@@ -228,6 +228,24 @@ Map Supabase error codes to our AuthError codes:
 - Type conversions
 - Access token storage in HTTP-only cookies (handled by API routes, not adapter)
 
+### Row Level Security (RLS)
+
+**CRITICAL:** This adapter's security model assumes that Row Level Security (RLS) is enabled and correctly configured on all Supabase tables. Without proper RLS policies:
+- Users may access data they shouldn't see
+- Data integrity could be compromised
+- Authorization boundaries may be violated
+
+Always verify RLS policies are in place before deploying to production.
+
+### Key Rotation Strategy
+
+For production deployments, establish a key rotation strategy for `SUPABASE_SECRET_KEY`:
+- Rotate service role keys periodically (e.g., every 90 days)
+- Use Supabase dashboard to generate new keys
+- Update environment variables with zero downtime using rolling deployments
+- Monitor API usage during rotation to detect issues
+- Keep audit logs of key rotation events
+
 **KISS Security:**
 - Trust Supabase's security (they're the experts)
 - Don't implement custom crypto or validation
@@ -239,24 +257,23 @@ Map Supabase error codes to our AuthError codes:
 
 **Required:**
 - `SUPABASE_URL`: Project URL (e.g., https://your-project.supabase.co)
-- `SUPABASE_ANON_KEY`: Public anonymous key for client operations
-- `SUPABASE_JWT_SECRET`: JWT secret for server-side token verification
+- `SUPABASE_PUBLISHABLE_KEY`: Public anonymous key for client operations
 
 **Optional:**
-- `SUPABASE_SERVICE_ROLE_KEY`: Service role key for admin operations (bypasses RLS)
+- `SUPABASE_SECRET_KEY`: Service role key for admin operations (bypasses RLS)
 
-**Note on JWT_SECRET:**
-The `SUPABASE_JWT_SECRET` is required for server-side JWT verification. This is found in your Supabase project settings under API > JWT Secret. The Supabase client library uses this to verify token signatures without making API calls.
+**Note on Token Validation:**
+The supabase-js client library automatically handles JWT verification using the public JWKS endpoint. No manual JWT secret configuration is required.
 
 ### Validation
 
 Adapter should validate configuration on initialization:
-- Check required env vars: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_JWT_SECRET`
+- Check required env vars: `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`
 - Throw clear error if misconfigured
 - No fallback values (fail fast)
 
 **KISS Validation:**
-- Simple if-statement to check for required variables (SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_JWT_SECRET)
+- Simple if-statement to check for required variables (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
 - Fail fast with clear error message on missing configuration
 
 ## Testing Strategy

@@ -91,10 +91,9 @@ export class SupabaseAuthProvider implements AuthContract {
 
   constructor() {
     const supabaseUrl = env.SUPABASE_URL || '';
-    const supabaseKey = env.SUPABASE_ANON_KEY || '';
-    const jwtSecret = env.SUPABASE_JWT_SECRET || '';
+    const supabaseKey = env.SUPABASE_PUBLISHABLE_KEY || '';
 
-    if (!supabaseUrl || !supabaseKey || !jwtSecret) {
+    if (!supabaseUrl || !supabaseKey) {
       throw new Error('Supabase configuration missing. Check environment variables.');
     }
 
@@ -110,8 +109,8 @@ export class SupabaseAuthProvider implements AuthContract {
 }
 ```
 
-**Note on JWT Secret:** 
-The `SUPABASE_JWT_SECRET` is used by the Supabase client for server-side JWT verification. While the basic `createClient` doesn't require it in the constructor, it's needed for proper server-side auth operations.
+**Note on Token Validation:** 
+The supabase-js client library automatically handles JWT verification using the public JWKS endpoint. No manual JWT secret configuration is required.
 
 **KISS Principle:** Use minimal configuration. Default settings work for most cases.
 
@@ -468,8 +467,7 @@ Add Supabase setup instructions:
 ```bash
 USE_AUTH_MOCKS=false
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_JWT_SECRET=your-jwt-secret
+SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 ```
 
 4. Run the application
@@ -483,10 +481,9 @@ USE_AUTH_MOCKS=true  # Set to false for production
 
 # Supabase Configuration (when USE_AUTH_MOCKS=false)
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_JWT_SECRET=your-jwt-secret
+SUPABASE_PUBLISHABLE_KEY=your-publishable-key
 
-# Note: Find JWT_SECRET in Supabase Dashboard > Settings > API > JWT Secret
+# Note: The supabase-js library automatically uses the public JWKS endpoint for token validation
 ```
 
 **Expected Outcome:** Clear setup instructions for Supabase
@@ -557,7 +554,7 @@ Ensure implementation satisfies AuthContract:
 **Zero Breaking Changes:**
 - AuthContract interface unchanged
 - Factory pattern unchanged
-- Environment variable structure unchanged (adds SUPABASE_URL, SUPABASE_ANON_KEY)
+- Environment variable structure unchanged (uses SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
 - API routes unchanged
 - Client service unchanged
 
