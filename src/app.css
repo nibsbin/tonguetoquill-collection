@@ -10,20 +10,18 @@
 	--radius-xl: calc(var(--radius) + 4px);
 
 	/* Sidebar spacing tokens */
-	--sidebar-padding: 0.5rem; /* 8px - consistent padding around all sidebar buttons */
-	--sidebar-button-size: 2.5rem; /* 40px - size of icon buttons */
+	--sidebar-padding: 0.5rem; /* 8px - padding for expanded button labels */
+	--sidebar-button-size: 2.5rem; /* 40px - exact size of icon buttons */
 	--sidebar-icon-size: 1.5rem; /* 24px - size of icons within buttons */
-	--sidebar-collapsed-width: 3rem; /* 48px - collapsed sidebar width (40px button + 8px padding each side) */
+	--sidebar-collapsed-width: 3rem; /* 48px - collapsed sidebar width */
 	--sidebar-expanded-width: 18rem; /* 288px - expanded sidebar width */
 
-	/* Semantic sidebar button slot tokens (DRY - derived from base tokens) */
-	--sidebar-slot-width-collapsed: var(
-		--sidebar-collapsed-width
-	); /* Slot width in collapsed state */
-	--sidebar-slot-height: var(--sidebar-collapsed-width); /* Slot height (square aspect ratio) */
+	/* Derived tokens - calculated for perfect centering */
+	--sidebar-slot-width-collapsed: var(--sidebar-collapsed-width); /* 48px slot width */
+	--sidebar-slot-height: var(--sidebar-collapsed-width); /* 48px slot height (square) */
 	--sidebar-button-spacing: calc(
 		(var(--sidebar-collapsed-width) - var(--sidebar-button-size)) / 2
-	); /* 8px - auto-calculated centering offset */
+	); /* 4px - centers 40px button in 48px slot */
 
 	/* Top menu spacing tokens */
 	--top-menu-height: var(--sidebar-collapsed-width); /* Aligned with sidebar */
