@@ -249,16 +249,17 @@
 						> to exit.
 					</span>
 				</div>
-				<Button
-					variant="ghost"
-					size="icon"
-					class="h-8 w-8 shrink-0 hover:bg-destructive/20 hover:text-destructive"
-					onclick={exitRulerMode}
-					aria-label="Exit ruler mode"
-				>
-					<X size={18} />
-				</Button>
 			</div>
+			<!-- Close button positioned in top-right -->
+			<Button
+				variant="ghost"
+				size="icon"
+				class="ruler-close-button h-7 w-7 shrink-0 text-destructive hover:bg-destructive/20 hover:text-destructive-hover"
+				onclick={exitRulerMode}
+				aria-label="Exit ruler mode"
+			>
+				<X size={16} />
+			</Button>
 		</div>
 	</div>
 {/if}
@@ -336,15 +337,22 @@
 	}
 
 	/* Make banner semi-transparent on hover to see content behind */
-	.ruler-instructions.group:hover {
+	.ruler-instructions.group:hover .ruler-instructions-content {
 		opacity: 0.3;
 	}
 
+	/* Keep close button opaque when banner is hovered */
+	.ruler-instructions.group:hover .ruler-close-button {
+		opacity: 1;
+	}
+
 	.ruler-instructions-content {
+		position: relative;
 		display: flex;
 		align-items: center;
 		gap: 1rem;
 		padding: 0.875rem 1.25rem;
+		padding-right: 3rem; /* Make room for close button */
 		background: var(--color-surface-elevated);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-lg);
@@ -365,6 +373,12 @@
 		line-height: 1.4;
 	}
 
+	.ruler-close-button {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+	}
+
 	@keyframes slideUp {
 		from {
 			opacity: 0;
@@ -381,10 +395,16 @@
 			min-width: auto;
 			max-width: calc(100vw - 2rem);
 			padding: 0.75rem 1rem;
+			padding-right: 2.5rem; /* Adjust for smaller button on mobile */
 		}
 
 		.ruler-instructions-text {
 			font-size: 0.8125rem;
+		}
+
+		.ruler-close-button {
+			top: 0.375rem;
+			right: 0.375rem;
 		}
 	}
 </style>
