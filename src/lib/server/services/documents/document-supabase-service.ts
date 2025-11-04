@@ -26,13 +26,17 @@ import { DocumentError } from '$lib/services/documents/types';
 export class SupabaseDocumentService implements DocumentServiceContract {
 	private supabase: SupabaseClient;
 
-	// Constraints
+	// Constants
 	private readonly MAX_CONTENT_SIZE = 524288; // 0.5 MB in bytes
 	private readonly MAX_NAME_LENGTH = 255;
 	private readonly MIN_NAME_LENGTH = 1;
+	private readonly PGRST_NO_ROWS_ERROR = 'PGRST116'; // PostgREST error code for no rows
 
 	constructor() {
 		const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL || '';
+		// Prefer service role key for server-side operations (bypasses RLS)
+		// Fall back to publishable key for development/testing environments
+		// Production deployments should always set SUPABASE_SECRET_KEY
 		const supabaseKey = env.SUPABASE_SECRET_KEY || publicEnv.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 
 		if (!supabaseUrl || !supabaseKey) {
@@ -107,7 +111,7 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 			return new DocumentError('validation_error', 'Duplicate entry', 400);
 		}
 
-		if (error?.code === 'PGRST116' || message.includes('no rows')) {
+		if (error?.code === this.PGRST_NO_ROWS_ERROR || message.includes('no rows')) {
 			// PostgREST error for no rows returned
 			return new DocumentError('not_found', 'Document not found', 404);
 		}
@@ -212,6 +216,8 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 		const content_size_bytes = this.calculateContentSize(content);
 
 		try {
+			// Note: We manually set updated_at for consistency with mock service
+			// and to ensure timestamps are controlled by the application layer
 			const { data, error } = await this.supabase
 				.from('documents')
 				.update({
@@ -246,6 +252,8 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 		this.validateName(name);
 
 		try {
+			// Note: We manually set updated_at for consistency with mock service
+			// and to ensure timestamps are controlled by the application layer
 			const { data, error } = await this.supabase
 				.from('documents')
 				.update({
@@ -312,6 +320,8 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 			if (error) throw error;
 
 			// Get total count
+			// Note: This is a separate query for simplicity and consistency with mock service
+			// For large datasets, consider cursor-based pagination in future optimization
 			const { count, error: countError } = await this.supabase
 				.from('documents')
 				.select('*', { count: 'exact', head: true })
