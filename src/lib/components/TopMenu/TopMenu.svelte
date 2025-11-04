@@ -10,7 +10,8 @@
 		Check,
 		Loader2,
 		AlertCircle,
-		Share2
+		Share2,
+		Ruler
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import DropdownMenu from '$lib/components/ui/dropdown-menu.svelte';
@@ -19,6 +20,7 @@
 	import DropdownMenuItem from '$lib/components/ui/dropdown-menu-item.svelte';
 	import DropdownMenuSeparator from '$lib/components/ui/dropdown-menu-separator.svelte';
 	import type { SaveStatus } from '$lib/utils/auto-save.svelte';
+	import { rulerStore } from '$lib/stores/ruler.svelte';
 
 	type TopMenuProps = {
 		fileName: string;
@@ -126,6 +128,10 @@
 	function handlePrivacy() {
 		window.open('/privacy', '_blank');
 	}
+
+	function handleRulerToggle() {
+		rulerStore.toggle();
+	}
 </script>
 
 <div
@@ -227,6 +233,14 @@
 				>
 					<Share2 class="mr-2 h-4 w-4" />
 					Share
+				</DropdownMenuItem>
+
+				<DropdownMenuItem
+					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					onclick={handleRulerToggle}
+				>
+					<Ruler class="mr-2 h-4 w-4" />
+					Ruler Tool
 				</DropdownMenuItem>
 
 				<DropdownMenuSeparator class="bg-border" />
