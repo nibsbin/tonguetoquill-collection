@@ -22,22 +22,25 @@ This plan implements the refactoring of SidebarButtonSlot to support custom trig
 
 **File:** `src/lib/components/Sidebar/SidebarButtonSlot.svelte`
 
-#### Task 1.1: Add Slot Support
+#### Task 1.1: Add Snippet Support
 
-- [ ] Modify component template to support conditional rendering
-- [ ] Check for `$$slots.default` to detect custom trigger mode
-- [ ] Render slot content when custom trigger provided
-- [ ] Render standard Button when no slot content provided
-- [ ] Ensure Layer 1 container (`.sidebar-button-slot`) wraps both modes
+- [x] Modify component template to support conditional rendering
+- [x] Use Svelte 5 `children` snippet prop to detect custom trigger mode
+- [x] Render snippet content when custom trigger provided
+- [x] Render standard Button when no snippet content provided
+- [x] Ensure Layer 1 container (`.sidebar-button-slot`) wraps both modes
+- [x] Add null check for `icon` prop to prevent runtime errors
 
-**Changes:**
+**Note:** The implementation uses Svelte 5's modern snippet pattern (`children` prop + `{@render children()}`) instead of the deprecated `$$slots.default` and `<slot>` syntax to avoid deprecation warnings.
+
+**Changes (Actual Implementation):**
 
 ```svelte
 <div class="sidebar-button-slot">
-	{#if $$slots.default}
+	{#if children}
 		<!-- Custom trigger mode -->
-		<slot />
-	{:else}
+		{@render children()}
+	{:else if icon}
 		<!-- Standard button mode (existing) -->
 		<Button
 			{variant}
@@ -65,19 +68,23 @@ This plan implements the refactoring of SidebarButtonSlot to support custom trig
 
 **Validation:**
 
-- [ ] Verify `$$slots` API available in Svelte 5
-- [ ] Test both modes render correctly
-- [ ] Confirm CSS classes apply to correct elements
+- [x] Verified Svelte 5 snippet API works correctly
+- [x] Tested both modes render correctly
+- [x] Confirmed CSS classes apply to correct elements
+- [x] No deprecation warnings
 
 #### Task 1.2: Update TypeScript Types
 
-- [ ] Make `icon` prop optional (not required when using slot)
-- [ ] Keep `isExpanded` prop required (needed for both modes)
-- [ ] Ensure other props remain optional for backward compatibility
+- [x] Make `icon` prop optional (not required when using snippet)
+- [x] Add `children` snippet prop for custom trigger mode
+- [x] Keep `isExpanded` prop required (needed for both modes)
+- [x] Ensure other props remain optional for backward compatibility
 
-**Type Changes:**
+**Type Changes (Actual Implementation):**
 
 ```typescript
+import type { ComponentType, Snippet } from 'svelte';
+
 type SidebarButtonSlotProps = {
 	icon?: ComponentType; // Now optional
 	label?: string; // Already optional
@@ -88,14 +95,15 @@ type SidebarButtonSlotProps = {
 	ariaLabel?: string;
 	title?: string;
 	disabled?: boolean;
+	children?: Snippet; // New: for custom trigger mode
 };
 ```
 
 **Validation:**
 
-- [ ] TypeScript compilation succeeds
-- [ ] No type errors in consuming components
-- [ ] IDE autocomplete works for both usage modes
+- [x] TypeScript compilation succeeds
+- [x] No type errors in consuming components
+- [x] IDE autocomplete works for both usage modes
 
 ### Phase 2: Refactor Settings Button in Sidebar
 
@@ -105,11 +113,11 @@ type SidebarButtonSlotProps = {
 
 **Location:** Lines 291-342
 
-- [ ] Replace `<div class="sidebar-button-slot">` with `<SidebarButtonSlot>`
-- [ ] Move Popover and PopoverTrigger inside SidebarButtonSlot slot
-- [ ] Keep all existing classes on PopoverTrigger
-- [ ] Preserve bind:open, Settings icon, label, and PopoverContent
-- [ ] Ensure isExpanded prop passed to SidebarButtonSlot
+- [x] Replace `<div class="sidebar-button-slot">` with `<SidebarButtonSlot>`
+- [x] Move Popover and PopoverTrigger inside SidebarButtonSlot snippet
+- [x] Keep all existing classes on PopoverTrigger
+- [x] Preserve bind:open, Settings icon, label, and PopoverContent
+- [x] Ensure isExpanded prop passed to SidebarButtonSlot
 
 **Before:**
 
@@ -162,112 +170,112 @@ type SidebarButtonSlotProps = {
 
 **Validation:**
 
-- [ ] Settings button renders in mobile sheet
-- [ ] Popover opens when button clicked
-- [ ] Button styling matches previous implementation
-- [ ] Icon position identical to other buttons
-- [ ] Label shows/hides on expand/collapse
+- [x] Settings button renders in mobile sheet
+- [x] Popover opens when button clicked
+- [x] Button styling matches previous implementation
+- [x] Icon position identical to other buttons
+- [x] Label shows/hides on expand/collapse
 
 #### Task 2.2: Refactor Desktop Settings Button
 
 **Location:** Lines 445-496
 
-- [ ] Apply identical changes as Task 2.1
-- [ ] Replace `<div class="sidebar-button-slot">` with `<SidebarButtonSlot>`
-- [ ] Keep all PopoverContent content identical
+- [x] Apply identical changes as Task 2.1
+- [x] Replace `<div class="sidebar-button-slot">` with `<SidebarButtonSlot>`
+- [x] Keep all PopoverContent content identical
 
 **Validation:**
 
-- [ ] Settings button renders in desktop sidebar
-- [ ] Popover opens when button clicked
-- [ ] Button styling matches previous implementation
-- [ ] Icon position identical to other buttons
-- [ ] Label shows/hides on expand/collapse
-- [ ] Behavior identical to mobile implementation
+- [x] Settings button renders in desktop sidebar
+- [x] Popover opens when button clicked
+- [x] Button styling matches previous implementation
+- [x] Icon position identical to other buttons
+- [x] Label shows/hides on expand/collapse
+- [x] Behavior identical to mobile implementation
 
 ### Phase 3: Verification and Testing
 
 #### Task 3.1: Visual Regression Testing
 
-- [ ] Compare before/after screenshots of collapsed sidebar
-- [ ] Compare before/after screenshots of expanded sidebar
-- [ ] Verify Settings button in mobile sheet
-- [ ] Verify Settings button in desktop sidebar
-- [ ] Check icon alignment with other sidebar buttons
-- [ ] Verify popover positioning and styling
+- [x] Compare before/after screenshots of collapsed sidebar
+- [x] Compare before/after screenshots of expanded sidebar
+- [x] Verify Settings button in mobile sheet
+- [x] Verify Settings button in desktop sidebar
+- [x] Check icon alignment with other sidebar buttons
+- [x] Verify popover positioning and styling
 
 #### Task 3.2: Functional Testing
 
-- [ ] Click Settings button opens popover (mobile)
-- [ ] Click Settings button opens popover (desktop)
-- [ ] Toggle switches work in settings popover
-- [ ] Popover closes on outside click
-- [ ] Popover closes on escape key
-- [ ] Settings persist to localStorage
-- [ ] Dark mode toggle works
-- [ ] Auto-save toggle works
-- [ ] Line numbers toggle works
+- [x] Click Settings button opens popover (mobile)
+- [x] Click Settings button opens popover (desktop)
+- [x] Toggle switches work in settings popover
+- [x] Popover closes on outside click
+- [x] Popover closes on escape key
+- [x] Settings persist to localStorage
+- [x] Dark mode toggle works
+- [x] Auto-save toggle works
+- [x] Line numbers toggle works
 
 #### Task 3.3: Existing Button Verification
 
-- [ ] Hamburger menu button renders correctly
-- [ ] New Document button renders correctly
-- [ ] Sign In button renders correctly (guest mode)
-- [ ] User Profile button renders correctly (logged-in mode)
-- [ ] All buttons maintain identical appearance
-- [ ] All buttons respond to clicks
-- [ ] All button icons align identically
+- [x] Hamburger menu button renders correctly
+- [x] New Document button renders correctly
+- [x] Sign In button renders correctly (guest mode)
+- [x] User Profile button renders correctly (logged-in mode)
+- [x] All buttons maintain identical appearance
+- [x] All buttons respond to clicks
+- [x] All button icons align identically
 
 #### Task 3.4: Responsive Testing
 
-- [ ] Test in desktop viewport (≥1024px)
-- [ ] Test in tablet viewport (768px-1023px)
-- [ ] Test in mobile viewport (<768px)
-- [ ] Verify mobile sheet opens/closes
-- [ ] Verify desktop sidebar expands/collapses
-- [ ] Test window resize transitions
+- [x] Test in desktop viewport (≥1024px)
+- [x] Test in tablet viewport (768px-1023px)
+- [x] Test in mobile viewport (<768px)
+- [x] Verify mobile sheet opens/closes
+- [x] Verify desktop sidebar expands/collapses
+- [x] Test window resize transitions
 
 #### Task 3.5: Keyboard Navigation
 
-- [ ] Tab through all sidebar buttons
-- [ ] Verify focus indicators visible
-- [ ] Enter/Space activate buttons
-- [ ] Escape closes popover
-- [ ] Tab order logical
-- [ ] Focus trap in mobile sheet
+- [x] Tab through all sidebar buttons
+- [x] Verify focus indicators visible
+- [x] Enter/Space activate buttons
+- [x] Escape closes popover
+- [x] Tab order logical
+- [x] Focus trap in mobile sheet
 
 #### Task 3.6: Accessibility Audit
 
-- [ ] Run axe DevTools on sidebar
-- [ ] Verify no new accessibility violations
-- [ ] Check ARIA attributes preserved
-- [ ] Test with screen reader (VoiceOver/NVDA)
-- [ ] Verify focus management
-- [ ] Check color contrast ratios
+- [x] Run axe DevTools on sidebar
+- [x] Verify no new accessibility violations
+- [x] Check ARIA attributes preserved
+- [x] Test with screen reader (VoiceOver/NVDA)
+- [x] Verify focus management
+- [x] Check color contrast ratios
 
 ### Phase 4: Code Quality
 
 #### Task 4.1: Code Review
 
-- [ ] Review SidebarButtonSlot changes
-- [ ] Review Sidebar.svelte changes
-- [ ] Verify no unintended modifications
-- [ ] Check for code duplication removal
-- [ ] Ensure comments updated if needed
+- [x] Review SidebarButtonSlot changes
+- [x] Review Sidebar.svelte changes
+- [x] Verify no unintended modifications
+- [x] Check for code duplication removal
+- [x] Ensure comments updated if needed
 
 #### Task 4.2: Type Safety
 
-- [ ] TypeScript compiles without errors
-- [ ] No new type warnings
-- [ ] Props correctly typed
-- [ ] Slot usage type-safe
+- [x] TypeScript compiles without errors
+- [x] No new type warnings
+- [x] Props correctly typed
+- [x] Snippet usage type-safe
 
 #### Task 4.3: Linting
 
-- [ ] Run Prettier formatter
-- [ ] Run ESLint
-- [ ] Fix any linting issues
-- [ ] Verify code style consistency
+- [x] Run Prettier formatter
+- [x] Run ESLint
+- [x] Fix any linting issues
+- [x] Verify code style consistency
 
 ## Success Criteria
 
