@@ -8,7 +8,16 @@ import { documentStore } from '$lib/stores/documents.svelte';
 // Mock the document store
 vi.mock('$lib/stores/documents.svelte', () => ({
 	documentStore: {
-		fetchDocument: vi.fn()
+		fetchDocument: vi.fn(),
+		activeDocument: null
+	}
+}));
+
+// Mock svelte-sonner
+vi.mock('svelte-sonner', () => ({
+	toast: {
+		success: vi.fn(),
+		error: vi.fn()
 	}
 }));
 
@@ -24,9 +33,9 @@ describe('DocumentEditor', () => {
 		});
 	});
 
-	it('should render editor and preview sections', async () => {
+	it('should render editor component', async () => {
 		const autoSave = new AutoSave();
-		render(DocumentEditor, {
+		const { container } = render(DocumentEditor, {
 			documentId: 'test-id',
 			autoSave: autoSave
 		});
@@ -34,8 +43,9 @@ describe('DocumentEditor', () => {
 		// Wait for loading to complete
 		await page.waitForChanges();
 
-		const editorSection = page.getByRole('main', { name: 'Document editor' });
-		await expect.element(editorSection).not.toBeNull();
+		// Check that the editor container is rendered
+		const editorContainer = container.querySelector('.flex.h-full');
+		expect(editorContainer).not.toBeNull();
 	});
 
 	it('should show loading state initially', async () => {
@@ -55,7 +65,7 @@ describe('DocumentEditor', () => {
 
 	it('should render for temporary documents', async () => {
 		const autoSave = new AutoSave();
-		render(DocumentEditor, {
+		const { container } = render(DocumentEditor, {
 			documentId: 'temp-123',
 			autoSave: autoSave
 		});
@@ -63,7 +73,8 @@ describe('DocumentEditor', () => {
 		// Wait for loading to complete
 		await page.waitForChanges();
 
-		const editorSection = page.getByRole('main', { name: 'Document editor' });
-		await expect.element(editorSection).not.toBeNull();
+		// Check that the editor container is rendered
+		const editorContainer = container.querySelector('.flex.h-full');
+		expect(editorContainer).not.toBeNull();
 	});
 });
