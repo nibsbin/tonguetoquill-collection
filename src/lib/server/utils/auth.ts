@@ -5,7 +5,7 @@
 
 import type { RequestEvent } from '@sveltejs/kit';
 import { authService } from '$lib/server/services/auth';
-import { getAccessToken, errorResponse } from './api';
+import { getAccessToken, errorResponse } from '$lib/server/utils/api';
 import type { User } from '$lib/services/auth';
 
 /**
