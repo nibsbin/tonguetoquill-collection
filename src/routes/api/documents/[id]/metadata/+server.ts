@@ -5,8 +5,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { documentService } from '$lib/server/services/documents';
-import { requireAuth } from '$lib/utils/auth';
-import { handleDocumentError } from '$lib/utils/api';
+import { requireAuth } from '$lib/server/utils/auth';
+import { handleDocumentError } from '$lib/server/utils/api';
 
 export const GET: RequestHandler = async (event) => {
 	try {

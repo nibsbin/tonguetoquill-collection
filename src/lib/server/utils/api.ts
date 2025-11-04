@@ -6,7 +6,7 @@
 import { json, type RequestEvent } from '@sveltejs/kit';
 import { AuthError } from '$lib/services/auth';
 import { DocumentError } from '$lib/services/documents';
-import { NODE_ENV } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 /**
  * Standard error response format
  */
@@ -75,7 +75,7 @@ export function setAuthCookies(event: RequestEvent, accessToken: string, refresh
 	event.cookies.set('access_token', accessToken, {
 		path: '/',
 		httpOnly: true,
-		secure: NODE_ENV === 'production',
+		secure: env.NODE_ENV === 'production',
 		sameSite: 'strict',
 		maxAge: 60 * 60 // 1 hour
 	});
@@ -83,7 +83,7 @@ export function setAuthCookies(event: RequestEvent, accessToken: string, refresh
 	event.cookies.set('refresh_token', refreshToken, {
 		path: '/',
 		httpOnly: true,
-		secure: NODE_ENV === 'production',
+		secure: env.NODE_ENV === 'production',
 		sameSite: 'strict',
 		maxAge: 7 * 24 * 60 * 60 // 7 days
 	});

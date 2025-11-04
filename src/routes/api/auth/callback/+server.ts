@@ -6,7 +6,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { authService } from '$lib/server/services/auth';
-import { setAuthCookies } from '$lib/utils/api';
+import { setAuthCookies } from '$lib/server/utils/api';
 
 export const GET: RequestHandler = async (event) => {
 	try {

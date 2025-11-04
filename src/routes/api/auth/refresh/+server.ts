@@ -6,7 +6,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { authService } from '$lib/server/services/auth';
-import { handleAuthError, setAuthCookies } from '$lib/utils/api';
+import { handleAuthError, setAuthCookies } from '$lib/server/utils/api';
 
 export const POST: RequestHandler = async (event) => {
 	try {

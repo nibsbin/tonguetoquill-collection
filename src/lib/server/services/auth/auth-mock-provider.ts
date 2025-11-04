@@ -14,6 +14,7 @@ import type {
 	UUID
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
+import { env } from '$env/dynamic/private';
 
 interface StoredUser {
 	id: UUID;
@@ -23,8 +24,6 @@ interface StoredUser {
 	created_at: string;
 	updated_at: string;
 }
-
-import { MOCK_JWT_SECRET } from '$env/static/private';
 
 /**
  * Mock Authentication Provider
@@ -40,9 +39,17 @@ export class MockAuthProvider implements AuthContract {
 	private ACCESS_TOKEN_EXPIRY = 15 * 60 * 1000; // 15 minutes (per design)
 	private REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-	constructor(secret?: string) {
-		this.secret = secret || MOCK_JWT_SECRET || 'dev-secret-key';
+	private constructor(secret: string) {
+		this.secret = secret;
 		this.initializeDefaultUser();
+	}
+
+	/**
+	 * Create a new MockAuthProvider instance with dynamic access to MOCK_JWT_SECRET
+	 */
+	static async create(secret?: string): Promise<MockAuthProvider> {
+		const finalSecret = secret || env.MOCK_JWT_SECRET || 'dev-secret-key';
+		return new MockAuthProvider(finalSecret);
 	}
 
 	/**

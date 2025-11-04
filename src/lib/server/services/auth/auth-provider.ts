@@ -6,19 +6,18 @@
 import type { AuthContract } from '$lib/services/auth/types';
 import { MockAuthProvider } from './auth-mock-provider';
 import { SupabaseAuthProvider } from './auth-supabase-provider';
-import { USE_AUTH_MOCKS, MOCK_JWT_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
 let cachedProvider: AuthContract | null = null;
 
 /**
  * Create authentication service based on environment
  */
-export function createAuthService(): AuthContract {
-	const useMocks = USE_AUTH_MOCKS === 'true';
-	const mockSecret = MOCK_JWT_SECRET || 'dev-secret-key';
+export async function createAuthService(): Promise<AuthContract> {
+	const useMocks = env.USE_AUTH_MOCKS === 'true';
 
 	if (useMocks) {
-		return new MockAuthProvider(mockSecret);
+		return await MockAuthProvider.create();
 	}
 
 	// Phase 10+: Use Supabase provider
@@ -28,9 +27,9 @@ export function createAuthService(): AuthContract {
 /**
  * Get authentication service instance (lazy-loaded singleton)
  */
-export function getAuthService(): AuthContract {
+export async function getAuthService(): Promise<AuthContract> {
 	if (!cachedProvider) {
-		cachedProvider = createAuthService();
+		cachedProvider = await createAuthService();
 	}
 	return cachedProvider;
 }
