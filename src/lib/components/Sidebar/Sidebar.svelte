@@ -240,16 +240,9 @@
 						{#if documentStore.documents.length > 0 && isExpanded}
 							<Separator class="bg-border" />
 
-							<!-- Recents Section Header -->
-							<div
-								class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-3 pr-3"
-							>
-								<h3 class="text-xs text-muted-foreground">Recents</h3>
-							</div>
-
 							<!-- Scrollable Recent Items -->
 							<div
-								class="space-y-px overflow-x-hidden overflow-y-auto px-1"
+								class="overflow-x-hidden overflow-y-auto px-1 pt-1"
 								style="max-height: calc(100vh - 300px);"
 							>
 								{#each documentStore.documents as doc (doc.id)}
@@ -405,16 +398,9 @@
 				{#if documentStore.documents.length > 0 && isExpanded}
 					<Separator class="bg-border" />
 
-					<!-- Recents Section Header -->
-					<div
-						class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-3 pr-3"
-					>
-						<h3 class="text-xs text-muted-foreground">Recents</h3>
-					</div>
-
 					<!-- Scrollable Recent Items -->
 					<div
-						class="space-y-px overflow-x-hidden overflow-y-auto px-1"
+						class="overflow-x-hidden overflow-y-auto px-1 pt-1"
 						style="max-height: calc(100vh - 300px);"
 					>
 						{#each documentStore.documents as doc (doc.id)}
