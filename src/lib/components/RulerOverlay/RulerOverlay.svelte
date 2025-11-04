@@ -15,6 +15,7 @@
 	let currentPoint = $state<{ x: number; y: number } | null>(null);
 	let isDrawing = $state(false);
 	let toastId = $state<string | number | undefined>(undefined);
+	let isExiting = $state(false);
 
 	// A4 page dimensions in inches
 	const A4_WIDTH_INCHES = 8.5;
@@ -139,11 +140,11 @@
 	 * Exit ruler mode completely
 	 */
 	function exitRulerMode() {
+		if (isExiting) return; // Prevent recursive calls
+		isExiting = true;
 		rulerStore.setActive(false);
 		clearMeasurement();
-		if (toastId !== undefined) {
-			toast.dismiss(toastId);
-		}
+		// Don't dismiss toast here - let the effect handle it to avoid double-dismiss
 	}
 
 	/**
@@ -166,6 +167,8 @@
 	 */
 	$effect(() => {
 		if (rulerStore.isActive) {
+			isExiting = false; // Reset exit flag when activating
+
 			// Show instructional toast
 			toastId = toast('Ruler Mode Active', {
 				description:
@@ -182,20 +185,25 @@
 					}
 				}
 			});
+
+			// Cleanup when effect re-runs or component unmounts
+			return () => {
+				if (toastId !== undefined) {
+					const id = toastId;
+					toastId = undefined;
+					toast.dismiss(id);
+				}
+			};
 		} else {
 			// Clean up when deactivated
 			clearMeasurement();
 			if (toastId !== undefined) {
-				toast.dismiss(toastId);
+				const id = toastId;
 				toastId = undefined;
+				toast.dismiss(id);
 			}
+			isExiting = false; // Reset exit flag after cleanup
 		}
-
-		return () => {
-			if (toastId !== undefined) {
-				toast.dismiss(toastId);
-			}
-		};
 	});
 
 	/**
