@@ -71,37 +71,54 @@
 				</Button>
 			</div>
 
-			<div class="mt-4 space-y-4">
+			<div class="mt-6 space-y-6">
 				<!-- Document Name -->
 				<div class="space-y-1">
 					<div class="text-sm font-medium text-muted-foreground">Document Name</div>
 					<div class="text-base text-foreground">{document?.name || 'Untitled'}</div>
 				</div>
 
-				<!-- Created -->
-				<div class="space-y-1">
-					<div class="text-sm font-medium text-muted-foreground">Created</div>
-					<div class="text-base text-foreground">
-						{document?.created_at ? formatDate(document.created_at) : 'Unknown'}
-					</div>
-				</div>
-
-				<!-- Modified -->
-				<div class="space-y-1">
-					<div class="text-sm font-medium text-muted-foreground">Modified</div>
-					<div class="text-base text-foreground">
-						{document?.updated_at ? formatDate(document.updated_at) : 'Unknown'}
-					</div>
-				</div>
-
-				<!-- Statistics -->
-				<div class="space-y-1">
+				<!-- Statistics (Emphasized) -->
+				<div class="space-y-3">
 					<div class="text-sm font-medium text-muted-foreground">Statistics</div>
-					<ul class="text-sm text-foreground" role="list">
-						<li>• Characters: {stats.characters}</li>
-						<li>• Words: {stats.words}</li>
-						<li>• Lines: {stats.lines}</li>
-					</ul>
+					<div class="grid grid-cols-3 gap-4">
+						<div class="text-center">
+							<div class="text-2xl font-semibold text-foreground">
+								{stats.characters.toLocaleString()}
+							</div>
+							<div class="mt-1 text-xs text-muted-foreground">Chars</div>
+						</div>
+						<div class="text-center">
+							<div class="text-2xl font-semibold text-foreground">
+								{stats.words.toLocaleString()}
+							</div>
+							<div class="mt-1 text-xs text-muted-foreground">Words</div>
+						</div>
+						<div class="text-center">
+							<div class="text-2xl font-semibold text-foreground">
+								{stats.lines.toLocaleString()}
+							</div>
+							<div class="mt-1 text-xs text-muted-foreground">Lines</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Dates (De-emphasized, grouped) -->
+				<div class="border-t border-border pt-2">
+					<div class="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
+						<div>
+							<span class="font-medium">Created:</span>
+							<span class="ml-1">
+								{document?.created_at ? formatDate(document.created_at) : 'Unknown'}
+							</span>
+						</div>
+						<div>
+							<span class="font-medium">Modified:</span>
+							<span class="ml-1">
+								{document?.updated_at ? formatDate(document.updated_at) : 'Unknown'}
+							</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
