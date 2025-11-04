@@ -73,7 +73,8 @@ This plan outlines the implementation of a proper Supabase Auth adapter using th
 npm install @supabase/supabase-js
 ```
 
-**KISS Note:** Use only `@supabase/supabase-js`. Don't add SvelteKit-specific helpers yet (YAGNI - You Aren't Gonna Need It).
+**Note on SvelteKit Helpers:** 
+Supabase provides `@supabase/ssr` for opinionated SvelteKit integration with automatic cookie management. However, we're implementing a custom adapter to fit our existing AuthContract architecture. The `@supabase/ssr` package is an alternative approach but not required for our implementation.
 
 **Expected Outcome:** Supabase client library available for import
 
@@ -94,8 +95,9 @@ export class SupabaseAuthProvider implements AuthContract {
   constructor() {
     const supabaseUrl = env.SUPABASE_URL || '';
     const supabaseKey = env.SUPABASE_ANON_KEY || '';
+    const jwtSecret = env.SUPABASE_JWT_SECRET || '';
 
-    if (!supabaseUrl || !supabaseKey) {
+    if (!supabaseUrl || !supabaseKey || !jwtSecret) {
       throw new Error('Supabase configuration missing. Check environment variables.');
     }
 
@@ -110,6 +112,9 @@ export class SupabaseAuthProvider implements AuthContract {
   }
 }
 ```
+
+**Note on JWT Secret:** 
+The `SUPABASE_JWT_SECRET` is used by the Supabase client for server-side JWT verification. While the basic `createClient` doesn't require it in the constructor, it's needed for proper server-side auth operations.
 
 **KISS Principle:** Use minimal configuration. Default settings work for most cases.
 
@@ -467,6 +472,7 @@ Add Supabase setup instructions:
 USE_AUTH_MOCKS=false
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_JWT_SECRET=your-jwt-secret
 ```
 
 4. Run the application
@@ -481,6 +487,9 @@ USE_AUTH_MOCKS=true  # Set to false for production
 # Supabase Configuration (when USE_AUTH_MOCKS=false)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_JWT_SECRET=your-jwt-secret
+
+# Note: Find JWT_SECRET in Supabase Dashboard > Settings > API > JWT Secret
 ```
 
 **Expected Outcome:** Clear setup instructions for Supabase
@@ -665,7 +674,13 @@ The result is a **simpler**, **more secure**, and **more maintainable** authenti
 
 ## Cross-References
 
+**Internal Documentation:**
 - [../designs/backend/SUPABASE_AUTH_ADAPTER.md](../designs/backend/SUPABASE_AUTH_ADAPTER.md) - Design document
+- [../designs/backend/SUPABASE_AUTH_VERIFICATION.md](../designs/backend/SUPABASE_AUTH_VERIFICATION.md) - Verification against Supabase docs
 - [../designs/backend/LOGIN_SERVICE.md](../designs/backend/LOGIN_SERVICE.md) - Authentication architecture
 - [../designs/backend/SERVICES.md](../designs/backend/SERVICES.md) - Service patterns
-- [Supabase Auth Docs](https://supabase.com/docs/guides/auth) - Official documentation
+
+**Official Supabase Documentation:**
+- [Supabase Auth Overview](https://supabase.com/docs/guides/auth) - Official auth documentation
+- [SvelteKit Server-Side Auth](https://supabase.com/docs/guides/auth/server-side/sveltekit) - SvelteKit integration guide
+- [Supabase JS Library Reference](https://supabase.com/docs/reference/javascript) - JavaScript client API reference
