@@ -14,23 +14,73 @@ import type {
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
 import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
+import {
+	createClient,
+	type SupabaseClient,
+	type AuthError as SupabaseAuthError,
+	type User as SupabaseUser,
+	type Session as SupabaseSession
+} from '@supabase/supabase-js';
 
 /**
  * Supabase Authentication Provider
  * Delegates authentication to Supabase-hosted pages and APIs
  */
 export class SupabaseAuthProvider implements AuthContract {
-	private supabaseUrl: string;
-	private supabaseKey: string;
-	private jwtSecret: string;
+	private supabase: SupabaseClient;
+	private authMethod: 'email' | 'github' = 'github';
 
 	constructor() {
-		this.supabaseUrl = env.SUPABASE_URL || '';
-		this.supabaseKey = env.SUPABASE_ANON_KEY || '';
-		this.jwtSecret = env.SUPABASE_JWT_SECRET || '';
+		const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL || '';
+		const supabasePublishableKey = publicEnv.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 
-		if (!this.supabaseUrl || !this.supabaseKey || !this.jwtSecret) {
+		if (!supabaseUrl || !supabasePublishableKey) {
 			throw new Error('Supabase configuration missing. Check environment variables.');
+		}
+
+		// Create Supabase client
+		this.supabase = createClient(supabaseUrl, supabasePublishableKey, {
+			auth: {
+				autoRefreshToken: false, // We handle refresh manually
+				persistSession: false, // Server-side, no persistence needed
+				detectSessionInUrl: false, // Server-side, no URL detection
+				flowType: 'pkce' // Use PKCE flow for server-side OAuth
+			}
+		});
+	}
+
+	/**
+	 * Get the OAuth login URL for Supabase provider
+	 * Returns the Supabase hosted UI URL for authentication
+	 * Supports both email magic link and GitHub OAuth
+	 */
+	async getLoginUrl(redirectUri: string): Promise<string> {
+		if (this.authMethod === 'github') {
+			// Use GitHub OAuth
+			const { data, error } = await this.supabase.auth.signInWithOAuth({
+				provider: 'github',
+				options: {
+					redirectTo: redirectUri,
+					skipBrowserRedirect: true // We want the URL, not to redirect immediately
+				}
+			});
+
+			if (error || !data.url) {
+				throw new AuthError('network_error', 'Failed to generate GitHub login URL', 500);
+			}
+
+			return data.url;
+		} else {
+			// For email-based auth, we need to redirect to a login page
+			// that collects the email and sends a magic link
+			// Since we're using server-side flow, we'll use Supabase's built-in email OTP
+			// The client will need to handle this differently
+			throw new AuthError(
+				'unknown_error',
+				'Email-based auth requires client-side implementation with OTP',
+				500
+			);
 		}
 	}
 
@@ -40,52 +90,25 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async exchangeCodeForTokens(code: string): Promise<AuthResult> {
 		try {
-			const response = await fetch(
-				`${this.supabaseUrl}/auth/v1/token?grant_type=authorization_code`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						apikey: this.supabaseKey
-					},
-					body: JSON.stringify({ auth_code: code })
-				}
-			);
+			const { data, error } = await this.supabase.auth.exchangeCodeForSession(code);
 
-			if (!response.ok) {
-				const error = await response.json();
-				throw new AuthError(
-					'invalid_token',
-					error.error_description || 'Failed to exchange code for tokens',
-					response.status
-				);
+			if (error) {
+				throw this.mapSupabaseError(error);
 			}
 
-			const data = await response.json();
+			if (!data.session || !data.user) {
+				throw new AuthError('invalid_token', 'Failed to get session from code', 401);
+			}
 
-			// Extract user and session from Supabase response
-			const user: User = {
-				id: data.user.id,
-				email: data.user.email,
-				dodid: data.user.user_metadata?.dodid || null,
-				profile: data.user.user_metadata || {},
-				created_at: data.user.created_at,
-				updated_at: data.user.updated_at
+			return {
+				user: this.mapSupabaseUserToUser(data.user),
+				session: this.mapSupabaseSessionToSession(data.session)
 			};
-
-			const session: Session = {
-				access_token: data.access_token,
-				refresh_token: data.refresh_token,
-				expires_at: data.expires_at,
-				user
-			};
-
-			return { user, session };
 		} catch (error) {
 			if (error instanceof AuthError) {
 				throw error;
 			}
-			throw new AuthError('network_error', 'Failed to communicate with auth provider', 500);
+			throw new AuthError('network_error', 'Failed to exchange code for tokens', 500);
 		}
 	}
 
@@ -95,23 +118,30 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async validateToken(token: string): Promise<TokenPayload> {
 		try {
-			const parts = token.split('.');
-			if (parts.length !== 3) {
-				throw new AuthError('invalid_token', 'Invalid token format', 401);
+			// Supabase automatically validates JWT signature using JWKS
+			const { data, error } = await this.supabase.auth.getUser(token);
+
+			if (error) {
+				throw this.mapSupabaseError(error);
 			}
 
-			// Decode payload (without verification for now - in production, use a JWT library)
-			const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString()) as TokenPayload;
-
-			// Check expiry
-			const now = Math.floor(Date.now() / 1000);
-			if (payload.exp < now) {
-				throw new AuthError('token_expired', 'Token has expired', 401);
+			if (!data.user) {
+				throw new AuthError('invalid_token', 'Token validation failed', 401);
 			}
 
-			// In production, verify signature using JWKS from Supabase
-			// For now, we trust the token if it's properly formatted and not expired
-			// TODO: Implement proper JWT signature verification using Supabase JWKS endpoint
+			// Decode JWT to extract actual claims
+			// Supabase has already verified the signature, so we can safely decode
+			const jwtPayload = this.decodeJWT(token);
+
+			// Extract payload information from verified token
+			const payload: TokenPayload = {
+				sub: data.user.id,
+				email: data.user.email || '',
+				exp: jwtPayload.exp,
+				iat: jwtPayload.iat,
+				role: jwtPayload.role || 'authenticated',
+				aud: jwtPayload.aud || 'authenticated'
+			};
 
 			return payload;
 		} catch (error) {
@@ -127,23 +157,16 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async signOut(accessToken: string): Promise<void> {
 		try {
-			const response = await fetch(`${this.supabaseUrl}/auth/v1/logout`, {
-				method: 'POST',
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					apikey: this.supabaseKey
-				}
-			});
+			// Note: signOut doesn't require token parameter in client mode
+			// For server-side, we can call the API directly or just let cookies clear
+			const { error } = await this.supabase.auth.signOut();
 
-			if (!response.ok && response.status !== 401) {
-				// 401 means already logged out, which is fine
-				throw new AuthError('unknown_error', 'Failed to sign out', response.status);
+			if (error && error.message !== 'not_authenticated') {
+				// Don't throw on not_authenticated - already logged out
+				console.error('Logout error (non-critical):', error);
 			}
 		} catch (error) {
-			if (error instanceof AuthError) {
-				throw error;
-			}
-			// Swallow network errors on logout - not critical
+			// Swallow errors on logout - not critical
 			console.error('Logout error (non-critical):', error);
 		}
 	}
@@ -154,39 +177,22 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async refreshSession(refreshToken: string): Promise<Session> {
 		try {
-			const response = await fetch(`${this.supabaseUrl}/auth/v1/token?grant_type=refresh_token`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					apikey: this.supabaseKey
-				},
-				body: JSON.stringify({ refresh_token: refreshToken })
+			const { data, error } = await this.supabase.auth.refreshSession({
+				refresh_token: refreshToken
 			});
 
-			if (!response.ok) {
-				if (response.status === 401) {
+			if (error) {
+				if (error.message?.includes('expired')) {
 					throw new AuthError('session_expired', 'Refresh token has expired', 401);
 				}
-				throw new AuthError('invalid_refresh_token', 'Failed to refresh session', response.status);
+				throw this.mapSupabaseError(error);
 			}
 
-			const data = await response.json();
+			if (!data.session) {
+				throw new AuthError('invalid_refresh_token', 'Failed to refresh session', 401);
+			}
 
-			const user: User = {
-				id: data.user.id,
-				email: data.user.email,
-				dodid: data.user.user_metadata?.dodid || null,
-				profile: data.user.user_metadata || {},
-				created_at: data.user.created_at,
-				updated_at: data.user.updated_at
-			};
-
-			return {
-				access_token: data.access_token,
-				refresh_token: data.refresh_token,
-				expires_at: data.expires_at,
-				user
-			};
+			return this.mapSupabaseSessionToSession(data.session);
 		} catch (error) {
 			if (error instanceof AuthError) {
 				throw error;
@@ -201,39 +207,81 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async getCurrentUser(accessToken: string): Promise<User | null> {
 		try {
-			// Call Supabase API to get user info
-			const response = await fetch(`${this.supabaseUrl}/auth/v1/user`, {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-					apikey: this.supabaseKey
-				}
-			});
+			const { data, error } = await this.supabase.auth.getUser(accessToken);
 
-			if (response.status === 401) {
+			if (error || !data.user) {
 				return null;
 			}
 
-			if (!response.ok) {
-				throw new AuthError('unknown_error', 'Failed to get user', response.status);
-			}
-
-			const data = await response.json();
-
-			return {
-				id: data.id,
-				email: data.email,
-				dodid: data.user_metadata?.dodid || null,
-				profile: data.user_metadata || {},
-				created_at: data.created_at,
-				updated_at: data.updated_at
-			};
+			return this.mapSupabaseUserToUser(data.user);
 		} catch (error) {
-			if (error instanceof AuthError && error.code === 'unauthorized') {
-				return null;
-			}
 			// Return null for any error (user not authenticated)
 			return null;
+		}
+	}
+
+	/**
+	 * Map Supabase User to our User type
+	 */
+	private mapSupabaseUserToUser(supabaseUser: SupabaseUser): User {
+		return {
+			id: supabaseUser.id,
+			email: supabaseUser.email || '',
+			dodid: supabaseUser.user_metadata?.dodid || null,
+			profile: supabaseUser.user_metadata || {},
+			created_at: supabaseUser.created_at || new Date().toISOString(),
+			updated_at: supabaseUser.updated_at || new Date().toISOString()
+		};
+	}
+
+	/**
+	 * Map Supabase Session to our Session type
+	 */
+	private mapSupabaseSessionToSession(supabaseSession: SupabaseSession): Session {
+		return {
+			access_token: supabaseSession.access_token,
+			refresh_token: supabaseSession.refresh_token,
+			expires_at: supabaseSession.expires_at || 0,
+			user: this.mapSupabaseUserToUser(supabaseSession.user)
+		};
+	}
+
+	/**
+	 * Map Supabase errors to AuthError
+	 */
+	private mapSupabaseError(error: SupabaseAuthError): AuthError {
+		const message = error.message || 'Unknown error';
+
+		// Map common Supabase error codes
+		if (message.includes('invalid_grant')) {
+			return new AuthError('invalid_token', 'Invalid authorization code', 401);
+		}
+		if (message.includes('expired')) {
+			return new AuthError('token_expired', 'Token has expired', 401);
+		}
+		if (message.includes('not_authenticated')) {
+			return new AuthError('unauthorized', 'Not authenticated', 401);
+		}
+
+		return new AuthError('unknown_error', message, 500);
+	}
+
+	/**
+	 * Decode JWT payload without verification
+	 * Note: This is safe because Supabase has already verified the signature
+	 */
+	private decodeJWT(token: string): any {
+		const parts = token.split('.');
+		if (parts.length !== 3) {
+			throw new AuthError('invalid_token', 'Invalid token format', 401);
+		}
+
+		try {
+			// Decode the payload (second part) from base64url
+			const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+			return payload;
+		} catch (error) {
+			throw new AuthError('invalid_token', 'Failed to decode token payload', 401);
 		}
 	}
 }

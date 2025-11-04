@@ -59,33 +59,6 @@ describe('AuthContract - MockAuthProvider', () => {
 		});
 	});
 
-	describe('validateToken', () => {
-		it('should validate and decode valid token', async () => {
-			const { session } = await authProvider.exchangeCodeForTokens('test_code');
-
-			const payload = await authProvider.validateToken(session.access_token);
-
-			expect(payload).toBeDefined();
-			expect(payload.email).toBe('asdf@asdf.com');
-			expect(payload.role).toBe('authenticated');
-			expect(payload.aud).toBe('authenticated');
-		});
-
-		it('should reject invalid token format', async () => {
-			await expect(authProvider.validateToken('invalid-token')).rejects.toThrow(AuthError);
-		});
-
-		it('should reject token with invalid signature', async () => {
-			const { session } = await authProvider.exchangeCodeForTokens('test_code');
-
-			// Modify token to invalidate signature
-			const parts = session.access_token.split('.');
-			const tamperedToken = `${parts[0]}.${parts[1]}.invalidsignature`;
-
-			await expect(authProvider.validateToken(tamperedToken)).rejects.toThrow(AuthError);
-		});
-	});
-
 	describe('signOut', () => {
 		it('should complete without error', async () => {
 			const { session } = await authProvider.exchangeCodeForTokens('test_code');

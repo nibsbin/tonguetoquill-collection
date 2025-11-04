@@ -4,7 +4,10 @@ This document defines the Login Service and overall authentication architecture 
 
 > **Status**: ✅ **IMPLEMENTED** - OAuth delegation architecture implemented in Phase 9. See [Implementation Plan](../../plans/auth-delegation-implementation.md) for details.
 >
-> **Related**: [SERVICES.md](./SERVICES.md) for overall service architecture patterns
+> **Related**:
+>
+> - [SERVICES.md](./SERVICES.md) for overall service architecture patterns
+> - [SUPABASE_AUTH_ADAPTER.md](./SUPABASE_AUTH_ADAPTER.md) for Supabase integration design
 
 ## Philosophy
 
@@ -203,9 +206,12 @@ JWT claims include subject (user ID), email, expiration, issued-at, role, and au
 
 The server-side service is **minimal** and focused only on token validation:
 
+- `getLoginUrl()` - Generate provider-specific OAuth login URL (with PKCE for production providers)
+- `exchangeCodeForTokens()` - Exchange OAuth code for access and refresh tokens
 - `validateToken()` - Verify JWT signature using provider's JWKS
 - `getCurrentUser()` - Extract user info from validated token
 - `refreshSession()` - Exchange refresh token for new access token (via provider API)
+- `signOut()` - Invalidate session and clear tokens
 
 ### Client-Side Interface
 
@@ -501,5 +507,7 @@ This is the right trade-off for most applications.
 ## Cross-References
 
 - [SERVICES.md](./SERVICES.md) - Overall service architecture
+- [SUPABASE_AUTH_ADAPTER.md](./SUPABASE_AUTH_ADAPTER.md) - Supabase auth integration design
 - [../frontend/API_INTEGRATION.md](../frontend/API_INTEGRATION.md) - Frontend API integration patterns
 - [../frontend/STATE_MANAGEMENT.md](../frontend/STATE_MANAGEMENT.md) - Session state management
+- [../../plans/supabase-auth-adapter-implementation.md](../../plans/supabase-auth-adapter-implementation.md) - Implementation plan for Supabase adapter

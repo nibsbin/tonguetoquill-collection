@@ -14,7 +14,6 @@ import type {
 	UUID
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
-import { env } from '$env/dynamic/private';
 
 interface StoredUser {
 	id: UUID;
@@ -33,23 +32,20 @@ interface StoredUser {
 export class MockAuthProvider implements AuthContract {
 	private users: Map<UUID, StoredUser> = new Map();
 	private emailIndex: Map<string, UUID> = new Map(); // email -> user_id mapping
-	private secret: string;
 
 	// Session expiry times (in milliseconds)
 	private ACCESS_TOKEN_EXPIRY = 15 * 60 * 1000; // 15 minutes (per design)
 	private REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-	private constructor(secret: string) {
-		this.secret = secret;
+	private constructor() {
 		this.initializeDefaultUser();
 	}
 
 	/**
-	 * Create a new MockAuthProvider instance with dynamic access to MOCK_JWT_SECRET
+	 * Create a new MockAuthProvider instance
 	 */
-	static async create(secret?: string): Promise<MockAuthProvider> {
-		const finalSecret = secret || env.MOCK_JWT_SECRET || 'dev-secret-key';
-		return new MockAuthProvider(finalSecret);
+	static async create(): Promise<MockAuthProvider> {
+		return new MockAuthProvider();
 	}
 
 	/**
@@ -84,16 +80,12 @@ export class MockAuthProvider implements AuthContract {
 	 * Generate a mock JWT token
 	 */
 	private generateToken(payload: TokenPayload): string {
-		const header = { alg: 'HS256', typ: 'JWT' };
+		const header = { alg: 'none', typ: 'JWT' };
 		const encodedHeader = Buffer.from(JSON.stringify(header)).toString('base64url');
 		const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
 
-		// Simple HMAC-like signature (not cryptographically secure, just for mocking)
-		const signature = Buffer.from(`${encodedHeader}.${encodedPayload}.${this.secret}`).toString(
-			'base64url'
-		);
-
-		return `${encodedHeader}.${encodedPayload}.${signature}`;
+		// No signature for mock tokens - just header and payload
+		return `${encodedHeader}.${encodedPayload}.`;
 	}
 
 	/**
@@ -108,15 +100,7 @@ export class MockAuthProvider implements AuthContract {
 				throw new AuthError('invalid_token', 'Invalid token format', 401);
 			}
 
-			const [encodedHeader, encodedPayload, signature] = parts;
-
-			// Verify signature
-			const expectedSignature = Buffer.from(
-				`${encodedHeader}.${encodedPayload}.${this.secret}`
-			).toString('base64url');
-			if (signature !== expectedSignature) {
-				throw new AuthError('invalid_token', 'Invalid token signature', 401);
-			}
+			const [, encodedPayload] = parts;
 
 			// Decode payload
 			const payload = JSON.parse(
@@ -136,6 +120,21 @@ export class MockAuthProvider implements AuthContract {
 			}
 			throw new AuthError('invalid_token', 'Failed to validate token', 401);
 		}
+	}
+
+	/**
+	 * Get the OAuth login URL for mock provider
+	 * Returns a callback URL with a mock authorization code
+	 */
+	async getLoginUrl(redirectUri: string): Promise<string> {
+		await this.simulateDelay();
+
+		// Generate a mock authorization code
+		const mockAuthCode = 'mock_auth_code_' + Date.now();
+
+		// Return the callback URL with the mock code
+		// In mock mode, we skip the actual login page and go straight to callback
+		return `${redirectUri}?code=${mockAuthCode}`;
 	}
 
 	/**
