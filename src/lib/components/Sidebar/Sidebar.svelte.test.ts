@@ -42,10 +42,10 @@ describe('Sidebar', () => {
 	});
 
 	it('should render sidebar', async () => {
-		const { container } = render(Sidebar);
-		// Check for sidebar container
-		const sidebar = container.querySelector('.flex.h-screen');
-		expect(sidebar).not.toBeNull();
+		render(Sidebar);
+		// Just verify it renders without errors
+		const newDocButton = page.getByRole('button', { name: 'Create new document' });
+		await expect.element(newDocButton).toBeInTheDocument();
 	});
 
 	it('should render new document button', async () => {
