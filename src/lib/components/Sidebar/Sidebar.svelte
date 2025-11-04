@@ -224,7 +224,9 @@
 							icon={Plus}
 							label="New Document"
 							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985] {!isExpanded ? 'border-b border-border' : ''}"
+							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985] {!isExpanded
+								? 'border-b border-border'
+								: ''}"
 							onclick={handleNewFile}
 							ariaLabel="Create new document"
 						/>
@@ -239,7 +241,7 @@
 
 							<!-- Scrollable Recent Items -->
 							<div
-								class="space-y-px overflow-x-hidden overflow-y-auto"
+								class="overflow-x-hidden overflow-y-auto px-1 pt-1"
 								style="max-height: calc(100vh - 300px);"
 							>
 								{#each documentStore.documents as doc (doc.id)}
@@ -309,7 +311,7 @@
 									<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
 									<div class="space-y-4">
-										<div class="flex items-center justify-between pb-3 border-b border-border">
+										<div class="flex items-center justify-between border-b border-border pb-3">
 											<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
 											<Switch
 												id="dark-mode"
@@ -378,7 +380,9 @@
 					icon={Plus}
 					label="New Document"
 					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985] {!isExpanded ? 'border-b border-border' : ''}"
+					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985] {!isExpanded
+						? 'border-b border-border'
+						: ''}"
 					onclick={handleNewFile}
 					ariaLabel="Create new document"
 				/>
@@ -393,7 +397,7 @@
 
 					<!-- Scrollable Recent Items -->
 					<div
-						class="space-y-px overflow-x-hidden overflow-y-auto"
+						class="overflow-x-hidden overflow-y-auto px-1 pt-1"
 						style="max-height: calc(100vh - 300px);"
 					>
 						{#each documentStore.documents as doc (doc.id)}
@@ -463,7 +467,7 @@
 							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
 							<div class="space-y-4">
-								<div class="flex items-center justify-between pb-3 border-b border-border">
+								<div class="flex items-center justify-between border-b border-border pb-3">
 									<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
 									<Switch
 										id="dark-mode"
