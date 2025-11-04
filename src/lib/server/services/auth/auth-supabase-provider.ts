@@ -44,7 +44,8 @@ export class SupabaseAuthProvider implements AuthContract {
 			auth: {
 				autoRefreshToken: false, // We handle refresh manually
 				persistSession: false, // Server-side, no persistence needed
-				detectSessionInUrl: false // Server-side, no URL detection
+				detectSessionInUrl: false, // Server-side, no URL detection
+				flowType: 'pkce' // Use PKCE flow for server-side OAuth
 			}
 		});
 	}
