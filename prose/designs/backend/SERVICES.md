@@ -18,6 +18,7 @@ Services receive authenticated user context through middleware that validates JW
 **Service-Specific Documentation:**
 
 - [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) - Login service and authentication architecture
+- [SUPABASE_AUTH_ADAPTER.md](./SUPABASE_AUTH_ADAPTER.md) - Supabase auth integration adapter design
 - [DOCUMENT_SERVICE.md](./DOCUMENT_SERVICE.md) - Document service specification
 - [TEMPLATE_SERVICE.md](./TEMPLATE_SERVICE.md) - Template service specification
 
