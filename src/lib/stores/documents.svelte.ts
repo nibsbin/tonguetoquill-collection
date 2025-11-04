@@ -202,14 +202,31 @@ class DocumentStore {
 	}
 
 	async createDocument(name: string = 'Untitled Document', content: string = '') {
-		// For guest mode, create directly without optimistic update
+		// For guest mode, use optimistic update for immediate UI responsiveness
 		if (this.state.isGuest) {
+			// Create temporary document for immediate UI feedback
+			const tempId = `temp-${Date.now()}`;
+			const tempDoc: DocumentMetadata = {
+				id: tempId,
+				owner_id: 'guest',
+				name,
+				content_size_bytes: 0,
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
+			};
+
+			this.addDocument(tempDoc);
+			this.setActiveDocumentId(tempId);
+
 			try {
 				const metadata = await this.documentClient.createDocument(name, content);
+				this.removeDocument(tempId);
 				this.addDocument(metadata);
 				this.setActiveDocumentId(metadata.id);
 				return metadata;
 			} catch (err) {
+				// Rollback on error
+				this.removeDocument(tempId);
 				this.setError(err instanceof Error ? err.message : 'Failed to create document');
 				throw err;
 			}
@@ -228,6 +245,7 @@ class DocumentStore {
 
 		this.addDocument(tempDoc);
 		const previousActiveId = this.state.activeDocumentId;
+		this.setActiveDocumentId(tempId);
 
 		try {
 			const metadata = await this.documentClient.createDocument(name, content);
