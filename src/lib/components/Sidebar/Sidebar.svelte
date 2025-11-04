@@ -220,23 +220,22 @@
 				<!-- Menu Items -->
 				<div class="flex-1 overflow-hidden">
 					<div>
-						<SidebarButtonSlot
-							icon={Plus}
-							label="New Document"
-							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
-							onclick={handleNewFile}
-							ariaLabel="Create new document"
-						/>
+						<div
+							class={documentStore.documents.length > 0 && isExpanded
+								? 'border-b border-border'
+								: ''}
+						>
+							<SidebarButtonSlot
+								icon={Plus}
+								label="New Document"
+								{isExpanded}
+								class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
+								onclick={handleNewFile}
+								ariaLabel="Create new document"
+							/>
+						</div>
 
 						{#if documentStore.documents.length > 0 && isExpanded}
-							<!-- Recents Section Header -->
-							<div
-								class="sticky top-0 z-10 mt-1 border-t border-border bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
-							>
-								<h3 class="text-xs text-muted-foreground">Recents</h3>
-							</div>
-
 							<!-- Scrollable Recent Items -->
 							<div
 								class="space-y-px overflow-x-hidden overflow-y-auto"
@@ -288,7 +287,7 @@
 					{/if}
 
 					<!-- Settings Gear Button -->
-					<div class="sidebar-button-slot">
+					<SidebarButtonSlot {isExpanded}>
 						<Popover bind:open={popoverOpen}>
 							<PopoverTrigger
 								class="sidebar-slot-button {isExpanded
@@ -339,7 +338,7 @@
 								</div>
 							</PopoverContent>
 						</Popover>
-					</div>
+					</SidebarButtonSlot>
 				</div>
 			</SheetContent>
 		</Sheet>
@@ -374,23 +373,20 @@
 		<!-- Menu Items -->
 		<div class="flex-1 overflow-hidden">
 			<div>
-				<SidebarButtonSlot
-					icon={Plus}
-					label="New Document"
-					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
-					onclick={handleNewFile}
-					ariaLabel="Create new document"
-				/>
+				<div
+					class={documentStore.documents.length > 0 && isExpanded ? 'border-b border-border' : ''}
+				>
+					<SidebarButtonSlot
+						icon={Plus}
+						label="New Document"
+						{isExpanded}
+						class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
+						onclick={handleNewFile}
+						ariaLabel="Create new document"
+					/>
+				</div>
 
 				{#if documentStore.documents.length > 0 && isExpanded}
-					<!-- Recents Section Header -->
-					<div
-						class="sticky top-0 z-10 mt-1 border-t border-border bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
-					>
-						<h3 class="text-xs text-muted-foreground">Recents</h3>
-					</div>
-
 					<!-- Scrollable Recent Items -->
 					<div
 						class="space-y-px overflow-x-hidden overflow-y-auto"
@@ -442,7 +438,7 @@
 			{/if}
 
 			<!-- Settings Gear Button -->
-			<div class="sidebar-button-slot">
+			<SidebarButtonSlot {isExpanded}>
 				<Popover bind:open={popoverOpen}>
 					<PopoverTrigger
 						class="sidebar-slot-button {isExpanded
@@ -493,7 +489,7 @@
 						</div>
 					</PopoverContent>
 				</Popover>
-			</div>
+			</SidebarButtonSlot>
 		</div>
 	</div>
 {/if}

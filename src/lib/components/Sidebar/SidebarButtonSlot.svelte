@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { ComponentType } from 'svelte';
+	import type { ComponentType, Snippet } from 'svelte';
 	import Button from '$lib/components/ui/button.svelte';
 
 	type SidebarButtonSlotProps = {
-		icon: ComponentType;
+		icon?: ComponentType;
 		label?: string;
 		isExpanded: boolean;
 		variant?: 'ghost' | 'default' | 'outline';
@@ -12,6 +12,7 @@
 		ariaLabel?: string;
 		title?: string;
 		disabled?: boolean;
+		children?: Snippet;
 	};
 
 	let {
@@ -23,7 +24,8 @@
 		onclick,
 		ariaLabel,
 		title,
-		disabled = false
+		disabled = false,
+		children
 	}: SidebarButtonSlotProps = $props();
 </script>
 
@@ -47,24 +49,31 @@
 	   - Label text fades in/out with opacity transition
 -->
 <div class="sidebar-button-slot">
-	<Button
-		{variant}
-		size="icon"
-		class="sidebar-slot-button {isExpanded ? 'sidebar-slot-button-full' : ''} {className}"
-		{onclick}
-		aria-label={ariaLabel}
-		{title}
-		{disabled}
-	>
-		{@const Icon = icon}
-		<Icon class="sidebar-icon" />
-		{#if label}
-			<span
-				class="truncate transition-opacity duration-300 {isExpanded ? 'opacity-100' : 'opacity-0'}"
-				>{label}</span
-			>
-		{/if}
-	</Button>
+	{#if children}
+		<!-- Custom trigger mode: Render snippet content -->
+		{@render children()}
+	{:else if icon}
+		<!-- Standard button mode: Render Button component -->
+		<Button
+			{variant}
+			size="icon"
+			class="sidebar-slot-button {isExpanded ? 'sidebar-slot-button-full' : ''} {className}"
+			{onclick}
+			aria-label={ariaLabel}
+			{title}
+			{disabled}
+		>
+			{@const Icon = icon}
+			<Icon class="sidebar-icon" />
+			{#if label}
+				<span
+					class="truncate transition-opacity duration-300 {isExpanded
+						? 'opacity-100'
+						: 'opacity-0'}">{label}</span
+				>
+			{/if}
+		</Button>
+	{/if}
 </div>
 
 <style>
@@ -92,19 +101,32 @@
 
 	/* Layer 1: Button Slot Container */
 	:global(.sidebar-button-slot) {
-		height: var(--sidebar-slot-height); /* 48px */
-		box-sizing: border-box;
+		/* Exact dimensions: 48px × 48px (no more, no less) */
+		height: var(--sidebar-slot-height) !important; /* 48px */
+		max-height: var(--sidebar-slot-height) !important; /* Force exact height */
+		min-height: var(--sidebar-slot-height) !important; /* Prevent shrinking */
+		box-sizing: border-box !important;
 
-		/* Flexbox for button layout */
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
+		/* Flexbox for button layout - buttons aligned to left with symmetric spacing */
+		display: flex !important;
+		align-items: center !important; /* Vertical centering */
+		justify-content: flex-start !important; /* Horizontal left alignment */
 
 		/* Symmetric padding on all sides: 4px + 40px + 4px = 48px */
-		padding: var(--sidebar-button-spacing); /* 4px all around */
+		padding: var(--sidebar-button-spacing) !important; /* 4px all around */
 
-		flex-shrink: 0;
-		overflow: hidden; /* Clips label text in collapsed state */
+		flex-shrink: 0 !important;
+		overflow: hidden !important; /* Clips label text in collapsed state */
+
+		/* Prevent any extra space from text/inline layout */
+		line-height: 0 !important;
+		font-size: 0 !important;
+
+		/* Remove any potential margins that could create extra space */
+		margin: 0 !important;
+
+		/* Ensure no extra space from positioning context */
+		position: relative !important;
 	}
 
 	/* Layer 2: Button Element */
@@ -113,26 +135,33 @@
 		 * Button: 40px × 40px with 8px padding all around
 		 * Content area: 24px × 24px (exact icon size)
 		 * Total: 8px + 24px + 8px = 40px ✓
+		 *
+		 * Note: !important is required to override Button component's Tailwind
+		 * size="icon" classes (h-8 w-8 p-0) which have same specificity
 		 */
-		width: var(--sidebar-button-size); /* 40px */
-		height: var(--sidebar-button-size); /* 40px */
-		min-width: var(--sidebar-button-size);
+		width: var(--sidebar-button-size) !important; /* 40px */
+		height: var(--sidebar-button-size) !important; /* 40px */
+		min-width: var(--sidebar-button-size) !important;
 
 		/* Flexbox for icon + label layout */
-		display: inline-flex;
-		align-items: center;
-		justify-content: flex-start; /* Left-align content */
+		display: inline-flex !important;
+		align-items: center !important;
+		justify-content: flex-start !important; /* Left-align content */
 
 		/* 8px padding ensures icon is always at same position */
-		padding: var(--sidebar-padding); /* 8px all around */
+		padding: var(--sidebar-padding) !important; /* 8px all around */
 
 		flex-shrink: 0;
 		transition: none;
+
+		/* Reset text properties from parent container */
+		line-height: normal;
+		font-size: 0.875rem; /* text-sm */
 	}
 
 	/* Expanded state: button stretches to full width */
 	:global(.sidebar-slot-button-full) {
-		width: 100%;
+		width: 100% !important;
 		/* Padding stays the same - icon position unchanged */
 	}
 
