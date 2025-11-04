@@ -7,10 +7,13 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { authService } from '$lib/server/services/auth';
+import { getSiteURL } from '$lib/server/utils/api';
 
 export const GET: RequestHandler = async (event) => {
 	// Get the callback URL (where the provider will redirect back to)
-	const callbackUrl = `${event.url.origin}/api/auth/callback`;
+	// Use getSiteURL() to handle local development, Vercel preview, and production
+	// Pass event to auto-detect the actual host and port
+	const callbackUrl = `${getSiteURL(event)}api/auth/callback`;
 
 	// Get the provider-specific login URL
 	// - Mock provider: Returns callback URL with mock code
