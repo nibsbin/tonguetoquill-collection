@@ -127,6 +127,18 @@
 	}
 
 	/**
+	 * Handle clicks outside the preview pane to exit ruler mode
+	 */
+	function handleDocumentClick(event: MouseEvent) {
+		if (!containerElement) return;
+
+		const target = event.target as Node;
+		if (!containerElement.contains(target)) {
+			exitRulerMode();
+		}
+	}
+
+	/**
 	 * Handle keyboard events
 	 */
 	function handleKeyDown(event: KeyboardEvent) {
@@ -169,11 +181,13 @@
 			}
 
 			window.addEventListener('keydown', handleKeyDown);
+			window.addEventListener('click', handleDocumentClick, true);
 
 			return () => {
 				window.removeEventListener('mousemove', handleMouseMove);
 				window.removeEventListener('mouseup', handleMouseUp);
 				window.removeEventListener('keydown', handleKeyDown);
+				window.removeEventListener('click', handleDocumentClick, true);
 			};
 		}
 	});
@@ -184,6 +198,7 @@
 			window.removeEventListener('mousemove', handleMouseMove);
 			window.removeEventListener('mouseup', handleMouseUp);
 			window.removeEventListener('keydown', handleKeyDown);
+			window.removeEventListener('click', handleDocumentClick, true);
 		}
 	});
 </script>
@@ -235,21 +250,7 @@
 		<!-- Custom instruction banner -->
 		<div class="ruler-instructions group">
 			<div class="ruler-instructions-content">
-				<div class="ruler-instructions-text">
-					<strong class="font-semibold text-accent-foreground">Ruler Mode Active</strong>
-					<span class="text-muted-foreground">
-						Click and drag to measure distances. Hold <kbd
-							class="rounded-sm border border-border bg-muted px-1.5 py-0.5 font-mono text-xs font-medium text-accent-foreground"
-							>Shift</kbd
-						>
-						to snap. Press
-						<kbd
-							class="rounded-sm border border-border bg-muted px-1.5 py-0.5 font-mono text-xs font-medium text-accent-foreground"
-							>Esc</kbd
-						> to exit.
-					</span>
-				</div>
-				<!-- Close button positioned in top-right -->
+				<!-- Close button positioned in exact top-right corner -->
 				<Button
 					variant="ghost"
 					size="icon"
@@ -257,8 +258,18 @@
 					onclick={exitRulerMode}
 					aria-label="Exit ruler mode"
 				>
-					<X size={14} />
+					<X size={14} strokeWidth={2.5} />
 				</Button>
+				<div class="ruler-instructions-text">
+					<strong class="text-sm font-semibold text-foreground">Ruler Mode</strong>
+					<p class="text-xs leading-relaxed text-muted-foreground">
+						Click and drag to measure. Hold <kbd
+							class="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.6875rem] font-medium text-foreground shadow-sm"
+							>Shift</kbd
+						>
+						to snap.
+					</p>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -350,17 +361,17 @@
 		position: relative;
 		display: flex;
 		align-items: flex-start;
-		gap: 1rem;
-		padding: 0.75rem 1rem;
-		padding-right: 2.5rem; /* Make room for close button */
+		gap: 0.75rem;
+		padding: 0.875rem 1rem;
+		padding-top: 0.75rem;
 		background: var(--color-surface-elevated);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-lg);
 		box-shadow:
 			0 4px 6px -1px rgba(0, 0, 0, 0.1),
 			0 2px 4px -1px rgba(0, 0, 0, 0.06);
-		min-width: 400px;
-		max-width: 600px;
+		min-width: 350px;
+		max-width: 450px;
 		transition: opacity 0.2s ease-in-out;
 	}
 
@@ -368,16 +379,27 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
-		font-size: 0.875rem;
-		line-height: 1.4;
+		gap: 0.375rem;
+		padding-right: 1.75rem; /* Make room for close button */
+	}
+
+	.ruler-instructions-text p {
+		max-width: 100%;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
 	}
 
 	.ruler-close-button {
 		position: absolute;
-		top: 0.375rem;
-		right: 0.375rem;
+		top: 0;
+		right: 0;
+		border-radius: 0 var(--radius-lg) 0 var(--radius-sm);
 		opacity: 1 !important; /* Always keep button visible */
+		transition: all 0.15s ease;
+	}
+
+	.ruler-close-button:hover {
+		transform: scale(1.05);
 	}
 
 	@keyframes slideUp {
@@ -395,17 +417,12 @@
 		.ruler-instructions-content {
 			min-width: auto;
 			max-width: calc(100vw - 2rem);
-			padding: 0.625rem 0.875rem;
-			padding-right: 2.25rem; /* Adjust for button on mobile */
+			padding: 0.75rem 0.875rem;
+			padding-top: 0.625rem;
 		}
 
 		.ruler-instructions-text {
-			font-size: 0.8125rem;
-		}
-
-		.ruler-close-button {
-			top: 0.25rem;
-			right: 0.25rem;
+			padding-right: 1.5rem;
 		}
 	}
 </style>
