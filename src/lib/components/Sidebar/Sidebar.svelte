@@ -241,7 +241,7 @@
 
 							<!-- Scrollable Recent Items -->
 							<div
-								class="overflow-x-hidden overflow-y-auto px-1 pt-1"
+								class="space-y-px overflow-x-hidden overflow-y-auto"
 								style="max-height: calc(100vh - 300px);"
 							>
 								{#each documentStore.documents as doc (doc.id)}
@@ -397,7 +397,7 @@
 
 					<!-- Scrollable Recent Items -->
 					<div
-						class="overflow-x-hidden overflow-y-auto px-1 pt-1"
+						class="space-y-px overflow-x-hidden overflow-y-auto"
 						style="max-height: calc(100vh - 300px);"
 					>
 						{#each documentStore.documents as doc (doc.id)}
