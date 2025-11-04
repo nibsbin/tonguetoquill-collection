@@ -195,7 +195,11 @@ export function findYamlPairs(from: number, to: number, doc: Text): YamlPair[] {
 
 			// Only add decoration if there's a value on the same line
 			if (value.trim().length > 0) {
-				const valueStart = currentPos + line.indexOf(value);
+				// Search for the value starting AFTER the colon to avoid finding the key
+				// when key and value are identical (e.g., "asdf: asdf")
+				const colonIndex = indent.length + key.length;
+				const valueStartInLine = line.indexOf(value, colonIndex + 1);
+				const valueStart = currentPos + valueStartInLine;
 				const valueEnd = valueStart + value.length;
 
 				// Determine value type
