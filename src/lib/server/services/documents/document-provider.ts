@@ -5,15 +5,15 @@
 
 import type { DocumentServiceContract } from '$lib/services/documents/types';
 import { MockDocumentService } from './document-mock-service';
+import { env } from '$env/dynamic/private';
 
 let cachedService: DocumentServiceContract | null = null;
 
-import { USE_DB_MOCKS } from '$env/static/private';
 /**
  * Create document service based on environment
  */
-export function createDocumentService(): DocumentServiceContract {
-	const useMocks = USE_DB_MOCKS === 'true';
+export async function createDocumentService(): Promise<DocumentServiceContract> {
+	const useMocks = env.USE_DB_MOCKS === 'true';
 
 	if (useMocks) {
 		return new MockDocumentService();
@@ -26,9 +26,9 @@ export function createDocumentService(): DocumentServiceContract {
 /**
  * Get document service instance (lazy-loaded singleton)
  */
-export function getDocumentService(): DocumentServiceContract {
+export async function getDocumentService(): Promise<DocumentServiceContract> {
 	if (!cachedService) {
-		cachedService = createDocumentService();
+		cachedService = await createDocumentService();
 	}
 	return cachedService;
 }
