@@ -1,5 +1,5 @@
 ---
-name: Architect
+name: architect
 description: Specialized agent that crafts high level designs and plans
 ---
 
