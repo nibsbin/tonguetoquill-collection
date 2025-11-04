@@ -364,22 +364,10 @@ Map Supabase/PostgreSQL error codes to our DocumentError types:
 - Simple error mapping function
 
 **Error Detection Patterns:**
-```typescript
-// Not found: single() returns null or error
-if (!data) {
-  throw new DocumentError('not_found', 'Document not found', 404);
-}
-
-// Check constraint violations: error.code or error.message
-if (error.message.includes('check_content_size')) {
-  throw new DocumentError('content_too_large', 'Content exceeds size limit', 413);
-}
-
-// No rows affected by delete
-if (count === 0) {
-  throw new DocumentError('not_found', 'Document not found', 404);
-}
-```
+- Not found: single() returns null or empty result
+- Check constraint violations: Inspect error.code or error.message for constraint names
+- No rows affected: Check count returned from delete operations
+- Foreign key violations: Database reports referential integrity errors
 
 ## Security Considerations
 
@@ -441,33 +429,21 @@ Adapter should validate configuration on initialization:
 - No fallback values (fail fast)
 
 **KISS Validation:**
-```typescript
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
-  throw new Error('Supabase configuration missing. Check environment variables.');
-}
-```
+Simple boolean checks for required environment variables with descriptive error messages on failure.
 
 ## Provider Factory Integration
 
 The adapter integrates with the existing provider factory pattern in `document-provider.ts`:
 
-```typescript
-export async function createDocumentService(): Promise<DocumentServiceContract> {
-  const useMocks = env.USE_DB_MOCKS === 'true';
-  
-  if (useMocks) {
-    return new MockDocumentService();
-  }
-  
-  // Phase 10: Real Supabase implementation
-  return new SupabaseDocumentService();
-}
-```
+**Pattern:**
+- Factory function checks USE_DB_MOCKS environment variable
+- Returns MockDocumentService when mocks enabled
+- Returns SupabaseDocumentService for production use
+- Lazy singleton for performance
 
 **Pattern Consistency:**
 - Same factory pattern as auth service
 - Environment variable controls mock vs real
-- Lazy singleton for performance
 - No interface changes needed
 
 ## Performance Optimization
@@ -533,23 +509,11 @@ Test adapter methods in isolation with proper mocking:
 - Check error handling paths
 
 **Example Test Cases:**
-```typescript
-describe('SupabaseDocumentService', () => {
-  describe('createDocument', () => {
-    it('should create document with valid inputs');
-    it('should throw error when name is empty');
-    it('should throw error when content exceeds size limit');
-  });
-  
-  describe('getDocumentMetadata', () => {
-    it('should return metadata without content');
-    it('should throw not_found when document does not exist');
-    it('should throw not_found when user does not own document');
-  });
-  
-  // ... more test suites
-});
-```
+- Document creation with valid and invalid inputs
+- Metadata retrieval with ownership validation
+- Content updates with size validation
+- Deletion with not-found scenarios
+- List operations with pagination
 
 ### Integration Tests
 
