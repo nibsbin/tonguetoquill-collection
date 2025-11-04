@@ -14,8 +14,6 @@
 	let startPoint = $state<{ x: number; y: number } | null>(null);
 	let currentPoint = $state<{ x: number; y: number } | null>(null);
 	let isDrawing = $state(false);
-	let toastId = $state<string | number | undefined>(undefined);
-	let isExiting = $state(false);
 
 	// A4 page dimensions in inches
 	const A4_WIDTH_INCHES = 8.5;
@@ -140,11 +138,8 @@
 	 * Exit ruler mode completely
 	 */
 	function exitRulerMode() {
-		if (isExiting) return; // Prevent recursive calls
-		isExiting = true;
 		rulerStore.setActive(false);
 		clearMeasurement();
-		// Don't dismiss toast here - let the effect handle it to avoid double-dismiss
 	}
 
 	/**
@@ -167,17 +162,12 @@
 	 */
 	$effect(() => {
 		if (rulerStore.isActive) {
-			isExiting = false; // Reset exit flag when activating
-
-			// Show instructional toast
-			toastId = toast('Ruler Mode Active', {
+			// Show instructional toast using toast.info
+			const id = toast.info('Ruler Mode Active', {
 				description:
-					'Click and drag to measure distances. Hold Shift to snap to horizontal/vertical. Press Esc or dismiss this message to exit.',
+					'Click and drag to measure distances. Hold Shift to snap to horizontal/vertical. Press Esc to exit.',
 				duration: Infinity,
 				position: 'bottom-center',
-				onDismiss: () => {
-					exitRulerMode();
-				},
 				action: {
 					label: 'Exit',
 					onClick: () => {
@@ -186,23 +176,10 @@
 				}
 			});
 
-			// Cleanup when effect re-runs or component unmounts
+			// Cleanup when ruler is deactivated or component unmounts
 			return () => {
-				if (toastId !== undefined) {
-					const id = toastId;
-					toastId = undefined;
-					toast.dismiss(id);
-				}
-			};
-		} else {
-			// Clean up when deactivated
-			clearMeasurement();
-			if (toastId !== undefined) {
-				const id = toastId;
-				toastId = undefined;
 				toast.dismiss(id);
-			}
-			isExiting = false; // Reset exit flag after cleanup
+			};
 		}
 	});
 
@@ -232,9 +209,6 @@
 			window.removeEventListener('mousemove', handleMouseMove);
 			window.removeEventListener('mouseup', handleMouseUp);
 			window.removeEventListener('keydown', handleKeyDown);
-		}
-		if (toastId !== undefined) {
-			toast.dismiss(toastId);
 		}
 	});
 </script>
