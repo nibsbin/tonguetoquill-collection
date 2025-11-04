@@ -31,18 +31,18 @@
 	Button Slot Architecture (3 layers):
 
 	1. Slot Container (48px × 48px in collapsed state)
-	   - Provides 4px horizontal padding for button positioning
-	   - Vertically centers the button via flexbox
-	   - Expands horizontally when sidebar expands
+	   - Symmetric 4px padding on all sides (top, right, bottom, left)
+	   - Creates 40px × 40px space for button
+	   - Expands horizontally when sidebar expands, vertical stays 48px
 
 	2. Button Element (40px × 40px in collapsed, full width when expanded)
 	   - Always has 8px padding on all sides (NEVER changes)
 	   - Content area: 24px × 24px (perfect fit for icon)
 	   - Always uses flex-start justification (NEVER changes)
-	   - Only width changes between states
+	   - Only width changes between states, height stays 40px
 
 	3. Icon Element (24px × 24px)
-	   - ALWAYS positioned at 12px from left edge (4px + 8px)
+	   - ALWAYS positioned at 12px from all edges (4px slot + 8px button)
 	   - Position is identical in collapsed and expanded states
 	   - Label text fades in/out with opacity transition
 -->
@@ -75,17 +75,19 @@
 	 * Goal: Icons must NEVER move between collapsed/expanded states
 	 *
 	 * Layout structure:
-	 * - Slot container: 48px square (collapsed), provides positioning
-	 * - Button: 40px square (collapsed), always has 8px padding
-	 * - Icon: 24px square, always at 12px from left edge (4px + 8px)
+	 * - Slot container: 48px square with consistent 4px padding on all sides
+	 * - Button: 40px square (collapsed), always has 8px padding on all sides
+	 * - Icon: 24px square, always at 12px from edges (4px slot + 8px button)
 	 *
-	 * Math:
-	 * - Slot padding: 4px left + 4px right = 8px horizontal
-	 * - Button: 40px wide, 8px padding all around
-	 * - Content area: 40px - 16px padding = 24px (perfect for icon)
-	 * - Icon position: 4px (slot) + 8px (button) = 12px from left edge
+	 * Math (same for both horizontal and vertical):
+	 * - Slot: 48px total
+	 * - Slot padding: 4px (top, right, bottom, left - all symmetric)
+	 * - Button: 40px with 8px padding all around
+	 * - Content area: 40px - 16px = 24px (exact icon size)
+	 * - Icon position: 4px (slot) + 8px (button) = 12px from any edge
 	 *
 	 * This position is IDENTICAL in both collapsed and expanded states.
+	 * Vertical and horizontal spacing is completely symmetric.
 	 */
 
 	/* Layer 1: Button Slot Container */
@@ -93,15 +95,13 @@
 		height: var(--sidebar-slot-height); /* 48px */
 		box-sizing: border-box;
 
-		/* Flexbox: centers 40px button vertically in 48px slot */
+		/* Flexbox for button layout */
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
 
-		/* Horizontal padding positions the button */
-		padding-left: var(--sidebar-button-spacing); /* 4px */
-		padding-right: var(--sidebar-button-spacing); /* 4px */
-		/* No vertical padding - button centered via align-items */
+		/* Symmetric padding on all sides: 4px + 40px + 4px = 48px */
+		padding: var(--sidebar-button-spacing); /* 4px all around */
 
 		flex-shrink: 0;
 		overflow: hidden; /* Clips label text in collapsed state */
