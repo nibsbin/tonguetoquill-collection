@@ -54,14 +54,14 @@ This document defines the UI integration for login and profile functionality in 
 
 **Collapsed Sidebar:**
 
-- Display `circle-user` icon from lucide-svelte
+- Display user icon from lucide-svelte
 - Position above settings button
 - Same visual treatment as settings button
 - Clicking opens profile modal
 
 **Expanded Sidebar:**
 
-- Display `circle-user` icon + user's name/email
+- Display user icon + user's name/email
 - Position above settings button, under same divider
 - Same visual treatment as settings button
 - Text truncates with ellipsis if too long
