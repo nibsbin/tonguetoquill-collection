@@ -1,8 +1,4 @@
 <script lang="ts">
-	import { Root, Portal } from '$lib/components/ui/dialog.svelte';
-	import DialogContent from '$lib/components/ui/dialog-content.svelte';
-	import DialogHeader from '$lib/components/ui/dialog-header.svelte';
-	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
 	import { X } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 
@@ -39,27 +35,41 @@
 			timeStyle: 'short'
 		});
 	}
+
+	// Handle backdrop click
+	function handleBackdropClick(e: MouseEvent) {
+		if (e.target === e.currentTarget) {
+			onOpenChange(false);
+		}
+	}
 </script>
 
-<Root {open} {onOpenChange}>
-	<Portal>
-		<DialogContent
-			class="max-w-md border border-border bg-background p-6 shadow-lg lg:top-1/2 lg:right-8 lg:left-auto lg:translate-x-0 lg:-translate-y-1/2"
+{#if open}
+	<!-- Backdrop - only covers the preview pane -->
+	<div
+		class="absolute inset-0 z-40 bg-black/50 backdrop-blur-sm"
+		onclick={handleBackdropClick}
+		role="presentation"
+	>
+		<!-- Dialog Content - centered in preview pane -->
+		<div
+			class="absolute top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-background p-6 shadow-lg"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="document-info-title"
 		>
-			<DialogHeader>
-				<div class="flex items-center justify-between">
-					<DialogTitle class="text text-lg font-semibold">Document Info</DialogTitle>
-					<Button
-						variant="ghost"
-						size="sm"
-						class="h-6 w-6 p-0"
-						onclick={() => onOpenChange(false)}
-						aria-label="Close dialog"
-					>
-						<X class="h-4 w-4" />
-					</Button>
-				</div>
-			</DialogHeader>
+			<div class="flex items-center justify-between">
+				<h2 id="document-info-title" class="text text-lg font-semibold">Document Info</h2>
+				<Button
+					variant="ghost"
+					size="sm"
+					class="h-6 w-6 p-0"
+					onclick={() => onOpenChange(false)}
+					aria-label="Close dialog"
+				>
+					<X class="h-4 w-4" />
+				</Button>
+			</div>
 
 			<div class="mt-4 space-y-4">
 				<!-- Document Name -->
@@ -94,9 +104,9 @@
 					</ul>
 				</div>
 			</div>
-		</DialogContent>
-	</Portal>
-</Root>
+		</div>
+	</div>
+{/if}
 
 <style>
 	.text {
