@@ -1,8 +1,4 @@
 <script lang="ts">
-	import { Root, Portal } from '$lib/components/ui/dialog.svelte';
-	import DialogContent from '$lib/components/ui/dialog-content.svelte';
-	import DialogHeader from '$lib/components/ui/dialog-header.svelte';
-	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
 	import { X } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 
@@ -39,64 +35,91 @@
 			timeStyle: 'short'
 		});
 	}
+
+	// Handle backdrop click
+	function handleBackdropClick(e: MouseEvent) {
+		if (e.target === e.currentTarget) {
+			onOpenChange(false);
+		}
+	}
 </script>
 
-<Root {open} {onOpenChange}>
-	<Portal>
-		<DialogContent
-			class="max-w-md border border-border bg-background p-6 shadow-lg lg:top-1/2 lg:right-8 lg:left-auto lg:translate-x-0 lg:-translate-y-1/2"
+{#if open}
+	<!-- Backdrop - only covers the preview pane -->
+	<div class="absolute inset-0 z-40 bg-black/40" onclick={handleBackdropClick} role="presentation">
+		<!-- Dialog Content - centered in preview pane -->
+		<div
+			class="absolute top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-background p-6 shadow-lg"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="document-info-title"
 		>
-			<DialogHeader>
-				<div class="flex items-center justify-between">
-					<DialogTitle class="text text-lg font-semibold">Document Info</DialogTitle>
-					<Button
-						variant="ghost"
-						size="sm"
-						class="h-6 w-6 p-0"
-						onclick={() => onOpenChange(false)}
-						aria-label="Close dialog"
-					>
-						<X class="h-4 w-4" />
-					</Button>
-				</div>
-			</DialogHeader>
+			<div class="flex items-center justify-between">
+				<h2 id="document-info-title" class="text text-lg font-semibold">Document Info</h2>
+				<Button
+					variant="ghost"
+					size="sm"
+					class="h-6 w-6 p-0"
+					onclick={() => onOpenChange(false)}
+					aria-label="Close dialog"
+				>
+					<X class="h-4 w-4" />
+				</Button>
+			</div>
 
-			<div class="mt-4 space-y-4">
+			<div class="mt-6 space-y-6">
 				<!-- Document Name -->
 				<div class="space-y-1">
 					<div class="text-sm font-medium text-muted-foreground">Document Name</div>
 					<div class="text-base text-foreground">{document?.name || 'Untitled'}</div>
 				</div>
 
-				<!-- Created -->
-				<div class="space-y-1">
-					<div class="text-sm font-medium text-muted-foreground">Created</div>
-					<div class="text-base text-foreground">
-						{document?.created_at ? formatDate(document.created_at) : 'Unknown'}
-					</div>
-				</div>
-
-				<!-- Modified -->
-				<div class="space-y-1">
-					<div class="text-sm font-medium text-muted-foreground">Modified</div>
-					<div class="text-base text-foreground">
-						{document?.updated_at ? formatDate(document.updated_at) : 'Unknown'}
-					</div>
-				</div>
-
-				<!-- Statistics -->
-				<div class="space-y-1">
+				<!-- Statistics (Emphasized) -->
+				<div class="space-y-3">
 					<div class="text-sm font-medium text-muted-foreground">Statistics</div>
-					<ul class="text-sm text-foreground" role="list">
-						<li>• Characters: {stats.characters}</li>
-						<li>• Words: {stats.words}</li>
-						<li>• Lines: {stats.lines}</li>
-					</ul>
+					<div class="grid grid-cols-3 gap-4">
+						<div class="text-center">
+							<div class="text-2xl font-semibold text-foreground">
+								{stats.characters.toLocaleString()}
+							</div>
+							<div class="mt-1 text-xs text-muted-foreground">Chars</div>
+						</div>
+						<div class="text-center">
+							<div class="text-2xl font-semibold text-foreground">
+								{stats.words.toLocaleString()}
+							</div>
+							<div class="mt-1 text-xs text-muted-foreground">Words</div>
+						</div>
+						<div class="text-center">
+							<div class="text-2xl font-semibold text-foreground">
+								{stats.lines.toLocaleString()}
+							</div>
+							<div class="mt-1 text-xs text-muted-foreground">Lines</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Dates (De-emphasized, grouped) -->
+				<div class="border-t border-border pt-2">
+					<div class="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
+						<div>
+							<span class="font-medium">Created:</span>
+							<span class="ml-1">
+								{document?.created_at ? formatDate(document.created_at) : 'Unknown'}
+							</span>
+						</div>
+						<div>
+							<span class="font-medium">Modified:</span>
+							<span class="ml-1">
+								{document?.updated_at ? formatDate(document.updated_at) : 'Unknown'}
+							</span>
+						</div>
+					</div>
 				</div>
 			</div>
-		</DialogContent>
-	</Portal>
-</Root>
+		</div>
+	</div>
+{/if}
 
 <style>
 	.text {

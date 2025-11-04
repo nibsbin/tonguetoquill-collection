@@ -17,7 +17,6 @@
 	import DropdownMenuTrigger from '$lib/components/ui/dropdown-menu-trigger.svelte';
 	import DropdownMenuContent from '$lib/components/ui/dropdown-menu-content.svelte';
 	import DropdownMenuItem from '$lib/components/ui/dropdown-menu-item.svelte';
-	import DropdownMenuSeparator from '$lib/components/ui/dropdown-menu-separator.svelte';
 	import type { SaveStatus } from '$lib/utils/auto-save.svelte';
 
 	type TopMenuProps = {
@@ -229,22 +228,18 @@
 					Share
 				</DropdownMenuItem>
 
-				<DropdownMenuSeparator class="bg-border" />
-
 				<!-- Group 2: Info & Help -->
 				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					class="border-t border-border text-foreground/80 focus:bg-accent focus:text-foreground"
 					onclick={handleDocumentInfo}
 				>
 					<FileText class="mr-2 h-4 w-4" />
 					Document Info
 				</DropdownMenuItem>
 
-				<DropdownMenuSeparator class="bg-border" />
-
 				<!-- Group 3: Legal & About -->
 				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					class="border-t border-border text-foreground/80 focus:bg-accent focus:text-foreground"
 					onclick={handleAbout}
 				>
 					<Info class="mr-2 h-4 w-4" />

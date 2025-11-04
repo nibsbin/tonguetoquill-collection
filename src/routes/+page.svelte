@@ -6,7 +6,6 @@
 	import { Sidebar } from '$lib/components/Sidebar';
 	import { TopMenu } from '$lib/components/TopMenu';
 	import { DocumentEditor } from '$lib/components/Editor';
-	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
 
 	let user = $state<{ email: string; id: string } | null>(null);
 	let loading = $state(true);
@@ -134,19 +133,13 @@
 						{autoSave}
 						onContentChange={handleContentChange}
 						onDocumentLoad={handleDocumentLoad}
+						{showDocumentInfo}
+						onDocumentInfoChange={(open) => (showDocumentInfo = open)}
 					/>
 				{/if}
 			</div>
 		</div>
 	</div>
-
-	<!-- Document Info Dialog -->
-	<DocumentInfoDialog
-		open={showDocumentInfo}
-		document={documentStore.activeDocument}
-		content={documentContent}
-		onOpenChange={(open) => (showDocumentInfo = open)}
-	/>
 
 	<!-- Toast Notifications using Sonner -->
 	<Toaster theme="dark" />

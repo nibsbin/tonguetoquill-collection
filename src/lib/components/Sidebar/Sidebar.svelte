@@ -3,7 +3,6 @@
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
-	import Separator from '$lib/components/ui/separator.svelte';
 	import Popover from '$lib/components/ui/popover.svelte';
 	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';
 	import PopoverContent from '$lib/components/ui/popover-content.svelte';
@@ -200,7 +199,7 @@
 			</SheetTrigger>
 			<SheetContent side="left" class="flex w-72 flex-col bg-background p-0 text-foreground">
 				<!-- Hamburger Menu and Title -->
-				<div class="relative flex items-center">
+				<div class="relative flex items-center border-b border-border">
 					<SidebarButtonSlot
 						icon={Menu}
 						{isExpanded}
@@ -218,9 +217,6 @@
 					</span>
 				</div>
 
-				<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
-				<Separator class="bg-border" />
-
 				<!-- Menu Items -->
 				<div class="flex-1 overflow-hidden">
 					<div>
@@ -228,17 +224,20 @@
 							icon={Plus}
 							label="New Document"
 							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
+							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985] {!isExpanded
+								? 'border-b border-border'
+								: ''}"
 							onclick={handleNewFile}
 							ariaLabel="Create new document"
 						/>
 
-						{#if !isExpanded}
-							<Separator class="bg-border" />
-						{/if}
-
 						{#if documentStore.documents.length > 0 && isExpanded}
-							<Separator class="bg-border" />
+							<!-- Recents Section Header -->
+							<div
+								class="sticky top-0 z-10 mt-1 border-t border-border bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
+							>
+								<h3 class="text-xs text-muted-foreground">Recents</h3>
+							</div>
 
 							<!-- Scrollable Recent Items -->
 							<div
@@ -312,7 +311,7 @@
 									<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
 									<div class="space-y-4">
-										<div class="flex items-center justify-between">
+										<div class="flex items-center justify-between border-b border-border pb-3">
 											<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
 											<Switch
 												id="dark-mode"
@@ -320,8 +319,6 @@
 												onCheckedChange={handleDarkModeChange}
 											/>
 										</div>
-
-										<Separator class="my-3 bg-border" />
 
 										<div class="flex items-center justify-between">
 											<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
@@ -358,7 +355,7 @@
 			: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 	>
 		<!-- Hamburger Menu and Title -->
-		<div class="relative flex items-center">
+		<div class="relative flex items-center border-b border-border">
 			<SidebarButtonSlot
 				icon={Menu}
 				{isExpanded}
@@ -376,9 +373,6 @@
 			</span>
 		</div>
 
-		<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
-		<Separator class="bg-border" />
-
 		<!-- Menu Items -->
 		<div class="flex-1 overflow-hidden">
 			<div>
@@ -386,17 +380,20 @@
 					icon={Plus}
 					label="New Document"
 					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
+					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985] {!isExpanded
+						? 'border-b border-border'
+						: ''}"
 					onclick={handleNewFile}
 					ariaLabel="Create new document"
 				/>
 
-				{#if !isExpanded}
-					<Separator class="bg-border" />
-				{/if}
-
 				{#if documentStore.documents.length > 0 && isExpanded}
-					<Separator class="bg-border" />
+					<!-- Recents Section Header -->
+					<div
+						class="sticky top-0 z-10 mt-1 border-t border-border bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
+					>
+						<h3 class="text-xs text-muted-foreground">Recents</h3>
+					</div>
 
 					<!-- Scrollable Recent Items -->
 					<div
@@ -470,7 +467,7 @@
 							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
 							<div class="space-y-4">
-								<div class="flex items-center justify-between">
+								<div class="flex items-center justify-between border-b border-border pb-3">
 									<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
 									<Switch
 										id="dark-mode"
@@ -478,8 +475,6 @@
 										onCheckedChange={handleDarkModeChange}
 									/>
 								</div>
-
-								<Separator class="my-3 bg-border" />
 
 								<div class="flex items-center justify-between">
 									<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
