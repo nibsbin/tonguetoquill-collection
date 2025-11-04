@@ -4,7 +4,9 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "npm run dev:mock",
+		"dev:mock": "vite dev --mode mock",
+		"dev:supabase": "vite dev --mode supabase",
 		"build": "npm run pack && vite build",
 		"preview": "vite preview",
 		"prepare": "husky",
