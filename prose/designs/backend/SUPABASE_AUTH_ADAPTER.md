@@ -237,15 +237,6 @@ Map Supabase error codes to our AuthError codes:
 
 Always verify RLS policies are in place before deploying to production.
 
-### Key Rotation Strategy
-
-For production deployments, establish a key rotation strategy for `SUPABASE_SECRET_KEY`:
-- Rotate service role keys periodically (e.g., every 90 days)
-- Use Supabase dashboard to generate new keys
-- Update environment variables with zero downtime using rolling deployments
-- Monitor API usage during rotation to detect issues
-- Keep audit logs of key rotation events
-
 **KISS Security:**
 - Trust Supabase's security (they're the experts)
 - Don't implement custom crypto or validation
@@ -287,41 +278,6 @@ Test adapter methods in isolation with mocked Supabase client:
 - Test session refresh
 - Test error mapping
 - Test data mapping
-
-**KISS Testing:**
-- Mock the Supabase client (not the HTTP layer)
-- Test one method at a time
-- Use simple assertions
-
-### Integration Tests
-
-Test with real Supabase project (test environment):
-
-- Test full OAuth flow
-- Test token refresh before expiry
-- Test error scenarios (invalid tokens, expired sessions)
-- Test concurrent requests
-
-**Note:** Use dedicated Supabase test project, not production.
-
-## Migration from Current Implementation
-
-### Current State
-
-The existing `SupabaseAuthProvider` uses raw fetch() calls and has incomplete JWT validation.
-
-### Migration Steps
-
-1. Add Supabase library dependencies
-2. Replace fetch() calls with Supabase client methods
-3. Remove manual JWT parsing
-4. Update tests to use mocked Supabase client
-5. Update environment configuration
-
-**KISS Migration:**
-- Replace methods one at a time
-- Keep same AuthContract interface
-- No breaking changes to callers
 
 ## Why This Design?
 
@@ -370,24 +326,6 @@ The existing `SupabaseAuthProvider` uses raw fetch() calls and has incomplete JW
 - Custom user registration (use Supabase hosted UI)
 - Social auth providers (configured in Supabase dashboard)
 - MFA/2FA (configured in Supabase dashboard)
-
-### Known Limitations
-
-- Requires internet connection to Supabase API
-- Dependent on Supabase service availability
-- JWKS caching controlled by Supabase library (not configurable)
-
-**KISS Trade-off:** Accept these limitations for simplicity. The alternative (self-hosting) adds massive complexity.
-
-## Future Enhancements
-
-**Post-MVP:**
-- Add caching layer for user data (reduce API calls)
-- Add metrics/logging for auth operations
-- Add admin operations (user management via service role key)
-- Add webhook integration for auth events
-
-**KISS Rule:** Only add these if clearly needed. Start simple.
 
 ## Cross-References
 
