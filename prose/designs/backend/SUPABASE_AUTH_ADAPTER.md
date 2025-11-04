@@ -75,8 +75,8 @@ We use a **custom adapter** approach with `@supabase/supabase-js` core library t
 
 **Configuration:**
 - `SUPABASE_URL`: Project URL (e.g., https://xyz.supabase.co)
-- `SUPABASE_ANON_KEY`: Public anonymous key for API access
-- `SUPABASE_SERVICE_ROLE_KEY` (optional): For admin operations
+- `SUPABASE_PUBLISHABLE_KEY`: Public anonymous key for API access
+- `SUPABASE_SECRET_KEY` (optional): For admin operations
 
 **KISS Approach:**
 - Single client instance (singleton pattern)
@@ -228,6 +228,15 @@ Map Supabase error codes to our AuthError codes:
 - Type conversions
 - Access token storage in HTTP-only cookies (handled by API routes, not adapter)
 
+### Row Level Security (RLS)
+
+**CRITICAL:** This adapter's security model assumes that Row Level Security (RLS) is enabled and correctly configured on all Supabase tables. Without proper RLS policies:
+- Users may access data they shouldn't see
+- Data integrity could be compromised
+- Authorization boundaries may be violated
+
+Always verify RLS policies are in place before deploying to production.
+
 **KISS Security:**
 - Trust Supabase's security (they're the experts)
 - Don't implement custom crypto or validation
@@ -239,24 +248,23 @@ Map Supabase error codes to our AuthError codes:
 
 **Required:**
 - `SUPABASE_URL`: Project URL (e.g., https://your-project.supabase.co)
-- `SUPABASE_ANON_KEY`: Public anonymous key for client operations
-- `SUPABASE_JWT_SECRET`: JWT secret for server-side token verification
+- `SUPABASE_PUBLISHABLE_KEY`: Public anonymous key for client operations
 
 **Optional:**
-- `SUPABASE_SERVICE_ROLE_KEY`: Service role key for admin operations (bypasses RLS)
+- `SUPABASE_SECRET_KEY`: Service role key for admin operations (bypasses RLS)
 
-**Note on JWT_SECRET:**
-The `SUPABASE_JWT_SECRET` is required for server-side JWT verification. This is found in your Supabase project settings under API > JWT Secret. The Supabase client library uses this to verify token signatures without making API calls.
+**Note on Token Validation:**
+The supabase-js client library automatically handles JWT verification using the public JWKS endpoint. No manual JWT secret configuration is required.
 
 ### Validation
 
 Adapter should validate configuration on initialization:
-- Check required env vars: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_JWT_SECRET`
+- Check required env vars: `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`
 - Throw clear error if misconfigured
 - No fallback values (fail fast)
 
 **KISS Validation:**
-- Simple if-statement to check for required variables (SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_JWT_SECRET)
+- Simple if-statement to check for required variables (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
 - Fail fast with clear error message on missing configuration
 
 ## Testing Strategy
@@ -270,41 +278,6 @@ Test adapter methods in isolation with mocked Supabase client:
 - Test session refresh
 - Test error mapping
 - Test data mapping
-
-**KISS Testing:**
-- Mock the Supabase client (not the HTTP layer)
-- Test one method at a time
-- Use simple assertions
-
-### Integration Tests
-
-Test with real Supabase project (test environment):
-
-- Test full OAuth flow
-- Test token refresh before expiry
-- Test error scenarios (invalid tokens, expired sessions)
-- Test concurrent requests
-
-**Note:** Use dedicated Supabase test project, not production.
-
-## Migration from Current Implementation
-
-### Current State
-
-The existing `SupabaseAuthProvider` uses raw fetch() calls and has incomplete JWT validation.
-
-### Migration Steps
-
-1. Add Supabase library dependencies
-2. Replace fetch() calls with Supabase client methods
-3. Remove manual JWT parsing
-4. Update tests to use mocked Supabase client
-5. Update environment configuration
-
-**KISS Migration:**
-- Replace methods one at a time
-- Keep same AuthContract interface
-- No breaking changes to callers
 
 ## Why This Design?
 
@@ -353,24 +326,6 @@ The existing `SupabaseAuthProvider` uses raw fetch() calls and has incomplete JW
 - Custom user registration (use Supabase hosted UI)
 - Social auth providers (configured in Supabase dashboard)
 - MFA/2FA (configured in Supabase dashboard)
-
-### Known Limitations
-
-- Requires internet connection to Supabase API
-- Dependent on Supabase service availability
-- JWKS caching controlled by Supabase library (not configurable)
-
-**KISS Trade-off:** Accept these limitations for simplicity. The alternative (self-hosting) adds massive complexity.
-
-## Future Enhancements
-
-**Post-MVP:**
-- Add caching layer for user data (reduce API calls)
-- Add metrics/logging for auth operations
-- Add admin operations (user management via service role key)
-- Add webhook integration for auth events
-
-**KISS Rule:** Only add these if clearly needed. Start simple.
 
 ## Cross-References
 
