@@ -55,28 +55,17 @@ The Supabase Auth Adapter implements the Adapter pattern to translate between ou
 **Required:**
 - `@supabase/supabase-js` (v2.x) - Core Supabase client library
 
-**Optional:**
-- `@supabase/ssr` - SvelteKit server-side rendering helpers (alternative to custom adapter)
-
 **Our Approach:**
-We use a **custom adapter** approach with `@supabase/supabase-js` core library to implement our AuthContract interface. This gives us full control and fits our existing architecture.
-
-**Alternative Approach:**
-Supabase's `@supabase/ssr` package provides opinionated helpers for SvelteKit with automatic cookie management. While this is the recommended Supabase pattern, we chose the custom adapter approach for:
-- Better fit with existing AuthContract interface
+We use a **custom adapter** approach with `@supabase/supabase-js` core library to implement our AuthContract interface. This gives us:
+- Perfect fit with existing AuthContract interface
 - Full control over token and cookie management
 - Consistency with other service providers (mock, Keycloak)
 - Explicit session handling in our API routes
-
-**Why Official Libraries:**
-- Battle-tested and maintained by Supabase team
+- Battle-tested library maintained by Supabase team
 - Automatic handling of token refresh
 - Built-in JWT validation with JWKS
 - TypeScript support
 - Regular security updates
-
-**Alternative Considered:** Raw fetch() calls to Supabase REST API
-**Why Rejected:** Requires manual implementation of JWT validation, token refresh logic, and JWKS caching. The official library handles all of this correctly and securely.
 
 ## Adapter Components
 
@@ -394,4 +383,3 @@ The existing `SupabaseAuthProvider` uses raw fetch() calls and has incomplete JW
 - [Supabase Auth Overview](https://supabase.com/docs/guides/auth) - Official auth documentation
 - [SvelteKit Server-Side Auth](https://supabase.com/docs/guides/auth/server-side/sveltekit) - SvelteKit integration guide
 - [Supabase JS Library Reference](https://supabase.com/docs/reference/javascript) - JavaScript client API reference
-- [Auth Helpers for SvelteKit](https://supabase.com/docs/guides/auth/auth-helpers/sveltekit) - SSR helpers (alternative approach)

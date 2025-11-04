@@ -73,9 +73,6 @@ This plan outlines the implementation of a proper Supabase Auth adapter using th
 npm install @supabase/supabase-js
 ```
 
-**Note on SvelteKit Helpers:** 
-Supabase provides `@supabase/ssr` for opinionated SvelteKit integration with automatic cookie management. However, we're implementing a custom adapter to fit our existing AuthContract architecture. The `@supabase/ssr` package is an alternative approach but not required for our implementation.
-
 **Expected Outcome:** Supabase client library available for import
 
 ### Step 2: Create Supabase Client Singleton
