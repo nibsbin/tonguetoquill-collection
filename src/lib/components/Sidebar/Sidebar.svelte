@@ -288,7 +288,7 @@
 					{/if}
 
 					<!-- Settings Gear Button -->
-					<div class="sidebar-button-slot">
+					<SidebarButtonSlot {isExpanded}>
 						<Popover bind:open={popoverOpen}>
 							<PopoverTrigger
 								class="sidebar-slot-button {isExpanded
@@ -339,7 +339,7 @@
 								</div>
 							</PopoverContent>
 						</Popover>
-					</div>
+					</SidebarButtonSlot>
 				</div>
 			</SheetContent>
 		</Sheet>
@@ -442,7 +442,7 @@
 			{/if}
 
 			<!-- Settings Gear Button -->
-			<div class="sidebar-button-slot">
+			<SidebarButtonSlot {isExpanded}>
 				<Popover bind:open={popoverOpen}>
 					<PopoverTrigger
 						class="sidebar-slot-button {isExpanded
@@ -493,7 +493,7 @@
 						</div>
 					</PopoverContent>
 				</Popover>
-			</div>
+			</SidebarButtonSlot>
 		</div>
 	</div>
 {/if}

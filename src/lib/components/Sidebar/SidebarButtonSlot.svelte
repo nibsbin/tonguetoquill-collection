@@ -3,7 +3,7 @@
 	import Button from '$lib/components/ui/button.svelte';
 
 	type SidebarButtonSlotProps = {
-		icon: ComponentType;
+		icon?: ComponentType;
 		label?: string;
 		isExpanded: boolean;
 		variant?: 'ghost' | 'default' | 'outline';
@@ -47,24 +47,31 @@
 	   - Label text fades in/out with opacity transition
 -->
 <div class="sidebar-button-slot">
-	<Button
-		{variant}
-		size="icon"
-		class="sidebar-slot-button {isExpanded ? 'sidebar-slot-button-full' : ''} {className}"
-		{onclick}
-		aria-label={ariaLabel}
-		{title}
-		{disabled}
-	>
-		{@const Icon = icon}
-		<Icon class="sidebar-icon" />
-		{#if label}
-			<span
-				class="truncate transition-opacity duration-300 {isExpanded ? 'opacity-100' : 'opacity-0'}"
-				>{label}</span
-			>
-		{/if}
-	</Button>
+	{#if $$slots.default}
+		<!-- Custom trigger mode: Render slot content -->
+		<slot />
+	{:else}
+		<!-- Standard button mode: Render Button component -->
+		<Button
+			{variant}
+			size="icon"
+			class="sidebar-slot-button {isExpanded ? 'sidebar-slot-button-full' : ''} {className}"
+			{onclick}
+			aria-label={ariaLabel}
+			{title}
+			{disabled}
+		>
+			{@const Icon = icon}
+			<Icon class="sidebar-icon" />
+			{#if label}
+				<span
+					class="truncate transition-opacity duration-300 {isExpanded
+						? 'opacity-100'
+						: 'opacity-0'}">{label}</span
+				>
+			{/if}
+		</Button>
+	{/if}
 </div>
 
 <style>
