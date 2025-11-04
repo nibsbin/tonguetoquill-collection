@@ -112,7 +112,7 @@ This document defines the UI integration for login and profile functionality in 
 
 **Props:**
 
-- `icon`: `CircleUser` from lucide-svelte
+- `icon`: `User` from lucide-svelte
 - `label`: User's display name or email
 - `isExpanded`: Sidebar expansion state
 - `onclick`: Opens profile modal
@@ -219,7 +219,7 @@ The root layout should:
 **Icon Choice:**
 
 - Guest mode: `LogIn` icon (arrow entering door)
-- Logged-in: `CircleUser` icon (user avatar silhouette)
+- Logged-in: `User` icon (user avatar silhouette)
 
 ### Modal Appearance (Profile Modal Only)
 
@@ -337,7 +337,7 @@ Both buttons work identically in mobile sheet as in desktop sidebar:
 
 ## Implementation Checklist
 
-- [ ] Add `LogIn` and `CircleUser` icons to Sidebar imports
+- [ ] Add `LogIn` and `User` icons to Sidebar imports
 - [ ] Add state variables for profile modal
 - [ ] Create sign-in button using SidebarButtonSlot (guest mode)
   - [ ] Button calls `loginClient.initiateLogin()` to redirect to OAuth provider

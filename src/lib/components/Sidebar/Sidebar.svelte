@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, Settings, Plus, LogIn, CircleUser } from 'lucide-svelte';
+	import { Menu, Settings, Plus, LogIn, User } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
@@ -287,7 +287,7 @@
 					<!-- User Profile Button (Logged-in Mode) -->
 					{#if user}
 						<SidebarButtonSlot
-							icon={CircleUser}
+							icon={User}
 							label={user.email}
 							{isExpanded}
 							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
@@ -452,7 +452,7 @@
 			<!-- User Profile Button (Logged-in Mode) -->
 			{#if user}
 				<SidebarButtonSlot
-					icon={CircleUser}
+					icon={User}
 					label={user.email}
 					{isExpanded}
 					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
