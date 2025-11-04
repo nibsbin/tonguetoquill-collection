@@ -11,7 +11,6 @@ interface DocumentsState {
 	activeDocumentId: string | null;
 	isLoading: boolean;
 	error: string | null;
-	isGuest: boolean;
 }
 
 class DocumentStore {
@@ -19,12 +18,15 @@ class DocumentStore {
 		documents: [],
 		activeDocumentId: null,
 		isLoading: false,
-		error: null,
-		isGuest: true // Default to guest mode
+		error: null
 	});
 
+	// Authentication state - separate from document state
+	// Used by DocumentClient to route between localStorage (guest) and API (authenticated)
+	private _isGuest = $state<boolean>(true);
+
 	// Create document client with guest mode accessor
-	private documentClient = createDocumentClient(() => this.state.isGuest);
+	private documentClient = createDocumentClient(() => this._isGuest);
 
 	// Getters
 	get documents() {
@@ -43,12 +45,13 @@ class DocumentStore {
 		return this.state.error;
 	}
 
-	get isGuest() {
-		return this.state.isGuest;
-	}
-
 	get activeDocument() {
 		return this.state.documents.find((doc) => doc.id === this.state.activeDocumentId) || null;
+	}
+
+	// Provide access to document client for AutoSave
+	getDocumentClient() {
+		return this.documentClient;
 	}
 
 	// Actions
@@ -68,8 +71,12 @@ class DocumentStore {
 		this.state.error = error;
 	}
 
+	/**
+	 * Set authentication mode
+	 * Internal method used to configure DocumentClient routing
+	 */
 	setGuestMode(isGuest: boolean) {
-		this.state.isGuest = isGuest;
+		this._isGuest = isGuest;
 	}
 
 	addDocument(document: DocumentMetadata) {
@@ -114,24 +121,8 @@ class DocumentStore {
 			...(result.updated_at !== undefined && { updated_at: result.updated_at })
 		});
 
-		// For guest mode, persist first then update state
-		if (this.state.isGuest) {
-			try {
-				// Call DocumentClient to persist
-				const result = await this.documentClient.updateDocument(id, clientUpdates);
-
-				// Update local state with both user updates and server response
-				this.state.documents = this.state.documents.map((doc) =>
-					doc.id === id ? mergeWithServerResponse(doc, result) : doc
-				);
-			} catch (err) {
-				this.setError(err instanceof Error ? err.message : 'Failed to update document');
-				throw err;
-			}
-			return;
-		}
-
-		// Authenticated mode: use optimistic update
+		// Use optimistic update for immediate UI responsiveness
+		// DocumentClient handles routing to localStorage (guest) or API (authenticated)
 		const previousDocument = { ...documentToUpdate };
 
 		// Optimistically update local state
@@ -202,41 +193,12 @@ class DocumentStore {
 	}
 
 	async createDocument(name: string = 'Untitled Document', content: string = '') {
-		// For guest mode, use optimistic update for immediate UI responsiveness
-		if (this.state.isGuest) {
-			// Create temporary document for immediate UI feedback
-			const tempId = `temp-${Date.now()}`;
-			const tempDoc: DocumentMetadata = {
-				id: tempId,
-				owner_id: 'guest',
-				name,
-				content_size_bytes: 0,
-				created_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
-			};
-
-			this.addDocument(tempDoc);
-			this.setActiveDocumentId(tempId);
-
-			try {
-				const metadata = await this.documentClient.createDocument(name, content);
-				this.removeDocument(tempId);
-				this.addDocument(metadata);
-				this.setActiveDocumentId(metadata.id);
-				return metadata;
-			} catch (err) {
-				// Rollback on error
-				this.removeDocument(tempId);
-				this.setError(err instanceof Error ? err.message : 'Failed to create document');
-				throw err;
-			}
-		}
-
-		// Authenticated mode: use optimistic update
+		// Use optimistic update for immediate UI responsiveness
+		// DocumentClient handles routing to localStorage (guest) or API (authenticated)
 		const tempId = `temp-${Date.now()}`;
 		const tempDoc: DocumentMetadata = {
 			id: tempId,
-			owner_id: 'temp',
+			owner_id: 'temp', // Temporary value, will be replaced when actual document is created
 			name,
 			content_size_bytes: 0,
 			created_at: new Date().toISOString(),
@@ -264,19 +226,8 @@ class DocumentStore {
 	}
 
 	async deleteDocument(id: string) {
-		// For guest mode, delete directly without optimistic update
-		if (this.state.isGuest) {
-			try {
-				await this.documentClient.deleteDocument(id);
-				this.removeDocument(id);
-			} catch (err) {
-				this.setError(err instanceof Error ? err.message : 'Failed to delete document');
-				throw err;
-			}
-			return;
-		}
-
-		// Authenticated mode: use optimistic update
+		// Use optimistic update for immediate UI responsiveness
+		// DocumentClient handles routing to localStorage (guest) or API (authenticated)
 		const documentToDelete = this.state.documents.find((doc) => doc.id === id);
 		if (!documentToDelete) {
 			throw new Error('Document not found');
