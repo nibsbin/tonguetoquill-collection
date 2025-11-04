@@ -224,9 +224,7 @@
 							icon={Plus}
 							label="New Document"
 							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985] {!isExpanded
-								? 'border-b border-border'
-								: ''}"
+							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							onclick={handleNewFile}
 							ariaLabel="Create new document"
 						/>
@@ -380,9 +378,7 @@
 					icon={Plus}
 					label="New Document"
 					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985] {!isExpanded
-						? 'border-b border-border'
-						: ''}"
+					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
 					onclick={handleNewFile}
 					ariaLabel="Create new document"
 				/>
