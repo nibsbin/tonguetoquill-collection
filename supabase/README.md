@@ -4,9 +4,10 @@ This directory contains the database schema and migration files for the Tongue t
 
 ## Prerequisites
 
-1. Install the Supabase CLI:
+1. Install [the Supabase CLI](https://supabase.com/docs/guides/local-development):
+
    ```bash
-   npm install -g supabase
+   brew install supabase/tap/supabase
    ```
 
 2. Sign up for a Supabase account at https://supabase.com if you haven't already
@@ -18,9 +19,11 @@ This directory contains the database schema and migration files for the Tongue t
 This is the recommended approach for development as it allows you to run a local Supabase instance with Docker.
 
 1. **Start local Supabase instance:**
+
    ```bash
    supabase start
    ```
+
    This will start all Supabase services locally (PostgreSQL, API, Studio, etc.)
 
 2. **The migrations will automatically run** when you start the local instance
@@ -42,12 +45,15 @@ This is the recommended approach for development as it allows you to run a local
 If you prefer to use a hosted Supabase project:
 
 1. **Link your Supabase project:**
+
    ```bash
    supabase link --project-ref <your-project-ref>
    ```
+
    You can find your project ref in your Supabase project URL: `https://app.supabase.com/project/<project-ref>`
 
 2. **Push migrations to your hosted database:**
+
    ```bash
    supabase db push
    ```
@@ -65,7 +71,9 @@ If you prefer to use a hosted Supabase project:
 The initial migration (`20250104000000_initial_schema.sql`) creates:
 
 ### Users Table
+
 Stores user identity and profile information:
+
 - `id` (UUID, primary key)
 - `email` (VARCHAR, unique, required)
 - `dodid` (VARCHAR, optional, unique) - For military users
@@ -73,7 +81,9 @@ Stores user identity and profile information:
 - `created_at`, `updated_at` (timestamps)
 
 ### Documents Table
+
 Stores user documents with content:
+
 - `id` (UUID, primary key)
 - `owner_id` (UUID, foreign key to users)
 - `name` (VARCHAR, required)
@@ -87,9 +97,11 @@ Stores user documents with content:
 When you need to make schema changes:
 
 1. **Generate a new migration file:**
+
    ```bash
    supabase migration new <migration_name>
    ```
+
    Example: `supabase migration new add_document_tags`
 
 2. **Edit the generated migration file** in `supabase/migrations/`
@@ -136,6 +148,7 @@ supabase status
 If you've manually created tables on Supabase and now want to use migrations:
 
 1. **Option A: Start fresh** (if no important data):
+
    ```bash
    # For local
    supabase db reset
@@ -151,6 +164,7 @@ If you've manually created tables on Supabase and now want to use migrations:
 ### Missing environment variables
 
 Make sure your `.env` file has:
+
 ```env
 SUPABASE_URL=<your-supabase-url>
 SUPABASE_PUBLISHABLE_KEY=<your-anon-key>
@@ -180,5 +194,6 @@ SUPABASE_SECRET_KEY=<your-service-role-key>
 ## Schema Design Documentation
 
 For detailed information about the database schema design and rationale, see:
+
 - `prose/designs/backend/SCHEMAS.md` - Complete schema documentation
 - `prose/designs/backend/SUPABASE_DATABASE_ADAPTER.md` - Database adapter design
