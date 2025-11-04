@@ -4,7 +4,7 @@
  */
 
 import { documentStore } from '$lib/stores/documents.svelte';
-import { createDocumentClient } from '$lib/services/documents/document-client';
+import type { DocumentClient } from '$lib/services/documents/document-client';
 import type { DocumentMetadata } from '$lib/services/documents/types';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
@@ -27,8 +27,10 @@ export class AutoSave {
 		status: 'idle'
 	});
 
-	// Create document client with guest mode accessor
-	private documentClient = createDocumentClient(() => documentStore.isGuest);
+	// Use the document store's client to avoid duplicate client instances
+	private get documentClient(): DocumentClient {
+		return documentStore.getDocumentClient();
+	}
 
 	constructor(debounceMs: number = 4000) {
 		this.saveDebounceMs = debounceMs;

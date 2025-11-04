@@ -102,6 +102,21 @@
 	async function loadDocument() {
 		loading = true;
 		try {
+			// Skip loading for temporary documents (they don't exist yet)
+			if (documentId.startsWith('temp-')) {
+				// Get document metadata from store
+				const metadata = documentStore.activeDocument;
+				content = '';
+				initialContent = '';
+				debouncedContent = '';
+				autoSave.reset();
+				if (onDocumentLoad && metadata) {
+					onDocumentLoad({ name: metadata.name, content: '' });
+				}
+				loading = false;
+				return;
+			}
+
 			const doc = await documentStore.fetchDocument(documentId);
 			content = doc.content;
 			initialContent = doc.content;
@@ -167,7 +182,11 @@
 
 <div class="relative flex h-full flex-1 flex-col" aria-busy={loading}>
 	<!-- Editor content (dimmed when loading) -->
-	<div class="flex h-full flex-1 flex-col {loading ? 'pointer-events-none opacity-50' : ''}">
+	<div
+		class="flex h-full flex-1 flex-col transition-opacity duration-224 ease-in-out {loading
+			? 'pointer-events-none opacity-50'
+			: ''}"
+	>
 		<!-- Mobile Tab Switcher (< 768px) -->
 		{#if isMobile}
 			<div class="flex border-b border-border bg-surface-elevated">
