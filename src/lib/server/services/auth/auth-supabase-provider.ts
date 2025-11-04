@@ -31,14 +31,14 @@ export class SupabaseAuthProvider implements AuthContract {
 
 	constructor() {
 		const supabaseUrl = env.PUBLIC_SUPABASE_URL || '';
-		const supabase_publishable_key = env.SUPABASE_PUBLISHABLE_KEY || '';
+		const supabasePublishableKey = env.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 
-		if (!supabaseUrl || !supabase_publishable_key) {
+		if (!supabaseUrl || !supabasePublishableKey) {
 			throw new Error('Supabase configuration missing. Check environment variables.');
 		}
 
 		// Create Supabase client
-		this.supabase = createClient(supabaseUrl, supabase_publishable_key, {
+		this.supabase = createClient(supabaseUrl, supabasePublishableKey, {
 			auth: {
 				autoRefreshToken: false, // We handle refresh manually
 				persistSession: false, // Server-side, no persistence needed
