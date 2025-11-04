@@ -13,19 +13,24 @@ import { getAuthService } from './auth-provider';
  * Export as authService for consistent API with document service
  */
 export const authService = {
-	get exchangeCodeForTokens() {
-		return getAuthService().exchangeCodeForTokens.bind(getAuthService());
+	async exchangeCodeForTokens(code: string) {
+		const service = await getAuthService();
+		return service.exchangeCodeForTokens(code);
 	},
-	get signOut() {
-		return getAuthService().signOut.bind(getAuthService());
+	async signOut(accessToken: string) {
+		const service = await getAuthService();
+		return service.signOut(accessToken);
 	},
-	get refreshSession() {
-		return getAuthService().refreshSession.bind(getAuthService());
+	async refreshSession(refreshToken: string) {
+		const service = await getAuthService();
+		return service.refreshSession(refreshToken);
 	},
-	get getCurrentUser() {
-		return getAuthService().getCurrentUser.bind(getAuthService());
+	async getCurrentUser(accessToken: string) {
+		const service = await getAuthService();
+		return service.getCurrentUser(accessToken);
 	},
-	get validateToken() {
-		return getAuthService().validateToken.bind(getAuthService());
+	async validateToken(token: string) {
+		const service = await getAuthService();
+		return service.validateToken(token);
 	}
 };
