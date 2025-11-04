@@ -62,58 +62,23 @@ The application uses two complementary approaches:
 
 ## Authentication Integration
 
-See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for complete authentication architecture and specifications.
+See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for complete authentication architecture, OAuth flow, and token management specifications.
 
-### Login Flow
+### Frontend Integration Points
 
-**Process**:
+**Client-Side Authentication Check**:
 
-1. User clicks "Sign In" button in TopMenu
-2. Browser redirects to `/api/auth/login` (GET request)
-3. Server redirects to auth provider's hosted login page (OAuth flow)
-4. User authenticates with provider
-5. Provider redirects back to `/api/auth/callback?code=...`
-6. Server exchanges OAuth code for JWT tokens
-7. Server sets HTTP-only cookies (`access_token`, `refresh_token`)
-8. User redirected to `/` with full features unlocked
-
-**Token Management**:
-
-- JWT tokens stored in HTTP-only cookies (never accessible to JavaScript)
-- `access_token`: 1 hour expiration
-- `refresh_token`: 7 days expiration
-- Automatic token refresh before expiration (handled server-side)
-- Logout clears both cookies via `/api/auth/logout`
-- Failed requests fall back to guest mode
-
-### Protected Routes
-
-**Server-Side Protection**:
-
-- API routes use `requireAuth()` utility to verify JWT
-- Extracts token from cookies via `getAccessToken()`
-- Validates token with auth service
-- Returns 401 if not authenticated or token invalid
-- Client falls back to guest mode on 401
-
-**Client-Side Behavior**:
-
-- Check authentication via `GET /api/auth/me` on page load
-- Set documentStore guest mode based on response
+- Check session via `GET /api/auth/me` on page load
+- Set documentStore guest mode based on response (401 = guest, 200 = authenticated)
 - Guest mode: documents stored in localStorage
 - Authenticated mode: documents synced via API
+
+**Protected API Calls**:
+
+- Server-side routes use `requireAuth()` utility to verify JWT
+- Returns 401 if not authenticated or token invalid
+- Client falls back to guest mode on 401
 - Toast notifications for errors
-
-### Session Management
-
-See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for session timeout and refresh specifications.
-
-**Features**:
-
-- HTTP-only cookies for security
-- Automatic token refresh via `/api/auth/refresh`
-- Guest mode as fallback for unauthenticated users
-- No explicit session timeout warnings (seamless experience)
 
 ## Document Management
 
@@ -301,12 +266,14 @@ See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for se
 
 ### Security Practices
 
-- JWT tokens never exposed to client JavaScript (HTTP-only cookies)
+See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for authentication security architecture.
+
+**Frontend Security**:
+
 - Validate all user input server-side
 - CSRF protection via SameSite cookie attribute
 - XSS protection via automatic Svelte escaping
 - Secure cookies in production (secure flag)
-- OAuth delegation (no password handling)
 
 ## Testing Strategies
 

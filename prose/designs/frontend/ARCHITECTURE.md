@@ -33,11 +33,7 @@ The application uses a simple, flat route structure without route groups:
 
 **Authentication Flow**:
 
-- Authentication uses OAuth delegation via `/api/auth/login`
-- Users click login → redirected to auth provider's hosted page
-- Provider authenticates and redirects to `/api/auth/callback` with OAuth code
-- Application exchanges code for JWT tokens stored in HTTP-only cookies
-- After authentication, user returned to `/` with full features unlocked
+See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for complete OAuth flow and authentication architecture. Frontend initiates login via `/api/auth/login` redirect.
 
 ### Guest Mode vs Authenticated Mode
 
@@ -145,10 +141,7 @@ RESTful API endpoints in `src/routes/api/`:
 
 ### Session Management
 
-- JWT tokens stored in HTTP-only cookies (`access_token`, `refresh_token`)
-- Automatic token refresh via `/api/auth/refresh`
-- Protected routes verified via `requireAuth()` utility
-- Guest mode fallback for unauthenticated users
+See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for token management and session details. Frontend supports guest mode fallback for unauthenticated users.
 
 ## Progressive Enhancement
 
@@ -218,11 +211,12 @@ Breakpoints: 640px (mobile), 768px (tablet), 1024px (desktop), 1280px+ (large)
 
 ### Authentication Security
 
-- OAuth-based authentication (delegated to provider)
-- JWT tokens in HTTP-only cookies (never exposed to JavaScript)
-- Automatic token refresh before expiration
-- Session management with guest mode fallback
-- Attack prevention (CSRF via SameSite cookies, XSS via automatic escaping)
+See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for authentication security architecture.
+
+Frontend security measures:
+- XSS prevention via automatic Svelte escaping
+- CSRF protection via SameSite cookie attribute
+- Tokens managed server-side only (never exposed to JavaScript)
 
 ## Build & Deployment
 
