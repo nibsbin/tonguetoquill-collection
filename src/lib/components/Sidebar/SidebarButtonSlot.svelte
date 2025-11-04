@@ -6,7 +6,7 @@
 		icon: ComponentType;
 		label?: string;
 		isExpanded: boolean;
-		variant?: 'ghost' | 'default' | 'outline' | 'secondary' | 'destructive' | 'link';
+		variant?: 'ghost' | 'default' | 'outline';
 		class?: string;
 		onclick?: (event: MouseEvent) => void;
 		ariaLabel?: string;
@@ -27,18 +27,30 @@
 	}: SidebarButtonSlotProps = $props();
 </script>
 
-<!-- 
+<!--
 	Button Slot Architecture (3 layers):
-	1. Slot Container: Square of --sidebar-collapsed-width in collapsed state, 
-	   expands horizontally when sidebar expands, clips button content
-	2. Button Element: Always full width of available space, content clipped by container
-	3. Icon Element: Square of --sidebar-icon-size, followed by label text
+
+	1. Slot Container (48px × 48px in collapsed state)
+	   - Symmetric 4px padding on all sides (top, right, bottom, left)
+	   - Creates 40px × 40px space for button
+	   - Expands horizontally when sidebar expands, vertical stays 48px
+
+	2. Button Element (40px × 40px in collapsed, full width when expanded)
+	   - Always has 8px padding on all sides (NEVER changes)
+	   - Content area: 24px × 24px (perfect fit for icon)
+	   - Always uses flex-start justification (NEVER changes)
+	   - Only width changes between states, height stays 40px
+
+	3. Icon Element (24px × 24px)
+	   - ALWAYS positioned at 12px from all edges (4px slot + 8px button)
+	   - Position is identical in collapsed and expanded states
+	   - Label text fades in/out with opacity transition
 -->
 <div class="sidebar-button-slot">
 	<Button
 		{variant}
 		size="icon"
-		class="sidebar-slot-button {className}"
+		class="sidebar-slot-button {isExpanded ? 'sidebar-slot-button-full' : ''} {className}"
 		{onclick}
 		aria-label={ariaLabel}
 		{title}
@@ -56,50 +68,72 @@
 </div>
 
 <style>
+	/*
+	 * Clean Button Slot Architecture
+	 * ==============================
+	 *
+	 * Goal: Icons must NEVER move between collapsed/expanded states
+	 *
+	 * Layout structure:
+	 * - Slot container: 48px square with consistent 4px padding on all sides
+	 * - Button: 40px square (collapsed), always has 8px padding on all sides
+	 * - Icon: 24px square, always at 12px from edges (4px slot + 8px button)
+	 *
+	 * Math (same for both horizontal and vertical):
+	 * - Slot: 48px total
+	 * - Slot padding: 4px (top, right, bottom, left - all symmetric)
+	 * - Button: 40px with 8px padding all around
+	 * - Content area: 40px - 16px = 24px (exact icon size)
+	 * - Icon position: 4px (slot) + 8px (button) = 12px from any edge
+	 *
+	 * This position is IDENTICAL in both collapsed and expanded states.
+	 * Vertical and horizontal spacing is completely symmetric.
+	 */
+
 	/* Layer 1: Button Slot Container */
 	:global(.sidebar-button-slot) {
-		/* Square in collapsed state, expands horizontally when sidebar expands */
-		height: var(--sidebar-slot-height);
-		/* Include padding in the height calculation so slot height aligns with top menu */
+		height: var(--sidebar-slot-height); /* 48px */
 		box-sizing: border-box;
-		/* Flexbox for alignment */
+
+		/* Flexbox for button layout */
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
-		/* Fixed left padding to keep button visually centered in collapsed state */
-		padding-left: var(--sidebar-button-spacing);
-		/* Top/bottom padding */
-		padding-top: var(--sidebar-padding);
-		padding-bottom: var(--sidebar-padding);
-		/* Right padding matches left for symmetry */
-		padding-right: var(--sidebar-button-spacing);
-		/* Prevent shrinking */
+
+		/* Symmetric padding on all sides: 4px + 40px + 4px = 48px */
+		padding: var(--sidebar-button-spacing); /* 4px all around */
+
 		flex-shrink: 0;
-		/* Overflow hidden to clip expanding button content */
-		overflow: hidden;
+		overflow: hidden; /* Clips label text in collapsed state */
 	}
 
-	/* Slightly reduced vertical padding for the very first slot (hamburger) to improve visual alignment */
-	:global(.sidebar-button-slot:first-child) {
-		padding-top: calc(var(--sidebar-padding));
-		padding-bottom: calc(var(--sidebar-padding));
-	}
-
-	/* Layer 2: Button Element - always full width of available space */
+	/* Layer 2: Button Element */
 	:global(.sidebar-slot-button) {
-		/* Always full width - let container control clipping */
-		width: 100%;
-		height: var(--sidebar-button-size);
-		/* Flexbox for centering icon */
+		/*
+		 * Button: 40px × 40px with 8px padding all around
+		 * Content area: 24px × 24px (exact icon size)
+		 * Total: 8px + 24px + 8px = 40px ✓
+		 */
+		width: var(--sidebar-button-size); /* 40px */
+		height: var(--sidebar-button-size); /* 40px */
+		min-width: var(--sidebar-button-size);
+
+		/* Flexbox for icon + label layout */
 		display: inline-flex;
 		align-items: center;
-		justify-content: flex-start;
-		/* Prevent shrinking */
+		justify-content: flex-start; /* Left-align content */
+
+		/* 8px padding ensures icon is always at same position */
+		padding: var(--sidebar-padding); /* 8px all around */
+
 		flex-shrink: 0;
-		/* No width transition - only opacity for label */
 		transition: none;
-		/* Padding for content */
-		padding: var(--sidebar-padding);
+	}
+
+	/* Expanded state: button stretches to full width */
+	:global(.sidebar-slot-button-full) {
+		width: 100%;
+		/* Padding stays the same - icon position unchanged */
 	}
 
 	/* Layer 3: Icon Element (handled by global .sidebar-icon in Sidebar.svelte) */
