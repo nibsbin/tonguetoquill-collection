@@ -5,3 +5,4 @@
 
 export * from './document-provider';
 export * from './document-mock-service';
+export * from './document-supabase-service';
