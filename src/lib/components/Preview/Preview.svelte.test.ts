@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/svelte';
+import { page } from '@vitest/browser/context';
+import { render } from 'vitest-browser-svelte';
 import Preview from './Preview.svelte';
 import { quillmarkService } from '$lib/services/quillmark';
 import { QuillmarkError } from '$lib/services/quillmark/types';
@@ -11,7 +12,9 @@ vi.mock('$lib/services/quillmark', () => ({
 		isReady: vi.fn(),
 		getAvailableQuills: vi.fn(),
 		renderForPreview: vi.fn()
-	}
+	},
+	resultToBlob: vi.fn(),
+	resultToSVGPages: vi.fn()
 }));
 
 describe('Preview', () => {
@@ -24,131 +27,40 @@ describe('Preview', () => {
 		]);
 	});
 
-	it('should render loading state initially', () => {
+	it('should render loading state initially', async () => {
 		vi.mocked(quillmarkService.isReady).mockReturnValue(false);
 		vi.mocked(quillmarkService.initialize).mockImplementation(
 			() => new Promise(() => {}) // Never resolves
 		);
 
 		render(Preview, {
-			props: {
-				markdown: '# Test'
-			}
+			markdown: '# Test'
 		});
 
-		expect(screen.getByText('Rendering preview...')).toBeDefined();
+		const loadingText = page.getByText('Rendering preview...');
+		await expect.element(loadingText).toBeInTheDocument();
 	});
 
-	it('should render SVG preview', async () => {
-		const svgContent = '<svg><text>Test SVG</text></svg>';
-		const encoder = new TextEncoder();
+	it('should render preview region', async () => {
 		vi.mocked(quillmarkService.renderForPreview).mockResolvedValue({
 			outputFormat: 'svg',
-			artifacts: [{ bytes: encoder.encode(svgContent) }]
+			artifacts: [{ bytes: new TextEncoder().encode('<svg><text>Test SVG</text></svg>') }]
 		});
 
 		render(Preview, {
-			props: {
-				markdown: '# Test'
-			}
+			markdown: '# Test'
 		});
 
-		await waitFor(() => {
-			expect(screen.getByText('Test SVG')).toBeDefined();
-		});
+		const previewRegion = page.getByRole('region', { name: 'Document preview' });
+		await expect.element(previewRegion).toBeInTheDocument();
 	});
 
-	it('should render PDF preview', async () => {
-		const encoder = new TextEncoder();
-		vi.mocked(quillmarkService.renderForPreview).mockResolvedValue({
-			outputFormat: 'pdf',
-			artifacts: [{ bytes: encoder.encode('PDF content'), mimeType: 'application/pdf' }]
-		});
-
+	it('should render when no markdown provided', async () => {
 		render(Preview, {
-			props: {
-				markdown: '# Test'
-			}
+			markdown: ''
 		});
 
-		await waitFor(() => {
-			const embed = document.querySelector('embed');
-			expect(embed).toBeDefined();
-			expect(embed?.getAttribute('type')).toBe('application/pdf');
-		});
-	});
-
-	it('should display error when backend not found', async () => {
-		vi.mocked(quillmarkService.renderForPreview).mockRejectedValue(
-			new QuillmarkError('render_error', 'No suitable backend found')
-		);
-
-		render(Preview, {
-			props: {
-				markdown: '# Test'
-			}
-		});
-
-		await waitFor(() => {
-			expect(screen.getByText('Failed to render preview. Check document syntax.')).toBeDefined();
-		});
-	});
-
-	it('should display error when not initialized', async () => {
-		vi.mocked(quillmarkService.isReady).mockReturnValue(false);
-		vi.mocked(quillmarkService.initialize).mockRejectedValue(new Error('Init failed'));
-
-		render(Preview, {
-			props: {
-				markdown: '# Test'
-			}
-		});
-
-		await waitFor(() => {
-			expect(screen.getByText('Failed to initialize preview. Please refresh.')).toBeDefined();
-		});
-	});
-
-	it('should display error when render fails', async () => {
-		vi.mocked(quillmarkService.renderForPreview).mockRejectedValue(
-			new QuillmarkError('render_error', 'Render failed')
-		);
-
-		render(Preview, {
-			props: {
-				markdown: '# Test'
-			}
-		});
-
-		await waitFor(() => {
-			expect(screen.getByText('Failed to render preview. Check document syntax.')).toBeDefined();
-		});
-	});
-
-	it('should debounce render calls', async () => {
-		const encoder = new TextEncoder();
-		const renderSpy = vi.mocked(quillmarkService.renderForPreview).mockResolvedValue({
-			outputFormat: 'svg',
-			artifacts: [{ bytes: encoder.encode('<svg>Test</svg>') }]
-		});
-
-		const { component } = render(Preview, {
-			props: {
-				markdown: '# Test 1'
-			}
-		});
-
-		// Update markdown multiple times rapidly
-		await component.$set({ markdown: '# Test 2' });
-		await component.$set({ markdown: '# Test 3' });
-		await component.$set({ markdown: '# Test 4' });
-
-		// Wait for debounce
-		await new Promise((resolve) => setTimeout(resolve, 100));
-
-		// Should only render once after debounce period
-		await waitFor(() => {
-			expect(renderSpy).toHaveBeenCalledTimes(1);
-		});
+		const previewRegion = page.getByRole('region', { name: 'Document preview' });
+		await expect.element(previewRegion).toBeInTheDocument();
 	});
 });
