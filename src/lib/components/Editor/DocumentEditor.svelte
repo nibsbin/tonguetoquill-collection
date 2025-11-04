@@ -5,15 +5,25 @@
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
 	import { Preview } from '$lib/components/Preview';
+	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
 
 	interface Props {
 		documentId: string;
 		autoSave: AutoSave;
 		onContentChange?: (content: string) => void;
 		onDocumentLoad?: (doc: { name: string; content: string }) => void;
+		showDocumentInfo?: boolean;
+		onDocumentInfoChange?: (open: boolean) => void;
 	}
 
-	let { documentId, autoSave, onContentChange, onDocumentLoad }: Props = $props();
+	let {
+		documentId,
+		autoSave,
+		onContentChange,
+		onDocumentLoad,
+		showDocumentInfo = false,
+		onDocumentInfoChange
+	}: Props = $props();
 
 	let content = $state('');
 	let initialContent = $state('');
@@ -229,13 +239,23 @@
 
 			<!-- Preview Section (Desktop: always visible, Mobile: toggled) -->
 			<div
-				class="flex-1 overflow-auto {isMobile
+				class="relative flex-1 overflow-auto {isMobile
 					? mobileView === 'preview'
 						? ''
 						: 'hidden'
 					: 'hidden lg:block'}"
 			>
 				<Preview markdown={debouncedContent} />
+
+				<!-- Document Info Dialog (scoped to preview pane) -->
+				{#if showDocumentInfo !== undefined && onDocumentInfoChange}
+					<DocumentInfoDialog
+						open={showDocumentInfo}
+						document={documentStore.activeDocument}
+						{content}
+						onOpenChange={onDocumentInfoChange}
+					/>
+				{/if}
 			</div>
 		</div>
 	</div>
