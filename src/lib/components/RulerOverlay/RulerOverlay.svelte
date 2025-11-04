@@ -249,17 +249,17 @@
 						> to exit.
 					</span>
 				</div>
+				<!-- Close button positioned in top-right -->
+				<Button
+					variant="ghost"
+					size="icon"
+					class="ruler-close-button h-6 w-6 shrink-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+					onclick={exitRulerMode}
+					aria-label="Exit ruler mode"
+				>
+					<X size={14} />
+				</Button>
 			</div>
-			<!-- Close button positioned in top-right -->
-			<Button
-				variant="ghost"
-				size="icon"
-				class="ruler-close-button h-7 w-7 shrink-0 text-destructive hover:bg-destructive/20 hover:text-destructive-hover"
-				onclick={exitRulerMode}
-				aria-label="Exit ruler mode"
-			>
-				<X size={16} />
-			</Button>
 		</div>
 	</div>
 {/if}
@@ -343,16 +343,16 @@
 
 	/* Keep close button opaque when banner is hovered */
 	.ruler-instructions.group:hover .ruler-close-button {
-		opacity: 1;
+		opacity: 1 !important;
 	}
 
 	.ruler-instructions-content {
 		position: relative;
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 1rem;
-		padding: 0.875rem 1.25rem;
-		padding-right: 3rem; /* Make room for close button */
+		padding: 0.75rem 1rem;
+		padding-right: 2.5rem; /* Make room for close button */
 		background: var(--color-surface-elevated);
 		border: 1px solid var(--color-border);
 		border-radius: var(--radius-lg);
@@ -375,8 +375,9 @@
 
 	.ruler-close-button {
 		position: absolute;
-		top: 0.5rem;
-		right: 0.5rem;
+		top: 0.375rem;
+		right: 0.375rem;
+		opacity: 1 !important; /* Always keep button visible */
 	}
 
 	@keyframes slideUp {
@@ -394,8 +395,8 @@
 		.ruler-instructions-content {
 			min-width: auto;
 			max-width: calc(100vw - 2rem);
-			padding: 0.75rem 1rem;
-			padding-right: 2.5rem; /* Adjust for smaller button on mobile */
+			padding: 0.625rem 0.875rem;
+			padding-right: 2.25rem; /* Adjust for button on mobile */
 		}
 
 		.ruler-instructions-text {
@@ -403,8 +404,8 @@
 		}
 
 		.ruler-close-button {
-			top: 0.375rem;
-			right: 0.375rem;
+			top: 0.25rem;
+			right: 0.25rem;
 		}
 	}
 </style>
