@@ -17,7 +17,9 @@ import { env } from '$env/dynamic/private';
 import {
 	createClient,
 	type SupabaseClient,
-	type AuthError as SupabaseAuthError
+	type AuthError as SupabaseAuthError,
+	type User as SupabaseUser,
+	type Session as SupabaseSession
 } from '@supabase/supabase-js';
 
 /**
@@ -181,7 +183,7 @@ export class SupabaseAuthProvider implements AuthContract {
 	/**
 	 * Map Supabase User to our User type
 	 */
-	private mapSupabaseUserToUser(supabaseUser: any): User {
+	private mapSupabaseUserToUser(supabaseUser: SupabaseUser): User {
 		return {
 			id: supabaseUser.id,
 			email: supabaseUser.email || '',
@@ -195,7 +197,7 @@ export class SupabaseAuthProvider implements AuthContract {
 	/**
 	 * Map Supabase Session to our Session type
 	 */
-	private mapSupabaseSessionToSession(supabaseSession: any): Session {
+	private mapSupabaseSessionToSession(supabaseSession: SupabaseSession): Session {
 		return {
 			access_token: supabaseSession.access_token,
 			refresh_token: supabaseSession.refresh_token,
