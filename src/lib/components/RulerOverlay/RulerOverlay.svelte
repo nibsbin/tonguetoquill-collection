@@ -250,18 +250,19 @@
 		<!-- Custom instruction banner -->
 		<div class="ruler-instructions group">
 			<div class="ruler-instructions-content">
-				<!-- Close button positioned in exact top-right corner -->
-				<Button
-					variant="ghost"
-					size="icon"
-					class="ruler-close-button h-6 w-6 shrink-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-					onclick={exitRulerMode}
-					aria-label="Exit ruler mode"
-				>
-					<X size={14} strokeWidth={2.5} />
-				</Button>
 				<div class="ruler-instructions-text">
-					<strong class="text-sm font-semibold text-foreground">Ruler Mode</strong>
+					<div class="ruler-title-row">
+						<strong class="text-sm font-semibold text-foreground">Ruler Mode</strong>
+						<Button
+							variant="ghost"
+							size="icon"
+							class="ruler-close-button h-6 w-6 shrink-0 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+							onclick={exitRulerMode}
+							aria-label="Exit ruler mode"
+						>
+							<X size={14} strokeWidth={2.5} />
+						</Button>
+					</div>
 					<p class="text-xs leading-relaxed text-muted-foreground">
 						Click and drag to measure. Hold <kbd
 							class="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[0.6875rem] font-medium text-foreground shadow-sm"
@@ -285,11 +286,6 @@
 		z-index: 30;
 		cursor: crosshair;
 		pointer-events: auto;
-		transition: background-color 0.2s ease;
-	}
-
-	.ruler-overlay.active {
-		background-color: color-mix(in srgb, var(--color-accent) 15%, transparent);
 	}
 
 	.ruler-svg {
@@ -380,7 +376,13 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.375rem;
-		padding-right: 1.75rem; /* Make room for close button */
+	}
+
+	.ruler-title-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
 	}
 
 	.ruler-instructions-text p {
@@ -390,12 +392,9 @@
 	}
 
 	.ruler-close-button {
-		position: absolute;
-		top: 0;
-		right: 0;
-		border-radius: 0 var(--radius-lg) 0 var(--radius-sm);
 		opacity: 1 !important; /* Always keep button visible */
 		transition: all 0.15s ease;
+		flex-shrink: 0;
 	}
 
 	.ruler-close-button:hover {
@@ -419,10 +418,6 @@
 			max-width: calc(100vw - 2rem);
 			padding: 0.75rem 0.875rem;
 			padding-top: 0.625rem;
-		}
-
-		.ruler-instructions-text {
-			padding-right: 1.5rem;
 		}
 	}
 </style>
