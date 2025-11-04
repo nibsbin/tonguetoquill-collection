@@ -29,14 +29,11 @@ import {
  */
 export class SupabaseAuthProvider implements AuthContract {
 	private supabase: SupabaseClient;
-	private authMethod: 'email' | 'github';
+	private authMethod: 'email' | 'github' = 'github';
 
 	constructor() {
 		const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL || '';
 		const supabasePublishableKey = publicEnv.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
-
-		// Get auth method from environment (default to email for development)
-		this.authMethod = (env.SUPABASE_AUTH_METHOD as 'email' | 'github') || 'email';
 
 		if (!supabaseUrl || !supabasePublishableKey) {
 			throw new Error('Supabase configuration missing. Check environment variables.');
