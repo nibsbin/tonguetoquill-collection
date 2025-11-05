@@ -4,6 +4,7 @@
  */
 
 import type { DocumentMetadata } from './types';
+import { DocumentValidator } from './document-validator';
 
 const STORAGE_KEY = 'tonguetoquill_guest_documents';
 const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
@@ -44,13 +45,18 @@ class DocumentBrowserStorage {
 	}
 
 	async createDocument(name: string, content: string = ''): Promise<DocumentMetadata> {
+		// Validate inputs
+		const trimmedName = name.trim() || 'Untitled Document';
+		DocumentValidator.validateName(trimmedName);
+		DocumentValidator.validateContent(content);
+
 		const documents = this.getDocuments();
 
 		const newDoc: StoredDocument = {
 			id: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-			name: name.trim() || 'Untitled Document',
+			name: trimmedName,
 			content,
-			content_size_bytes: new Blob([content]).size,
+			content_size_bytes: DocumentValidator.getByteLength(content),
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
 		};
@@ -90,6 +96,9 @@ class DocumentBrowserStorage {
 	}
 
 	async updateDocumentContent(id: string, content: string): Promise<void> {
+		// Validate content
+		DocumentValidator.validateContent(content);
+
 		const documents = this.getDocuments();
 		const index = documents.findIndex((d) => d.id === id);
 
@@ -98,13 +107,17 @@ class DocumentBrowserStorage {
 		}
 
 		documents[index].content = content;
-		documents[index].content_size_bytes = new Blob([content]).size;
+		documents[index].content_size_bytes = DocumentValidator.getByteLength(content);
 		documents[index].updated_at = new Date().toISOString();
 
 		this.saveDocuments(documents);
 	}
 
 	async updateDocumentName(id: string, name: string): Promise<void> {
+		// Validate name
+		const trimmedName = name.trim() || 'Untitled Document';
+		DocumentValidator.validateName(trimmedName);
+
 		const documents = this.getDocuments();
 		const index = documents.findIndex((d) => d.id === id);
 
@@ -112,7 +125,7 @@ class DocumentBrowserStorage {
 			throw new Error('Document not found');
 		}
 
-		documents[index].name = name.trim() || 'Untitled Document';
+		documents[index].name = trimmedName;
 		documents[index].updated_at = new Date().toISOString();
 
 		this.saveDocuments(documents);
