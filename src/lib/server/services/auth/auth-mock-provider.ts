@@ -61,7 +61,7 @@ export class MockAuthProvider implements AuthContract {
 		const defaultUser: StoredUser = {
 			id: userId,
 			email: 'asdf@asdf.com',
-			dodid: '1234567890',
+			dodid: '0123456789abcdef',
 			profile: {},
 			created_at: now,
 			updated_at: now
