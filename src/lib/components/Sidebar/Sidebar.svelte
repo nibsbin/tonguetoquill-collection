@@ -291,56 +291,55 @@
 					{/if}
 
 					<!-- Settings Gear Button -->
-					<SidebarButtonSlot
-						icon={Settings}
-						label="Settings"
-						{isExpanded}
-						onclick={() => (popoverOpen = !popoverOpen)}
-						ariaLabel="Open settings"
-					/>
-				</div>
+					<Popover bind:open={popoverOpen}>
+						<PopoverTrigger class="w-full">
+							<SidebarButtonSlot
+								icon={Settings}
+								label="Settings"
+								{isExpanded}
+								ariaLabel="Open settings"
+							/>
+						</PopoverTrigger>
+						<PopoverContent
+							side="right"
+							align="end"
+							class="w-64 border-border bg-surface-elevated p-0 text-foreground"
+						>
+							<div class="p-4">
+								<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
-				<!-- Settings Popover (rendered outside button slot) -->
-				<Popover bind:open={popoverOpen}>
-					<PopoverContent
-						side="right"
-						align="end"
-						class="w-64 border-border bg-surface-elevated p-0 text-foreground"
-					>
-						<div class="p-4">
-							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+								<div class="space-y-4">
+									<div class="flex items-center justify-between border-b border-border pb-3">
+										<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
+										<Switch
+											id="dark-mode"
+											bind:checked={isDarkMode}
+											onCheckedChange={handleDarkModeChange}
+										/>
+									</div>
 
-							<div class="space-y-4">
-								<div class="flex items-center justify-between border-b border-border pb-3">
-									<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
-									<Switch
-										id="dark-mode"
-										bind:checked={isDarkMode}
-										onCheckedChange={handleDarkModeChange}
-									/>
-								</div>
+									<div class="flex items-center justify-between">
+										<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
+										<Switch
+											id="auto-save"
+											bind:checked={autoSave}
+											onCheckedChange={handleAutoSaveChange}
+										/>
+									</div>
 
-								<div class="flex items-center justify-between">
-									<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
-									<Switch
-										id="auto-save"
-										bind:checked={autoSave}
-										onCheckedChange={handleAutoSaveChange}
-									/>
-								</div>
-
-								<div class="flex items-center justify-between">
-									<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
-									<Switch
-										id="line-numbers"
-										bind:checked={lineNumbers}
-										onCheckedChange={handleLineNumbersChange}
-									/>
+									<div class="flex items-center justify-between">
+										<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
+										<Switch
+											id="line-numbers"
+											bind:checked={lineNumbers}
+											onCheckedChange={handleLineNumbersChange}
+										/>
+									</div>
 								</div>
 							</div>
-						</div>
-					</PopoverContent>
-				</Popover>
+						</PopoverContent>
+					</Popover>
+				</div>
 			</SheetContent>
 		</Sheet>
 	</div>
@@ -445,56 +444,55 @@
 			{/if}
 
 			<!-- Settings Gear Button -->
-			<SidebarButtonSlot
-				icon={Settings}
-				label="Settings"
-				{isExpanded}
-				onclick={() => (popoverOpen = !popoverOpen)}
-				ariaLabel="Open settings"
-			/>
-		</div>
+			<Popover bind:open={popoverOpen}>
+				<PopoverTrigger class="w-full">
+					<SidebarButtonSlot
+						icon={Settings}
+						label="Settings"
+						{isExpanded}
+						ariaLabel="Open settings"
+					/>
+				</PopoverTrigger>
+				<PopoverContent
+					side="right"
+					align="end"
+					class="w-64 border-border bg-surface-elevated p-0 text-foreground"
+				>
+					<div class="p-4">
+						<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
-		<!-- Settings Popover (rendered outside button slot) -->
-		<Popover bind:open={popoverOpen}>
-			<PopoverContent
-				side="right"
-				align="end"
-				class="w-64 border-border bg-surface-elevated p-0 text-foreground"
-			>
-				<div class="p-4">
-					<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+						<div class="space-y-4">
+							<div class="flex items-center justify-between border-b border-border pb-3">
+								<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
+								<Switch
+									id="dark-mode"
+									bind:checked={isDarkMode}
+									onCheckedChange={handleDarkModeChange}
+								/>
+							</div>
 
-					<div class="space-y-4">
-						<div class="flex items-center justify-between border-b border-border pb-3">
-							<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
-							<Switch
-								id="dark-mode"
-								bind:checked={isDarkMode}
-								onCheckedChange={handleDarkModeChange}
-							/>
-						</div>
+							<div class="flex items-center justify-between">
+								<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
+								<Switch
+									id="auto-save"
+									bind:checked={autoSave}
+									onCheckedChange={handleAutoSaveChange}
+								/>
+							</div>
 
-						<div class="flex items-center justify-between">
-							<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
-							<Switch
-								id="auto-save"
-								bind:checked={autoSave}
-								onCheckedChange={handleAutoSaveChange}
-							/>
-						</div>
-
-						<div class="flex items-center justify-between">
-							<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
-							<Switch
-								id="line-numbers"
-								bind:checked={lineNumbers}
-								onCheckedChange={handleLineNumbersChange}
-							/>
+							<div class="flex items-center justify-between">
+								<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
+								<Switch
+									id="line-numbers"
+									bind:checked={lineNumbers}
+									onCheckedChange={handleLineNumbersChange}
+								/>
+							</div>
 						</div>
 					</div>
-				</div>
-			</PopoverContent>
-		</Popover>
+				</PopoverContent>
+			</Popover>
+		</div>
 	</div>
 {/if}
 
