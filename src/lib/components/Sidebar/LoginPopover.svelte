@@ -3,6 +3,7 @@
 	import Button from '$lib/components/ui/button.svelte';
 	import { loginClient } from '$lib/services/auth';
 	import type { AuthProviderConfig } from '$lib/services/auth/types';
+	import { browser } from '$app/environment';
 
 	type LoginPopoverProps = {
 		onClose?: () => void;
@@ -10,8 +11,8 @@
 
 	let { onClose }: LoginPopoverProps = $props();
 
-	// Get available providers synchronously from login client
-	const providers = loginClient.getAvailableProviders();
+	// Get available providers (client-side only to avoid SSR fetch warning)
+	const providers = browser ? loginClient.getAvailableProviders() : [];
 
 	// Icon mapping
 	const iconMap: Record<string, any> = {
