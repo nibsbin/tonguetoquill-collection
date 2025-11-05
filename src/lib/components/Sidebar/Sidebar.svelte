@@ -229,7 +229,7 @@
 	</div>
 
 	<!-- User Profile and Settings Section -->
-	<div class="border-t border-border">
+	<div class="flex flex-col border-t border-border">
 		<!-- Sign-In Button (Guest Mode) -->
 		{#if !user}
 			<Popover bind:open={loginPopoverOpen}>
