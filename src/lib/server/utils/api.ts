@@ -108,7 +108,7 @@ export function getSiteURL(event?: RequestEvent): string {
 	// 3. Request origin (detects actual host and port from the incoming request)
 	// 4. Local development fallback
 	let url =
-		env.PUBLIC_SITE_URL ??
+		env.SUPABASE_URL ??
 		env.VERCEL_URL ??
 		(event ? event.url.origin : null) ??
 		'http://localhost:5173';
