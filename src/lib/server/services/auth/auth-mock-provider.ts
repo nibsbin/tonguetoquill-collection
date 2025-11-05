@@ -7,6 +7,7 @@
 import { webcrypto as crypto } from 'node:crypto';
 import type {
 	AuthContract,
+	AuthProviderConfig,
 	AuthResult,
 	Session,
 	TokenPayload,
@@ -123,18 +124,52 @@ export class MockAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Get the OAuth login URL for mock provider
-	 * Returns a callback URL with a mock authorization code
+	 * Get available authentication providers
+	 * Returns list of auth methods supported by the mock provider
 	 */
-	async getLoginUrl(redirectUri: string): Promise<string> {
+	getAvailableProviders(): AuthProviderConfig[] {
+		return [
+			{
+				id: 'mock',
+				type: 'oauth',
+				name: 'Sign in (Mock)',
+				oauthProvider: 'mock',
+				icon: 'key',
+				requiresInput: false
+			}
+		];
+	}
+
+	/**
+	 * Initiate authentication with a specific provider
+	 */
+	async initiateAuth(
+		providerId: string,
+		redirectUri: string,
+		data?: Record<string, string>
+	): Promise<{ url?: string; message?: string }> {
 		await this.simulateDelay();
+
+		if (providerId !== 'mock') {
+			throw new AuthError('invalid_request', `Unknown provider: ${providerId}`, 400);
+		}
 
 		// Generate a mock authorization code
 		const mockAuthCode = 'mock_auth_code_' + Date.now();
 
 		// Return the callback URL with the mock code
 		// In mock mode, we skip the actual login page and go straight to callback
-		return `${redirectUri}?code=${mockAuthCode}`;
+		return { url: `${redirectUri}?code=${mockAuthCode}` };
+	}
+
+	/**
+	 * Get the OAuth login URL for mock provider
+	 * Returns a callback URL with a mock authorization code
+	 * @deprecated Use initiateAuth() instead
+	 */
+	async getLoginUrl(redirectUri: string): Promise<string> {
+		const result = await this.initiateAuth('mock', redirectUri);
+		return result.url || '';
 	}
 
 	/**

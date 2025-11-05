@@ -13,6 +13,14 @@ import { getAuthService } from './auth-provider';
  * Export as authService for consistent API with document service
  */
 export const authService = {
+	async getAvailableProviders() {
+		const service = await getAuthService();
+		return service.getAvailableProviders();
+	},
+	async initiateAuth(providerId: string, redirectUri: string, data?: Record<string, string>) {
+		const service = await getAuthService();
+		return service.initiateAuth(providerId, redirectUri, data);
+	},
 	async getLoginUrl(redirectUri: string) {
 		const service = await getAuthService();
 		return service.getLoginUrl(redirectUri);
