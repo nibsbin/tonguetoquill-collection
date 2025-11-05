@@ -30,6 +30,12 @@
 	onMount(async () => {
 		try {
 			providers = await loginClient.getAvailableProviders();
+			// Initialize inputValues for all providers that require input
+			providers.forEach((provider) => {
+				if (provider.requiresInput) {
+					inputValues[provider.id] = '';
+				}
+			});
 		} catch (error: any) {
 			errorMessage = 'Failed to load authentication providers';
 		} finally {

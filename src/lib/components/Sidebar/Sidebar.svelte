@@ -163,10 +163,6 @@
 		updateDarkMode(value);
 	}
 
-	function handleSignIn() {
-		loginPopoverOpen = !loginPopoverOpen;
-	}
-
 	async function handleSignOut() {
 		try {
 			await loginClient.signOut();
@@ -269,7 +265,6 @@
 									icon={LogIn}
 									label="Sign in"
 									{isExpanded}
-									onclick={handleSignIn}
 									ariaLabel="Sign in to your account"
 								/>
 							</PopoverTrigger>
@@ -426,7 +421,6 @@
 							icon={LogIn}
 							label="Sign in"
 							{isExpanded}
-							onclick={handleSignIn}
 							ariaLabel="Sign in to your account"
 						/>
 					</PopoverTrigger>
