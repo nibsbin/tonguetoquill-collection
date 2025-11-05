@@ -79,16 +79,13 @@
 			aria-modal="true"
 			aria-labelledby="import-dialog-title"
 			tabindex="-1"
-			class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-neutral-800"
+			class="relative w-full max-w-md rounded-lg bg-surface-elevated p-6 shadow-lg"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.key === 'Escape' && handleClose()}
 		>
 			<!-- Header -->
 			<div class="mb-4 flex items-center justify-between">
-				<h2
-					id="import-dialog-title"
-					class="text-lg font-semibold text-neutral-900 dark:text-neutral-100"
-				>
+				<h2 id="import-dialog-title" class="text-lg font-semibold text-foreground">
 					Import File
 				</h2>
 				<Button
@@ -104,7 +101,7 @@
 
 			<!-- Content -->
 			<div class="space-y-4">
-				<p class="text-sm text-neutral-600 dark:text-neutral-400">
+				<p class="text-sm text-muted-foreground">
 					Select a plaintext file (.md, .txt) to import. This will replace the current editor
 					content.
 				</p>
@@ -121,22 +118,22 @@
 
 				<!-- File selection area -->
 				<div
-					class="cursor-pointer rounded-lg border-2 border-dashed border-neutral-300 p-6 text-center transition-colors hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-500"
+					class="cursor-pointer rounded-lg border-2 border-dashed border-border p-6 text-center transition-colors hover:border-border-hover"
 					onclick={triggerFileInput}
 					role="button"
 					tabindex={0}
 					onkeydown={(e) => e.key === 'Enter' && triggerFileInput()}
 				>
-					<Upload class="mx-auto mb-2 h-8 w-8 text-neutral-400 dark:text-neutral-500" />
-					<p class="text-sm text-neutral-600 dark:text-neutral-400">Click to select a file</p>
-					<p class="mt-1 text-xs text-neutral-500 dark:text-neutral-500">or drag and drop</p>
+					<Upload class="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+					<p class="text-sm text-muted-foreground">Click to select a file</p>
+					<p class="mt-1 text-xs text-muted-foreground">or drag and drop</p>
 				</div>
 
 				<!-- Error message -->
 				{#if error}
-					<p class="text-sm text-red-600 dark:text-red-400">
+					<div class="rounded-md border border-error-border bg-error-background p-3 text-sm text-error-foreground">
 						{error}
-					</p>
+					</div>
 				{/if}
 			</div>
 		</div>

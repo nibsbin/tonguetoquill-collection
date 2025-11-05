@@ -309,7 +309,7 @@
 	}
 
 	.start-point {
-		fill: #22c55e; /* green-500 for consistency */
+		fill: var(--color-success);
 	}
 
 	.end-point {

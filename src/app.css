@@ -83,6 +83,18 @@
 	--color-warning-background: #fffbeb; /* amber-50 light bg */
 	--color-warning-border: #fde68a; /* amber-200 subtle border */
 
+	/* Success colors */
+	--color-success: #16a34a; /* green-600 base */
+	--color-success-foreground: #14532d; /* green-900 dark text */
+	--color-success-background: #f0fdf4; /* green-50 light bg */
+	--color-success-border: #bbf7d0; /* green-200 subtle border */
+
+	/* Info colors */
+	--color-info: #2563eb; /* blue-600 base */
+	--color-info-foreground: #1e3a8a; /* blue-900 dark text */
+	--color-info-background: #eff6ff; /* blue-50 light bg */
+	--color-info-border: #bfdbfe; /* blue-200 subtle border */
+
 	/* Design tokens from mock project */
 	font-family: 'Lato', Arial, sans-serif;
 }
@@ -133,6 +145,18 @@
 	--color-warning-foreground: #fde68a; /* amber-200 light text */
 	--color-warning-background: #451a03; /* amber-950 dark bg */
 	--color-warning-border: #78350f; /* amber-800 stronger border */
+
+	/* Success colors */
+	--color-success: #22c55e; /* green-500 base */
+	--color-success-foreground: #bbf7d0; /* green-200 light text */
+	--color-success-background: #14532d; /* green-900 dark bg */
+	--color-success-border: #166534; /* green-800 stronger border */
+
+	/* Info colors */
+	--color-info: #3b82f6; /* blue-500 base */
+	--color-info-foreground: #bfdbfe; /* blue-200 light text */
+	--color-info-background: #1e3a8a; /* blue-900 dark bg */
+	--color-info-border: #1e40af; /* blue-800 stronger border */
 }
 
 /* Tailwind CSS Integration */
@@ -175,6 +199,18 @@
 	--color-warning-foreground: var(--color-warning-foreground);
 	--color-warning-background: var(--color-warning-background);
 	--color-warning-border: var(--color-warning-border);
+
+	/* Success colors */
+	--color-success: var(--color-success);
+	--color-success-foreground: var(--color-success-foreground);
+	--color-success-background: var(--color-success-background);
+	--color-success-border: var(--color-success-border);
+
+	/* Info colors */
+	--color-info: var(--color-info);
+	--color-info-foreground: var(--color-info-foreground);
+	--color-info-background: var(--color-info-background);
+	--color-info-border: var(--color-info-border);
 }
 
 body {
