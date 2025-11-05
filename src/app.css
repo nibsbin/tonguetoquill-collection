@@ -59,6 +59,7 @@
 	--color-syntax-keyword: #355e93;
 	--color-syntax-key: #355e93;
 	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.03);
+	--color-syntax-comment: #71717a; /* zinc-500 - muted gray for comments */
 
 	/* Error/Diagnostic colors */
 	--color-error: #ef4444; /* red-500 base */
@@ -116,6 +117,7 @@
 	--color-syntax-keyword: #7aacd4;
 	--color-syntax-key: #3a85b6;
 	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.08);
+	--color-syntax-comment: #a1a1aa; /* zinc-400 - lighter muted gray for dark mode */
 
 	/* Error/Diagnostic colors */
 	--color-error: #ef4444; /* red-500 base (unchanged) */

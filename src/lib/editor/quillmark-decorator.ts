@@ -11,6 +11,7 @@ import {
 	findMetadataBlocks,
 	findScopeQuillKeywords,
 	findYamlPairs,
+	findYamlComments,
 	type MetadataBlock
 } from './quillmark-patterns';
 import { findClosingDelimiter } from './quillmark-folding';
@@ -62,6 +63,7 @@ const yamlKeyMark = Decoration.mark({ class: 'cm-quillmark-yaml-key' });
 const yamlStringMark = Decoration.mark({ class: 'cm-quillmark-yaml-string' });
 const yamlNumberMark = Decoration.mark({ class: 'cm-quillmark-yaml-number' });
 const yamlBooleanMark = Decoration.mark({ class: 'cm-quillmark-yaml-bool' });
+const yamlCommentMark = Decoration.mark({ class: 'cm-quillmark-yaml-comment' });
 
 /**
  * QuillMark decorator plugin
@@ -241,6 +243,17 @@ class QuillMarkDecorator {
 					isLine: false
 				});
 			}
+		}
+
+		// Decorate YAML comments
+		const yamlComments = findYamlComments(block.contentFrom, block.contentTo, doc);
+		for (const comment of yamlComments) {
+			decorations.push({
+				from: comment.from,
+				to: comment.to,
+				decoration: yamlCommentMark,
+				isLine: false
+			});
 		}
 	}
 }
