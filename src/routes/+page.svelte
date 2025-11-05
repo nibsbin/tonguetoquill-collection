@@ -79,10 +79,12 @@
 	}
 
 	function handleDocumentInfo() {
+		showImportDialog = false; // Dismiss any existing preview modal
 		showDocumentInfo = true;
 	}
 
 	function handleImport() {
+		showDocumentInfo = false; // Dismiss any existing preview modal
 		showImportDialog = true;
 	}
 </script>
