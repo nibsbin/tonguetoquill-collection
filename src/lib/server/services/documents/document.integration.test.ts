@@ -14,7 +14,7 @@ describe('Document API Integration', () => {
 	let userId: string;
 
 	beforeEach(async () => {
-		authProvider = new MockAuthProvider('test-secret');
+		authProvider = await MockAuthProvider.create();
 		documentService = new MockDocumentService();
 		authProvider.clearAllData();
 		documentService.clearAllData();
