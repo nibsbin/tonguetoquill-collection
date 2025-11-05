@@ -233,9 +233,14 @@
 						</div>
 
 						{#if documentStore.documents.length > 0 && isExpanded}
+							<!-- Recents Section Header -->
+							<div class="px-1 py-2">
+								<h2 class="px-2 text-xs font-medium text-muted-foreground">Recents</h2>
+							</div>
+
 							<!-- Scrollable Recent Items -->
 							<div
-								class="space-y-px overflow-x-hidden overflow-y-auto"
+								class="space-y-px overflow-x-hidden overflow-y-auto px-1"
 								style="max-height: calc(100vh - 300px);"
 							>
 								{#each documentStore.documents as doc (doc.id)}
@@ -378,9 +383,14 @@
 				</div>
 
 				{#if documentStore.documents.length > 0 && isExpanded}
+					<!-- Recents Section Header -->
+					<div class="px-1 py-2">
+						<h2 class="px-2 text-xs font-medium text-muted-foreground">Recents</h2>
+					</div>
+
 					<!-- Scrollable Recent Items -->
 					<div
-						class="space-y-px overflow-x-hidden overflow-y-auto"
+						class="space-y-px overflow-x-hidden overflow-y-auto px-1"
 						style="max-height: calc(100vh - 300px);"
 					>
 						{#each documentStore.documents as doc (doc.id)}
