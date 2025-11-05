@@ -75,7 +75,7 @@ export function setAuthCookies(event: RequestEvent, accessToken: string, refresh
 	event.cookies.set('access_token', accessToken, {
 		path: '/',
 		httpOnly: true,
-		secure: env.NODE_ENV === 'production',
+		secure: true,
 		sameSite: 'strict',
 		maxAge: 60 * 60 // 1 hour
 	});
@@ -83,7 +83,7 @@ export function setAuthCookies(event: RequestEvent, accessToken: string, refresh
 	event.cookies.set('refresh_token', refreshToken, {
 		path: '/',
 		httpOnly: true,
-		secure: env.NODE_ENV === 'production',
+		secure: true,
 		sameSite: 'strict',
 		maxAge: 7 * 24 * 60 * 60 // 7 days
 	});
