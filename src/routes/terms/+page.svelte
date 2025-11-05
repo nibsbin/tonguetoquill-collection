@@ -1,13 +1,18 @@
 <script lang="ts">
 	import Button from '$lib/components/ui/button.svelte';
+	import { ArrowLeft } from 'lucide-svelte';
+
+	function returnToApp() {
+		window.location.href = '/';
+	}
 </script>
 
 <svelte:head>
 	<title>Terms of Use - Tongue to Quill</title>
 </svelte:head>
 
-<div class="min-h-screen bg-background text-foreground">
-	<div class="container mx-auto px-4 py-8 max-w-4xl">
+<div class="min-h-screen bg-background text-foreground overflow-y-auto">
+	<div class="container mx-auto px-4 py-8 max-w-4xl pb-24">
 		<!-- Header -->
 		<div class="mb-8">
 			<h1 class="text-4xl font-bold mb-4">Terms of Use</h1>
@@ -126,8 +131,12 @@
 		</div>
 
 		<!-- Footer -->
-		<div class="mt-12 pt-6 border-t">
-			<Button variant="outline" on:click={() => window.close()}>Close</Button>
+		<div class="mt-12 pt-6 border-t flex gap-3">
+			<Button variant="default" on:click={returnToApp}>
+				<ArrowLeft class="mr-2 h-4 w-4" />
+				Return to App
+			</Button>
+			<Button variant="outline" on:click={() => window.close()}>Close Tab</Button>
 		</div>
 	</div>
 </div>
