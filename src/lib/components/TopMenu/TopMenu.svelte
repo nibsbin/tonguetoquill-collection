@@ -29,6 +29,7 @@
 		onDocumentInfo?: () => void;
 		onTitleChange?: (newTitle: string) => void;
 		onImport?: () => void;
+		onRulerToggle?: () => void;
 	};
 
 	let {
@@ -38,7 +39,8 @@
 		saveError,
 		onDocumentInfo,
 		onTitleChange,
-		onImport
+		onImport,
+		onRulerToggle
 	}: TopMenuProps = $props();
 
 	import { documentStore } from '$lib/stores/documents.svelte';
@@ -132,7 +134,11 @@
 	}
 
 	function handleRulerToggle() {
-		rulerStore.toggle();
+		if (onRulerToggle) {
+			onRulerToggle();
+		} else {
+			rulerStore.toggle();
+		}
 	}
 </script>
 
