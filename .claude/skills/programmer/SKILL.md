@@ -1,5 +1,5 @@
 ---
-name: Programmer
+name: programmer
 description: Translates design documents and plans into code
 ---
 
