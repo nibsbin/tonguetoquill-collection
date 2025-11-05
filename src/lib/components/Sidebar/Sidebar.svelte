@@ -181,6 +181,11 @@
 		</span>
 	</div>
 
+	<!-- Logo Signature -->
+	<div class="sidebar-logo-slot border-b border-border" class:expanded={isExpanded}>
+		<img src="/logo.svg" alt="Tonguetoquill logo" aria-hidden="true" class="sidebar-logo" />
+	</div>
+
 	<!-- Menu Items -->
 	<div class="flex-1 overflow-hidden">
 		<div>
@@ -369,6 +374,28 @@
 </Dialog>
 
 <style>
+	/* Logo signature slot */
+	.sidebar-logo-slot {
+		height: 48px;
+		min-height: 48px;
+		max-height: 48px;
+		display: flex;
+		align-items: center;
+		padding: 4px;
+		transition: all 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
+		justify-content: flex-start;
+	}
+
+	.sidebar-logo-slot.expanded {
+		justify-content: center;
+	}
+
+	.sidebar-logo {
+		width: 40px;
+		height: 40px;
+		flex-shrink: 0;
+	}
+
 	/* Legacy styles - kept for document list items */
 	:global(.sidebar-icon-small) {
 		width: calc(var(--sidebar-icon-size) * 0.6);

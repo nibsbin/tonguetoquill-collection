@@ -141,13 +141,6 @@
 	style="height: var(--top-menu-height);"
 >
 	<div class="flex items-center gap-2" style="height: 3.1rem;">
-		<!-- Logo to the left of document title (decorative) -->
-		<img
-			src="/logo.svg"
-			alt="Tonguetoquill logo"
-			aria-hidden="true"
-			class="mr-3 h-8 w-auto shrink-0"
-		/>
 		{#if isEditing}
 			<input
 				bind:this={inputEl}
