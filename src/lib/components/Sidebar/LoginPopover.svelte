@@ -13,15 +13,22 @@
 	let { onClose }: LoginPopoverProps = $props();
 
 	// Get available providers (client-side only to avoid SSR fetch warning)
-	const providers = browser ? loginClient.getAvailableProviders() : [];
+	let providers = $state<AuthProviderConfig[]>([]);
+
+	$effect(() => {
+		if (browser) {
+			loginClient.getProviders().then((result) => {
+				providers = result;
+			});
+		}
+	});
 
 	// State management
 	let email = $state('');
-	let otp = $state('');
-	let showOTPInput = $state(false);
 	let loading = $state(false);
 	let message = $state('');
 	let error = $state('');
+	let emailSent = $state(false);
 
 	// Icon mapping
 	const iconMap: Record<string, any> = {
@@ -52,36 +59,17 @@
 		try {
 			const result = await loginClient.sendEmailAuth(email);
 			message = result.message;
-			showOTPInput = true;
+			emailSent = true;
 		} catch (err: any) {
-			error = err.message || 'Failed to send email';
+			error = err.message || 'Failed to send magic link';
 		} finally {
 			loading = false;
 		}
 	}
 
-	async function handleOTPSubmit() {
-		if (!otp || !otp.trim()) {
-			error = 'Please enter the verification code';
-			return;
-		}
-
-		loading = true;
-		error = '';
-
-		try {
-			await loginClient.verifyEmailOTP(email, otp);
-			// Success! Redirect will happen automatically
-			window.location.href = '/';
-		} catch (err: any) {
-			error = err.message || 'Invalid verification code';
-			loading = false;
-		}
-	}
-
 	function resetEmailFlow() {
-		showOTPInput = false;
-		otp = '';
+		emailSent = false;
+		email = '';
 		error = '';
 		message = '';
 	}
@@ -101,7 +89,7 @@
 		<div class="space-y-3">
 			{#each providers as provider, index}
 				{#if provider.type === 'oauth'}
-					<!-- OAuth Button (GitHub) -->
+					<!-- OAuth Button -->
 					{@const Icon = getProviderIcon(provider.icon)}
 					<Button
 						variant={index === 0 ? 'default' : 'outline'}
@@ -113,53 +101,41 @@
 						<Icon class="h-5 w-5" />
 						{provider.name}
 					</Button>
-				{:else if provider.type === 'email_otp'}
-					<!-- Email OTP Flow -->
-					{#if !showOTPInput}
-						<!-- Step 1: Enter Email -->
-						<div class="space-y-2">
-							<Input
-								type="email"
-								placeholder={provider.inputConfig?.placeholder}
-								bind:value={email}
-								disabled={loading}
-								onkeydown={(e) => e.key === 'Enter' && handleEmailSubmit()}
-								class="text-foreground"
-							/>
-							<Button
-								variant="outline"
-								class="w-full justify-start gap-2"
-								onclick={handleEmailSubmit}
-								disabled={loading}
-							>
-								{@const Icon = getProviderIcon(provider.icon)}
-								<Icon class="h-5 w-5" />
-								{loading ? 'Sending...' : provider.name}
-							</Button>
+				{:else if provider.type === 'magic_link'}
+					<!-- Email Magic Link Flow -->
+					<div class="space-y-2">
+						<Input
+							type="email"
+							placeholder={provider.inputConfig?.placeholder}
+							bind:value={email}
+							disabled={loading}
+							onkeydown={(e) => e.key === 'Enter' && handleEmailSubmit()}
+							class="text-foreground"
+						/>
+						<Button
+							variant="outline"
+							class="w-full justify-start gap-2"
+							onclick={handleEmailSubmit}
+							disabled={loading}
+						>
+							{@const Icon = getProviderIcon(provider.icon)}
+							<Icon class="h-5 w-5" />
+							{loading ? 'Sending...' : provider.name}
+						</Button>
+					</div>
+
+					{#if emailSent}
+						<div class="text-sm text-foreground">
+							A magic link has been sent to <strong>{email}</strong>. Please check your inbox.
 						</div>
-					{:else}
-						<!-- Step 2: Enter OTP -->
-						<div class="space-y-2">
-							<Input
-								type="text"
-								placeholder="Enter 6-digit code"
-								bind:value={otp}
-								disabled={loading}
-								maxlength="6"
-								onkeydown={(e) => e.key === 'Enter' && handleOTPSubmit()}
-								class="text-center text-lg tracking-widest text-foreground"
-							/>
-							<Button variant="default" class="w-full" onclick={handleOTPSubmit} disabled={loading}>
-								{loading ? 'Verifying...' : 'Verify Code'}
-							</Button>
-							<button
-								class="w-full text-center text-sm text-muted-foreground underline hover:text-foreground"
-								onclick={resetEmailFlow}
-								disabled={loading}
-							>
-								Use a different email
-							</button>
-						</div>
+						<Button
+							variant="default"
+							class="p-0 text-sm"
+							onclick={resetEmailFlow}
+							disabled={loading}
+						>
+							Send to a different email
+						</Button>
 					{/if}
 				{/if}
 			{/each}

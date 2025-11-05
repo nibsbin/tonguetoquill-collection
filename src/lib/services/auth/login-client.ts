@@ -4,6 +4,7 @@
  * Communicates with API routes via fetch()
  */
 
+import { browser } from '$app/environment';
 import type { User, Session, AuthProvider, AuthProviderConfig } from './types';
 
 /**
@@ -19,33 +20,41 @@ interface ErrorResponse {
  * Provides methods for login/logout/session management
  */
 export class LoginClient {
+	// Stores the promise of the fetch operation
+	private providersPromise: Promise<AuthProviderConfig[]>;
+
+	constructor() {
+		// Only fetch providers on client-side to avoid SSR issues
+		if (browser) {
+			this.providersPromise = fetch('/api/auth/providers')
+				.then((response) => {
+					if (!response.ok) {
+						// Throw an error to be caught in the next .catch()
+						throw new Error('Failed to fetch providers');
+					}
+					return response.json();
+				})
+				.then((data) => {
+					// Assume the API returns { providers: AuthProviderConfig[] }
+					return data.providers;
+				})
+				.catch((error) => {
+					console.error('Error fetching auth providers:', error);
+					// Crucially, return an empty array on failure so the promise resolves
+					return [];
+				});
+		} else {
+			// On server, resolve to empty array immediately
+			this.providersPromise = Promise.resolve([]);
+		}
+	}
+
 	/**
 	 * Get available authentication providers for UI display
-	 * Returns hard-coded provider configurations based on enabled auth methods
 	 */
-	getAvailableProviders(): AuthProviderConfig[] {
-		return [
-			{
-				id: 'github',
-				type: 'oauth',
-				name: 'Continue with GitHub',
-				oauthProvider: 'github',
-				icon: 'github',
-				requiresInput: false
-			},
-			{
-				id: 'email',
-				type: 'email_otp',
-				name: 'Continue with Email',
-				icon: 'mail',
-				requiresInput: true,
-				inputConfig: {
-					type: 'email',
-					placeholder: 'your@email.com',
-					label: 'Email'
-				}
-			}
-		];
+	async getProviders(): Promise<AuthProviderConfig[]> {
+		// Now, this method awaits the initial, pre-started fetch operation
+		return this.providersPromise;
 	}
 
 	/**

@@ -78,17 +78,12 @@ export class AuthError extends Error {
 /**
  * Supported authentication providers
  */
-export type AuthProvider = 'email' | 'github';
+export type AuthProvider = 'mock' | 'email' | 'github';
 
 /**
  * Authentication provider type (for UI configuration)
  */
-export type AuthProviderType = 'oauth' | 'email_otp' | 'magic_link';
-
-/**
- * OAuth provider name (for UI configuration)
- */
-export type OAuthProviderName = 'github' | 'google' | 'microsoft' | 'mock';
+export type AuthProviderType = 'oauth' | 'magic_link';
 
 /**
  * Authentication provider configuration (for UI display)
@@ -101,8 +96,6 @@ export interface AuthProviderConfig {
 	type: AuthProviderType;
 	/** Display name shown to users */
 	name: string;
-	/** OAuth provider name (only for oauth type) */
-	oauthProvider?: OAuthProviderName;
 	/** Icon identifier for UI rendering */
 	icon?: string;
 	/** Whether this provider requires user input (e.g., email) */
@@ -121,6 +114,11 @@ export interface AuthProviderConfig {
  * Supports both OAuth (redirect) and email (OTP/magic link) flows
  */
 export interface AuthContract {
+	/**
+	 * Get the available authentication providers
+	 */
+	getAvailableProviders(): Promise<AuthProviderConfig[]>;
+
 	/**
 	 * Get the OAuth login URL for this provider
 	 * Returns the URL to redirect users to for authentication
@@ -142,15 +140,6 @@ export interface AuthContract {
 	 * @returns Success message to display to user
 	 */
 	sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }>;
-
-	/**
-	 * Verify OTP code entered by user
-	 * @param email - User's email address
-	 * @param code - 6-digit OTP code from email
-	 * @returns Session with user and tokens
-	 */
-	verifyOTP(email: string, code: string): Promise<AuthResult>;
-
 	/**
 	 * Invalidate session
 	 */

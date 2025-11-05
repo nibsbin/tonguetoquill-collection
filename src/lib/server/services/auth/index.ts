@@ -6,7 +6,7 @@
 export * from './auth-provider';
 export * from './auth-mock-provider';
 
-import type { AuthProvider } from '$lib/services/auth/types';
+import type { AuthProvider, AuthProviderConfig } from '$lib/services/auth/types';
 import { getAuthService } from './auth-provider';
 
 /**
@@ -14,6 +14,10 @@ import { getAuthService } from './auth-provider';
  * Export as authService for consistent API with document service
  */
 export const authService = {
+	async getAvailableProviders(): Promise<AuthProviderConfig[]> {
+		const service = await getAuthService();
+		return service.getAvailableProviders();
+	},
 	async getLoginUrl(redirectUri: string, provider?: AuthProvider) {
 		const service = await getAuthService();
 		return service.getLoginUrl(redirectUri, provider);
@@ -25,10 +29,6 @@ export const authService = {
 	async sendAuthEmail(email: string, redirectUri: string) {
 		const service = await getAuthService();
 		return service.sendAuthEmail(email, redirectUri);
-	},
-	async verifyOTP(email: string, code: string) {
-		const service = await getAuthService();
-		return service.verifyOTP(email, code);
 	},
 	async signOut(accessToken: string) {
 		const service = await getAuthService();

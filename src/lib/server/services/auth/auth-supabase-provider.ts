@@ -7,6 +7,7 @@
 import type {
 	AuthContract,
 	AuthProvider,
+	AuthProviderConfig,
 	AuthResult,
 	Session,
 	TokenPayload,
@@ -57,6 +58,33 @@ export class SupabaseAuthProvider implements AuthContract {
 				flowType: 'pkce' // Use PKCE flow for server-side OAuth
 			}
 		});
+	}
+
+	/**
+	 * Get the available authentication providers
+	 */
+	async getAvailableProviders(): Promise<AuthProviderConfig[]> {
+		return [
+			{
+				id: 'github',
+				type: 'oauth',
+				name: 'Continue with GitHub',
+				icon: 'github',
+				requiresInput: false
+			},
+			{
+				id: 'email',
+				type: 'magic_link',
+				name: 'Continue with Email',
+				icon: 'mail',
+				requiresInput: true,
+				inputConfig: {
+					type: 'email',
+					placeholder: 'your@email.com',
+					label: 'Email'
+				}
+			}
+		];
 	}
 
 	/**
@@ -155,9 +183,9 @@ export class SupabaseAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Send authentication email with OTP code
+	 * Send authentication email with magic link
 	 * @param email - User's email address
-	 * @param redirectUri - Not used for OTP flow (only for magic links)
+	 * @param redirectUri - URL to redirect to after clicking link
 	 * @returns Success message to show user
 	 */
 	async sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }> {
@@ -165,6 +193,7 @@ export class SupabaseAuthProvider implements AuthContract {
 			const { error } = await this.supabase.auth.signInWithOtp({
 				email,
 				options: {
+					emailRedirectTo: redirectUri,
 					shouldCreateUser: true
 				}
 			});
@@ -173,46 +202,12 @@ export class SupabaseAuthProvider implements AuthContract {
 				throw this.mapSupabaseError(error);
 			}
 
-			return { message: 'Check your email for a 6-digit verification code' };
+			return { message: 'Check your email for a sign-in link' };
 		} catch (error) {
 			if (error instanceof AuthError) {
 				throw error;
 			}
 			throw new AuthError('network_error', 'Failed to send authentication email', 500);
-		}
-	}
-
-	/**
-	 * Verify OTP code entered by user
-	 * @param email - User's email address
-	 * @param code - 6-digit OTP code from email
-	 * @returns Session with user and tokens
-	 */
-	async verifyOTP(email: string, code: string): Promise<AuthResult> {
-		try {
-			const { data, error } = await this.supabase.auth.verifyOtp({
-				email,
-				token: code,
-				type: 'email'
-			});
-
-			if (error) {
-				throw this.mapSupabaseError(error);
-			}
-
-			if (!data.session || !data.user) {
-				throw new AuthError('invalid_token', 'Invalid verification code', 401);
-			}
-
-			return {
-				user: this.mapSupabaseUserToUser(data.user),
-				session: this.mapSupabaseSessionToSession(data.session)
-			};
-		} catch (error) {
-			if (error instanceof AuthError) {
-				throw error;
-			}
-			throw new AuthError('invalid_token', 'Failed to verify OTP code', 401);
 		}
 	}
 
