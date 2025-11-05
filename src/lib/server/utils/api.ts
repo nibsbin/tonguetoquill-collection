@@ -103,11 +103,10 @@ export function clearAuthCookies(event: RequestEvent) {
  */
 export function getSiteURL(event?: RequestEvent): string {
 	// In order of priority:
-	// 1. Explicit site URL from environment
+	// 1. Request origin (detects actual host and port from the incoming request)
 	// 2. Vercel URL (automatically set by Vercel for preview/production)
-	// 3. Request origin (detects actual host and port from the incoming request)
-	// 4. Local development fallback
-	let url = env.VERCEL_URL ?? (event ? event.url.origin : null) ?? 'http://localhost:5173';
+	// 3. Local development fallback
+	let url = (event ? event.url.origin : null) ?? env.VERCEL_URL ?? 'http://localhost:5173';
 
 	console.log('Determined site URL:', url);
 
