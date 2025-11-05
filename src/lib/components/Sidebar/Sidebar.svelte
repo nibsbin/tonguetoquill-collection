@@ -177,7 +177,9 @@
 				? 'opacity-100'
 				: 'opacity-0'}"
 		>
-			Tongueto<span style="color: #3C79AA;">quill</span>
+			<span class="">
+				<span style="color: #3C79AA;">tongueto</span>quill
+			</span>
 		</span>
 	</div>
 
