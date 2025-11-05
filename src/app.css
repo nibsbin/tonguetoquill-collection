@@ -212,8 +212,7 @@ button {
 
 /* Utility class: slightly heavier top-menu divider for visual alignment/theming */
 .top-menu-strong-border {
-	height: 49px;
-	/* keep border style/color from existing utility classes; only increase width */
+	/* Only controls border styling; height is managed by --top-menu-height variable */
 	border-bottom-width: 1.5px;
 }
 
