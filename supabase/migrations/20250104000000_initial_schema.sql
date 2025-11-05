@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
 -- Index for DODID lookups (where not null)
-CREATE INDEX IF NOT EXISTS idx_users_dodid ON users(dodid) WHERE dodid IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_users_dodid_full ON users(dodid_full) WHERE dodid_full IS NOT NULL;
 
 -- Documents Table
 -- Stores all document data including content
