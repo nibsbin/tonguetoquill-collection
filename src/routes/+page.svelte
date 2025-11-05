@@ -11,6 +11,7 @@
 	let loading = $state(true);
 	let autoSave = new AutoSave();
 	let showDocumentInfo = $state(false);
+	let showImportDialog = $state(false);
 	let documentContent = $state('');
 	let documentName = $state('');
 
@@ -80,6 +81,10 @@
 	function handleDocumentInfo() {
 		showDocumentInfo = true;
 	}
+
+	function handleImport() {
+		showImportDialog = true;
+	}
 </script>
 
 {#if loading}
@@ -109,6 +114,7 @@
 				saveError={autoSave.saveState.errorMessage}
 				onDocumentInfo={handleDocumentInfo}
 				onTitleChange={handleTitleChange}
+				onImport={handleImport}
 			/>
 
 			<!-- Editor and Preview Area -->
@@ -135,6 +141,8 @@
 						onDocumentLoad={handleDocumentLoad}
 						{showDocumentInfo}
 						onDocumentInfoChange={(open) => (showDocumentInfo = open)}
+						{showImportDialog}
+						onImportDialogChange={(open) => (showImportDialog = open)}
 					/>
 				{/if}
 			</div>

@@ -28,6 +28,7 @@
 		saveError?: string;
 		onDocumentInfo?: () => void;
 		onTitleChange?: (newTitle: string) => void;
+		onImport?: () => void;
 	};
 
 	let {
@@ -36,7 +37,8 @@
 		saveStatus = 'idle',
 		saveError,
 		onDocumentInfo,
-		onTitleChange
+		onTitleChange,
+		onImport
 	}: TopMenuProps = $props();
 
 	import { documentStore } from '$lib/stores/documents.svelte';
@@ -101,8 +103,9 @@
 	}
 
 	function handleImport() {
-		// TODO: Open file picker
-		console.log('Import document');
+		if (onImport) {
+			onImport();
+		}
 	}
 
 	function handleShare() {
