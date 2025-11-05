@@ -1,9 +1,21 @@
 /**
  * Browser Storage Document Service for Guest Users
  * Provides document storage using browser LocalStorage for guest mode
+ * Implements DocumentServiceContract for compatibility with other storage services
  */
 
-import type { DocumentMetadata } from './types';
+import type {
+	CreateDocumentParams,
+	Document,
+	DocumentListResult,
+	DocumentMetadata,
+	DocumentReferenceParams,
+	DocumentServiceContract,
+	ListDocumentsParams,
+	UpdateContentParams,
+	UpdateNameParams
+} from './types';
+import { DocumentValidator } from './document-validator';
 
 const STORAGE_KEY = 'tonguetoquill_guest_documents';
 const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB limit
@@ -17,7 +29,7 @@ interface StoredDocument {
 	updated_at: string;
 }
 
-class DocumentBrowserStorage {
+class DocumentBrowserStorage implements DocumentServiceContract {
 	private getDocuments(): StoredDocument[] {
 		try {
 			const data = localStorage.getItem(STORAGE_KEY);
@@ -43,14 +55,22 @@ class DocumentBrowserStorage {
 		}
 	}
 
-	async createDocument(name: string, content: string = ''): Promise<DocumentMetadata> {
+	async createDocument(params: CreateDocumentParams): Promise<Document> {
+		// Extract params (owner_id ignored, always 'guest' for browser storage)
+		const { name, content } = params;
+
+		// Validate inputs
+		const trimmedName = name.trim() || 'Untitled Document';
+		DocumentValidator.validateName(trimmedName);
+		DocumentValidator.validateContent(content);
+
 		const documents = this.getDocuments();
 
 		const newDoc: StoredDocument = {
 			id: `local-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-			name: name.trim() || 'Untitled Document',
+			name: trimmedName,
 			content,
-			content_size_bytes: new Blob([content]).size,
+			content_size_bytes: DocumentValidator.getByteLength(content),
 			created_at: new Date().toISOString(),
 			updated_at: new Date().toISOString()
 		};
@@ -58,69 +78,97 @@ class DocumentBrowserStorage {
 		documents.unshift(newDoc);
 		this.saveDocuments(documents);
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { content: _, ...metadata } = newDoc;
-		return { ...metadata, owner_id: 'guest' };
+		// Return complete Document with owner_id
+		return { ...newDoc, owner_id: 'guest' };
 	}
 
-	async getDocumentMetadata(id: string): Promise<DocumentMetadata | null> {
-		const documents = this.getDocuments();
-		const doc = documents.find((d) => d.id === id);
+	async getDocumentMetadata(params: DocumentReferenceParams): Promise<DocumentMetadata> {
+		// Extract params (user_id ignored for browser storage)
+		const { document_id } = params;
 
-		if (!doc) return null;
+		const documents = this.getDocuments();
+		const doc = documents.find((d) => d.id === document_id);
+
+		if (!doc) {
+			throw new Error('Document not found');
+		}
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { content: _, ...metadata } = doc;
 		return { ...metadata, owner_id: 'guest' };
 	}
 
-	async getDocumentContent(
-		id: string
-	): Promise<{ id: string; content: string; name: string } | null> {
+	async getDocumentContent(params: DocumentReferenceParams): Promise<Document> {
+		// Extract params (user_id ignored for browser storage)
+		const { document_id } = params;
+
 		const documents = this.getDocuments();
-		const doc = documents.find((d) => d.id === id);
+		const doc = documents.find((d) => d.id === document_id);
 
-		if (!doc) return null;
+		if (!doc) {
+			throw new Error('Document not found');
+		}
 
-		return {
-			id: doc.id,
-			name: doc.name,
-			content: doc.content
-		};
+		// Return complete Document with owner_id
+		return { ...doc, owner_id: 'guest' };
 	}
 
-	async updateDocumentContent(id: string, content: string): Promise<void> {
+	async updateDocumentContent(params: UpdateContentParams): Promise<Document> {
+		// Extract params (user_id ignored for browser storage)
+		const { document_id, content } = params;
+
+		// Validate content
+		DocumentValidator.validateContent(content);
+
 		const documents = this.getDocuments();
-		const index = documents.findIndex((d) => d.id === id);
+		const index = documents.findIndex((d) => d.id === document_id);
 
 		if (index === -1) {
 			throw new Error('Document not found');
 		}
 
 		documents[index].content = content;
-		documents[index].content_size_bytes = new Blob([content]).size;
+		documents[index].content_size_bytes = DocumentValidator.getByteLength(content);
 		documents[index].updated_at = new Date().toISOString();
 
 		this.saveDocuments(documents);
+
+		// Return updated document
+		return { ...documents[index], owner_id: 'guest' };
 	}
 
-	async updateDocumentName(id: string, name: string): Promise<void> {
+	async updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata> {
+		// Extract params (user_id ignored for browser storage)
+		const { document_id, name } = params;
+
+		// Validate name
+		const trimmedName = name.trim() || 'Untitled Document';
+		DocumentValidator.validateName(trimmedName);
+
 		const documents = this.getDocuments();
-		const index = documents.findIndex((d) => d.id === id);
+		const index = documents.findIndex((d) => d.id === document_id);
 
 		if (index === -1) {
 			throw new Error('Document not found');
 		}
 
-		documents[index].name = name.trim() || 'Untitled Document';
+		documents[index].name = trimmedName;
 		documents[index].updated_at = new Date().toISOString();
 
 		this.saveDocuments(documents);
+
+		// Return metadata (without content)
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { content: _, ...metadata } = documents[index];
+		return { ...metadata, owner_id: 'guest' };
 	}
 
-	async deleteDocument(id: string): Promise<void> {
+	async deleteDocument(params: DocumentReferenceParams): Promise<void> {
+		// Extract params (user_id ignored for browser storage)
+		const { document_id } = params;
+
 		const documents = this.getDocuments();
-		const filtered = documents.filter((d) => d.id !== id);
+		const filtered = documents.filter((d) => d.id !== document_id);
 
 		if (filtered.length === documents.length) {
 			throw new Error('Document not found');
@@ -129,13 +177,29 @@ class DocumentBrowserStorage {
 		this.saveDocuments(filtered);
 	}
 
-	async listUserDocuments(): Promise<DocumentMetadata[]> {
+	async listUserDocuments(params: ListDocumentsParams): Promise<DocumentListResult> {
+		// Extract params (user_id ignored for browser storage)
+		const { limit = 50, offset = 0 } = params;
+
 		const documents = this.getDocuments();
+
+		// Apply pagination
+		const total = documents.length;
+		const paginatedDocuments = documents.slice(offset, offset + limit);
+
+		// Convert to metadata
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		return documents.map(({ content: _, ...metadata }) => ({
-			...metadata,
+		const metadata = paginatedDocuments.map(({ content: _, ...meta }) => ({
+			...meta,
 			owner_id: 'guest'
 		}));
+
+		return {
+			documents: metadata,
+			total,
+			limit,
+			offset
+		};
 	}
 
 	// Helper method to get all documents for migration
@@ -162,4 +226,8 @@ class DocumentBrowserStorage {
 	}
 }
 
+// Export class for factory instantiation
+export { DocumentBrowserStorage };
+
+// Export singleton for backward compatibility
 export const documentBrowserStorage = new DocumentBrowserStorage();

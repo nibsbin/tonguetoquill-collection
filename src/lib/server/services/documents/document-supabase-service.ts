@@ -18,6 +18,7 @@ import type {
 	UUID
 } from '$lib/services/documents/types';
 import { DocumentError } from '$lib/services/documents/types';
+import { DocumentValidator } from '$lib/services/documents/document-validator';
 
 /**
  * Supabase Document Service
@@ -27,9 +28,6 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 	private supabase: SupabaseClient;
 
 	// Constants
-	private readonly MAX_CONTENT_SIZE = 524288; // 0.5 MB in bytes
-	private readonly MAX_NAME_LENGTH = 255;
-	private readonly MIN_NAME_LENGTH = 1;
 	private readonly PGRST_NO_ROWS_ERROR = 'PGRST116'; // PostgREST error code for no rows
 
 	constructor() {
@@ -39,55 +37,6 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 		// Use service role key for server-side operations (bypasses RLS)
 		// Production deployments should always set SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY
 		this.supabase = createClient(config.POSTGRES_URL, config.SECRET_KEY);
-	}
-
-	/**
-	 * Validate document name
-	 */
-	private validateName(name: string): void {
-		const trimmedName = name.trim();
-
-		if (trimmedName.length < this.MIN_NAME_LENGTH) {
-			throw new DocumentError('invalid_name', 'Document name cannot be empty', 400);
-		}
-
-		if (trimmedName.length > this.MAX_NAME_LENGTH) {
-			throw new DocumentError(
-				'invalid_name',
-				`Document name must be ${this.MAX_NAME_LENGTH} characters or less`,
-				400
-			);
-		}
-
-		if (trimmedName !== name) {
-			throw new DocumentError(
-				'invalid_name',
-				'Document name cannot have leading or trailing whitespace',
-				400
-			);
-		}
-	}
-
-	/**
-	 * Validate content size
-	 */
-	private validateContent(content: string): void {
-		const byteLength = this.calculateContentSize(content);
-
-		if (byteLength > this.MAX_CONTENT_SIZE) {
-			throw new DocumentError(
-				'content_too_large',
-				`Content size (${byteLength} bytes) exceeds maximum of ${this.MAX_CONTENT_SIZE} bytes`,
-				413
-			);
-		}
-	}
-
-	/**
-	 * Calculate byte length of string (UTF-8)
-	 */
-	private calculateContentSize(content: string): number {
-		return Buffer.from(content, 'utf-8').length;
 	}
 
 	/**
@@ -122,11 +71,11 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 		const { owner_id, name, content } = params;
 
 		// Validate inputs
-		this.validateName(name);
-		this.validateContent(content);
+		DocumentValidator.validateName(name);
+		DocumentValidator.validateContent(content);
 
 		// Calculate size
-		const content_size_bytes = this.calculateContentSize(content);
+		const content_size_bytes = DocumentValidator.getByteLength(content);
 
 		try {
 			// Insert document
@@ -217,10 +166,10 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 		const { user_id, document_id, content } = params;
 
 		// Validate content
-		this.validateContent(content);
+		DocumentValidator.validateContent(content);
 
 		// Calculate new size
-		const content_size_bytes = this.calculateContentSize(content);
+		const content_size_bytes = DocumentValidator.getByteLength(content);
 
 		try {
 			// Note: We manually set updated_at for consistency with mock service
@@ -256,7 +205,7 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 		const { user_id, document_id, name } = params;
 
 		// Validate name
-		this.validateName(name);
+		DocumentValidator.validateName(name);
 
 		try {
 			// Note: We manually set updated_at for consistency with mock service

@@ -24,9 +24,10 @@ class DocumentStore {
 	// Authentication state - separate from document state
 	// Used by DocumentClient to route between localStorage (guest) and API (authenticated)
 	private _isGuest = $state<boolean>(true);
+	private _userId = $state<string>('guest');
 
-	// Create document client with guest mode accessor
-	private documentClient = createDocumentClient(() => this._isGuest);
+	// Create document client - recreated when auth state changes
+	private documentClient = createDocumentClient(this._isGuest, this._userId);
 
 	// Getters
 	get documents() {
@@ -77,6 +78,16 @@ class DocumentStore {
 	 */
 	setGuestMode(isGuest: boolean) {
 		this._isGuest = isGuest;
+		this.documentClient = createDocumentClient(this._isGuest, this._userId);
+	}
+
+	/**
+	 * Set user ID
+	 * Internal method used to configure DocumentClient with authenticated user ID
+	 */
+	setUserId(userId: string) {
+		this._userId = userId;
+		this.documentClient = createDocumentClient(this._isGuest, this._userId);
 	}
 
 	addDocument(document: DocumentMetadata) {
