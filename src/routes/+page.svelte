@@ -13,6 +13,7 @@
 	let autoSave = new AutoSave();
 	let showDocumentInfo = $state(false);
 	let showImportDialog = $state(false);
+	let showShareModal = $state(false);
 	let documentContent = $state('');
 	let documentName = $state('');
 
@@ -96,6 +97,13 @@
 		showImportDialog = false; // Dismiss any existing preview modal
 		rulerStore.toggle();
 	}
+
+	function handleShare() {
+		showDocumentInfo = false; // Dismiss any existing preview modal
+		showImportDialog = false; // Dismiss any existing preview modal
+		rulerStore.setActive(false); // Dismiss ruler overlay
+		showShareModal = true;
+	}
 </script>
 
 {#if loading}
@@ -119,14 +127,11 @@
 				onTitleChange={handleTitleChange}
 				onImport={handleImport}
 				onRulerToggle={handleRulerToggle}
+				onShare={handleShare}
 			/>
 
 			<!-- Editor and Preview Area -->
-			<div
-				class="flex flex-1 overflow-hidden"
-				role="main"
-				aria-label="Document editor"
-			>
+			<div class="flex flex-1 overflow-hidden" role="main" aria-label="Document editor">
 				{#if !documentStore.activeDocumentId}
 					<div class="flex h-full flex-1 items-center justify-center">
 						<div class="text-center">
@@ -146,6 +151,8 @@
 						onDocumentInfoChange={(open) => (showDocumentInfo = open)}
 						{showImportDialog}
 						onImportDialogChange={(open) => (showImportDialog = open)}
+						{showShareModal}
+						onShareModalChange={(open) => (showShareModal = open)}
 					/>
 				{/if}
 			</div>

@@ -30,6 +30,7 @@
 		onTitleChange?: (newTitle: string) => void;
 		onImport?: () => void;
 		onRulerToggle?: () => void;
+		onShare?: () => void;
 	};
 
 	let {
@@ -40,7 +41,8 @@
 		onDocumentInfo,
 		onTitleChange,
 		onImport,
-		onRulerToggle
+		onRulerToggle,
+		onShare
 	}: TopMenuProps = $props();
 
 	import { documentStore } from '$lib/stores/documents.svelte';
@@ -111,8 +113,9 @@
 	}
 
 	function handleShare() {
-		// TODO: Open share dialog
-		console.log('Share document');
+		if (onShare) {
+			onShare();
+		}
 	}
 
 	function handleDocumentInfo() {
