@@ -9,7 +9,6 @@
 	import { DocumentEditor } from '$lib/components/Editor';
 
 	let user = $state<{ email: string; id: string } | null>(null);
-	let loading = $state(true);
 	let autoSave = new AutoSave();
 	let showDocumentInfo = $state(false);
 	let showImportDialog = $state(false);
@@ -17,35 +16,36 @@
 	let documentContent = $state('');
 	let documentName = $state('');
 
-	onMount(async () => {
+	onMount(() => {
 		// Show classification message
 		toast.info('This system is not authorized for controlled information.', {
 			duration: 10000,
 			position: 'top-center'
 		});
 
-		try {
-			const response = await fetch('/api/auth/me');
-			if (response.ok) {
-				const data = await response.json();
-				user = data.user;
-				documentStore.setGuestMode(false);
-			} else {
-				// Guest mode - no authentication
+		// Run auth check and document fetch in background (non-blocking)
+		(async () => {
+			try {
+				const response = await fetch('/api/auth/me');
+				if (response.ok) {
+					const data = await response.json();
+					user = data.user;
+					documentStore.setGuestMode(false);
+				} else {
+					// Guest mode - no authentication
+					documentStore.setGuestMode(true);
+				}
+
+				// Fetch documents (from API or LocalStorage depending on mode)
+				await documentStore.fetchDocuments();
+			} catch {
+				// Guest mode on error
 				documentStore.setGuestMode(true);
+
+				// Fetch from LocalStorage
+				await documentStore.fetchDocuments();
 			}
-
-			// Fetch documents (from API or LocalStorage depending on mode)
-			await documentStore.fetchDocuments();
-		} catch {
-			// Guest mode on error
-			documentStore.setGuestMode(true);
-
-			// Fetch from LocalStorage
-			await documentStore.fetchDocuments();
-		} finally {
-			loading = false;
-		}
+		})();
 	});
 
 	async function handleDownload() {
@@ -106,59 +106,53 @@
 	}
 </script>
 
-{#if loading}
-	<div class="flex min-h-screen items-center justify-center bg-background">
-		<p class="text-muted-foreground">Loading...</p>
-	</div>
-{:else}
-	<div class="flex h-screen bg-background">
-		<!-- Sidebar -->
-		<Sidebar {user} />
+<div class="flex h-screen bg-background">
+	<!-- Sidebar -->
+	<Sidebar {user} />
 
-		<!-- Main Content -->
-		<div class="flex flex-1 flex-col">
-			<!-- Top Menu -->
-			<TopMenu
-				fileName={documentName}
-				onDownload={handleDownload}
-				saveStatus={autoSave.saveState.status}
-				saveError={autoSave.saveState.errorMessage}
-				onDocumentInfo={handleDocumentInfo}
-				onTitleChange={handleTitleChange}
-				onImport={handleImport}
-				onRulerToggle={handleRulerToggle}
-				onShare={handleShare}
-			/>
+	<!-- Main Content -->
+	<div class="flex flex-1 flex-col">
+		<!-- Top Menu -->
+		<TopMenu
+			fileName={documentName}
+			onDownload={handleDownload}
+			saveStatus={autoSave.saveState.status}
+			saveError={autoSave.saveState.errorMessage}
+			onDocumentInfo={handleDocumentInfo}
+			onTitleChange={handleTitleChange}
+			onImport={handleImport}
+			onRulerToggle={handleRulerToggle}
+			onShare={handleShare}
+		/>
 
-			<!-- Editor and Preview Area -->
-			<div class="flex flex-1 overflow-hidden" role="main" aria-label="Document editor">
-				{#if !documentStore.activeDocumentId}
-					<div class="flex h-full flex-1 items-center justify-center">
-						<div class="text-center">
-							<h2 class="text-xl font-semibold text-foreground/80">No Document Selected</h2>
-							<p class="mt-2 text-sm text-muted-foreground">
-								Select a document from the sidebar or create a new one
-							</p>
-						</div>
+		<!-- Editor and Preview Area -->
+		<div class="flex flex-1 overflow-hidden" role="main" aria-label="Document editor">
+			{#if !documentStore.activeDocumentId}
+				<div class="flex h-full flex-1 items-center justify-center">
+					<div class="text-center">
+						<h2 class="text-xl font-semibold text-foreground/80">No Document Selected</h2>
+						<p class="mt-2 text-sm text-muted-foreground">
+							Select a document from the sidebar or create a new one
+						</p>
 					</div>
-				{:else}
-					<DocumentEditor
-						documentId={documentStore.activeDocumentId}
-						{autoSave}
-						onContentChange={handleContentChange}
-						onDocumentLoad={handleDocumentLoad}
-						{showDocumentInfo}
-						onDocumentInfoChange={(open) => (showDocumentInfo = open)}
-						{showImportDialog}
-						onImportDialogChange={(open) => (showImportDialog = open)}
-						{showShareModal}
-						onShareModalChange={(open) => (showShareModal = open)}
-					/>
-				{/if}
-			</div>
+				</div>
+			{:else}
+				<DocumentEditor
+					documentId={documentStore.activeDocumentId}
+					{autoSave}
+					onContentChange={handleContentChange}
+					onDocumentLoad={handleDocumentLoad}
+					{showDocumentInfo}
+					onDocumentInfoChange={(open) => (showDocumentInfo = open)}
+					{showImportDialog}
+					onImportDialogChange={(open) => (showImportDialog = open)}
+					{showShareModal}
+					onShareModalChange={(open) => (showShareModal = open)}
+				/>
+			{/if}
 		</div>
 	</div>
+</div>
 
-	<!-- Toast Notifications using Sonner -->
-	<Toaster theme="dark" />
-{/if}
+<!-- Toast Notifications using Sonner -->
+<Toaster theme="dark" />
