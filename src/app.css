@@ -26,17 +26,6 @@
 	/* Top menu spacing tokens */
 	--top-menu-height: var(--sidebar-collapsed-width); /* Aligned with sidebar */
 
-	/* Utility class: slightly heavier top-menu divider for visual alignment/theming */
-	.top-menu-strong-border {
-		height: 49px !important;
-		/* keep border style/color from existing utility classes; only increase width */
-		border-bottom-width: 1.5px;
-	}
-
-	button {
-		cursor: pointer !important;
-	}
-
 	/* Light Theme Color Tokens */
 	/* Surface colors */
 	--color-background: #ffffff;
@@ -94,9 +83,6 @@
 	--color-info-foreground: #1e3a8a; /* blue-900 dark text */
 	--color-info-background: #eff6ff; /* blue-50 light bg */
 	--color-info-border: #bfdbfe; /* blue-200 subtle border */
-
-	/* Design tokens from mock project */
-	font-family: 'Lato', Arial, sans-serif;
 }
 
 /* Dark Theme */
@@ -116,11 +102,8 @@
 
 	/* Semantic colors */
 	--color-muted: #27272a;
-	--color-muted-foreground: #71717a;
 	--color-accent: #3f3f46;
 	--color-accent-foreground: #f4f4f5;
-	--color-destructive: #ef4444;
-	--color-destructive-hover: #dc2626;
 	--color-destructive-foreground: #fafafa;
 
 	/* UI elements */
@@ -159,7 +142,7 @@
 	--color-info-border: #1e40af; /* blue-800 stronger border */
 }
 
-/* Tailwind CSS Integration */
+/* Tailwind CSS Integration - required for utility class generation */
 @theme inline {
 	/* Surface colors */
 	--color-background: var(--color-background);
@@ -214,12 +197,23 @@
 }
 
 body {
+	font-family: 'Lato', Arial, sans-serif;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
 	transition:
 		background-color 200ms ease-in-out,
 		color 200ms ease-in-out;
+}
+
+button {
+	cursor: pointer;
+}
+
+/* Utility class: slightly heavier top-menu divider for visual alignment/theming */
+.top-menu-strong-border {
+	/* Only controls border styling; height is managed by --top-menu-height variable */
+	border-bottom-width: 1.5px;
 }
 
 /* Screen reader only utility */
