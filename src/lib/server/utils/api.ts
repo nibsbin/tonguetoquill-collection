@@ -107,11 +107,9 @@ export function getSiteURL(event?: RequestEvent): string {
 	// 2. Vercel URL (automatically set by Vercel for preview/production)
 	// 3. Request origin (detects actual host and port from the incoming request)
 	// 4. Local development fallback
-	let url =
-		env.SUPABASE_URL ??
-		env.VERCEL_URL ??
-		(event ? event.url.origin : null) ??
-		'http://localhost:5173';
+	let url = env.VERCEL_URL ?? (event ? event.url.origin : null) ?? 'http://localhost:5173';
+
+	console.log('Determined site URL:', url);
 
 	// Make sure to include `https://` when not localhost
 	url = url.startsWith('http') ? url : `https://${url}`;
