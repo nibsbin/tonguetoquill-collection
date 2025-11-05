@@ -140,28 +140,6 @@ export class LoginClient {
 
 		return response.json();
 	}
-
-	/**
-	 * Verify OTP code and create session
-	 * @param email - User's email address
-	 * @param code - 6-digit verification code
-	 */
-	async verifyEmailOTP(email: string, code: string): Promise<void> {
-		const response = await fetch('/api/auth/email/verify', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ email, code })
-		});
-
-		if (!response.ok) {
-			const error: ErrorResponse = await response.json();
-			throw new Error(error.message || 'Invalid verification code');
-		}
-
-		// Session cookies are set by server
-		// No need to handle response, just return success
-	}
-
 	/**
 	 * Get current session (if authenticated)
 	 */

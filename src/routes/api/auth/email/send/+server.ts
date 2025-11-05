@@ -23,8 +23,8 @@ export const POST: RequestHandler = async (event) => {
 			return json({ error: 'Invalid email format' }, { status: 400 });
 		}
 
-		// Get callback URL (not used for OTP, but required by interface)
-		const callbackUrl = `${getSiteURL(event)}api/auth/email/callback`;
+		// Get callback URL
+		const callbackUrl = `${getSiteURL(event)}api/auth/callback`;
 
 		// Send OTP email
 		const result = await authService.sendAuthEmail(email, callbackUrl);
