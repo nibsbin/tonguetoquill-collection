@@ -164,8 +164,8 @@
 		: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 >
 	<!-- Hamburger Menu and Title -->
-	<div class="flex items-center">
-		<div class="flex-shrink-0" style="width: 48px;">
+	<div class="relative flex items-center">
+		<div class="relative flex-shrink-0" style="width: 48px; z-index: 10;">
 			<SidebarButtonSlot
 				icon={Menu}
 				{isExpanded}
@@ -175,7 +175,7 @@
 		</div>
 
 		<span
-			class="pointer-events-none flex-1 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute left-0 right-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
 		>
