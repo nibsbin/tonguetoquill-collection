@@ -130,16 +130,19 @@ export class MockDocumentService implements DocumentServiceContract {
 	/**
 	 * Get document metadata only (no content)
 	 */
-	async getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetadata> {
+	async getDocumentMetadata(params: {
+		user_id: UUID;
+		document_id: UUID;
+	}): Promise<DocumentMetadata> {
 		await this.simulateDelay();
 
-		const document = this.documents.get(documentId);
+		const document = this.documents.get(params.document_id);
 
 		if (!document) {
 			throw new DocumentError('not_found', 'Document not found', 404);
 		}
 
-		this.verifyOwnership(document, userId);
+		this.verifyOwnership(document, params.user_id);
 
 		return {
 			id: document.id,

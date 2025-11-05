@@ -287,7 +287,7 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 	/**
 	 * Delete a document
 	 */
-	async deleteDocument(params: DeleteDocumentParams): Promise<void> {
+	async deleteDocument(params: DocumentReferenceParams): Promise<void> {
 		const { user_id, document_id } = params;
 
 		try {

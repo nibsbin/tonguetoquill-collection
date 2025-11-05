@@ -142,7 +142,10 @@ describe('DocumentServiceContract - MockDocumentService', () => {
 				content: '# Large content here'
 			});
 
-			const metadata = await documentService.getDocumentMetadata(userId, created.id);
+			const metadata = await documentService.getDocumentMetadata({
+				user_id: userId,
+				document_id: created.id
+			});
 
 			expect(metadata.id).toBe(created.id);
 			expect(metadata.name).toBe('Test Doc');
