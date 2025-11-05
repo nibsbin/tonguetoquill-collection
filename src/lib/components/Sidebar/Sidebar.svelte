@@ -306,11 +306,11 @@
 							class="w-64 border-border bg-surface-elevated p-0 text-foreground"
 						>
 							<div class="p-4">
-								<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+								<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
 
 								<div class="space-y-4">
 									<div class="flex items-center justify-between border-b border-border pb-3">
-										<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
+										<Label for="dark-mode" class="text-muted-foreground">Dark Mode</Label>
 										<Switch
 											id="dark-mode"
 											bind:checked={isDarkMode}
@@ -319,7 +319,7 @@
 									</div>
 
 									<div class="flex items-center justify-between">
-										<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
+										<Label for="auto-save" class="text-muted-foreground">Auto-save</Label>
 										<Switch
 											id="auto-save"
 											bind:checked={autoSave}
@@ -328,7 +328,7 @@
 									</div>
 
 									<div class="flex items-center justify-between">
-										<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
+										<Label for="line-numbers" class="text-muted-foreground">Line Numbers</Label>
 										<Switch
 											id="line-numbers"
 											bind:checked={lineNumbers}
@@ -459,11 +459,11 @@
 					class="w-64 border-border bg-surface-elevated p-0 text-foreground"
 				>
 					<div class="p-4">
-						<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+						<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
 
 						<div class="space-y-4">
 							<div class="flex items-center justify-between border-b border-border pb-3">
-								<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
+								<Label for="dark-mode" class="text-muted-foreground">Dark Mode</Label>
 								<Switch
 									id="dark-mode"
 									bind:checked={isDarkMode}
@@ -472,7 +472,7 @@
 							</div>
 
 							<div class="flex items-center justify-between">
-								<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
+								<Label for="auto-save" class="text-muted-foreground">Auto-save</Label>
 								<Switch
 									id="auto-save"
 									bind:checked={autoSave}
@@ -481,7 +481,7 @@
 							</div>
 
 							<div class="flex items-center justify-between">
-								<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
+								<Label for="line-numbers" class="text-muted-foreground">Line Numbers</Label>
 								<Switch
 									id="line-numbers"
 									bind:checked={lineNumbers}

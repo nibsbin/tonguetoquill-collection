@@ -143,7 +143,7 @@
 			<!-- Success Message -->
 			{#if message}
 				<div
-					class="rounded-md bg-green-50 p-3 text-sm text-green-800 dark:bg-green-900/20 dark:text-green-300"
+					class="rounded-md border border-success-border bg-success-background p-3 text-sm text-success-foreground"
 				>
 					{message}
 				</div>
@@ -152,7 +152,7 @@
 			<!-- Error Message -->
 			{#if error}
 				<div
-					class="rounded-md bg-red-50 p-3 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-300"
+					class="rounded-md border border-error-border bg-error-background p-3 text-sm text-error-foreground"
 				>
 					{error}
 				</div>
