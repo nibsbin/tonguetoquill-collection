@@ -203,7 +203,6 @@
 					<SidebarButtonSlot
 						icon={Menu}
 						{isExpanded}
-						class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
 						onclick={handleToggle}
 						ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 					/>
@@ -229,7 +228,6 @@
 								icon={Plus}
 								label="New Document"
 								{isExpanded}
-								class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
 								onclick={handleNewFile}
 								ariaLabel="Create new document"
 							/>
@@ -260,14 +258,13 @@
 				</div>
 
 				<!-- User Profile and Settings Section -->
-				<div class="space-y-1 border-t border-border">
+				<div class="border-t border-border">
 					<!-- Sign-In Button (Guest Mode) -->
 					{#if !user}
 						<SidebarButtonSlot
 							icon={LogIn}
 							label="Sign in"
 							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							onclick={handleSignIn}
 							ariaLabel="Sign in to your account"
 						/>
@@ -279,7 +276,6 @@
 							icon={User}
 							label={user.email}
 							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							title={user.email}
 							onclick={handleProfileClick}
 							ariaLabel="User profile: {user.email}"
@@ -289,14 +285,10 @@
 					<!-- Settings Gear Button -->
 					<SidebarButtonSlot {isExpanded}>
 						<Popover bind:open={popoverOpen}>
-							<PopoverTrigger
-								class="sidebar-slot-button {isExpanded
-									? 'sidebar-slot-button-full'
-									: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
-							>
+							<PopoverTrigger class="settings-trigger">
 								<Settings class="sidebar-icon" />
 								{#if isExpanded}
-									<span>Settings</span>
+									<span class="settings-label">Settings</span>
 								{/if}
 							</PopoverTrigger>
 							<PopoverContent
@@ -356,7 +348,6 @@
 			<SidebarButtonSlot
 				icon={Menu}
 				{isExpanded}
-				class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
 				onclick={handleToggle}
 				ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 			/>
@@ -380,7 +371,6 @@
 						icon={Plus}
 						label="New Document"
 						{isExpanded}
-						class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
 						onclick={handleNewFile}
 						ariaLabel="Create new document"
 					/>
@@ -411,14 +401,13 @@
 		</div>
 
 		<!-- User Profile and Settings Section -->
-		<div class="space-y-1 border-t border-border">
+		<div class="border-t border-border">
 			<!-- Sign-In Button (Guest Mode) -->
 			{#if !user}
 				<SidebarButtonSlot
 					icon={LogIn}
 					label="Sign in"
 					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 					onclick={handleSignIn}
 					ariaLabel="Sign in to your account"
 				/>
@@ -430,7 +419,6 @@
 					icon={User}
 					label={user.email}
 					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 					title={user.email}
 					onclick={handleProfileClick}
 					ariaLabel="User profile: {user.email}"
@@ -440,14 +428,10 @@
 			<!-- Settings Gear Button -->
 			<SidebarButtonSlot {isExpanded}>
 				<Popover bind:open={popoverOpen}>
-					<PopoverTrigger
-						class="sidebar-slot-button {isExpanded
-							? 'sidebar-slot-button-full'
-							: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
-					>
+					<PopoverTrigger class="settings-trigger">
 						<Settings class="sidebar-icon" />
 						{#if isExpanded}
-							<span>Settings</span>
+							<span class="settings-label">Settings</span>
 						{/if}
 					</PopoverTrigger>
 					<PopoverContent
@@ -558,23 +542,56 @@
 </Dialog>
 
 <style>
-	:global(.sidebar-icon) {
-		width: var(--sidebar-icon-size);
-		height: var(--sidebar-icon-size);
+	/* Settings trigger button - matches our simple button system */
+	:global(.settings-trigger) {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 0.5rem;
+		padding: 0 0.75rem;
+		margin: 0;
+		border: none;
+		background: transparent;
+		color: rgb(from var(--color-foreground) r g b / 0.7);
+		font-family: inherit;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		border-radius: 0;
+		transition:
+			background-color 0.2s,
+			color 0.2s;
+		box-sizing: border-box;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	:global(.settings-trigger:hover) {
+		background-color: var(--color-accent);
+		color: var(--color-foreground);
+	}
+
+	:global(.settings-trigger:active) {
+		transform: scale(0.985);
+	}
+
+	:global(.settings-trigger .sidebar-icon) {
+		width: 24px;
+		height: 24px;
 		flex-shrink: 0;
 	}
 
-	:global(.sidebar-icon:has(+ *)) {
-		margin-right: 0.5rem;
+	:global(.settings-label) {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
+	/* Legacy styles - kept for document list items */
 	:global(.sidebar-icon-small) {
-		/* This calculates 60% of the parent's --sidebar-icon-size */
 		width: calc(var(--sidebar-icon-size) * 0.6);
 		height: calc(var(--sidebar-icon-size) * 0.6);
-	}
-
-	:global(.sidebar-section-height) {
-		height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
 	}
 </style>
