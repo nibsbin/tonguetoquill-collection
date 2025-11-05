@@ -23,6 +23,8 @@ export const GET: RequestHandler = async (event) => {
 	// Pass event to auto-detect the actual host and port
 	const callbackUrl = `${getSiteURL(event)}api/auth/callback`;
 
+	console.log('Auth login requested. Provider:', provider, 'Callback URL:', callbackUrl);
+
 	// Get the provider-specific login URL
 	// - Mock provider: Returns callback URL with mock code
 	// - Supabase provider: Returns Supabase OAuth URL with PKCE
