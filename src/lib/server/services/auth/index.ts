@@ -13,27 +13,17 @@ import { getAuthService } from './auth-provider';
  * Export as authService for consistent API with document service
  */
 export const authService = {
+	async getAvailableProviders() {
+		const service = await getAuthService();
+		return service.getAvailableProviders();
+	},
+	async initiateAuth(providerId: string, redirectUri: string, data?: Record<string, string>) {
+		const service = await getAuthService();
+		return service.initiateAuth(providerId, redirectUri, data);
+	},
 	async getLoginUrl(redirectUri: string) {
 		const service = await getAuthService();
 		return service.getLoginUrl(redirectUri);
-	},
-	async getGitHubLoginUrl(redirectUri: string) {
-		const service = await getAuthService();
-		// Check if the method exists (only on SupabaseAuthProvider)
-		if ('getGitHubLoginUrl' in service) {
-			return (service as any).getGitHubLoginUrl(redirectUri);
-		}
-		// Fallback to default getLoginUrl for MockAuthProvider
-		return service.getLoginUrl(redirectUri);
-	},
-	async sendEmailOTP(email: string, redirectUri: string) {
-		const service = await getAuthService();
-		// Check if the method exists (only on SupabaseAuthProvider)
-		if ('sendEmailOTP' in service) {
-			return (service as any).sendEmailOTP(email, redirectUri);
-		}
-		// Mock provider doesn't support email OTP
-		throw new Error('Email OTP not supported in mock mode');
 	},
 	async exchangeCodeForTokens(code: string) {
 		const service = await getAuthService();

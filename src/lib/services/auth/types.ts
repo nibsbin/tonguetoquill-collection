@@ -76,15 +76,70 @@ export class AuthError extends Error {
 }
 
 /**
+ * Authentication provider type
+ */
+export type AuthProviderType = 'oauth' | 'email_otp' | 'magic_link';
+
+/**
+ * OAuth provider name
+ */
+export type OAuthProviderName = 'github' | 'google' | 'microsoft' | 'mock';
+
+/**
+ * Authentication provider configuration
+ * Describes a single auth method available to users
+ */
+export interface AuthProviderConfig {
+	/** Unique identifier for this provider */
+	id: string;
+	/** Type of authentication */
+	type: AuthProviderType;
+	/** Display name shown to users */
+	name: string;
+	/** OAuth provider name (only for oauth type) */
+	oauthProvider?: OAuthProviderName;
+	/** Icon identifier for UI rendering */
+	icon?: string;
+	/** Whether this provider requires user input (e.g., email) */
+	requiresInput?: boolean;
+	/** Input field configuration if requiresInput is true */
+	inputConfig?: {
+		type: 'email' | 'text';
+		placeholder: string;
+		label: string;
+	};
+}
+
+/**
  * Authentication contract interface
  * All authentication providers (mock and real) must implement this interface
  * Focused on token validation and management only - no password handling
  */
 export interface AuthContract {
 	/**
+	 * Get available authentication providers
+	 * Returns a list of auth methods this provider supports
+	 */
+	getAvailableProviders(): AuthProviderConfig[];
+
+	/**
+	 * Initiate authentication with a specific provider
+	 * @param providerId - The provider ID from getAvailableProviders()
+	 * @param redirectUri - The callback URL to return to after authentication
+	 * @param data - Optional data (e.g., email for email-based auth)
+	 * @returns URL to redirect to (for OAuth) or success message (for email OTP)
+	 */
+	initiateAuth(
+		providerId: string,
+		redirectUri: string,
+		data?: Record<string, string>
+	): Promise<{ url?: string; message?: string }>;
+
+	/**
 	 * Get the OAuth login URL for this provider
 	 * Returns the URL to redirect users to for authentication
 	 * @param redirectUri - The callback URL to return to after authentication
+	 * @deprecated Use initiateAuth() instead for dynamic provider support
 	 */
 	getLoginUrl(redirectUri: string): Promise<string>;
 

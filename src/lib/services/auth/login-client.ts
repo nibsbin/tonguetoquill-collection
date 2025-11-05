@@ -4,7 +4,7 @@
  * Communicates with API routes via fetch()
  */
 
-import type { User, Session } from './types';
+import type { User, Session, AuthProviderConfig } from './types';
 
 /**
  * Error response from API
@@ -20,47 +20,61 @@ interface ErrorResponse {
  */
 export class LoginClient {
 	/**
-	 * Initiate login by redirecting to auth provider
-	 * In mock mode, this redirects to a callback with a mock code
-	 * In production, this redirects to the provider's hosted login page
-	 *
-	 * The OAuth callback is handled server-side via GET /api/auth/callback
-	 * which exchanges the code for tokens and sets HTTP-only cookies
-	 * @deprecated Use initiateGitHubLogin or initiateEmailLogin instead
+	 * Get available authentication providers
+	 * Fetches the list of auth methods from the server
 	 */
-	async initiateLogin(): Promise<void> {
-		// Default to GitHub login for backwards compatibility
-		await this.initiateGitHubLogin();
+	async getAvailableProviders(): Promise<AuthProviderConfig[]> {
+		const response = await fetch('/api/auth/providers');
+
+		if (!response.ok) {
+			throw new Error('Failed to fetch authentication providers');
+		}
+
+		const data = await response.json();
+		return data.providers;
 	}
 
 	/**
-	 * Initiate GitHub OAuth login
-	 * Redirects to GitHub for authentication
+	 * Initiate authentication with a specific provider
+	 * @param providerId - The provider ID (e.g., 'github', 'email', 'mock')
+	 * @param data - Optional data (e.g., { email: 'user@example.com' } for email auth)
 	 */
-	async initiateGitHubLogin(): Promise<void> {
-		window.location.href = '/api/auth/login/github';
-	}
-
-	/**
-	 * Initiate email magic link login
-	 * Sends a magic link to the user's email
-	 */
-	async initiateEmailLogin(email: string): Promise<{ success: boolean; message: string }> {
-		const response = await fetch('/api/auth/login/email', {
+	async initiateAuth(
+		providerId: string,
+		data?: Record<string, string>
+	): Promise<{ url?: string; message?: string }> {
+		const response = await fetch('/api/auth/initiate', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ email })
+			body: JSON.stringify({ providerId, data })
 		});
 
-		const data = await response.json();
+		const result = await response.json();
 
 		if (!response.ok) {
-			throw new Error(data.message || 'Failed to send magic link');
+			throw new Error(result.message || 'Failed to initiate authentication');
 		}
 
-		return data;
+		// If URL is returned (OAuth), redirect to it
+		if (result.url) {
+			window.location.href = result.url;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Initiate login by redirecting to auth provider
+	 * @deprecated Use initiateAuth() with a specific provider ID instead
+	 */
+	async initiateLogin(): Promise<void> {
+		// Fetch providers and use the first one for backwards compatibility
+		const providers = await this.getAvailableProviders();
+		if (providers.length > 0) {
+			await this.initiateAuth(providers[0].id);
+		}
 	}
 
 	/**
