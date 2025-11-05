@@ -11,7 +11,6 @@
 	let { open = $bindable(), onOpenChange, onImport }: Props = $props();
 
 	let fileInput = $state<HTMLInputElement | null>(null);
-	let selectedFile = $state<File | null>(null);
 	let error = $state<string | null>(null);
 
 	function handleBackdropClick(event: MouseEvent) {
@@ -22,39 +21,37 @@
 
 	function handleClose() {
 		onOpenChange(false);
-		selectedFile = null;
 		error = null;
+		// Reset file input
+		if (fileInput) {
+			fileInput.value = '';
+		}
 	}
 
 	function handleFileSelect(event: Event) {
 		const target = event.target as HTMLInputElement;
 		const file = target.files?.[0];
 
-		if (file) {
-			// Validate file type
-			const validTypes = ['.md', '.txt', '.markdown'];
-			const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+		if (!file) return;
 
-			if (!validTypes.includes(fileExtension) && !file.type.startsWith('text/')) {
-				error = 'Please select a plaintext file (.md, .txt, etc.)';
-				selectedFile = null;
-				return;
-			}
+		// Validate file type
+		const validTypes = ['.md', '.txt', '.markdown'];
+		const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
 
-			selectedFile = file;
-			error = null;
+		if (!validTypes.includes(fileExtension) && !file.type.startsWith('text/')) {
+			error = 'Please select a plaintext file (.md, .txt, etc.)';
+			return;
 		}
-	}
 
-	function handleImport() {
-		if (!selectedFile) return;
+		error = null;
 
+		// Immediately read and import the file
 		const reader = new FileReader();
 
 		reader.onload = (e) => {
 			const content = e.target?.result as string;
 			if (content !== null && content !== undefined) {
-				onImport(content, selectedFile!.name);
+				onImport(content, file.name);
 				handleClose();
 			}
 		};
@@ -63,7 +60,7 @@
 			error = 'Failed to read file. Please try again.';
 		};
 
-		reader.readAsText(selectedFile);
+		reader.readAsText(file);
 	}
 
 	function triggerFileInput() {
@@ -131,17 +128,8 @@
 					onkeydown={(e) => e.key === 'Enter' && triggerFileInput()}
 				>
 					<Upload class="mx-auto mb-2 h-8 w-8 text-neutral-400 dark:text-neutral-500" />
-					{#if selectedFile}
-						<p class="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-							{selectedFile.name}
-						</p>
-						<p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-							{(selectedFile.size / 1024).toFixed(2)} KB
-						</p>
-					{:else}
-						<p class="text-sm text-neutral-600 dark:text-neutral-400">Click to select a file</p>
-						<p class="mt-1 text-xs text-neutral-500 dark:text-neutral-500">or drag and drop</p>
-					{/if}
+					<p class="text-sm text-neutral-600 dark:text-neutral-400">Click to select a file</p>
+					<p class="mt-1 text-xs text-neutral-500 dark:text-neutral-500">or drag and drop</p>
 				</div>
 
 				<!-- Error message -->
@@ -150,18 +138,6 @@
 						{error}
 					</p>
 				{/if}
-			</div>
-
-			<!-- Actions -->
-			<div class="mt-6 flex justify-end gap-2">
-				<Button variant="outline" onclick={handleClose}>Cancel</Button>
-				<Button
-					onclick={handleImport}
-					disabled={!selectedFile}
-					class="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
-				>
-					Import
-				</Button>
 			</div>
 		</div>
 	</div>
