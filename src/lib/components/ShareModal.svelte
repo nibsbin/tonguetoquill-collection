@@ -21,17 +21,15 @@
 </script>
 
 {#if open}
-	<div
-		class="absolute inset-0 z-40 flex items-center justify-center bg-black/40 p-4"
-		onclick={handleBackdropClick}
-		role="presentation"
-	>
+	<!-- Backdrop - only covers the preview pane -->
+	<div class="absolute inset-0 z-40 bg-black/40" onclick={handleBackdropClick} role="presentation">
+		<!-- Dialog Content - centered in preview pane -->
 		<div
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="share-dialog-title"
 			tabindex="-1"
-			class="relative w-full max-w-md rounded-lg border border-border bg-surface-elevated p-6 shadow-lg"
+			class="absolute top-1/2 left-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-surface-elevated p-6 shadow-lg"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.key === 'Escape' && handleClose()}
 		>
