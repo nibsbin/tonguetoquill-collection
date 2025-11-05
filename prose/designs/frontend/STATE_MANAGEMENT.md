@@ -228,7 +228,7 @@ See [DOCUMENT_LOADING_UX.md](./DOCUMENT_LOADING_UX.md) for auto-save behavior wh
 
 **Implementation**:
 
-- Debounced saves (7 seconds after last keystroke)
+- Debounced saves (4000ms / 4 seconds after last keystroke, configurable)
 - Cancel pending saves on unmount
 - Optimistic UI updates
 - Error handling and rollback
@@ -241,11 +241,12 @@ The AutoSave class is implemented in `src/lib/utils/auto-save.svelte.ts`:
 
 ```typescript
 class AutoSave {
-	// 7-second debounce timer
+	// 4-second default debounce timer (configurable)
 	// Save status tracking (idle, saving, saved, error)
 	// Support for both guest (localStorage) and authenticated (API) modes
 	// Configurable debounce interval
 	// Proper cleanup of timers
+	// Manual save support (Ctrl/Cmd+S bypasses debounce)
 }
 ```
 

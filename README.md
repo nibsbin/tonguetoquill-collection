@@ -133,7 +133,7 @@ Benefits:
 - ✅ User authentication
 - ✅ Markdown editor with formatting toolbar
 - ✅ Live preview pane
-- ✅ Auto-save with 7-second debounce
+- ✅ Auto-save with 4-second debounce
 - ✅ Document list (create, open, delete)
 - ✅ Mobile-responsive layout
 - ✅ Section 508 compliance

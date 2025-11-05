@@ -17,10 +17,25 @@ Tonguetoquill is a professional single-page application built with SvelteKit 5, 
 
 ### Route Structure
 
-The application uses a simple, flat route structure without route groups:
+The application uses a simple, flat route structure:
 
-- `src/routes/+page.svelte` → Main application at `/`
-- `src/routes/api/*` → API endpoints for backend communication
+```
+src/routes/
+├── +layout.svelte         # Root layout component
+├── +page.svelte           # Main application page at /
+└── api/                   # API endpoints
+    ├── auth/              # Authentication endpoints
+    │   ├── login/
+    │   ├── callback/
+    │   ├── me/
+    │   ├── logout/
+    │   ├── refresh/
+    │   ├── providers/
+    │   └── email/
+    └── documents/         # Document CRUD endpoints
+        ├── +server.ts     # List and create documents
+        └── [id]/          # Individual document operations
+```
 
 ### Main Routes
 
@@ -28,8 +43,8 @@ The application uses a simple, flat route structure without route groups:
 
 - Guest users can explore the app and create documents (stored in browser localStorage only)
 - Authenticated users get full functionality with server persistence
-- Shows authentication prompt banner for features requiring authentication
-- Login button visible in top menu for guests
+- Login/profile button visible in top menu
+- Seamless transition between guest and authenticated modes
 
 **Authentication Flow**:
 
@@ -41,16 +56,16 @@ See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for complete OAut
 
 - Access to app interface at `/`
 - Can create and edit documents
-- Documents stored in browser localStorage only
-- "Sign in to save your work" banner displayed
+- Documents stored in browser localStorage only (5MB limit)
 - Limited to browser-local functionality
+- No cross-device sync
 
 **Authenticated Mode** (After Login):
 
 - Full document CRUD with server persistence
 - Documents synced to user account
-- Option to import localStorage documents on first login
 - Access to all features without restrictions
+- Cross-device document access
 
 ### Data Loading Strategy
 
