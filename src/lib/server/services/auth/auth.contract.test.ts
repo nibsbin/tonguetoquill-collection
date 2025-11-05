@@ -10,8 +10,8 @@ import { AuthError } from '$lib/services/auth/types';
 describe('AuthContract - MockAuthProvider', () => {
 	let authProvider: MockAuthProvider;
 
-	beforeEach(() => {
-		authProvider = new MockAuthProvider('test-secret');
+	beforeEach(async () => {
+		authProvider = await MockAuthProvider.create();
 		authProvider.clearAllData();
 	});
 

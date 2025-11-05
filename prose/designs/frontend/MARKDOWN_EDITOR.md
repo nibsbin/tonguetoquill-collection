@@ -459,7 +459,7 @@ Lezer parser updates incrementally:
 
 Per [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md):
 
-- 7-second debounce after last keystroke
+- 4-second debounce after last keystroke (configurable)
 - Editor content changes trigger auto-save timer
 - Manual save (Ctrl/Cmd+S) bypasses debounce
 - Save status indicator updates in TopMenu

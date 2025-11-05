@@ -188,7 +188,7 @@ When a user selects a different document while the current document has unsaved 
 
 **Existing Auto-Save Behavior (from STATE_MANAGEMENT.md):**
 
-- 7-second debounce after last keystroke
+- 4-second debounce after last keystroke (4000ms, configurable)
 - Respects user's auto-save preference
 - Tracks save status (idle, saving, saved, error)
 

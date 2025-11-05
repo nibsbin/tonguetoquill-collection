@@ -92,7 +92,47 @@ Robust, maintainable approach to syntax highlighting for QuillMark's extended ma
 
 Feature-based component organization with co-located tests and optional styles. Defines directory structure, file naming conventions, and testing patterns.
 
-**Topics**: Feature folders (Sidebar, TopMenu, Editor, Preview), file structure per component, testing strategy, migration from flat structure, import patterns
+**Topics**: Feature folders (Sidebar, TopMenu, Editor, Preview, DocumentList, RulerOverlay), file structure per component, testing strategy, import patterns
+
+---
+
+### [DOCUMENT_LOADING_UX.md](./DOCUMENT_LOADING_UX.md)
+
+**Document Loading User Experience**
+
+User experience patterns for loading, switching, and managing documents. Covers auto-save behavior during transitions, loading states, and error handling.
+
+**Topics**: Document switching flow, auto-save before switch, loading states, error recovery, optimistic updates
+
+---
+
+### [LOGIN_PROFILE_UI.md](./LOGIN_PROFILE_UI.md)
+
+**Login and Profile UI Integration**
+
+Authentication UI integration in the sidebar and top menu, including sign-in flows, user profile display, and provider selection.
+
+**Topics**: Guest mode UI, authenticated user display, login popover, profile management, provider selection, responsive behavior
+
+---
+
+### [SIDEBAR_BUTTON_SLOT_REFACTOR.md](./SIDEBAR_BUTTON_SLOT_REFACTOR.md)
+
+**Sidebar Button Slot Architecture**
+
+Three-layer nested button architecture for consistent sizing and centering across collapsed and expanded sidebar states.
+
+**Topics**: Button slot container, button element, icon element, semantic tokens, centering strategy, reusable component pattern
+
+---
+
+### [ERROR_DISPLAY.md](./ERROR_DISPLAY.md)
+
+**Error Display and User Feedback**
+
+Error handling patterns, toast notifications, inline error display, and user feedback mechanisms throughout the application.
+
+**Topics**: Toast notifications (svelte-sonner), error boundaries, validation errors, network errors, user-friendly messaging
 
 ### [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md)
 
@@ -256,7 +296,7 @@ See [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) for detailed patterns.
 
 See [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md#auto-save-behavior) for complete specification.
 
-- 7-second debounce after last keystroke
+- 4-second debounce after last keystroke (configurable)
 - Manual save via Ctrl/Cmd+S
 - Conflict resolution: last write wins
 
@@ -281,7 +321,7 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 - Single-user document editing
 - Markdown editor with formatting toolbar
 - Live preview pane
-- Auto-save with 7-second debounce
+- Auto-save with 4-second debounce
 - Document list (create, open, delete)
 - User authentication
 - Classification message (toast notification)
