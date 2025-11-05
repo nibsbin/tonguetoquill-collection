@@ -20,6 +20,7 @@
 	import DropdownMenuItem from '$lib/components/ui/dropdown-menu-item.svelte';
 	import type { SaveStatus } from '$lib/utils/auto-save.svelte';
 	import { rulerStore } from '$lib/stores/ruler.svelte';
+	import ShareModal from '$lib/components/ShareModal.svelte';
 
 	type TopMenuProps = {
 		fileName: string;
@@ -47,6 +48,7 @@
 	let isEditing = $state(false);
 	let title = $state(fileName);
 	let inputEl = $state<HTMLInputElement | null>(null);
+	let shareModalOpen = $state(false);
 
 	$effect(() => {
 		if (!isEditing) {
@@ -111,8 +113,7 @@
 	}
 
 	function handleShare() {
-		// TODO: Open share dialog
-		console.log('Share document');
+		shareModalOpen = true;
 	}
 
 	function handleDocumentInfo() {
@@ -281,3 +282,5 @@
 		</DropdownMenu>
 	</div>
 </div>
+
+<ShareModal open={shareModalOpen} onOpenChange={(open) => (shareModalOpen = open)} />
