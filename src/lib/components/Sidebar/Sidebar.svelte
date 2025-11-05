@@ -190,14 +190,14 @@
 				<Button
 					variant="ghost"
 					size="icon"
-					class="fixed top-2 left-2 z-40 text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
+					class="text-muted-foreground hover:bg-accent hover:text-foreground fixed top-2 left-2 z-40 lg:hidden"
 				>
 					<Menu class="h-5 w-5" />
 				</Button>
 			</SheetTrigger>
-			<SheetContent side="left" class="flex w-72 flex-col bg-background p-0 text-foreground">
+			<SheetContent side="left" class="bg-background text-foreground flex w-72 flex-col p-0">
 				<!-- Hamburger Menu and Title -->
-				<div class="relative flex items-center border-b border-border">
+				<div class="border-border relative flex items-center border-b">
 					<SidebarButtonSlot
 						icon={Menu}
 						{isExpanded}
@@ -206,7 +206,7 @@
 					/>
 
 					<span
-						class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground italic transition-opacity duration-300 {isExpanded
+						class="text-foreground pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap italic transition-opacity duration-300 {isExpanded
 							? 'opacity-100'
 							: 'opacity-0'}"
 					>
@@ -219,7 +219,7 @@
 					<div>
 						<div
 							class={documentStore.documents.length > 0 && isExpanded
-								? 'border-b border-border'
+								? 'border-border border-b'
 								: ''}
 						>
 							<SidebarButtonSlot
@@ -248,7 +248,7 @@
 
 								<!-- Bottom gradient fade -->
 								<div
-									class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
+									class="from-background pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t to-transparent"
 								></div>
 							</div>
 						{/if}
@@ -256,7 +256,7 @@
 				</div>
 
 				<!-- User Profile and Settings Section -->
-				<div class="border-t border-border">
+				<div class="border-border border-t">
 					<!-- Sign-In Button (Guest Mode) -->
 					{#if !user}
 						<Popover bind:open={loginPopoverOpen}>
@@ -271,7 +271,7 @@
 							<PopoverContent
 								side="right"
 								align="start"
-								class="border-border bg-surface-elevated p-0 text-foreground"
+								class="border-border bg-surface-elevated text-foreground p-0"
 							>
 								<LoginPopover onClose={() => (loginPopoverOpen = false)} />
 							</PopoverContent>
@@ -303,13 +303,13 @@
 						<PopoverContent
 							side="right"
 							align="end"
-							class="w-64 border-border bg-surface-elevated p-0 text-foreground"
+							class="border-border bg-surface-elevated text-foreground w-64 p-0"
 						>
 							<div class="p-4">
-								<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
+								<h3 class="mb-4 text-lg font-semibold">Settings</h3>
 
 								<div class="space-y-4">
-									<div class="flex items-center justify-between border-b border-border pb-3">
+									<div class="border-border flex items-center justify-between border-b pb-3">
 										<Label for="dark-mode" class="text-muted-foreground">Dark Mode</Label>
 										<Switch
 											id="dark-mode"
@@ -346,13 +346,13 @@
 {:else}
 	<!-- Desktop Sidebar -->
 	<div
-		class="flex h-screen flex-col overflow-hidden border-r border-border bg-background text-foreground transition-all duration-300"
+		class="border-border bg-background text-foreground flex h-screen flex-col overflow-hidden border-r transition-all duration-300"
 		style="width: {isExpanded
 			? 'var(--sidebar-expanded-width)'
 			: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 	>
 		<!-- Hamburger Menu and Title -->
-		<div class="relative flex items-center border-b border-border">
+		<div class="border-border relative flex items-center border-b">
 			<SidebarButtonSlot
 				icon={Menu}
 				{isExpanded}
@@ -361,7 +361,7 @@
 			/>
 
 			<span
-				class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground italic transition-opacity duration-300 {isExpanded
+				class="text-foreground pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap italic transition-opacity duration-300 {isExpanded
 					? 'opacity-100'
 					: 'opacity-0'}"
 			>
@@ -373,7 +373,7 @@
 		<div class="flex-1 overflow-hidden">
 			<div>
 				<div
-					class={documentStore.documents.length > 0 && isExpanded ? 'border-b border-border' : ''}
+					class={documentStore.documents.length > 0 && isExpanded ? 'border-border border-b' : ''}
 				>
 					<SidebarButtonSlot
 						icon={Plus}
@@ -401,7 +401,7 @@
 
 						<!-- Bottom gradient fade -->
 						<div
-							class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
+							class="from-background pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t to-transparent"
 						></div>
 					</div>
 				{/if}
@@ -409,7 +409,7 @@
 		</div>
 
 		<!-- User Profile and Settings Section -->
-		<div class="border-t border-border">
+		<div class="border-border border-t">
 			<!-- Sign-In Button (Guest Mode) -->
 			{#if !user}
 				<Popover bind:open={loginPopoverOpen}>
@@ -424,7 +424,7 @@
 					<PopoverContent
 						side="right"
 						align="start"
-						class="border-border bg-surface-elevated p-0 text-foreground"
+						class="border-border bg-surface-elevated text-foreground p-0"
 					>
 						<LoginPopover onClose={() => (loginPopoverOpen = false)} />
 					</PopoverContent>
@@ -456,13 +456,13 @@
 				<PopoverContent
 					side="right"
 					align="end"
-					class="w-64 border-border bg-surface-elevated p-0 text-foreground"
+					class="border-border bg-surface-elevated text-foreground w-64 p-0"
 				>
 					<div class="p-4">
-						<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
+						<h3 class="text-foreground mb-4 text-lg font-semibold">Settings</h3>
 
 						<div class="space-y-4">
-							<div class="flex items-center justify-between border-b border-border pb-3">
+							<div class="border-border flex items-center justify-between border-b pb-3">
 								<Label for="dark-mode" class="text-muted-foreground">Dark Mode</Label>
 								<Switch
 									id="dark-mode"
@@ -536,12 +536,12 @@
 		{#if user}
 			<dl class="space-y-4">
 				<div>
-					<dt class="text-sm font-medium text-muted-foreground">Email</dt>
+					<dt class="text-muted-foreground text-sm font-medium">Email</dt>
 					<dd class="text-foreground">{user.email}</dd>
 				</div>
 				<div>
-					<dt class="text-sm font-medium text-muted-foreground">User ID</dt>
-					<dd class="font-mono text-sm text-foreground">{user.id}</dd>
+					<dt class="text-muted-foreground text-sm font-medium">User ID</dt>
+					<dd class="text-foreground font-mono text-sm">{user.id}</dd>
 				</div>
 			</dl>
 		{/if}
