@@ -479,7 +479,7 @@ This section outlines the centralized theme architecture for tonguetoquill-web t
 
 #### CSS Custom Properties Foundation
 
-All theme tokens are defined as CSS custom properties in `src/app.css`, following the Tailwind CSS 4.0 `@theme inline` pattern.
+All theme tokens are defined as CSS custom properties in `src/app.css` using standard `:root` and `.dark` selectors. Tailwind CSS v4 automatically reads these CSS custom properties and makes them available as utility classes.
 
 **Rationale**: CSS custom properties provide:
 
@@ -487,6 +487,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 - Access from both CSS (Tailwind) and JavaScript (CodeMirror)
 - Browser-native support with excellent performance
 - Standard CSS cascade and inheritance behavior
+- Direct integration with Tailwind v4 without intermediate mapping layers
 
 #### Theme Token Structure
 
@@ -512,6 +513,8 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 
 **Dark Theme**: Dark mode class overrides with inverted values (dark backgrounds, light text)
 
+**Shared Values**: Colors that are identical across both themes are defined only once in `:root` to avoid duplication and simplify maintenance. Examples include destructive colors and some neutral tones that work well in both contexts.
+
 **Zinc Palette Mapping**: Current zinc color scale maps to semantic tokens:
 
 - zinc-900 → background (dark mode)
@@ -524,15 +527,39 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 
 #### Tailwind CSS Integration
 
-**Approach**: Use Tailwind's `@theme inline` directive to map CSS custom properties to Tailwind utility classes.
+**Approach**: Tailwind CSS v4 directly reads CSS custom properties from `:root` and `.dark` selectors, automatically generating utility classes without requiring intermediate configuration.
 
 **Benefits**:
 
 - Enables usage of semantic tokens in standard Tailwind classes (e.g., `bg-background`, `text-foreground`)
 - Maintains consistency between custom properties and utility classes
 - Allows theme switching without rebuilding CSS
+- Eliminates redundant mapping and configuration overhead
+- Simplifies maintenance with a single source of truth
 
-**Pattern**: Map each CSS custom property to a corresponding Tailwind theme value, creating a bidirectional relationship between design tokens and utility classes.
+**Pattern**: CSS custom properties defined in `app.css` are automatically available as Tailwind utilities. For example, `--color-background` becomes usable as `bg-background` and `text-background` classes.
+
+#### CSS Structure Best Practices
+
+**Selector Organization**: The `app.css` file follows a strict organization pattern for maintainability:
+
+1. **`:root` Block**: Contains only CSS custom property definitions (CSS variables), never nested selectors or style rules
+2. **`.dark` Class**: Contains only CSS custom property overrides for dark theme
+3. **Global Selectors**: Placed at root level (not nested), including utility classes, element selectors, and component-specific styles
+4. **Font Family**: Applied to `body` selector rather than `:root` to follow CSS best practices
+
+**Invalid Patterns to Avoid**:
+
+- Nesting class selectors or element selectors inside `:root` or `.dark` blocks
+- Applying non-custom-property styles to `:root` (like `font-family`)
+- Using `!important` flags unnecessarily
+
+**Rationale**: This structure ensures:
+
+- Clear separation between design tokens (variables) and style rules
+- Easier maintenance and refactoring
+- Better compatibility with CSS processing tools
+- Reduced specificity conflicts
 
 #### CodeMirror Theme Integration
 
