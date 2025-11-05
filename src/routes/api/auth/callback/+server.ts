@@ -3,7 +3,7 @@
  * OAuth callback endpoint that exchanges authorization code for tokens
  */
 
-import { redirect } from '@sveltejs/kit';
+import { isRedirect, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { authService } from '$lib/server/services/auth';
 import { setAuthCookies } from '$lib/server/utils/api';
@@ -14,7 +14,8 @@ export const GET: RequestHandler = async (event) => {
 
 		if (!code) {
 			// No code provided, redirect to login
-			throw redirect(302, '/');
+			console.warn('No authorization code provided in callback');
+			redirect(302, '/');
 		}
 
 		// Exchange code for tokens
@@ -24,13 +25,13 @@ export const GET: RequestHandler = async (event) => {
 		setAuthCookies(event, result.session.access_token, result.session.refresh_token);
 
 		// Redirect to home page after successful authentication
-		throw redirect(302, '/');
+		console.log('Authentication successful, redirecting to home page');
+		redirect(302, '/');
 	} catch (error) {
-		// If it's already a redirect, re-throw it without logging
-		if (error instanceof Response && error.status >= 300 && error.status < 400) {
+		// Ignore expected redirect error
+		if (isRedirect(error)) {
 			throw error;
 		}
-
 		// Otherwise, log the actual error with details and redirect to home with error flag
 		console.error('Authentication callback error:', error);
 		if (error instanceof Error) {
