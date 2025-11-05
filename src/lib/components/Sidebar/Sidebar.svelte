@@ -175,7 +175,7 @@
 		</div>
 
 		<span
-			class="pointer-events-none absolute left-0 right-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
 			style="transform: translateY(4px);"
@@ -233,7 +233,7 @@
 		<!-- Sign-In Button (Guest Mode) -->
 		{#if !user}
 			<Popover bind:open={loginPopoverOpen}>
-				<PopoverTrigger class="w-full">
+				<PopoverTrigger asChild>
 					<SidebarButtonSlot
 						icon={LogIn}
 						label="Sign in"
@@ -265,7 +265,7 @@
 
 		<!-- Settings Gear Button -->
 		<Popover bind:open={popoverOpen}>
-			<PopoverTrigger class="w-full">
+			<PopoverTrigger asChild>
 				<SidebarButtonSlot
 					icon={Settings}
 					label="Settings"
