@@ -7,6 +7,7 @@
 	import { Preview } from '$lib/components/Preview';
 	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
 	import ImportFileDialog from '$lib/components/ImportFileDialog.svelte';
+	import ShareModal from '$lib/components/ShareModal.svelte';
 
 	interface Props {
 		documentId: string;
@@ -17,6 +18,8 @@
 		onDocumentInfoChange?: (open: boolean) => void;
 		showImportDialog?: boolean;
 		onImportDialogChange?: (open: boolean) => void;
+		showShareModal?: boolean;
+		onShareModalChange?: (open: boolean) => void;
 	}
 
 	let {
@@ -27,7 +30,9 @@
 		showDocumentInfo = false,
 		onDocumentInfoChange,
 		showImportDialog = false,
-		onImportDialogChange
+		onImportDialogChange,
+		showShareModal = false,
+		onShareModalChange
 	}: Props = $props();
 
 	let content = $state('');
@@ -297,6 +302,11 @@
 						onOpenChange={onImportDialogChange}
 						onImport={handleImport}
 					/>
+				{/if}
+
+				<!-- Share Modal (scoped to preview pane) -->
+				{#if showShareModal !== undefined && onShareModalChange}
+					<ShareModal open={showShareModal} onOpenChange={onShareModalChange} />
 				{/if}
 			</div>
 		</div>
