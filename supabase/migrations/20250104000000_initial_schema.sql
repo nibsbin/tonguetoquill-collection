@@ -2,9 +2,10 @@
 -- Creates Users and Documents tables with indexes and constraints
 
 -- Users Table
--- Stores core identity information and flexible profile data
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    -- Foreign Key referencing the auth.users table.
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+
     email VARCHAR(255) NOT NULL UNIQUE,
     dodid_full VARCHAR(16) UNIQUE,
     profile JSONB,
