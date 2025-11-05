@@ -165,17 +165,20 @@
 >
 	<!-- Hamburger Menu and Title -->
 	<div class="relative flex items-center">
-		<SidebarButtonSlot
-			icon={Menu}
-			{isExpanded}
-			onclick={handleToggle}
-			ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-		/>
+		<div class="relative flex-shrink-0" style="width: 48px; z-index: 10;">
+			<SidebarButtonSlot
+				icon={Menu}
+				{isExpanded}
+				onclick={handleToggle}
+				ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+			/>
+		</div>
 
 		<span
-			class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute left-0 right-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
+			style="transform: translateY(4px);"
 		>
 			<span class="">
 				<span style="color: #3C79AA;">tongueto</span>quill
@@ -383,6 +386,7 @@
 		max-height: 48px;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		padding: 4px;
 	}
 
@@ -391,11 +395,7 @@
 		height: 30px;
 		flex-shrink: 0;
 		transition: transform 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
-		transform: translate(0, -4px);
-	}
-
-	.sidebar-logo-slot.expanded .sidebar-logo {
-		transform: translate(125px, -4px);
+		transform: translateY(-4px);
 	}
 
 	/* Legacy styles - kept for document list items */
