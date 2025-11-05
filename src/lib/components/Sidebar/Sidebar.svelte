@@ -164,7 +164,7 @@
 		: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 >
 	<!-- Hamburger Menu and Title -->
-	<div class="relative flex items-center border-b border-border">
+	<div class="relative flex items-center">
 		<SidebarButtonSlot
 			icon={Menu}
 			{isExpanded}
@@ -173,12 +173,19 @@
 		/>
 
 		<span
-			class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground italic transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
 		>
-			Tonguetoquill
+			<span class="">
+				<span style="color: #3C79AA;">tongueto</span>quill
+			</span>
 		</span>
+	</div>
+
+	<!-- Logo Signature -->
+	<div class="sidebar-logo-slot border-b border-border" class:expanded={isExpanded}>
+		<img src="/logo.svg" alt="Tonguetoquill logo" aria-hidden="true" class="sidebar-logo" />
 	</div>
 
 	<!-- Menu Items -->
@@ -369,6 +376,28 @@
 </Dialog>
 
 <style>
+	/* Logo signature slot */
+	.sidebar-logo-slot {
+		height: 48px;
+		min-height: 48px;
+		max-height: 48px;
+		display: flex;
+		align-items: center;
+		padding: 4px;
+	}
+
+	.sidebar-logo {
+		width: 30px;
+		height: 30px;
+		flex-shrink: 0;
+		transition: transform 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
+		transform: translate(0, -4px);
+	}
+
+	.sidebar-logo-slot.expanded .sidebar-logo {
+		transform: translate(125px, -4px);
+	}
+
 	/* Legacy styles - kept for document list items */
 	:global(.sidebar-icon-small) {
 		width: calc(var(--sidebar-icon-size) * 0.6);
