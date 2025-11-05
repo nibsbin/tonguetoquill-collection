@@ -26,19 +26,15 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 
 ### Dimensions
 
-**Desktop (≥1024px)**:
+**All Screen Sizes**:
 
 - **Expanded width**: 18rem (288px / w-72) - updated October 2025
 - **Collapsed width**: 3rem (48px / w-12)
 - **Transition**: 300ms duration with cubic-bezier(0.165, 0.85, 0.45, 1) easing
 
-**Mobile (<1024px)**:
-
-- Full-screen drawer overlay
-- Width: 18rem (288px / w-72) when open
-- Slides in from left with shadow
-
 **Implementation Status**: ✅ Implemented (October 2025). See `prose/debriefs/sidebar-redesign.md`
+
+**Note**: The sidebar uses the same persistent design across all screen sizes. There is no separate mobile drawer implementation.
 
 ### Structure
 
@@ -254,22 +250,13 @@ See [LOGIN_PROFILE_UI.md](./LOGIN_PROFILE_UI.md) for detailed authentication UI 
 
 ## Responsive Behavior
 
-### Desktop (≥1024px)
+### All Screen Sizes
 
-- Sidebar persistent and fixed/sticky
+- Sidebar is persistent and fixed/sticky across all screen sizes
 - Width transitions smoothly between collapsed (48px) and expanded (288px)
 - Border on right edge: `border-r-0.5` or `border-r`
-- Shadow: `shadow-lg` on desktop (optional)
-
-### Tablet/Mobile (<1024px)
-
-- Sidebar becomes full-screen drawer overlay
-- Activated by hamburger menu button (top-left)
-- Width: 18rem (288px) when open
-- Overlay background with opacity
-- Slides in from left with transition
-- Shadow: `shadow-lg` for depth
-- Z-index: `z-sidebar` (high value)
+- Users can toggle between collapsed and expanded states using the toggle button
+- On smaller screens, the sidebar remains functional in collapsed mode to save horizontal space
 
 ## Accessibility
 
@@ -336,22 +323,14 @@ See [LOGIN_PROFILE_UI.md](./LOGIN_PROFILE_UI.md) for detailed authentication UI 
 - Display recent items with scrolling
 - Show all section headers and dividers
 
-### Mobile Considerations
+### Touch Optimization
 
-**Drawer Pattern**:
+**Mobile and Touch Devices**:
 
-- Hamburger menu trigger: fixed position, high z-index
-- Drawer slides in from left edge
-- Full height, 288px width
-- Semi-transparent backdrop overlay
-- Close triggers: backdrop click, escape key, navigation
-
-**Touch Optimization**:
-
-- Minimum 44x44px touch targets
+- Minimum 44x44px touch targets for all interactive elements
 - Adequate spacing between interactive elements
-- Prevent accidental activation
-- Body scroll lock when drawer is open
+- Prevent accidental activation with proper touch target sizing
+- Sidebar can be collapsed on mobile devices to maximize content area
 
 ### Performance
 
@@ -514,10 +493,9 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
    - Hover state improvements
    - Focus indicators
 
-5. **Phase 5**: Mobile refinements
-   - Adjust drawer behavior
+5. **Phase 5**: Touch device refinements
    - Optimize touch targets
-   - Test gestures
+   - Test gestures on mobile devices
 
 ## Future Enhancements
 

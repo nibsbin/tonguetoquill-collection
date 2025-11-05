@@ -276,7 +276,7 @@
 					? mobileView === 'preview'
 						? ''
 						: 'hidden'
-					: 'hidden lg:block'}"
+					: ''}"
 			>
 				<Preview markdown={debouncedContent} />
 
