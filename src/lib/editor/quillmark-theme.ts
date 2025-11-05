@@ -65,6 +65,12 @@ export function createQuillmarkTheme(): Extension {
 			// YAML boolean values
 			'.cm-quillmark-yaml-bool': {
 				color: getCssVar('--color-foreground')
+			},
+
+			// YAML comments
+			'.cm-quillmark-yaml-comment': {
+				color: getCssVar('--color-syntax-comment'),
+				fontStyle: 'italic'
 			}
 		},
 		{ dark: isDark }
