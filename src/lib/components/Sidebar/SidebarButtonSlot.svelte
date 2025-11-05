@@ -57,7 +57,7 @@
 	 * 3. Content: Icon (24px) + optional label, with internal spacing
 	 */
 
-	/* Container: Exact 48px square */
+	/* Container: Exact 48px square with 4px padding around button */
 	.sidebar-button-slot {
 		width: 100%;
 		height: 48px;
@@ -65,12 +65,12 @@
 		max-height: 48px;
 		display: flex;
 		margin: 0;
-		padding: 0;
+		padding: 0.25rem; /* 4px padding creates 40px × 40px button area */
 		box-sizing: border-box;
 		flex-shrink: 0;
 	}
 
-	/* Button: Fills container completely */
+	/* Button: Fills the 40px × 40px area inside padded slot */
 	.sidebar-button {
 		width: 100%;
 		height: 100%;
@@ -78,7 +78,7 @@
 		align-items: center;
 		justify-content: flex-start;
 		gap: 0.5rem;
-		padding: 0 0.75rem; /* 12px horizontal padding */
+		padding: 0 0.5rem; /* Horizontal padding for content */
 		margin: 0;
 		border: none;
 		background: transparent;
@@ -87,7 +87,7 @@
 		font-size: 0.875rem; /* 14px */
 		font-weight: 500;
 		cursor: pointer;
-		border-radius: 0;
+		border-radius: 0.375rem; /* rounded-md for inset button */
 		transition:
 			background-color 0.2s,
 			color 0.2s;
