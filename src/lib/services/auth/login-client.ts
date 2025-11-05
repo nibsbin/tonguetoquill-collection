@@ -22,10 +22,12 @@ export class LoginClient {
 	/**
 	 * Get available authentication providers for UI display
 	 * Returns hard-coded provider configurations based on enabled auth methods
+	 *
+	 * Note: With the simplified contract, only OAuth providers (GitHub) are supported.
+	 * Email auth requires OTP/magic link flow which is not yet implemented.
 	 */
 	getAvailableProviders(): AuthProviderConfig[] {
-		// Return available providers - in the future this could be dynamic
-		// For now we support GitHub and Email
+		// Only return OAuth providers that work with the simplified getLoginUrl() contract
 		return [
 			{
 				id: 'github',
@@ -34,14 +36,15 @@ export class LoginClient {
 				oauthProvider: 'github',
 				icon: 'github',
 				requiresInput: false
-			},
-			{
-				id: 'email',
-				type: 'oauth',
-				name: 'Continue with Email',
-				icon: 'mail',
-				requiresInput: false
 			}
+			// Email auth is disabled for now - requires OTP flow implementation
+			// {
+			// 	id: 'email',
+			// 	type: 'oauth',
+			// 	name: 'Continue with Email',
+			// 	icon: 'mail',
+			// 	requiresInput: false
+			// }
 		];
 	}
 
