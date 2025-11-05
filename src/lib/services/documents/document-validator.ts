@@ -66,6 +66,6 @@ export class DocumentValidator {
 	 * Used for content size validation
 	 */
 	static getByteLength(str: string): number {
-		return Buffer.from(str, 'utf-8').length;
+		return new TextEncoder().encode(str).length;
 	}
 }
