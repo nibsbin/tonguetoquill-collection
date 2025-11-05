@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
-	import { toast } from 'svelte-sonner';
+	import { toast } from '$lib/components/ui/sonner';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
 	import { Preview } from '$lib/components/Preview';

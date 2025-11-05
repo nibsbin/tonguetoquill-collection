@@ -16,6 +16,43 @@ Components are organized by feature/domain rather than by file type:
 - **Preview**: Rendered markdown output (may be merged with Editor)
 - **ui**: Reusable UI primitives from shadcn-svelte
 
+### UI Library Architecture
+
+Tonguetoquill follows shadcn-svelte as the **authoritative UI foundation**. Understanding the layered architecture is critical:
+
+**Layer 1: Headless Primitives (bits-ui)**
+
+- bits-ui provides unstyled, accessible, headless components
+- Handles behavior, accessibility, keyboard navigation, focus management
+- Used internally by shadcn-svelte components (not imported directly in feature code)
+
+**Layer 2: Styled Components (shadcn-svelte)**
+
+- Located in `src/lib/components/ui/`
+- Built on top of bits-ui, adding styling and design tokens
+- All imports from bits-ui MUST be within ui/ components only
+- Feature components import from ui/, never from bits-ui directly
+
+**Layer 3: Feature Components**
+
+- Located in feature folders (Sidebar/, Editor/, etc.)
+- Import and compose ui/ components
+- Never import from bits-ui or third-party UI libraries directly
+
+**Third-Party UI Integration Pattern:**
+
+- External UI libraries (e.g., svelte-sonner) must be wrapped in ui/ components
+- Feature code imports from `$lib/components/ui/*`, not from external packages
+- Maintains single source of truth for UI behavior and styling
+- Example: svelte-sonner → ui/sonner.svelte → feature components
+
+**Import Rules:**
+
+- ✓ Feature components → `$lib/components/ui/*`
+- ✓ UI components → `bits-ui`, `svelte-sonner`, etc.
+- ✗ Feature components → `bits-ui` directly
+- ✗ Feature components → `svelte-sonner` directly
+
 ### File Structure Per Component
 
 Each feature folder contains:

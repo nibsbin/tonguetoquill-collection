@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Toaster, toast } from 'svelte-sonner';
+	import { Toaster, toast } from '$lib/components/ui/sonner';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { rulerStore } from '$lib/stores/ruler.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
@@ -155,4 +155,4 @@
 </div>
 
 <!-- Toast Notifications using Sonner -->
-<Toaster theme="dark" />
+<Toaster />
