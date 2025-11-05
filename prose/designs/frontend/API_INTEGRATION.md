@@ -107,7 +107,7 @@ See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for co
 
 **Creating Documents**: API call via DocumentClient, optimistic UI update
 
-**Updating Documents**: Auto-save with debounce (4 seconds), optimistic updates
+**Updating Documents**: Auto-save with debounce (4000ms / 4 seconds default, configurable), optimistic updates
 
 **Deleting Documents**: Confirmation dialog, optimistic removal, rollback on error
 
