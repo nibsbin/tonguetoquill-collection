@@ -13,7 +13,10 @@ export const GET: RequestHandler = async (event) => {
 		const user = await requireAuth(event);
 		const documentId = event.params.id;
 
-		const metadata = await documentService.getDocumentMetadata(user.id, documentId);
+		const metadata = await documentService.getDocumentMetadata({
+			user_id: user.id,
+			document_id: documentId
+		});
 
 		return json(metadata);
 	} catch (error) {

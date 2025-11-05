@@ -12,6 +12,7 @@ This document defines the design for a database adapter that integrates Supabase
 **KISS - Keep It Simple, Stupid**
 
 The Supabase database adapter should:
+
 - Use official Supabase libraries (don't reinvent the wheel)
 - Delegate all database operations to Supabase client (minimal custom logic)
 - Follow the existing DocumentServiceContract interface (no interface changes)
@@ -31,11 +32,13 @@ The Supabase Database Adapter is a server-side implementation of the DocumentSer
 5. **Type Safety**: TypeScript support with proper typing
 
 **What It Is:**
+
 - A thin adapter between our DocumentServiceContract and Supabase's database API
 - Server-side only (never exposed to client)
 - Production-ready database integration using Supabase managed PostgreSQL
 
 **What It Is NOT:**
+
 - A custom database abstraction layer
 - A client-side service
 - A replacement for Supabase's query builder
@@ -47,6 +50,7 @@ The Supabase Database Adapter is a server-side implementation of the DocumentSer
 The Supabase Database Adapter implements the Adapter pattern to translate between our application's DocumentServiceContract interface and Supabase's database API.
 
 **Flow:**
+
 1. Application Code (API routes)
 2. DocumentServiceContract (interface)
 3. SupabaseDocumentService (implementation)
@@ -56,10 +60,12 @@ The Supabase Database Adapter implements the Adapter pattern to translate betwee
 ### Dependencies
 
 **Required:**
+
 - `@supabase/supabase-js` (v2.x) - Core Supabase client library (already installed)
 
 **Our Approach:**
 We use the **Supabase client** with its query builder to implement our DocumentServiceContract interface. This gives us:
+
 - Perfect fit with existing service contract
 - Type-safe database queries with TypeScript
 - Automatic connection pooling and retry logic
@@ -80,7 +86,7 @@ CREATE TABLE documents (
     content_size_bytes INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    
+
     -- Enforce content size limit (0.5 MB = 524,288 bytes)
     CONSTRAINT check_content_size CHECK (content_size_bytes <= 524288)
 );
@@ -98,11 +104,13 @@ CREATE INDEX idx_documents_owner_created ON documents(owner_id, created_at DESC)
 **Purpose:** Create and configure Supabase client instance for database operations
 
 **Configuration:**
+
 - `SUPABASE_URL`: Project URL (e.g., https://xyz.supabase.co)
 - `SUPABASE_PUBLISHABLE_KEY`: Public anonymous key for API access
 - `SUPABASE_SECRET_KEY`: Service role key for server-side operations (bypasses RLS)
 
 **KISS Approach:**
+
 - Single client instance (singleton pattern)
 - Use environment variables for configuration
 - Use service role key for server-side operations (we handle authorization ourselves)
@@ -110,6 +118,7 @@ CREATE INDEX idx_documents_owner_created ON documents(owner_id, created_at DESC)
 
 **Security Note:**
 Since we perform authorization checks in the service layer (validating owner_id matches user_id), we use the service role key to bypass RLS. This is appropriate because:
+
 - All operations are server-side only
 - Authorization is enforced in the service layer
 - RLS would be redundant with our ownership validation
@@ -120,7 +129,8 @@ Since we perform authorization checks in the service layer (validating owner_id 
 
 **Method:** `createDocument(params: CreateDocumentParams): Promise<Document>`
 
-**Supabase API:** 
+**Supabase API:**
+
 ```typescript
 supabase
   .from('documents')
@@ -130,6 +140,7 @@ supabase
 ```
 
 **KISS Approach:**
+
 - Validate inputs (name length, content size)
 - Calculate content_size_bytes before insertion
 - Use Supabase query builder for insertion
@@ -137,6 +148,7 @@ supabase
 - Map database errors to DocumentError types
 
 **Implementation Details:**
+
 - Generate UUID on database side (DEFAULT gen_random_uuid())
 - Set timestamps on database side (DEFAULT CURRENT_TIMESTAMP)
 - Calculate content_size_bytes in service layer (UTF-8 byte count)
@@ -149,16 +161,18 @@ supabase
 **Method:** `getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetadata>`
 
 **Supabase API:**
+
 ```typescript
 supabase
-  .from('documents')
-  .select('id, owner_id, name, content_size_bytes, created_at, updated_at')
-  .eq('id', documentId)
-  .eq('owner_id', userId)
-  .single()
+	.from('documents')
+	.select('id, owner_id, name, content_size_bytes, created_at, updated_at')
+	.eq('id', documentId)
+	.eq('owner_id', userId)
+	.single();
 ```
 
 **KISS Approach:**
+
 - Select only metadata fields (excludes content)
 - Filter by both id AND owner_id for ownership validation
 - PostgreSQL TOAST automatically skips loading content column
@@ -174,16 +188,13 @@ By not selecting the content field, PostgreSQL TOAST mechanism avoids loading th
 **Method:** `getDocumentContent(userId: UUID, documentId: UUID): Promise<Document>`
 
 **Supabase API:**
+
 ```typescript
-supabase
-  .from('documents')
-  .select('*')
-  .eq('id', documentId)
-  .eq('owner_id', userId)
-  .single()
+supabase.from('documents').select('*').eq('id', documentId).eq('owner_id', userId).single();
 ```
 
 **KISS Approach:**
+
 - Select all fields (includes content)
 - Filter by both id AND owner_id for ownership validation
 - Return full document or throw NotFoundError/UnauthorizedError
@@ -195,21 +206,23 @@ supabase
 **Method:** `updateDocumentContent(params: UpdateContentParams): Promise<Document>`
 
 **Supabase API:**
+
 ```typescript
 supabase
-  .from('documents')
-  .update({ 
-    content,
-    content_size_bytes,
-    updated_at: new Date().toISOString()
-  })
-  .eq('id', documentId)
-  .eq('owner_id', userId)
-  .select()
-  .single()
+	.from('documents')
+	.update({
+		content,
+		content_size_bytes,
+		updated_at: new Date().toISOString()
+	})
+	.eq('id', documentId)
+	.eq('owner_id', userId)
+	.select()
+	.single();
 ```
 
 **KISS Approach:**
+
 - Validate content size before update
 - Calculate new content_size_bytes
 - Update content, size, and timestamp atomically
@@ -225,20 +238,22 @@ supabase
 **Method:** `updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata>`
 
 **Supabase API:**
+
 ```typescript
 supabase
-  .from('documents')
-  .update({ 
-    name,
-    updated_at: new Date().toISOString()
-  })
-  .eq('id', documentId)
-  .eq('owner_id', userId)
-  .select('id, owner_id, name, content_size_bytes, created_at, updated_at')
-  .single()
+	.from('documents')
+	.update({
+		name,
+		updated_at: new Date().toISOString()
+	})
+	.eq('id', documentId)
+	.eq('owner_id', userId)
+	.select('id, owner_id, name, content_size_bytes, created_at, updated_at')
+	.single();
 ```
 
 **KISS Approach:**
+
 - Validate name (length, trimming)
 - Update name and timestamp
 - Filter by both id AND owner_id for ownership validation
@@ -251,15 +266,13 @@ supabase
 **Method:** `deleteDocument(userId: UUID, documentId: UUID): Promise<void>`
 
 **Supabase API:**
+
 ```typescript
-supabase
-  .from('documents')
-  .delete()
-  .eq('id', documentId)
-  .eq('owner_id', userId)
+supabase.from('documents').delete().eq('id', documentId).eq('owner_id', userId);
 ```
 
 **KISS Approach:**
+
 - Filter by both id AND owner_id for ownership validation
 - Check affected row count to determine if document existed
 - Throw NotFoundError if no rows deleted
@@ -272,23 +285,22 @@ supabase
 **Method:** `listUserDocuments(params: ListDocumentsParams): Promise<DocumentListResult>`
 
 **Supabase API:**
+
 ```typescript
 // Get paginated results
 supabase
-  .from('documents')
-  .select('id, owner_id, name, content_size_bytes, created_at, updated_at')
-  .eq('owner_id', userId)
-  .order('created_at', { ascending: false })
-  .range(offset, offset + limit - 1)
+	.from('documents')
+	.select('id, owner_id, name, content_size_bytes, created_at, updated_at')
+	.eq('owner_id', userId)
+	.order('created_at', { ascending: false })
+	.range(offset, offset + limit - 1);
 
 // Get total count
-supabase
-  .from('documents')
-  .select('*', { count: 'exact', head: true })
-  .eq('owner_id', userId)
+supabase.from('documents').select('*', { count: 'exact', head: true }).eq('owner_id', userId);
 ```
 
 **KISS Approach:**
+
 - Select only metadata fields (TOAST optimization)
 - Order by created_at DESC (newest first)
 - Use range() for pagination (offset-based)
@@ -296,6 +308,7 @@ supabase
 - Default limit 50, max limit 100
 
 **Performance:**
+
 - Uses idx_documents_owner_created index for efficient filtering and sorting
 - TOAST optimization avoids loading content for list view
 - Separate count query allows for efficient pagination
@@ -307,6 +320,7 @@ The adapter maps between Supabase's PostgreSQL data structures and our applicati
 ### Database Column Naming → TypeScript Property Naming
 
 **Database (snake_case) → TypeScript (camelCase):**
+
 - `id` → `id`
 - `owner_id` → `owner_id` (keep as-is for consistency)
 - `name` → `name`
@@ -320,11 +334,13 @@ The adapter maps between Supabase's PostgreSQL data structures and our applicati
 ### Timestamp Handling
 
 **Database → TypeScript:**
+
 - PostgreSQL TIMESTAMPTZ → ISO 8601 string
 - Supabase client automatically converts to ISO 8601 format
 - No manual conversion needed
 
 **TypeScript → Database:**
+
 - ISO 8601 string → PostgreSQL TIMESTAMPTZ
 - Use `new Date().toISOString()` for updated_at
 - Supabase client handles conversion automatically
@@ -332,11 +348,13 @@ The adapter maps between Supabase's PostgreSQL data structures and our applicati
 ### UUID Handling
 
 **Database → TypeScript:**
+
 - PostgreSQL UUID → string (TypeScript UUID type alias)
 - Supabase client returns UUIDs as strings
 - No conversion needed
 
 **TypeScript → Database:**
+
 - string (UUID type alias) → PostgreSQL UUID
 - Database validates UUID format
 - Invalid UUIDs rejected by database constraint
@@ -347,16 +365,17 @@ The adapter maps between Supabase's PostgreSQL data structures and our applicati
 
 Map Supabase/PostgreSQL error codes to our DocumentError types:
 
-| Database Error | DocumentError Code | HTTP Status | Description |
-|----------------|-------------------|-------------|-------------|
-| No rows returned (single()) | `not_found` | 404 | Document doesn't exist or user doesn't own it |
-| Check constraint violation (content_size) | `content_too_large` | 413 | Content exceeds 0.5 MB limit |
-| Check constraint violation (name length) | `invalid_name` | 400 | Name validation failed |
-| Foreign key violation | `validation_error` | 400 | Invalid owner_id |
-| Network/timeout errors | `unknown_error` | 500 | Database connection issues |
-| Other errors | `unknown_error` | 500 | Unexpected errors |
+| Database Error                            | DocumentError Code  | HTTP Status | Description                                   |
+| ----------------------------------------- | ------------------- | ----------- | --------------------------------------------- |
+| No rows returned (single())               | `not_found`         | 404         | Document doesn't exist or user doesn't own it |
+| Check constraint violation (content_size) | `content_too_large` | 413         | Content exceeds 0.5 MB limit                  |
+| Check constraint violation (name length)  | `invalid_name`      | 400         | Name validation failed                        |
+| Foreign key violation                     | `validation_error`  | 400         | Invalid owner_id                              |
+| Network/timeout errors                    | `unknown_error`     | 500         | Database connection issues                    |
+| Other errors                              | `unknown_error`     | 500         | Unexpected errors                             |
 
 **KISS Approach:**
+
 - Try-catch blocks around all Supabase calls
 - Check for specific error codes/messages
 - Map to appropriate DocumentError types
@@ -364,6 +383,7 @@ Map Supabase/PostgreSQL error codes to our DocumentError types:
 - Simple error mapping function
 
 **Error Detection Patterns:**
+
 - Not found: single() returns null or empty result
 - Check constraint violations: Inspect error.code or error.message for constraint names
 - No rows affected: Check count returned from delete operations
@@ -376,6 +396,7 @@ Map Supabase/PostgreSQL error codes to our DocumentError types:
 **Approach:** Service-layer authorization with service role key
 
 We use the service role key (bypasses RLS) because:
+
 - All operations are server-side only (never client-accessible)
 - Authorization is enforced in service layer (userId checks)
 - Simpler than maintaining parallel RLS policies
@@ -401,6 +422,7 @@ Every query includes `.eq('owner_id', userId)` to ensure users can only access t
 - Content size calculation
 
 **KISS Security:**
+
 - Trust Supabase's security (they're the experts)
 - Don't implement custom SQL (use query builder)
 - Validate inputs at service boundary
@@ -411,19 +433,23 @@ Every query includes `.eq('owner_id', userId)` to ensure users can only access t
 ### Environment Variables
 
 **Required:**
+
 - `SUPABASE_URL`: Project URL (e.g., https://your-project.supabase.co)
 - `SUPABASE_PUBLISHABLE_KEY`: Public anonymous key for client operations
 
 **Optional:**
+
 - `SUPABASE_SECRET_KEY`: Service role key for server-side operations (recommended for production)
 
 **Usage:**
+
 - Use service role key for server-side document operations (bypasses RLS)
 - Use publishable key only if implementing RLS policies (not in current design)
 
 ### Validation
 
 Adapter should validate configuration on initialization:
+
 - Check required env vars exist
 - Throw clear error if misconfigured
 - No fallback values (fail fast)
@@ -436,12 +462,14 @@ Simple boolean checks for required environment variables with descriptive error 
 The adapter integrates with the existing provider factory pattern in `document-provider.ts`:
 
 **Pattern:**
+
 - Factory function checks USE_DB_MOCKS environment variable
 - Returns MockDocumentService when mocks enabled
 - Returns SupabaseDocumentService for production use
 - Lazy singleton for performance
 
 **Pattern Consistency:**
+
 - Same factory pattern as auth service
 - Environment variable controls mock vs real
 - No interface changes needed
@@ -453,22 +481,27 @@ The adapter integrates with the existing provider factory pattern in `document-p
 The adapter leverages PostgreSQL's TOAST (The Oversized-Attribute Storage Technique) for optimal performance:
 
 **Metadata Queries (List, Get Metadata):**
+
 ```typescript
 .select('id, owner_id, name, content_size_bytes, created_at, updated_at')
 ```
+
 - Excludes content field from SELECT
 - PostgreSQL TOAST skips loading content from disk
 - Fast queries even with large documents
 
 **Content Queries (Get Content, Create, Update):**
+
 ```typescript
 .select('*') // or explicit list including content
 ```
+
 - Includes content field in SELECT
 - PostgreSQL TOAST loads content as needed
 - Only used when content is actually needed
 
 **Benefits:**
+
 - Single table design (no complex joins)
 - Automatic optimization (no manual cache management)
 - Consistent with design document specifications
@@ -478,9 +511,11 @@ The adapter leverages PostgreSQL's TOAST (The Oversized-Attribute Storage Techni
 The adapter relies on existing database indexes for performance:
 
 **Primary Index:**
+
 - `PRIMARY KEY (id)` - Fast lookup by document ID
 
 **Composite Index:**
+
 - `idx_documents_owner_created ON documents(owner_id, created_at DESC)`
 - Optimizes list queries (filter by owner, order by date)
 - Supports efficient pagination
@@ -495,6 +530,7 @@ All query patterns are covered by existing indexes defined in SCHEMAS.md.
 Test adapter methods in isolation with proper mocking:
 
 **Test Coverage:**
+
 - Test successful CRUD operations
 - Test ownership validation (queries filter by owner_id)
 - Test error mapping (database errors → DocumentError)
@@ -503,12 +539,14 @@ Test adapter methods in isolation with proper mocking:
 - Test TOAST optimization (field selection)
 
 **Mocking Strategy:**
+
 - Mock Supabase client responses
 - Test adapter logic without real database
 - Verify correct query builder calls
 - Check error handling paths
 
 **Example Test Cases:**
+
 - Document creation with valid and invalid inputs
 - Metadata retrieval with ownership validation
 - Content updates with size validation
@@ -520,6 +558,7 @@ Test adapter methods in isolation with proper mocking:
 Test adapter against real Supabase database:
 
 **Test Coverage:**
+
 - End-to-end CRUD operations
 - Ownership validation with multiple users
 - Pagination with varying limits/offsets
@@ -527,6 +566,7 @@ Test adapter against real Supabase database:
 - Error scenarios (constraints, foreign keys)
 
 **Setup Requirements:**
+
 - Test Supabase project or local Supabase instance
 - Test database with clean state
 - Test data fixtures
@@ -536,6 +576,7 @@ Test adapter against real Supabase database:
 Verify adapter implements DocumentServiceContract correctly:
 
 **Test Coverage:**
+
 - All interface methods implemented
 - Correct return types
 - Proper error throwing
@@ -591,21 +632,25 @@ The existing `document.contract.test.ts` should work with both MockDocumentServi
 ### From Mock to Supabase
 
 **Step 1: Database Setup**
+
 - Create Supabase project
 - Run schema migrations (SCHEMAS.md)
 - Configure environment variables
 
 **Step 2: Adapter Implementation**
+
 - Implement SupabaseDocumentService
 - Follow patterns from SupabaseAuthProvider
 - Test against real database
 
 **Step 3: Provider Factory Update**
+
 - Update createDocumentService() to return SupabaseDocumentService
 - Toggle with USE_DB_MOCKS environment variable
 - Deploy to production
 
 **Step 4: Data Migration (Future)**
+
 - Optional: Migration tool for guest documents (localStorage → database)
 - Not in scope for initial adapter implementation
 
@@ -632,17 +677,20 @@ The existing `document.contract.test.ts` should work with both MockDocumentServi
 ## Cross-References
 
 **Internal Documentation:**
+
 - [DOCUMENT_SERVICE.md](./DOCUMENT_SERVICE.md) - Overall document service architecture
 - [SERVICES.md](./SERVICES.md) - Service patterns and conventions
 - [SCHEMAS.md](./SCHEMAS.md) - Database schema definitions
 - [SUPABASE_AUTH_ADAPTER.md](./SUPABASE_AUTH_ADAPTER.md) - Authentication adapter pattern reference
 
 **Implementation Files:**
+
 - `src/lib/server/services/documents/document-provider.ts` - Provider factory
 - `src/lib/server/services/auth/auth-supabase-provider.ts` - Reference implementation pattern
 - `src/lib/services/documents/types.ts` - Service contract and types
 
 **Official Supabase Documentation:**
+
 - [Supabase JavaScript Client](https://supabase.com/docs/reference/javascript) - Query builder API
 - [Supabase Database Guide](https://supabase.com/docs/guides/database) - PostgreSQL best practices
 - [Supabase Server-Side Auth](https://supabase.com/docs/guides/auth/server-side) - Server-side patterns

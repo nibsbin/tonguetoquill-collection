@@ -154,16 +154,16 @@ export class MockDocumentService implements DocumentServiceContract {
 	/**
 	 * Get full document with content
 	 */
-	async getDocumentContent(userId: UUID, documentId: UUID): Promise<Document> {
+	async getDocumentContent(params: { user_id: UUID; document_id: UUID }): Promise<Document> {
 		await this.simulateDelay();
 
-		const document = this.documents.get(documentId);
+		const document = this.documents.get(params.document_id);
 
 		if (!document) {
 			throw new DocumentError('not_found', 'Document not found', 404);
 		}
 
-		this.verifyOwnership(document, userId);
+		this.verifyOwnership(document, params.user_id);
 
 		return document;
 	}
@@ -223,7 +223,13 @@ export class MockDocumentService implements DocumentServiceContract {
 	/**
 	 * Delete a document
 	 */
-	async deleteDocument(userId: UUID, documentId: UUID): Promise<void> {
+	async deleteDocument({
+		user_id: userId,
+		document_id: documentId
+	}: {
+		user_id: UUID;
+		document_id: UUID;
+	}): Promise<void> {
 		await this.simulateDelay();
 
 		const document = this.documents.get(documentId);

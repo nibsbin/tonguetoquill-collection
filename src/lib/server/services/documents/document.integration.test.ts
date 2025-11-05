@@ -6,6 +6,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { MockAuthProvider } from '$lib/server/services/auth/auth-mock-provider';
 import { MockDocumentService } from './document-mock-service';
+import { DocumentError } from '$lib/services/documents';
 
 describe('Document API Integration', () => {
 	let authProvider: MockAuthProvider;
@@ -104,7 +105,7 @@ describe('Document API Integration', () => {
 				content: 'Content'
 			});
 
-			await documentService.deleteDocument(userId, doc.id);
+			await documentService.deleteDocument({ user_id: userId, document_id: doc.id });
 
 			const result = await documentService.listUserDocuments({ user_id: userId });
 			expect(result.total).toBe(0);
@@ -125,7 +126,9 @@ describe('Document API Integration', () => {
 			});
 
 			// Try to access as second user (should fail)
-			await expect(documentService.getDocumentContent(otherUserId, doc.id)).rejects.toThrow();
+			await expect(
+				documentService.getDocumentContent({ user_id: otherUserId, document_id: doc.id })
+			).rejects.toThrow(DocumentError);
 		});
 	});
 });

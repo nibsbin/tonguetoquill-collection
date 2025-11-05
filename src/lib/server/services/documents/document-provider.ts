@@ -36,32 +36,36 @@ export async function getDocumentService(): Promise<DocumentServiceContract> {
 
 // Export as documentService for backwards compatibility
 export const documentService = {
-	async createDocument(userId: string, name: string, content: string) {
+	async createDocument(params: { user_id: string; name: string; content: string }) {
 		const service = await getDocumentService();
-		return service.createDocument(userId, name, content);
+		return service.createDocument({
+			owner_id: params.user_id,
+			name: params.name,
+			content: params.content
+		});
 	},
-	async getDocumentMetadata(userId: string, documentId: string) {
+	async getDocumentMetadata(params: { user_id: string; document_id: string }) {
 		const service = await getDocumentService();
-		return service.getDocumentMetadata(userId, documentId);
+		return service.getDocumentMetadata(params);
 	},
-	async getDocumentContent(userId: string, documentId: string) {
+	async getDocumentContent(params: { user_id: string; document_id: string }) {
 		const service = await getDocumentService();
-		return service.getDocumentContent(userId, documentId);
+		return service.getDocumentContent(params);
 	},
-	async updateDocumentContent(userId: string, documentId: string, content: string) {
+	async updateDocumentContent(params: { user_id: string; document_id: string; content: string }) {
 		const service = await getDocumentService();
-		return service.updateDocumentContent(userId, documentId, content);
+		return service.updateDocumentContent(params);
 	},
-	async updateDocumentName(userId: string, documentId: string, name: string) {
+	async updateDocumentName(params: { user_id: string; document_id: string; name: string }) {
 		const service = await getDocumentService();
-		return service.updateDocumentName(userId, documentId, name);
+		return service.updateDocumentName(params);
 	},
-	async deleteDocument(userId: string, documentId: string) {
+	async deleteDocument(params: { user_id: string; document_id: string }) {
 		const service = await getDocumentService();
-		return service.deleteDocument(userId, documentId);
+		return service.deleteDocument(params);
 	},
-	async listUserDocuments(userId: string) {
+	async listUserDocuments(params: { user_id: string; limit?: number; offset?: number }) {
 		const service = await getDocumentService();
-		return service.listUserDocuments(userId);
+		return service.listUserDocuments(params);
 	}
 };

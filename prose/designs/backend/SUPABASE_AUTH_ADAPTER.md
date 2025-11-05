@@ -10,6 +10,7 @@ This document defines the design for integrating Supabase Auth with the applicat
 **KISS - Keep It Simple, Stupid**
 
 The Supabase auth adapter should:
+
 - Use official Supabase libraries (don't reinvent the wheel)
 - Delegate all auth operations to Supabase (minimal custom logic)
 - Follow the existing AuthContract interface (no interface changes)
@@ -28,11 +29,13 @@ The Supabase Auth Adapter is a server-side implementation of the AuthContract in
 4. **User Retrieval**: Extract user information from validated tokens
 
 **What It Is:**
+
 - A thin adapter between our AuthContract and Supabase's Auth API
 - Server-side only (never exposed to client)
 - Production-ready authentication using Supabase managed service
 
 **What It Is NOT:**
+
 - A custom authentication system
 - A client-side service
 - A replacement for Supabase's hosted UI
@@ -44,6 +47,7 @@ The Supabase Auth Adapter is a server-side implementation of the AuthContract in
 The Supabase Auth Adapter implements the Adapter pattern to translate between our application's AuthContract interface and Supabase's Auth API.
 
 **Flow:**
+
 1. Application Code
 2. AuthContract (interface)
 3. SupabaseAuthAdapter (implementation)
@@ -53,10 +57,12 @@ The Supabase Auth Adapter implements the Adapter pattern to translate between ou
 ### Dependencies
 
 **Required:**
+
 - `@supabase/supabase-js` (v2.x) - Core Supabase client library
 
 **Our Approach:**
 We use a **custom adapter** approach with `@supabase/supabase-js` core library to implement our AuthContract interface. This gives us:
+
 - Perfect fit with existing AuthContract interface
 - Full control over token and cookie management
 - Consistency with other service providers (mock, Keycloak)
@@ -74,11 +80,13 @@ We use a **custom adapter** approach with `@supabase/supabase-js` core library t
 **Purpose:** Create and configure Supabase client instance
 
 **Configuration:**
+
 - `SUPABASE_URL`: Project URL (e.g., https://xyz.supabase.co)
 - `SUPABASE_PUBLISHABLE_KEY`: Public anonymous key for API access
 - `SUPABASE_SECRET_KEY` (optional): For admin operations
 
 **KISS Approach:**
+
 - Single client instance (singleton pattern)
 - Use environment variables for configuration
 - No custom configuration beyond defaults
@@ -92,11 +100,13 @@ We use a **custom adapter** approach with `@supabase/supabase-js` core library t
 **Supabase API:** `auth.exchangeCodeForSession(code)`
 
 **KISS Approach:**
+
 - Call Supabase library method directly
 - Map response data to our User and Session types
 - Handle errors via standard error mapping
 
 **No custom logic needed** - Supabase library handles:
+
 - Code validation
 - Token generation
 - User creation/retrieval
@@ -111,6 +121,7 @@ We use a **custom adapter** approach with `@supabase/supabase-js` core library t
 **Supabase API:** `auth.getUser(token)` or manual JWT verification with JWKS
 
 **KISS Approach:**
+
 - Use Supabase's built-in token validation
 - Library automatically verifies signature using JWKS
 - No manual JWKS fetching or caching needed
@@ -125,6 +136,7 @@ We use a **custom adapter** approach with `@supabase/supabase-js` core library t
 **Supabase API:** `auth.refreshSession({ refresh_token })`
 
 **KISS Approach:**
+
 - Supabase handles all refresh logic
 - Call library method with refresh token
 - Map response to our Session type
@@ -138,6 +150,7 @@ We use a **custom adapter** approach with `@supabase/supabase-js` core library t
 **Supabase API:** `auth.signOut()`
 
 **KISS Approach:**
+
 - Simple signout call to Supabase
 - No complex cleanup needed
 
@@ -152,6 +165,7 @@ We use a **custom adapter** approach with `@supabase/supabase-js` core library t
 **Supabase API:** `auth.getUser(token)`
 
 **KISS Approach:**
+
 - Call Supabase library method with access token
 - Map response to our User type
 - Return null if token invalid or user not found
@@ -163,6 +177,7 @@ The adapter maps between Supabase's data structures and our application's types.
 ### Supabase User → Application User
 
 **Supabase provides:**
+
 - `id`: User ID (UUID string)
 - `email`: User email address
 - `user_metadata`: Custom user data (Record<string, any>)
@@ -170,6 +185,7 @@ The adapter maps between Supabase's data structures and our application's types.
 - `updated_at`: Last update timestamp (ISO 8601)
 
 **Mapped to our User type:**
+
 - `id`: Direct mapping from Supabase id
 - `email`: Direct mapping from Supabase email
 - `dodid`: Extracted from user_metadata.dodid (nullable)
@@ -180,12 +196,14 @@ The adapter maps between Supabase's data structures and our application's types.
 ### Supabase Session → Application Session
 
 **Supabase provides:**
+
 - `access_token`: JWT access token (string)
 - `refresh_token`: Refresh token (string)
 - `expires_at`: Token expiration (Unix timestamp)
 - `user`: User object (User type)
 
 **Mapped to our Session type:**
+
 - Direct mapping for all fields (structures already align)
 - User field mapped via User mapping described above
 
@@ -197,15 +215,16 @@ The adapter maps between Supabase's data structures and our application's types.
 
 Map Supabase error codes to our AuthError codes:
 
-| Supabase Error | Our AuthError Code | HTTP Status |
-|----------------|-------------------|-------------|
-| `invalid_grant` | `invalid_token` | 401 |
-| `invalid_token` | `invalid_token` | 401 |
-| `token_expired` | `token_expired` | 401 |
-| Network errors | `network_error` | 500 |
-| Other errors | `unknown_error` | 500 |
+| Supabase Error  | Our AuthError Code | HTTP Status |
+| --------------- | ------------------ | ----------- |
+| `invalid_grant` | `invalid_token`    | 401         |
+| `invalid_token` | `invalid_token`    | 401         |
+| `token_expired` | `token_expired`    | 401         |
+| Network errors  | `network_error`    | 500         |
+| Other errors    | `unknown_error`    | 500         |
 
 **KISS Approach:**
+
 - Try-catch blocks around Supabase calls
 - Map Supabase errors to our AuthError types
 - Simple error mapping function
@@ -231,6 +250,7 @@ Map Supabase error codes to our AuthError codes:
 ### Row Level Security (RLS)
 
 **CRITICAL:** This adapter's security model assumes that Row Level Security (RLS) is enabled and correctly configured on all Supabase tables. Without proper RLS policies:
+
 - Users may access data they shouldn't see
 - Data integrity could be compromised
 - Authorization boundaries may be violated
@@ -238,6 +258,7 @@ Map Supabase error codes to our AuthError codes:
 Always verify RLS policies are in place before deploying to production.
 
 **KISS Security:**
+
 - Trust Supabase's security (they're the experts)
 - Don't implement custom crypto or validation
 - Use official libraries only
@@ -247,10 +268,12 @@ Always verify RLS policies are in place before deploying to production.
 ### Environment Variables
 
 **Required:**
+
 - `SUPABASE_URL`: Project URL (e.g., https://your-project.supabase.co)
 - `SUPABASE_PUBLISHABLE_KEY`: Public anonymous key for client operations
 
 **Optional:**
+
 - `SUPABASE_SECRET_KEY`: Service role key for admin operations (bypasses RLS)
 
 **Note on Token Validation:**
@@ -259,11 +282,13 @@ The supabase-js client library automatically handles JWT verification using the 
 ### Validation
 
 Adapter should validate configuration on initialization:
+
 - Check required env vars: `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`
 - Throw clear error if misconfigured
 - No fallback values (fail fast)
 
 **KISS Validation:**
+
 - Simple if-statement to check for required variables (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
 - Fail fast with clear error message on missing configuration
 
@@ -330,11 +355,13 @@ Test adapter methods in isolation with mocked Supabase client:
 ## Cross-References
 
 **Internal Documentation:**
+
 - [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) - Overall authentication architecture
 - [SERVICES.md](./SERVICES.md) - Service patterns and conventions
 - [SUPABASE_AUTH_VERIFICATION.md](./SUPABASE_AUTH_VERIFICATION.md) - Verification against Supabase docs
 
 **Official Supabase Documentation:**
+
 - [Supabase Auth Overview](https://supabase.com/docs/guides/auth) - Official auth documentation
 - [SvelteKit Server-Side Auth](https://supabase.com/docs/guides/auth/server-side/sveltekit) - SvelteKit integration guide
 - [Supabase JS Library Reference](https://supabase.com/docs/reference/javascript) - JavaScript client API reference

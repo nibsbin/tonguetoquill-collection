@@ -7,6 +7,7 @@ import { loadSupabaseConfig } from '$lib/server/utils/supabase';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type {
 	CreateDocumentParams,
+	DocumentReferenceParams,
 	Document,
 	DocumentListResult,
 	DocumentMetadata,
@@ -152,7 +153,13 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 	/**
 	 * Get document metadata only (no content)
 	 */
-	async getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetadata> {
+	async getDocumentMetadata({
+		userId,
+		documentId
+	}: {
+		userId: UUID;
+		documentId: UUID;
+	}): Promise<DocumentMetadata> {
 		try {
 			const { data, error } = await this.supabase
 				.from('documents')
@@ -176,7 +183,13 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 	/**
 	 * Get full document with content
 	 */
-	async getDocumentContent(userId: UUID, documentId: UUID): Promise<Document> {
+	async getDocumentContent({
+		user_id,
+		document_id
+	}: {
+		user_id: UUID;
+		document_id: UUID;
+	}): Promise<Document> {
 		try {
 			const { data, error } = await this.supabase
 				.from('documents')
@@ -274,13 +287,15 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 	/**
 	 * Delete a document
 	 */
-	async deleteDocument(userId: UUID, documentId: UUID): Promise<void> {
+	async deleteDocument(params: DeleteDocumentParams): Promise<void> {
+		const { user_id, document_id } = params;
+
 		try {
 			const { error, count } = await this.supabase
 				.from('documents')
 				.delete({ count: 'exact' })
-				.eq('id', documentId)
-				.eq('owner_id', userId);
+				.eq('id', document_id)
+				.eq('owner_id', user_id);
 
 			if (error) throw error;
 
