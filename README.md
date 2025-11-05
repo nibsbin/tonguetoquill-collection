@@ -104,7 +104,6 @@ See `.env.example` for required environment variables. Key variables:
 - `USE_AUTH_MOCKS=true` - Enable mock authentication provider
 - `USE_DB_MOCKS=true` - Enable mock document service
 - `MOCK_JWT_SECRET` - Secret key for mock JWT generation (dev only)
-- `AUTH_REDIRECT_URI` - OAuth callback URL (e.g., http://localhost:5173/api/auth/callback)
 
 **Production (Supabase Provider):**
 
