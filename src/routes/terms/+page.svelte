@@ -11,7 +11,7 @@
 	<title>Terms of Use - Tongue to Quill</title>
 </svelte:head>
 
-<div class="min-h-screen bg-background text-foreground overflow-y-auto">
+<div class="h-screen bg-background text-foreground overflow-y-auto">
 	<div class="container mx-auto px-4 py-8 max-w-4xl pb-24">
 		<!-- Header -->
 		<div class="mb-8">
