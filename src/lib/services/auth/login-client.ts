@@ -23,6 +23,8 @@ export class LoginClient {
 	// Stores the promise of the fetch operation
 	private providersPromise: Promise<AuthProviderConfig[]>;
 
+	// TODO: Use SSR to pre-fetch providers and pass to singleton client
+	// to avoid initial fetch delay
 	constructor() {
 		// Only fetch providers on client-side to avoid SSR issues
 		if (browser) {
