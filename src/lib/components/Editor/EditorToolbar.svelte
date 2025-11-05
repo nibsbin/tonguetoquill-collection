@@ -11,7 +11,6 @@
 		ListCollapse
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
-	import Separator from '$lib/components/ui/separator.svelte';
 
 	type EditorToolbarProps = {
 		onFormat: (type: string) => void;
@@ -37,13 +36,11 @@
 			<ListCollapse class="h-4 w-4" />
 		</Button>
 
-		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
-
 		<!-- Bold -->
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			class="ml-1 h-7 w-7 border-l border-accent p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('bold')}
 			title="Bold"
 		>
@@ -94,13 +91,11 @@
 			<Link class="h-4 w-4" />
 		</Button>
 
-		<Separator orientation="vertical" class="mx-1 h-5 bg-accent" />
-
 		<!-- Numbered List -->
 		<Button
 			variant="ghost"
 			size="sm"
-			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			class="ml-1 h-7 w-7 border-l border-accent p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('numberedList')}
 			title="Numbered List"
 		>

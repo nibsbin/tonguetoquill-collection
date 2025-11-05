@@ -131,5 +131,38 @@ describe('QuillMark Pattern Detection', () => {
 			const pairs = findYamlPairs(0, doc.length, doc);
 			expect(pairs).toHaveLength(1); // Only title, not SCOPE
 		});
+
+		it('should correctly position values when key and value are identical', () => {
+			const doc = Text.of(['asdf: asdf']);
+			const pairs = findYamlPairs(0, doc.length, doc);
+			expect(pairs).toHaveLength(1);
+
+			// Key should be at positions 0-4 (asdf)
+			expect(pairs[0].keyFrom).toBe(0);
+			expect(pairs[0].keyTo).toBe(4);
+
+			// Value should be at positions 6-10 (asdf after ": ")
+			expect(pairs[0].valueFrom).toBe(6);
+			expect(pairs[0].valueTo).toBe(10);
+			expect(pairs[0].valueType).toBe('string');
+		});
+
+		it('should handle multiple identical key-value pairs', () => {
+			const doc = Text.of(['foo: foo', 'bar: bar']);
+			const pairs = findYamlPairs(0, doc.length, doc);
+			expect(pairs).toHaveLength(2);
+
+			// First pair: foo: foo
+			expect(pairs[0].keyFrom).toBe(0);
+			expect(pairs[0].keyTo).toBe(3);
+			expect(pairs[0].valueFrom).toBe(5);
+			expect(pairs[0].valueTo).toBe(8);
+
+			// Second pair: bar: bar (9 characters offset for "foo: foo\n")
+			expect(pairs[1].keyFrom).toBe(9);
+			expect(pairs[1].keyTo).toBe(12);
+			expect(pairs[1].valueFrom).toBe(14);
+			expect(pairs[1].valueTo).toBe(17);
+		});
 	});
 });

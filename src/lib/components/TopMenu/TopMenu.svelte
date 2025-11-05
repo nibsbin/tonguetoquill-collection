@@ -10,15 +10,16 @@
 		Check,
 		Loader2,
 		AlertCircle,
-		Share2
+		Share2,
+		Ruler
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import DropdownMenu from '$lib/components/ui/dropdown-menu.svelte';
 	import DropdownMenuTrigger from '$lib/components/ui/dropdown-menu-trigger.svelte';
 	import DropdownMenuContent from '$lib/components/ui/dropdown-menu-content.svelte';
 	import DropdownMenuItem from '$lib/components/ui/dropdown-menu-item.svelte';
-	import DropdownMenuSeparator from '$lib/components/ui/dropdown-menu-separator.svelte';
 	import type { SaveStatus } from '$lib/utils/auto-save.svelte';
+	import { rulerStore } from '$lib/stores/ruler.svelte';
 
 	type TopMenuProps = {
 		fileName: string;
@@ -126,6 +127,10 @@
 	function handlePrivacy() {
 		window.open('/privacy', '_blank');
 	}
+
+	function handleRulerToggle() {
+		rulerStore.toggle();
+	}
 </script>
 
 <div
@@ -229,22 +234,26 @@
 					Share
 				</DropdownMenuItem>
 
-				<DropdownMenuSeparator class="bg-border" />
+				<DropdownMenuItem
+					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					onclick={handleRulerToggle}
+				>
+					<Ruler class="mr-2 h-4 w-4" />
+					Ruler Tool
+				</DropdownMenuItem>
 
 				<!-- Group 2: Info & Help -->
 				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					class="border-t border-border text-foreground/80 focus:bg-accent focus:text-foreground"
 					onclick={handleDocumentInfo}
 				>
 					<FileText class="mr-2 h-4 w-4" />
 					Document Info
 				</DropdownMenuItem>
 
-				<DropdownMenuSeparator class="bg-border" />
-
 				<!-- Group 3: Legal & About -->
 				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
+					class="border-t border-border text-foreground/80 focus:bg-accent focus:text-foreground"
 					onclick={handleAbout}
 				>
 					<Info class="mr-2 h-4 w-4" />

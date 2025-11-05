@@ -3,10 +3,9 @@
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
-	import Separator from '$lib/components/ui/separator.svelte';
 	import Popover from '$lib/components/ui/popover.svelte';
-	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';
 	import PopoverContent from '$lib/components/ui/popover-content.svelte';
+	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';
 	import Switch from '$lib/components/ui/switch.svelte';
 	import Label from '$lib/components/ui/label.svelte';
 	import Sheet from '$lib/components/ui/sheet.svelte';
@@ -18,6 +17,7 @@
 	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
 	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
 	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
+	import LoginPopover from './LoginPopover.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { onMount } from 'svelte';
 	import { loginClient } from '$lib/services/auth';
@@ -32,6 +32,7 @@
 	let autoSave = $state(true);
 	let lineNumbers = $state(true);
 	let popoverOpen = $state(false);
+	let loginPopoverOpen = $state(false);
 	let mobileSheetOpen = $state(false);
 	let isMobile = $state(false);
 	let deleteDialogOpen = $state(false);
@@ -162,10 +163,6 @@
 		updateDarkMode(value);
 	}
 
-	function handleSignIn() {
-		loginClient.initiateLogin();
-	}
-
 	async function handleSignOut() {
 		try {
 			await loginClient.signOut();
@@ -200,11 +197,10 @@
 			</SheetTrigger>
 			<SheetContent side="left" class="flex w-72 flex-col bg-background p-0 text-foreground">
 				<!-- Hamburger Menu and Title -->
-				<div class="relative flex items-center">
+				<div class="relative flex items-center border-b border-border">
 					<SidebarButtonSlot
 						icon={Menu}
 						{isExpanded}
-						class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
 						onclick={handleToggle}
 						ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 					/>
@@ -218,35 +214,24 @@
 					</span>
 				</div>
 
-				<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
-				<Separator class="bg-border" />
-
 				<!-- Menu Items -->
 				<div class="flex-1 overflow-hidden">
 					<div>
-						<SidebarButtonSlot
-							icon={Plus}
-							label="New Document"
-							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
-							onclick={handleNewFile}
-							ariaLabel="Create new document"
-						/>
-
-						{#if !isExpanded}
-							<Separator class="bg-border" />
-						{/if}
+						<div
+							class={documentStore.documents.length > 0 && isExpanded
+								? 'border-b border-border'
+								: ''}
+						>
+							<SidebarButtonSlot
+								icon={Plus}
+								label="New Document"
+								{isExpanded}
+								onclick={handleNewFile}
+								ariaLabel="Create new document"
+							/>
+						</div>
 
 						{#if documentStore.documents.length > 0 && isExpanded}
-							<Separator class="bg-border" />
-
-							<!-- Recents Section Header -->
-							<div
-								class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
-							>
-								<h3 class="text-xs text-muted-foreground">Recents</h3>
-							</div>
-
 							<!-- Scrollable Recent Items -->
 							<div
 								class="space-y-px overflow-x-hidden overflow-y-auto"
@@ -271,17 +256,27 @@
 				</div>
 
 				<!-- User Profile and Settings Section -->
-				<div class="space-y-1 border-t border-border">
+				<div class="border-t border-border">
 					<!-- Sign-In Button (Guest Mode) -->
 					{#if !user}
-						<SidebarButtonSlot
-							icon={LogIn}
-							label="Sign in"
-							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
-							onclick={handleSignIn}
-							ariaLabel="Sign in to your account"
-						/>
+						<Popover bind:open={loginPopoverOpen}>
+							<PopoverTrigger class="w-full">
+								<SidebarButtonSlot
+									icon={LogIn}
+									label="Sign in"
+									{isExpanded}
+									ariaLabel="Sign in to your account"
+								/>
+							</PopoverTrigger>
+							<PopoverContent
+								id="login-popover"
+								side="right"
+								align="start"
+								class="border-border bg-surface-elevated p-0 text-foreground"
+							>
+								<LoginPopover onClose={() => (loginPopoverOpen = false)} />
+							</PopoverContent>
+						</Popover>
 					{/if}
 
 					<!-- User Profile Button (Logged-in Mode) -->
@@ -290,7 +285,6 @@
 							icon={User}
 							label={user.email}
 							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 							title={user.email}
 							onclick={handleProfileClick}
 							ariaLabel="User profile: {user.email}"
@@ -298,61 +292,57 @@
 					{/if}
 
 					<!-- Settings Gear Button -->
-					<div class="sidebar-button-slot">
-						<Popover bind:open={popoverOpen}>
-							<PopoverTrigger
-								class="sidebar-slot-button {isExpanded
-									? 'sidebar-slot-button-full'
-									: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
-							>
-								<Settings class="sidebar-icon" />
-								{#if isExpanded}
-									<span>Settings</span>
-								{/if}
-							</PopoverTrigger>
-							<PopoverContent
-								side="right"
-								align="end"
-								class="w-64 border-border bg-surface-elevated p-0 text-foreground"
-							>
-								<div class="p-4">
-									<h3 class="mb-4 text-lg font-semibold">Settings</h3>
-
-									<div class="space-y-4">
-										<div class="flex items-center justify-between">
-											<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
-											<Switch
-												id="dark-mode"
-												bind:checked={isDarkMode}
-												onCheckedChange={handleDarkModeChange}
-											/>
-										</div>
-
-										<Separator class="my-3 bg-border" />
-
-										<div class="flex items-center justify-between">
-											<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
-											<Switch
-												id="auto-save"
-												bind:checked={autoSave}
-												onCheckedChange={handleAutoSaveChange}
-											/>
-										</div>
-
-										<div class="flex items-center justify-between">
-											<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
-											<Switch
-												id="line-numbers"
-												bind:checked={lineNumbers}
-												onCheckedChange={handleLineNumbersChange}
-											/>
-										</div>
-									</div>
-								</div>
-							</PopoverContent>
-						</Popover>
-					</div>
+					<SidebarButtonSlot
+						icon={Settings}
+						label="Settings"
+						{isExpanded}
+						onclick={() => (popoverOpen = !popoverOpen)}
+						ariaLabel="Open settings"
+					/>
 				</div>
+
+				<!-- Settings Popover (rendered outside button slot) -->
+				<Popover bind:open={popoverOpen}>
+					<PopoverContent
+						id="settings-popover"
+						side="right"
+						align="end"
+						class="w-64 border-border bg-surface-elevated p-0 text-foreground"
+					>
+						<div class="p-4">
+							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+
+							<div class="space-y-4">
+								<div class="flex items-center justify-between border-b border-border pb-3">
+									<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
+									<Switch
+										id="dark-mode"
+										bind:checked={isDarkMode}
+										onCheckedChange={handleDarkModeChange}
+									/>
+								</div>
+
+								<div class="flex items-center justify-between">
+									<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
+									<Switch
+										id="auto-save"
+										bind:checked={autoSave}
+										onCheckedChange={handleAutoSaveChange}
+									/>
+								</div>
+
+								<div class="flex items-center justify-between">
+									<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
+									<Switch
+										id="line-numbers"
+										bind:checked={lineNumbers}
+										onCheckedChange={handleLineNumbersChange}
+									/>
+								</div>
+							</div>
+						</div>
+					</PopoverContent>
+				</Popover>
 			</SheetContent>
 		</Sheet>
 	</div>
@@ -365,11 +355,10 @@
 			: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 	>
 		<!-- Hamburger Menu and Title -->
-		<div class="relative flex items-center">
+		<div class="relative flex items-center border-b border-border">
 			<SidebarButtonSlot
 				icon={Menu}
 				{isExpanded}
-				class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
 				onclick={handleToggle}
 				ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
 			/>
@@ -383,35 +372,22 @@
 			</span>
 		</div>
 
-		<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
-		<Separator class="bg-border" />
-
 		<!-- Menu Items -->
 		<div class="flex-1 overflow-hidden">
 			<div>
-				<SidebarButtonSlot
-					icon={Plus}
-					label="New Document"
-					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
-					onclick={handleNewFile}
-					ariaLabel="Create new document"
-				/>
-
-				{#if !isExpanded}
-					<Separator class="bg-border" />
-				{/if}
+				<div
+					class={documentStore.documents.length > 0 && isExpanded ? 'border-b border-border' : ''}
+				>
+					<SidebarButtonSlot
+						icon={Plus}
+						label="New Document"
+						{isExpanded}
+						onclick={handleNewFile}
+						ariaLabel="Create new document"
+					/>
+				</div>
 
 				{#if documentStore.documents.length > 0 && isExpanded}
-					<Separator class="bg-border" />
-
-					<!-- Recents Section Header -->
-					<div
-						class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
-					>
-						<h3 class="text-xs text-muted-foreground">Recents</h3>
-					</div>
-
 					<!-- Scrollable Recent Items -->
 					<div
 						class="space-y-px overflow-x-hidden overflow-y-auto"
@@ -436,17 +412,27 @@
 		</div>
 
 		<!-- User Profile and Settings Section -->
-		<div class="space-y-1 border-t border-border">
+		<div class="border-t border-border">
 			<!-- Sign-In Button (Guest Mode) -->
 			{#if !user}
-				<SidebarButtonSlot
-					icon={LogIn}
-					label="Sign in"
-					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
-					onclick={handleSignIn}
-					ariaLabel="Sign in to your account"
-				/>
+				<Popover bind:open={loginPopoverOpen}>
+					<PopoverTrigger class="w-full">
+						<SidebarButtonSlot
+							icon={LogIn}
+							label="Sign in"
+							{isExpanded}
+							ariaLabel="Sign in to your account"
+						/>
+					</PopoverTrigger>
+					<PopoverContent
+						id="login-popover-desktop"
+						side="right"
+						align="start"
+						class="border-border bg-surface-elevated p-0 text-foreground"
+					>
+						<LoginPopover onClose={() => (loginPopoverOpen = false)} />
+					</PopoverContent>
+				</Popover>
 			{/if}
 
 			<!-- User Profile Button (Logged-in Mode) -->
@@ -455,7 +441,6 @@
 					icon={User}
 					label={user.email}
 					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
 					title={user.email}
 					onclick={handleProfileClick}
 					ariaLabel="User profile: {user.email}"
@@ -463,61 +448,56 @@
 			{/if}
 
 			<!-- Settings Gear Button -->
-			<div class="sidebar-button-slot">
-				<Popover bind:open={popoverOpen}>
-					<PopoverTrigger
-						class="sidebar-slot-button {isExpanded
-							? 'sidebar-slot-button-full'
-							: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
-					>
-						<Settings class="sidebar-icon" />
-						{#if isExpanded}
-							<span>Settings</span>
-						{/if}
-					</PopoverTrigger>
-					<PopoverContent
-						side="right"
-						align="end"
-						class="w-64 border-border bg-surface-elevated p-0 text-foreground"
-					>
-						<div class="p-4">
-							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
-
-							<div class="space-y-4">
-								<div class="flex items-center justify-between">
-									<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
-									<Switch
-										id="dark-mode"
-										bind:checked={isDarkMode}
-										onCheckedChange={handleDarkModeChange}
-									/>
-								</div>
-
-								<Separator class="my-3 bg-border" />
-
-								<div class="flex items-center justify-between">
-									<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
-									<Switch
-										id="auto-save"
-										bind:checked={autoSave}
-										onCheckedChange={handleAutoSaveChange}
-									/>
-								</div>
-
-								<div class="flex items-center justify-between">
-									<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
-									<Switch
-										id="line-numbers"
-										bind:checked={lineNumbers}
-										onCheckedChange={handleLineNumbersChange}
-									/>
-								</div>
-							</div>
-						</div>
-					</PopoverContent>
-				</Popover>
-			</div>
+			<SidebarButtonSlot
+				icon={Settings}
+				label="Settings"
+				{isExpanded}
+				onclick={() => (popoverOpen = !popoverOpen)}
+				ariaLabel="Open settings"
+			/>
 		</div>
+
+		<!-- Settings Popover (rendered outside button slot) -->
+		<Popover bind:open={popoverOpen}>
+			<PopoverContent
+				side="right"
+				align="end"
+				class="w-64 border-border bg-surface-elevated p-0 text-foreground"
+			>
+				<div class="p-4">
+					<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+
+					<div class="space-y-4">
+						<div class="flex items-center justify-between border-b border-border pb-3">
+							<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
+							<Switch
+								id="dark-mode"
+								bind:checked={isDarkMode}
+								onCheckedChange={handleDarkModeChange}
+							/>
+						</div>
+
+						<div class="flex items-center justify-between">
+							<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
+							<Switch
+								id="auto-save"
+								bind:checked={autoSave}
+								onCheckedChange={handleAutoSaveChange}
+							/>
+						</div>
+
+						<div class="flex items-center justify-between">
+							<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
+							<Switch
+								id="line-numbers"
+								bind:checked={lineNumbers}
+								onCheckedChange={handleLineNumbersChange}
+							/>
+						</div>
+					</div>
+				</div>
+			</PopoverContent>
+		</Popover>
 	</div>
 {/if}
 
@@ -585,23 +565,9 @@
 </Dialog>
 
 <style>
-	:global(.sidebar-icon) {
-		width: var(--sidebar-icon-size);
-		height: var(--sidebar-icon-size);
-		flex-shrink: 0;
-	}
-
-	:global(.sidebar-icon:has(+ *)) {
-		margin-right: 0.5rem;
-	}
-
+	/* Legacy styles - kept for document list items */
 	:global(.sidebar-icon-small) {
-		/* This calculates 60% of the parent's --sidebar-icon-size */
 		width: calc(var(--sidebar-icon-size) * 0.6);
 		height: calc(var(--sidebar-icon-size) * 0.6);
-	}
-
-	:global(.sidebar-section-height) {
-		height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
 	}
 </style>

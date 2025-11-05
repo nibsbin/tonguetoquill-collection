@@ -81,6 +81,41 @@ export class AuthError extends Error {
 export type AuthProvider = 'email' | 'github';
 
 /**
+ * Authentication provider type (for UI configuration)
+ */
+export type AuthProviderType = 'oauth' | 'email_otp' | 'magic_link';
+
+/**
+ * OAuth provider name (for UI configuration)
+ */
+export type OAuthProviderName = 'github' | 'google' | 'microsoft' | 'mock';
+
+/**
+ * Authentication provider configuration (for UI display)
+ * Describes a single auth method available to users
+ */
+export interface AuthProviderConfig {
+	/** Unique identifier for this provider */
+	id: AuthProvider;
+	/** Type of authentication */
+	type: AuthProviderType;
+	/** Display name shown to users */
+	name: string;
+	/** OAuth provider name (only for oauth type) */
+	oauthProvider?: OAuthProviderName;
+	/** Icon identifier for UI rendering */
+	icon?: string;
+	/** Whether this provider requires user input (e.g., email) */
+	requiresInput?: boolean;
+	/** Input field configuration if requiresInput is true */
+	inputConfig?: {
+		type: 'email' | 'text';
+		placeholder: string;
+		label: string;
+	};
+}
+
+/**
  * Authentication contract interface
  * All authentication providers (mock and real) must implement this interface
  * Focused on token validation and management only - no password handling

@@ -4,7 +4,7 @@
  * Communicates with API routes via fetch()
  */
 
-import type { User, Session, AuthProvider } from './types';
+import type { User, Session, AuthProvider, AuthProviderConfig } from './types';
 
 /**
  * Error response from API
@@ -20,6 +20,32 @@ interface ErrorResponse {
  */
 export class LoginClient {
 	/**
+	 * Get available authentication providers for UI display
+	 * Returns hard-coded provider configurations based on enabled auth methods
+	 */
+	getAvailableProviders(): AuthProviderConfig[] {
+		// Return available providers - in the future this could be dynamic
+		// For now we support GitHub and Email
+		return [
+			{
+				id: 'github',
+				type: 'oauth',
+				name: 'Continue with GitHub',
+				oauthProvider: 'github',
+				icon: 'github',
+				requiresInput: false
+			},
+			{
+				id: 'email',
+				type: 'oauth',
+				name: 'Continue with Email',
+				icon: 'mail',
+				requiresInput: false
+			}
+		];
+	}
+
+	/**
 	 * Initiate login by redirecting to auth provider
 	 * In mock mode, this redirects to a callback with a mock code
 	 * In production, this redirects to the provider's hosted login page
@@ -27,13 +53,11 @@ export class LoginClient {
 	 * The OAuth callback is handled server-side via GET /api/auth/callback
 	 * which exchanges the code for tokens and sets HTTP-only cookies
 	 *
-	 * @param provider - Optional auth provider to use ('email' | 'github')
-	 *                   Required only when multiple providers are enabled
-	 *                   If not specified and only one provider is enabled, auto-selects it
+	 * @param provider - Auth provider to use ('email' | 'github')
 	 */
-	async initiateLogin(provider?: AuthProvider): Promise<void> {
-		// Build the login URL with optional provider parameter
-		const url = provider ? `/api/auth/login?provider=${provider}` : '/api/auth/login';
+	async initiateLogin(provider: AuthProvider): Promise<void> {
+		// Build the login URL with provider parameter
+		const url = `/api/auth/login?provider=${provider}`;
 
 		// Redirect to login endpoint which will handle the OAuth flow
 		window.location.href = url;
