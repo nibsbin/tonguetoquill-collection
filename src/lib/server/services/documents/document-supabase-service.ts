@@ -3,8 +3,7 @@
  * Implements DocumentServiceContract using Supabase PostgreSQL database
  */
 
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
+import { loadSupabaseConfig } from '$lib/server/utils/supabase';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type {
 	CreateDocumentParams,
@@ -33,17 +32,12 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 	private readonly PGRST_NO_ROWS_ERROR = 'PGRST116'; // PostgREST error code for no rows
 
 	constructor() {
-		const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL || '';
-		// Prefer service role key for server-side operations (bypasses RLS)
-		// Fall back to publishable key for development/testing environments
-		// Production deployments should always set SUPABASE_SECRET_KEY
-		const supabaseKey = env.SUPABASE_SECRET_KEY || publicEnv.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
+		// Load Supabase configuration
+		const config = loadSupabaseConfig();
 
-		if (!supabaseUrl || !supabaseKey) {
-			throw new Error('Supabase configuration missing. Check environment variables.');
-		}
-
-		this.supabase = createClient(supabaseUrl, supabaseKey);
+		// Use service role key for server-side operations (bypasses RLS)
+		// Production deployments should always set SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY
+		this.supabase = createClient(config.POSTGRES_URL, config.SECRET_KEY);
 	}
 
 	/**

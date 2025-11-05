@@ -13,8 +13,7 @@ import type {
 	UUID
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
+import { loadSupabaseConfig } from '$lib/server/utils/supabase';
 import {
 	createClient,
 	type SupabaseClient,
@@ -29,18 +28,25 @@ import {
  */
 export class SupabaseAuthProvider implements AuthContract {
 	private supabase: SupabaseClient;
-	private authMethod: 'email' | 'github' = 'github';
+	private authMethod: 'email' | 'github';
 
 	constructor() {
-		const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL || '';
-		const supabasePublishableKey = publicEnv.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
+		// Load Supabase configuration
+		const config = loadSupabaseConfig();
 
-		if (!supabaseUrl || !supabasePublishableKey) {
-			throw new Error('Supabase configuration missing. Check environment variables.');
+		// Determine auth method from configuration
+		if (config.ENABLE_GITHUB) {
+			this.authMethod = 'github';
+		} else if (config.ENABLE_EMAIL) {
+			this.authMethod = 'email';
+		} else {
+			throw new Error(
+				'No auth method enabled. Set SUPABASE_ENABLE_EMAIL or SUPABASE_ENABLE_GITHUB to true.'
+			);
 		}
 
-		// Create Supabase client
-		this.supabase = createClient(supabaseUrl, supabasePublishableKey, {
+		// Create Supabase client with publishable key (client-facing operations)
+		this.supabase = createClient(config.POSTGRES_URL, config.PUBLISHABLE_KEY, {
 			auth: {
 				autoRefreshToken: false, // We handle refresh manually
 				persistSession: false, // Server-side, no persistence needed
