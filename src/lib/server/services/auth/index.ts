@@ -22,6 +22,14 @@ export const authService = {
 		const service = await getAuthService();
 		return service.exchangeCodeForTokens(code);
 	},
+	async sendAuthEmail(email: string, redirectUri: string) {
+		const service = await getAuthService();
+		return service.sendAuthEmail(email, redirectUri);
+	},
+	async verifyOTP(email: string, code: string) {
+		const service = await getAuthService();
+		return service.verifyOTP(email, code);
+	},
 	async signOut(accessToken: string) {
 		const service = await getAuthService();
 		return service.signOut(accessToken);

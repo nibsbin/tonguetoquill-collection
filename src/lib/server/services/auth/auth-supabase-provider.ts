@@ -155,6 +155,68 @@ export class SupabaseAuthProvider implements AuthContract {
 	}
 
 	/**
+	 * Send authentication email with OTP code
+	 * @param email - User's email address
+	 * @param redirectUri - Not used for OTP flow (only for magic links)
+	 * @returns Success message to show user
+	 */
+	async sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }> {
+		try {
+			const { error } = await this.supabase.auth.signInWithOtp({
+				email,
+				options: {
+					shouldCreateUser: true
+				}
+			});
+
+			if (error) {
+				throw this.mapSupabaseError(error);
+			}
+
+			return { message: 'Check your email for a 6-digit verification code' };
+		} catch (error) {
+			if (error instanceof AuthError) {
+				throw error;
+			}
+			throw new AuthError('network_error', 'Failed to send authentication email', 500);
+		}
+	}
+
+	/**
+	 * Verify OTP code entered by user
+	 * @param email - User's email address
+	 * @param code - 6-digit OTP code from email
+	 * @returns Session with user and tokens
+	 */
+	async verifyOTP(email: string, code: string): Promise<AuthResult> {
+		try {
+			const { data, error } = await this.supabase.auth.verifyOtp({
+				email,
+				token: code,
+				type: 'email'
+			});
+
+			if (error) {
+				throw this.mapSupabaseError(error);
+			}
+
+			if (!data.session || !data.user) {
+				throw new AuthError('invalid_token', 'Invalid verification code', 401);
+			}
+
+			return {
+				user: this.mapSupabaseUserToUser(data.user),
+				session: this.mapSupabaseSessionToSession(data.session)
+			};
+		} catch (error) {
+			if (error instanceof AuthError) {
+				throw error;
+			}
+			throw new AuthError('invalid_token', 'Failed to verify OTP code', 401);
+		}
+	}
+
+	/**
 	 * Validate JWT token and return payload
 	 * Verifies the token signature using Supabase's JWT secret
 	 */

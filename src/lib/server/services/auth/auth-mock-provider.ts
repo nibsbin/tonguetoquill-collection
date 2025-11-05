@@ -33,6 +33,7 @@ interface StoredUser {
 export class MockAuthProvider implements AuthContract {
 	private users: Map<UUID, StoredUser> = new Map();
 	private emailIndex: Map<string, UUID> = new Map(); // email -> user_id mapping
+	private otpCodes: Map<string, { code: string; expiresAt: number }> = new Map(); // email -> OTP
 
 	// Session expiry times (in milliseconds)
 	private ACCESS_TOKEN_EXPIRY = 15 * 60 * 1000; // 15 minutes (per design)
@@ -165,6 +166,81 @@ export class MockAuthProvider implements AuthContract {
 
 		// Create session
 		const session = await this.createSession(userId);
+
+		return {
+			user: this.toPublicUser(user),
+			session
+		};
+	}
+
+	/**
+	 * Send authentication email with OTP code
+	 * In mock: Generate a 6-digit code and log it to console
+	 */
+	async sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }> {
+		await this.simulateDelay();
+
+		// Generate 6-digit OTP code
+		const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+		// Store code with 10-minute expiry
+		const expiresAt = Date.now() + 10 * 60 * 1000;
+		this.otpCodes.set(email.toLowerCase(), { code, expiresAt });
+
+		// In mock mode, log the code to console for easy testing
+		console.log(`[MockAuth] OTP code for ${email}: ${code} (expires in 10 minutes)`);
+
+		return { message: 'Check your email for a 6-digit verification code' };
+	}
+
+	/**
+	 * Verify OTP code entered by user
+	 * In mock: Check against stored code and create session
+	 */
+	async verifyOTP(email: string, code: string): Promise<AuthResult> {
+		await this.simulateDelay();
+
+		const emailKey = email.toLowerCase();
+		const storedOTP = this.otpCodes.get(emailKey);
+
+		// Check if OTP exists
+		if (!storedOTP) {
+			throw new AuthError('invalid_token', 'No OTP code found for this email', 401);
+		}
+
+		// Check if OTP expired
+		if (Date.now() > storedOTP.expiresAt) {
+			this.otpCodes.delete(emailKey);
+			throw new AuthError('token_expired', 'Verification code has expired', 401);
+		}
+
+		// Check if code matches
+		if (storedOTP.code !== code) {
+			throw new AuthError('invalid_token', 'Invalid verification code', 401);
+		}
+
+		// Delete used OTP
+		this.otpCodes.delete(emailKey);
+
+		// Get or create user for this email
+		let user = Array.from(this.users.values()).find((u) => u.email.toLowerCase() === emailKey);
+
+		if (!user) {
+			// Create new user
+			const userId = crypto.randomUUID() as UUID;
+			user = {
+				id: userId,
+				email,
+				dodid: null,
+				profile: {},
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString()
+			};
+			this.users.set(userId, user);
+		}
+
+		// Create session
+		const session = await this.createSession(user.id);
 
 		return {
 			user: this.toPublicUser(user),

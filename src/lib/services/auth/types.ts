@@ -118,7 +118,7 @@ export interface AuthProviderConfig {
 /**
  * Authentication contract interface
  * All authentication providers (mock and real) must implement this interface
- * Focused on token validation and management only - no password handling
+ * Supports both OAuth (redirect) and email (OTP/magic link) flows
  */
 export interface AuthContract {
 	/**
@@ -134,6 +134,22 @@ export interface AuthContract {
 	 * This is called after the user authenticates with the provider
 	 */
 	exchangeCodeForTokens(code: string): Promise<AuthResult>;
+
+	/**
+	 * Send authentication email (OTP code or magic link)
+	 * @param email - User's email address
+	 * @param redirectUri - Callback URL for magic links
+	 * @returns Success message to display to user
+	 */
+	sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }>;
+
+	/**
+	 * Verify OTP code entered by user
+	 * @param email - User's email address
+	 * @param code - 6-digit OTP code from email
+	 * @returns Session with user and tokens
+	 */
+	verifyOTP(email: string, code: string): Promise<AuthResult>;
 
 	/**
 	 * Invalidate session

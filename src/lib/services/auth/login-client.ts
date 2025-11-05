@@ -22,12 +22,8 @@ export class LoginClient {
 	/**
 	 * Get available authentication providers for UI display
 	 * Returns hard-coded provider configurations based on enabled auth methods
-	 *
-	 * Note: With the simplified contract, only OAuth providers (GitHub) are supported.
-	 * Email auth requires OTP/magic link flow which is not yet implemented.
 	 */
 	getAvailableProviders(): AuthProviderConfig[] {
-		// Only return OAuth providers that work with the simplified getLoginUrl() contract
 		return [
 			{
 				id: 'github',
@@ -36,15 +32,19 @@ export class LoginClient {
 				oauthProvider: 'github',
 				icon: 'github',
 				requiresInput: false
+			},
+			{
+				id: 'email',
+				type: 'email_otp',
+				name: 'Continue with Email',
+				icon: 'mail',
+				requiresInput: true,
+				inputConfig: {
+					type: 'email',
+					placeholder: 'your@email.com',
+					label: 'Email'
+				}
 			}
-			// Email auth is disabled for now - requires OTP flow implementation
-			// {
-			// 	id: 'email',
-			// 	type: 'oauth',
-			// 	name: 'Continue with Email',
-			// 	icon: 'mail',
-			// 	requiresInput: false
-			// }
 		];
 	}
 
@@ -108,6 +108,47 @@ export class LoginClient {
 	async isAuthenticated(): Promise<boolean> {
 		const user = await this.getCurrentUser();
 		return user !== null;
+	}
+
+	/**
+	 * Send authentication email with OTP code
+	 * @param email - User's email address
+	 * @returns Success message to display
+	 */
+	async sendEmailAuth(email: string): Promise<{ message: string }> {
+		const response = await fetch('/api/auth/email/send', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ email })
+		});
+
+		if (!response.ok) {
+			const error: ErrorResponse = await response.json();
+			throw new Error(error.message || 'Failed to send authentication email');
+		}
+
+		return response.json();
+	}
+
+	/**
+	 * Verify OTP code and create session
+	 * @param email - User's email address
+	 * @param code - 6-digit verification code
+	 */
+	async verifyEmailOTP(email: string, code: string): Promise<void> {
+		const response = await fetch('/api/auth/email/verify', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ email, code })
+		});
+
+		if (!response.ok) {
+			const error: ErrorResponse = await response.json();
+			throw new Error(error.message || 'Invalid verification code');
+		}
+
+		// Session cookies are set by server
+		// No need to handle response, just return success
 	}
 
 	/**
