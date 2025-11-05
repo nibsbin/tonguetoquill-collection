@@ -394,11 +394,7 @@
 		height: 30px;
 		flex-shrink: 0;
 		transition: transform 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
-		transform: translate(0, -4px);
-	}
-
-	.sidebar-logo-slot.expanded .sidebar-logo {
-		transform: translate(125px, -4px);
+		transform: translateY(-4px);
 	}
 
 	/* Legacy styles - kept for document list items */
