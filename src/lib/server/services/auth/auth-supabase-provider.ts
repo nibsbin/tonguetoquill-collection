@@ -29,7 +29,6 @@ import {
  */
 export class SupabaseAuthProvider implements AuthContract {
 	private supabase: SupabaseClient;
-	private authMethod: 'email' | 'github' = 'github';
 
 	constructor() {
 		const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL || '';
@@ -51,36 +50,48 @@ export class SupabaseAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Get the OAuth login URL for Supabase provider
+	 * Get the OAuth login URL for Supabase provider (GitHub)
 	 * Returns the Supabase hosted UI URL for authentication
-	 * Supports both email magic link and GitHub OAuth
+	 * @deprecated Use getGitHubLoginUrl instead
 	 */
 	async getLoginUrl(redirectUri: string): Promise<string> {
-		if (this.authMethod === 'github') {
-			// Use GitHub OAuth
-			const { data, error } = await this.supabase.auth.signInWithOAuth({
-				provider: 'github',
-				options: {
-					redirectTo: redirectUri,
-					skipBrowserRedirect: true // We want the URL, not to redirect immediately
-				}
-			});
+		return this.getGitHubLoginUrl(redirectUri);
+	}
 
-			if (error || !data.url) {
-				throw new AuthError('network_error', 'Failed to generate GitHub login URL', 500);
+	/**
+	 * Get the GitHub OAuth login URL
+	 * Returns the GitHub OAuth URL for authentication
+	 */
+	async getGitHubLoginUrl(redirectUri: string): Promise<string> {
+		const { data, error } = await this.supabase.auth.signInWithOAuth({
+			provider: 'github',
+			options: {
+				redirectTo: redirectUri,
+				skipBrowserRedirect: true // We want the URL, not to redirect immediately
 			}
+		});
 
-			return data.url;
-		} else {
-			// For email-based auth, we need to redirect to a login page
-			// that collects the email and sends a magic link
-			// Since we're using server-side flow, we'll use Supabase's built-in email OTP
-			// The client will need to handle this differently
-			throw new AuthError(
-				'unknown_error',
-				'Email-based auth requires client-side implementation with OTP',
-				500
-			);
+		if (error || !data.url) {
+			throw new AuthError('network_error', 'Failed to generate GitHub login URL', 500);
+		}
+
+		return data.url;
+	}
+
+	/**
+	 * Send email OTP (One-Time Password) for passwordless login
+	 * Sends a magic link to the user's email
+	 */
+	async sendEmailOTP(email: string, redirectUri: string): Promise<void> {
+		const { error } = await this.supabase.auth.signInWithOtp({
+			email,
+			options: {
+				emailRedirectTo: redirectUri
+			}
+		});
+
+		if (error) {
+			throw new AuthError('network_error', 'Failed to send email OTP: ' + error.message, 500);
 		}
 	}
 

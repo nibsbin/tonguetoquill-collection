@@ -5,6 +5,7 @@
 	import { DocumentListItem } from '$lib/components/DocumentList';
 	import Popover from '$lib/components/ui/popover.svelte';
 	import PopoverContent from '$lib/components/ui/popover-content.svelte';
+	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';
 	import Switch from '$lib/components/ui/switch.svelte';
 	import Label from '$lib/components/ui/label.svelte';
 	import Sheet from '$lib/components/ui/sheet.svelte';
@@ -16,6 +17,7 @@
 	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
 	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
 	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
+	import LoginPopover from './LoginPopover.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { onMount } from 'svelte';
 	import { loginClient } from '$lib/services/auth';
@@ -30,6 +32,7 @@
 	let autoSave = $state(true);
 	let lineNumbers = $state(true);
 	let popoverOpen = $state(false);
+	let loginPopoverOpen = $state(false);
 	let mobileSheetOpen = $state(false);
 	let isMobile = $state(false);
 	let deleteDialogOpen = $state(false);
@@ -161,7 +164,7 @@
 	}
 
 	function handleSignIn() {
-		loginClient.initiateLogin();
+		loginPopoverOpen = !loginPopoverOpen;
 	}
 
 	async function handleSignOut() {
@@ -260,13 +263,25 @@
 				<div class="border-t border-border">
 					<!-- Sign-In Button (Guest Mode) -->
 					{#if !user}
-						<SidebarButtonSlot
-							icon={LogIn}
-							label="Sign in"
-							{isExpanded}
-							onclick={handleSignIn}
-							ariaLabel="Sign in to your account"
-						/>
+						<Popover bind:open={loginPopoverOpen}>
+							<PopoverTrigger class="w-full">
+								<SidebarButtonSlot
+									icon={LogIn}
+									label="Sign in"
+									{isExpanded}
+									onclick={handleSignIn}
+									ariaLabel="Sign in to your account"
+								/>
+							</PopoverTrigger>
+							<PopoverContent
+								id="login-popover"
+								side="right"
+								align="start"
+								class="border-border bg-surface-elevated p-0 text-foreground"
+							>
+								<LoginPopover onClose={() => (loginPopoverOpen = false)} />
+							</PopoverContent>
+						</Popover>
 					{/if}
 
 					<!-- User Profile Button (Logged-in Mode) -->
@@ -405,13 +420,25 @@
 		<div class="border-t border-border">
 			<!-- Sign-In Button (Guest Mode) -->
 			{#if !user}
-				<SidebarButtonSlot
-					icon={LogIn}
-					label="Sign in"
-					{isExpanded}
-					onclick={handleSignIn}
-					ariaLabel="Sign in to your account"
-				/>
+				<Popover bind:open={loginPopoverOpen}>
+					<PopoverTrigger class="w-full">
+						<SidebarButtonSlot
+							icon={LogIn}
+							label="Sign in"
+							{isExpanded}
+							onclick={handleSignIn}
+							ariaLabel="Sign in to your account"
+						/>
+					</PopoverTrigger>
+					<PopoverContent
+						id="login-popover-desktop"
+						side="right"
+						align="start"
+						class="border-border bg-surface-elevated p-0 text-foreground"
+					>
+						<LoginPopover onClose={() => (loginPopoverOpen = false)} />
+					</PopoverContent>
+				</Popover>
 			{/if}
 
 			<!-- User Profile Button (Logged-in Mode) -->

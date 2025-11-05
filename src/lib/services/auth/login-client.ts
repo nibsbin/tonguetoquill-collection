@@ -26,10 +26,41 @@ export class LoginClient {
 	 *
 	 * The OAuth callback is handled server-side via GET /api/auth/callback
 	 * which exchanges the code for tokens and sets HTTP-only cookies
+	 * @deprecated Use initiateGitHubLogin or initiateEmailLogin instead
 	 */
 	async initiateLogin(): Promise<void> {
-		// Redirect to login endpoint which will handle the OAuth flow
-		window.location.href = '/api/auth/login';
+		// Default to GitHub login for backwards compatibility
+		await this.initiateGitHubLogin();
+	}
+
+	/**
+	 * Initiate GitHub OAuth login
+	 * Redirects to GitHub for authentication
+	 */
+	async initiateGitHubLogin(): Promise<void> {
+		window.location.href = '/api/auth/login/github';
+	}
+
+	/**
+	 * Initiate email magic link login
+	 * Sends a magic link to the user's email
+	 */
+	async initiateEmailLogin(email: string): Promise<{ success: boolean; message: string }> {
+		const response = await fetch('/api/auth/login/email', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ email })
+		});
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			throw new Error(data.message || 'Failed to send magic link');
+		}
+
+		return data;
 	}
 
 	/**
