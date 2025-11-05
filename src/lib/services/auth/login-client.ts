@@ -4,7 +4,7 @@
  * Communicates with API routes via fetch()
  */
 
-import type { User, Session } from './types';
+import type { User, Session, AuthProvider } from './types';
 
 /**
  * Error response from API
@@ -26,10 +26,17 @@ export class LoginClient {
 	 *
 	 * The OAuth callback is handled server-side via GET /api/auth/callback
 	 * which exchanges the code for tokens and sets HTTP-only cookies
+	 *
+	 * @param provider - Optional auth provider to use ('email' | 'github')
+	 *                   Required only when multiple providers are enabled
+	 *                   If not specified and only one provider is enabled, auto-selects it
 	 */
-	async initiateLogin(): Promise<void> {
+	async initiateLogin(provider?: AuthProvider): Promise<void> {
+		// Build the login URL with optional provider parameter
+		const url = provider ? `/api/auth/login?provider=${provider}` : '/api/auth/login';
+
 		// Redirect to login endpoint which will handle the OAuth flow
-		window.location.href = '/api/auth/login';
+		window.location.href = url;
 	}
 
 	/**

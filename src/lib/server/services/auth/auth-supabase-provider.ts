@@ -6,6 +6,7 @@
 
 import type {
 	AuthContract,
+	AuthProvider,
 	AuthResult,
 	Session,
 	TokenPayload,
@@ -25,21 +26,23 @@ import {
 /**
  * Supabase Authentication Provider
  * Delegates authentication to Supabase-hosted pages and APIs
+ * Supports both email and GitHub authentication methods simultaneously
  */
 export class SupabaseAuthProvider implements AuthContract {
 	private supabase: SupabaseClient;
-	private authMethod: 'email' | 'github';
+	private enableEmail: boolean;
+	private enableGithub: boolean;
 
 	constructor() {
 		// Load Supabase configuration
 		const config = loadSupabaseConfig();
 
-		// Determine auth method from configuration
-		if (config.ENABLE_GITHUB) {
-			this.authMethod = 'github';
-		} else if (config.ENABLE_EMAIL) {
-			this.authMethod = 'email';
-		} else {
+		// Store enabled auth methods
+		this.enableEmail = config.ENABLE_EMAIL;
+		this.enableGithub = config.ENABLE_GITHUB;
+
+		// Validate that at least one auth method is enabled
+		if (!this.enableEmail && !this.enableGithub) {
 			throw new Error(
 				'No auth method enabled. Set SUPABASE_ENABLE_EMAIL or SUPABASE_ENABLE_GITHUB to true.'
 			);
@@ -60,9 +63,14 @@ export class SupabaseAuthProvider implements AuthContract {
 	 * Get the OAuth login URL for Supabase provider
 	 * Returns the Supabase hosted UI URL for authentication
 	 * Supports both email magic link and GitHub OAuth
+	 * @param redirectUri - The callback URL to return to after authentication
+	 * @param provider - Optional provider to use. If not specified and multiple providers are enabled, an error is thrown
 	 */
-	async getLoginUrl(redirectUri: string): Promise<string> {
-		if (this.authMethod === 'github') {
+	async getLoginUrl(redirectUri: string, provider?: AuthProvider): Promise<string> {
+		// Determine which provider to use
+		const targetProvider = this.determineProvider(provider);
+
+		if (targetProvider === 'github') {
 			// Use GitHub OAuth
 			const { data, error } = await this.supabase.auth.signInWithOAuth({
 				provider: 'github',
@@ -88,6 +96,34 @@ export class SupabaseAuthProvider implements AuthContract {
 				500
 			);
 		}
+	}
+
+	/**
+	 * Determine which provider to use based on what's enabled and what was requested
+	 */
+	private determineProvider(requestedProvider?: AuthProvider): AuthProvider {
+		// If a specific provider was requested, validate it's enabled
+		if (requestedProvider) {
+			if (requestedProvider === 'email' && !this.enableEmail) {
+				throw new AuthError('unknown_error', 'Email authentication is not enabled', 400);
+			}
+			if (requestedProvider === 'github' && !this.enableGithub) {
+				throw new AuthError('unknown_error', 'GitHub authentication is not enabled', 400);
+			}
+			return requestedProvider;
+		}
+
+		// If both are enabled and no provider specified, require explicit choice
+		if (this.enableEmail && this.enableGithub) {
+			throw new AuthError(
+				'unknown_error',
+				'Multiple authentication providers are enabled. Please specify which provider to use.',
+				400
+			);
+		}
+
+		// Return the single enabled provider
+		return this.enableGithub ? 'github' : 'email';
 	}
 
 	/**

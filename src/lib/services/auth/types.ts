@@ -76,6 +76,11 @@ export class AuthError extends Error {
 }
 
 /**
+ * Supported authentication providers
+ */
+export type AuthProvider = 'email' | 'github';
+
+/**
  * Authentication contract interface
  * All authentication providers (mock and real) must implement this interface
  * Focused on token validation and management only - no password handling
@@ -85,8 +90,9 @@ export interface AuthContract {
 	 * Get the OAuth login URL for this provider
 	 * Returns the URL to redirect users to for authentication
 	 * @param redirectUri - The callback URL to return to after authentication
+	 * @param provider - Optional provider to use (required if multiple providers are enabled)
 	 */
-	getLoginUrl(redirectUri: string): Promise<string>;
+	getLoginUrl(redirectUri: string, provider?: AuthProvider): Promise<string>;
 
 	/**
 	 * Exchange OAuth authorization code for tokens

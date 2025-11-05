@@ -7,6 +7,7 @@
 import { webcrypto as crypto } from 'node:crypto';
 import type {
 	AuthContract,
+	AuthProvider,
 	AuthResult,
 	Session,
 	TokenPayload,
@@ -125,8 +126,10 @@ export class MockAuthProvider implements AuthContract {
 	/**
 	 * Get the OAuth login URL for mock provider
 	 * Returns a callback URL with a mock authorization code
+	 * @param redirectUri - The callback URL to return to after authentication
+	 * @param provider - Optional provider to use (ignored in mock mode)
 	 */
-	async getLoginUrl(redirectUri: string): Promise<string> {
+	async getLoginUrl(redirectUri: string, provider?: AuthProvider): Promise<string> {
 		await this.simulateDelay();
 
 		// Generate a mock authorization code
@@ -134,6 +137,7 @@ export class MockAuthProvider implements AuthContract {
 
 		// Return the callback URL with the mock code
 		// In mock mode, we skip the actual login page and go straight to callback
+		// Provider parameter is ignored since mock always returns the same default user
 		return `${redirectUri}?code=${mockAuthCode}`;
 	}
 
