@@ -385,15 +385,15 @@
 	}
 
 	.sidebar-logo {
-		width: 40px;
-		height: 40px;
+		width: 36px;
+		height: 36px;
 		flex-shrink: 0;
 		transition: transform 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
-		transform: translateX(0);
+		transform: translate(0, -4px);
 	}
 
 	.sidebar-logo-slot.expanded .sidebar-logo {
-		transform: translateX(120px);
+		transform: translate(122px, -4px);
 	}
 
 	/* Legacy styles - kept for document list items */
