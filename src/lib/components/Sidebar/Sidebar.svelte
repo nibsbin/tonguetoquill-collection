@@ -164,7 +164,7 @@
 		: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 >
 	<!-- Hamburger Menu and Title -->
-	<div class="relative flex items-center border-b border-border">
+	<div class="relative flex items-center">
 		<SidebarButtonSlot
 			icon={Menu}
 			{isExpanded}
@@ -382,18 +382,18 @@
 		display: flex;
 		align-items: center;
 		padding: 4px;
-		transition: all 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
-		justify-content: flex-start;
-	}
-
-	.sidebar-logo-slot.expanded {
-		justify-content: center;
 	}
 
 	.sidebar-logo {
 		width: 40px;
 		height: 40px;
 		flex-shrink: 0;
+		transition: transform 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
+		transform: translateX(0);
+	}
+
+	.sidebar-logo-slot.expanded .sidebar-logo {
+		transform: translateX(120px);
 	}
 
 	/* Legacy styles - kept for document list items */
