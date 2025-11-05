@@ -13,8 +13,8 @@
 	--sidebar-padding: 0.5rem; /* 8px - padding for expanded button labels */
 	--sidebar-button-size: 2.5rem; /* 40px - exact size of icon buttons */
 	--sidebar-icon-size: 1.5rem; /* 24px - size of icons within buttons */
-	--sidebar-collapsed-width: 3rem; /* 48px - collapsed sidebar width */
-	--sidebar-expanded-width: 18rem; /* 288px - expanded sidebar width */
+	--sidebar-collapsed-width: 3rem;
+	--sidebar-expanded-width: 15rem;
 
 	/* Derived tokens - calculated for perfect centering */
 	--sidebar-slot-width-collapsed: var(--sidebar-collapsed-width); /* 48px slot width */
