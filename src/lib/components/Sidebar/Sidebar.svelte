@@ -294,6 +294,7 @@
 				<!-- Settings Popover (rendered outside button slot) -->
 				<Popover bind:open={popoverOpen}>
 					<PopoverContent
+						id="settings-popover"
 						side="right"
 						align="end"
 						class="w-64 border-border bg-surface-elevated p-0 text-foreground"
