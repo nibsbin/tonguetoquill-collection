@@ -11,6 +11,7 @@
 		title?: string;
 		disabled?: boolean;
 		children?: Snippet;
+		asChild?: boolean; // When true, renders as div for use with PopoverTrigger
 	};
 
 	let {
@@ -22,7 +23,8 @@
 		ariaLabel,
 		title,
 		disabled = false,
-		children
+		children,
+		asChild = false
 	}: SidebarButtonSlotProps = $props();
 </script>
 
@@ -32,15 +34,25 @@
 		{@render children()}
 	</div>
 {:else if icon}
-	<!-- Standard button mode: Render our own simple button -->
 	{@const Icon = icon}
 	<div class="sidebar-button-slot">
-		<button class="sidebar-button {variant}" {onclick} aria-label={ariaLabel} {title} {disabled}>
-			<Icon class="sidebar-icon" />
-			{#if label}
-				<span class="sidebar-label" class:visible={isExpanded}>{label}</span>
-			{/if}
-		</button>
+		{#if asChild}
+			<!-- Render as div for PopoverTrigger/other composite components -->
+			<div class="sidebar-button {variant}" aria-label={ariaLabel} {title}>
+				<Icon class="sidebar-icon" />
+				{#if label}
+					<span class="sidebar-label" class:visible={isExpanded}>{label}</span>
+				{/if}
+			</div>
+		{:else}
+			<!-- Standard button mode -->
+			<button class="sidebar-button {variant}" {onclick} aria-label={ariaLabel} {title} {disabled}>
+				<Icon class="sidebar-icon" />
+				{#if label}
+					<span class="sidebar-label" class:visible={isExpanded}>{label}</span>
+				{/if}
+			</button>
+		{/if}
 	</div>
 {/if}
 
@@ -70,7 +82,7 @@
 		flex-shrink: 0;
 	}
 
-	/* Button: Fills the 40px × 40px area inside padded slot */
+	/* Button/Content: Fills the 40px × 40px area inside padded slot */
 	.sidebar-button {
 		width: 100%;
 		height: 100%;
@@ -86,7 +98,6 @@
 		font-family: inherit;
 		font-size: 0.875rem; /* 14px */
 		font-weight: 500;
-		cursor: pointer;
 		border-radius: 0.375rem; /* rounded-md for inset button */
 		transition:
 			background-color 0.2s,
@@ -94,6 +105,11 @@
 		box-sizing: border-box;
 		overflow: hidden;
 		white-space: nowrap;
+	}
+
+	/* Cursor only on interactive button elements */
+	button.sidebar-button {
+		cursor: pointer;
 	}
 
 	/* Variant styles */
@@ -106,11 +122,11 @@
 		color: var(--color-foreground);
 	}
 
-	.sidebar-button:active:not(:disabled) {
+	button.sidebar-button:active:not(:disabled) {
 		transform: scale(0.985);
 	}
 
-	.sidebar-button:disabled {
+	button.sidebar-button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 	}

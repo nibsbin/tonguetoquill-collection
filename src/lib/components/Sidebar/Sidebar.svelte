@@ -175,7 +175,7 @@
 		</div>
 
 		<span
-			class="pointer-events-none absolute left-0 right-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+			class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
 			style="transform: translateY(4px);"
@@ -239,6 +239,7 @@
 						label="Sign in"
 						{isExpanded}
 						ariaLabel="Sign in to your account"
+						asChild
 					/>
 				</PopoverTrigger>
 				<PopoverContent
@@ -271,6 +272,7 @@
 					label="Settings"
 					{isExpanded}
 					ariaLabel="Open settings"
+					asChild
 				/>
 			</PopoverTrigger>
 			<PopoverContent
