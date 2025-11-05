@@ -178,6 +178,7 @@
 			class="pointer-events-none absolute left-0 right-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
 				? 'opacity-100'
 				: 'opacity-0'}"
+			style="transform: translateY(4px);"
 		>
 			<span class="">
 				<span style="color: #3C79AA;">tongueto</span>quill
