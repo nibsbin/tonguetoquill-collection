@@ -10,7 +10,7 @@
 		"dev:supabase-prod": "vite dev --mode supabase",
 		"build": "npm run pack && vite build --mode supabase",
 		"preview": "vite preview --mode supabase-dev",
-		"prepare": "husky",
+		"prepare": "husky || true",
 		"pack": "npm run pack:quills && npm run pack:templates",
 		"pack:quills": "node scripts/package-quills.js",
 		"pack:templates": "node scripts/package-templates.js",
