@@ -6,6 +6,7 @@
 	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
 	import { Preview } from '$lib/components/Preview';
 	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
+	import ImportFileDialog from '$lib/components/ImportFileDialog.svelte';
 
 	interface Props {
 		documentId: string;
@@ -14,6 +15,8 @@
 		onDocumentLoad?: (doc: { name: string; content: string }) => void;
 		showDocumentInfo?: boolean;
 		onDocumentInfoChange?: (open: boolean) => void;
+		showImportDialog?: boolean;
+		onImportDialogChange?: (open: boolean) => void;
 	}
 
 	let {
@@ -22,7 +25,9 @@
 		onContentChange,
 		onDocumentLoad,
 		showDocumentInfo = false,
-		onDocumentInfoChange
+		onDocumentInfoChange,
+		showImportDialog = false,
+		onImportDialogChange
 	}: Props = $props();
 
 	let content = $state('');
@@ -106,6 +111,34 @@
 		} catch {
 			toast.error('Failed to save document');
 		}
+	}
+
+	// Handle file import
+	function handleImport(importedContent: string, filename: string) {
+		// Check for unsaved changes
+		if (isDirty) {
+			const confirmed = confirm(
+				'You have unsaved changes. Importing will replace your current content. Continue?'
+			);
+			if (!confirmed) {
+				return;
+			}
+		}
+
+		// Update content
+		content = importedContent;
+		initialContent = importedContent;
+		debouncedContent = importedContent;
+
+		// Trigger auto-save
+		autoSave.scheduleSave(documentId, importedContent, autoSaveEnabled);
+
+		// Notify parent of content change
+		if (onContentChange) {
+			onContentChange(importedContent);
+		}
+
+		toast.success(`Imported ${filename}`);
 	}
 
 	// Load document content
@@ -254,6 +287,15 @@
 						document={documentStore.activeDocument}
 						{content}
 						onOpenChange={onDocumentInfoChange}
+					/>
+				{/if}
+
+				<!-- Import File Dialog (scoped to preview pane) -->
+				{#if showImportDialog !== undefined && onImportDialogChange}
+					<ImportFileDialog
+						open={showImportDialog}
+						onOpenChange={onImportDialogChange}
+						onImport={handleImport}
 					/>
 				{/if}
 			</div>
