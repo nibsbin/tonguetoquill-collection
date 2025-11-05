@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { rulerStore } from '$lib/stores/ruler.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import { Sidebar } from '$lib/components/Sidebar';
 	import { TopMenu } from '$lib/components/TopMenu';
@@ -80,12 +81,20 @@
 
 	function handleDocumentInfo() {
 		showImportDialog = false; // Dismiss any existing preview modal
+		rulerStore.setActive(false); // Dismiss ruler overlay
 		showDocumentInfo = true;
 	}
 
 	function handleImport() {
 		showDocumentInfo = false; // Dismiss any existing preview modal
+		rulerStore.setActive(false); // Dismiss ruler overlay
 		showImportDialog = true;
+	}
+
+	function handleRulerToggle() {
+		showDocumentInfo = false; // Dismiss any existing preview modal
+		showImportDialog = false; // Dismiss any existing preview modal
+		rulerStore.toggle();
 	}
 </script>
 
@@ -109,6 +118,7 @@
 				onDocumentInfo={handleDocumentInfo}
 				onTitleChange={handleTitleChange}
 				onImport={handleImport}
+				onRulerToggle={handleRulerToggle}
 			/>
 
 			<!-- Editor and Preview Area -->
