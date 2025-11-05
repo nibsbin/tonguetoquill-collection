@@ -1,13 +1,11 @@
 <script lang="ts">
 	import type { ComponentType, Snippet } from 'svelte';
-	import Button from '$lib/components/ui/button.svelte';
 
 	type SidebarButtonSlotProps = {
 		icon?: ComponentType;
 		label?: string;
 		isExpanded: boolean;
-		variant?: 'ghost' | 'default' | 'outline';
-		class?: string;
+		variant?: 'ghost' | 'default';
 		onclick?: (event: MouseEvent) => void;
 		ariaLabel?: string;
 		title?: string;
@@ -20,7 +18,6 @@
 		label,
 		isExpanded,
 		variant = 'ghost',
-		class: className = '',
 		onclick,
 		ariaLabel,
 		title,
@@ -29,141 +26,112 @@
 	}: SidebarButtonSlotProps = $props();
 </script>
 
-<!--
-	Button Slot Architecture (3 layers):
-
-	1. Slot Container (48px × 48px in collapsed state)
-	   - Symmetric 4px padding on all sides (top, right, bottom, left)
-	   - Creates 40px × 40px space for button
-	   - Expands horizontally when sidebar expands, vertical stays 48px
-
-	2. Button Element (40px × 40px in collapsed, full width when expanded)
-	   - Always has 8px padding on all sides (NEVER changes)
-	   - Content area: 24px × 24px (perfect fit for icon)
-	   - Always uses flex-start justification (NEVER changes)
-	   - Only width changes between states, height stays 40px
-
-	3. Icon Element (24px × 24px)
-	   - ALWAYS positioned at 12px from all edges (4px slot + 8px button)
-	   - Position is identical in collapsed and expanded states
-	   - Label text fades in/out with opacity transition
--->
-<div class="sidebar-button-slot">
-	{#if children}
-		<!-- Custom trigger mode: Render snippet content -->
+{#if children}
+	<!-- Custom content mode: Render snippet in slot container -->
+	<div class="sidebar-button-slot">
 		{@render children()}
-	{:else if icon}
-		<!-- Standard button mode: Render Button component -->
-		<Button
-			{variant}
-			size="icon"
-			class="sidebar-slot-button {isExpanded ? 'sidebar-slot-button-full' : ''} {className}"
-			{onclick}
-			aria-label={ariaLabel}
-			{title}
-			{disabled}
-		>
-			{@const Icon = icon}
+	</div>
+{:else if icon}
+	<!-- Standard button mode: Render our own simple button -->
+	{@const Icon = icon}
+	<div class="sidebar-button-slot">
+		<button class="sidebar-button {variant}" {onclick} aria-label={ariaLabel} {title} {disabled}>
 			<Icon class="sidebar-icon" />
 			{#if label}
-				<span
-					class="truncate transition-opacity duration-300 {isExpanded
-						? 'opacity-100'
-						: 'opacity-0'}">{label}</span
-				>
+				<span class="sidebar-label" class:visible={isExpanded}>{label}</span>
 			{/if}
-		</Button>
-	{/if}
-</div>
+		</button>
+	</div>
+{/if}
 
 <style>
 	/*
-	 * Clean Button Slot Architecture
-	 * ==============================
+	 * SIMPLE SIDEBAR BUTTON SLOT ARCHITECTURE
+	 * ========================================
 	 *
-	 * Goal: Icons must NEVER move between collapsed/expanded states
+	 * Goal: Every button slot is EXACTLY 48px tall (same as collapsed sidebar width)
 	 *
-	 * Layout structure:
-	 * - Slot container: 48px square with consistent 4px padding on all sides
-	 * - Button: 40px square (collapsed), always has 8px padding on all sides
-	 * - Icon: 24px square, always at 12px from edges (4px slot + 8px button)
-	 *
-	 * Math (same for both horizontal and vertical):
-	 * - Slot: 48px total
-	 * - Slot padding: 4px (top, right, bottom, left - all symmetric)
-	 * - Button: 40px with 8px padding all around
-	 * - Content area: 40px - 16px = 24px (exact icon size)
-	 * - Icon position: 4px (slot) + 8px (button) = 12px from any edge
-	 *
-	 * This position is IDENTICAL in both collapsed and expanded states.
-	 * Vertical and horizontal spacing is completely symmetric.
+	 * Structure:
+	 * 1. .sidebar-button-slot: 48px × 48px container (no padding, no margins)
+	 * 2. .sidebar-button: Button that fills the slot completely
+	 * 3. Content: Icon (24px) + optional label, with internal spacing
 	 */
 
-	/* Layer 1: Button Slot Container */
-	:global(.sidebar-button-slot) {
-		/* Exact dimensions: 48px × 48px (no more, no less) */
-		height: var(--sidebar-slot-height) !important; /* 48px */
-		max-height: var(--sidebar-slot-height) !important; /* Force exact height */
-		min-height: var(--sidebar-slot-height) !important; /* Prevent shrinking */
-		box-sizing: border-box !important;
-
-		/* Flexbox for button layout - buttons aligned to left with symmetric spacing */
-		display: flex !important;
-		align-items: center !important; /* Vertical centering */
-		justify-content: flex-start !important; /* Horizontal left alignment */
-
-		/* Symmetric padding on all sides: 4px + 40px + 4px = 48px */
-		padding: var(--sidebar-button-spacing) !important; /* 4px all around */
-
-		flex-shrink: 0 !important;
-		overflow: hidden !important; /* Clips label text in collapsed state */
-
-		/* Prevent any extra space from text/inline layout */
-		line-height: 0 !important;
-		font-size: 0 !important;
-
-		/* Remove any potential margins that could create extra space */
-		margin: 0 !important;
-
-		/* Ensure no extra space from positioning context */
-		position: relative !important;
-	}
-
-	/* Layer 2: Button Element */
-	:global(.sidebar-slot-button) {
-		/*
-		 * Button: 40px × 40px with 8px padding all around
-		 * Content area: 24px × 24px (exact icon size)
-		 * Total: 8px + 24px + 8px = 40px ✓
-		 *
-		 * Note: !important is required to override Button component's Tailwind
-		 * size="icon" classes (h-8 w-8 p-0) which have same specificity
-		 */
-		width: var(--sidebar-button-size) !important; /* 40px */
-		height: var(--sidebar-button-size) !important; /* 40px */
-		min-width: var(--sidebar-button-size) !important;
-
-		/* Flexbox for icon + label layout */
-		display: inline-flex !important;
-		align-items: center !important;
-		justify-content: flex-start !important; /* Left-align content */
-
-		/* 8px padding ensures icon is always at same position */
-		padding: var(--sidebar-padding) !important; /* 8px all around */
-
+	/* Container: Exact 48px square with 4px padding around button */
+	.sidebar-button-slot {
+		width: 100%;
+		height: 48px;
+		min-height: 48px;
+		max-height: 48px;
+		display: flex;
+		margin: 0;
+		padding: 0.25rem; /* 4px padding creates 40px × 40px button area */
+		box-sizing: border-box;
 		flex-shrink: 0;
-		transition: none;
-
-		/* Reset text properties from parent container */
-		line-height: normal;
-		font-size: 0.875rem; /* text-sm */
 	}
 
-	/* Expanded state: button stretches to full width */
-	:global(.sidebar-slot-button-full) {
-		width: 100% !important;
-		/* Padding stays the same - icon position unchanged */
+	/* Button: Fills the 40px × 40px area inside padded slot */
+	.sidebar-button {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: 0.5rem;
+		padding: 0 0.5rem; /* Horizontal padding for content */
+		margin: 0;
+		border: none;
+		background: transparent;
+		color: inherit;
+		font-family: inherit;
+		font-size: 0.875rem; /* 14px */
+		font-weight: 500;
+		cursor: pointer;
+		border-radius: 0.375rem; /* rounded-md for inset button */
+		transition:
+			background-color 0.2s,
+			color 0.2s;
+		box-sizing: border-box;
+		overflow: hidden;
+		white-space: nowrap;
 	}
 
-	/* Layer 3: Icon Element (handled by global .sidebar-icon in Sidebar.svelte) */
+	/* Variant styles */
+	.sidebar-button.ghost {
+		color: rgb(from var(--color-foreground) r g b / 0.7);
+	}
+
+	.sidebar-button.ghost:hover:not(:disabled) {
+		background-color: var(--color-accent);
+		color: var(--color-foreground);
+	}
+
+	.sidebar-button:active:not(:disabled) {
+		transform: scale(0.985);
+	}
+
+	.sidebar-button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* Icon: Fixed 24px size */
+	:global(.sidebar-button .sidebar-icon) {
+		width: 24px;
+		height: 24px;
+		flex-shrink: 0;
+	}
+
+	/* Label: Hidden in collapsed state */
+	.sidebar-label {
+		opacity: 0;
+		transition: opacity 0.3s;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.sidebar-label.visible {
+		opacity: 1;
+	}
 </style>
