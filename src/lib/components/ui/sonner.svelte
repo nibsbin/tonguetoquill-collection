@@ -13,6 +13,7 @@
 		expand?: boolean;
 		duration?: number;
 		visibleToasts?: number;
+		closeButton?: boolean;
 	};
 
 	let {
@@ -21,6 +22,7 @@
 		expand = false,
 		duration = 4000,
 		visibleToasts = 3,
+		closeButton = true,
 		...restProps
 	}: ToasterProps = $props();
 
@@ -52,5 +54,6 @@
 	{expand}
 	{duration}
 	{visibleToasts}
+	{closeButton}
 	{...restProps}
 />
