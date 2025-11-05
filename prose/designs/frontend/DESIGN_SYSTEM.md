@@ -479,7 +479,7 @@ This section outlines the centralized theme architecture for tonguetoquill-web t
 
 #### CSS Custom Properties Foundation
 
-All theme tokens are defined as CSS custom properties in `src/app.css` using standard `:root` and `.dark` selectors. Tailwind CSS v4 automatically reads these CSS custom properties and makes them available as utility classes.
+All theme tokens are defined as CSS custom properties in `src/app.css` using standard `:root` and `.dark` selectors. These properties are then registered with Tailwind CSS v4 via the `@theme inline` directive to generate utility classes.
 
 **Rationale**: CSS custom properties provide:
 
@@ -487,7 +487,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css` using sta
 - Access from both CSS (Tailwind) and JavaScript (CodeMirror)
 - Browser-native support with excellent performance
 - Standard CSS cascade and inheritance behavior
-- Direct integration with Tailwind v4 without intermediate mapping layers
+- Reactive theme switching when combined with the `.dark` class
 
 #### Theme Token Structure
 
@@ -527,17 +527,29 @@ All theme tokens are defined as CSS custom properties in `src/app.css` using sta
 
 #### Tailwind CSS Integration
 
-**Approach**: Tailwind CSS v4 directly reads CSS custom properties from `:root` and `.dark` selectors, automatically generating utility classes without requiring intermediate configuration.
+**Approach**: Tailwind CSS v4 uses the `@theme inline` directive to register CSS custom properties as theme values, enabling Tailwind to generate utility classes.
+
+**How It Works**: The `@theme inline` block in `app.css` maps CSS custom properties to Tailwind theme tokens:
+
+```css
+@theme inline {
+	--color-background: var(--color-background);
+	--color-foreground: var(--color-foreground);
+	/* ... etc */
+}
+```
+
+This syntax tells Tailwind: "Create utility classes for `--color-background` that reference the CSS custom property `var(--color-background)`". The left side becomes the utility name; the right side is the value source.
 
 **Benefits**:
 
 - Enables usage of semantic tokens in standard Tailwind classes (e.g., `bg-background`, `text-foreground`)
 - Maintains consistency between custom properties and utility classes
-- Allows theme switching without rebuilding CSS
-- Eliminates redundant mapping and configuration overhead
-- Simplifies maintenance with a single source of truth
+- Allows theme switching without rebuilding CSS (utilities reference live CSS variables)
+- Single source of truth: color values defined once in `:root`/`.dark`, referenced everywhere
+- Theme changes via `.dark` class instantly affect all utilities
 
-**Pattern**: CSS custom properties defined in `app.css` are automatically available as Tailwind utilities. For example, `--color-background` becomes usable as `bg-background` and `text-background` classes.
+**Pattern**: CSS custom properties defined in `:root` and `.dark` are registered via `@theme inline`, making them available as Tailwind utilities. For example, `--color-background` becomes usable as `bg-background` and `text-background` classes that reactively update when the theme changes.
 
 #### CSS Structure Best Practices
 
@@ -550,9 +562,9 @@ All theme tokens are defined as CSS custom properties in `src/app.css` using sta
 
 **Invalid Patterns to Avoid**:
 
-- Nesting class selectors or element selectors inside `:root` or `.dark` blocks
-- Applying non-custom-property styles to `:root` (like `font-family`)
-- Using `!important` flags unnecessarily
+- Nesting class selectors or element selectors inside `:root` or `.dark` blocks (violates CSS custom property scope rules)
+- Applying non-custom-property styles to `:root` (like `font-family` - these belong on `body` or other selectors)
+- Forgetting to register custom properties in the `@theme inline` block (prevents Tailwind utility generation)
 
 **Rationale**: This structure ensures:
 

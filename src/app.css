@@ -142,6 +142,60 @@
 	--color-info-border: #1e40af; /* blue-800 stronger border */
 }
 
+/* Tailwind CSS Integration - required for utility class generation */
+@theme inline {
+	/* Surface colors */
+	--color-background: var(--color-background);
+	--color-foreground: var(--color-foreground);
+	--color-surface: var(--color-surface);
+	--color-surface-elevated: var(--color-surface-elevated);
+
+	/* Interactive states */
+	--color-primary: var(--color-primary);
+	--color-primary-foreground: var(--color-primary-foreground);
+	--color-secondary: var(--color-secondary);
+	--color-secondary-foreground: var(--color-secondary-foreground);
+
+	/* Semantic colors */
+	--color-muted: var(--color-muted);
+	--color-muted-foreground: var(--color-muted-foreground);
+	--color-accent: var(--color-accent);
+	--color-accent-foreground: var(--color-accent-foreground);
+	--color-destructive: var(--color-destructive);
+	--color-destructive-hover: var(--color-destructive-hover);
+	--color-destructive-foreground: var(--color-destructive-foreground);
+
+	/* UI elements */
+	--color-border: var(--color-border);
+	--color-border-hover: var(--color-border-hover);
+	--color-input: var(--color-input);
+	--color-ring: var(--color-ring);
+
+	/* Error/Diagnostic colors */
+	--color-error: var(--color-error);
+	--color-error-foreground: var(--color-error-foreground);
+	--color-error-background: var(--color-error-background);
+	--color-error-border: var(--color-error-border);
+
+	/* Warning/Hint colors */
+	--color-warning: var(--color-warning);
+	--color-warning-foreground: var(--color-warning-foreground);
+	--color-warning-background: var(--color-warning-background);
+	--color-warning-border: var(--color-warning-border);
+
+	/* Success colors */
+	--color-success: var(--color-success);
+	--color-success-foreground: var(--color-success-foreground);
+	--color-success-background: var(--color-success-background);
+	--color-success-border: var(--color-success-border);
+
+	/* Info colors */
+	--color-info: var(--color-info);
+	--color-info-foreground: var(--color-info-foreground);
+	--color-info-background: var(--color-info-background);
+	--color-info-border: var(--color-info-border);
+}
+
 body {
 	font-family: 'Lato', Arial, sans-serif;
 	margin: 0;
