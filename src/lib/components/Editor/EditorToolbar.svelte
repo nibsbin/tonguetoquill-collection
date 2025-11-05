@@ -40,7 +40,7 @@
 		<Button
 			variant="ghost"
 			size="sm"
-			class="ml-1 h-7 w-7 rounded-l-none border-l border-accent p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			class="ml-1 h-7 w-7 rounded-l-none border-l border-border p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('bold')}
 			title="Bold"
 		>
@@ -95,7 +95,7 @@
 		<Button
 			variant="ghost"
 			size="sm"
-			class="ml-1 h-7 w-7 rounded-l-none border-l border-accent p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			class="ml-1 h-7 w-7 rounded-l-none border-l border-border p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('numberedList')}
 			title="Numbered List"
 		>
