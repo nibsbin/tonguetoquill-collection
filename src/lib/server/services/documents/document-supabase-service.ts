@@ -154,18 +154,18 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 	 * Get document metadata only (no content)
 	 */
 	async getDocumentMetadata({
-		userId,
-		documentId
+		user_id,
+		document_id
 	}: {
-		userId: UUID;
-		documentId: UUID;
+		user_id: UUID;
+		document_id: UUID;
 	}): Promise<DocumentMetadata> {
 		try {
 			const { data, error } = await this.supabase
 				.from('documents')
 				.select('id, owner_id, name, content_size_bytes, created_at, updated_at')
-				.eq('id', documentId)
-				.eq('owner_id', userId)
+				.eq('id', document_id)
+				.eq('owner_id', user_id)
 				.single();
 
 			if (error) throw error;
@@ -194,8 +194,8 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 			const { data, error } = await this.supabase
 				.from('documents')
 				.select('*')
-				.eq('id', documentId)
-				.eq('owner_id', userId)
+				.eq('id', document_id)
+				.eq('owner_id', user_id)
 				.single();
 
 			if (error) throw error;
