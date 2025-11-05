@@ -233,13 +233,12 @@
 		<!-- Sign-In Button (Guest Mode) -->
 		{#if !user}
 			<Popover bind:open={loginPopoverOpen}>
-				<PopoverTrigger class="w-full">
+				<PopoverTrigger asChild>
 					<SidebarButtonSlot
 						icon={LogIn}
 						label="Sign in"
 						{isExpanded}
 						ariaLabel="Sign in to your account"
-						asChild
 					/>
 				</PopoverTrigger>
 				<PopoverContent
@@ -266,13 +265,12 @@
 
 		<!-- Settings Gear Button -->
 		<Popover bind:open={popoverOpen}>
-			<PopoverTrigger class="w-full">
+			<PopoverTrigger asChild>
 				<SidebarButtonSlot
 					icon={Settings}
 					label="Settings"
 					{isExpanded}
 					ariaLabel="Open settings"
-					asChild
 				/>
 			</PopoverTrigger>
 			<PopoverContent
