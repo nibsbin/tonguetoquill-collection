@@ -5,6 +5,7 @@
 
 import type { DocumentServiceContract } from '$lib/services/documents/types';
 import { MockDocumentService } from './document-mock-service';
+import { SupabaseDocumentService } from './document-supabase-service';
 import { env } from '$env/dynamic/private';
 
 let cachedService: DocumentServiceContract | null = null;
@@ -19,8 +20,8 @@ export async function createDocumentService(): Promise<DocumentServiceContract> 
 		return new MockDocumentService();
 	}
 
-	// TODO: Phase 10 - Implement SupabaseDocumentService
-	throw new Error('Real Supabase document service not yet implemented. Set USE_DB_MOCKS=true');
+	// Real Supabase implementation
+	return new SupabaseDocumentService();
 }
 
 /**

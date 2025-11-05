@@ -8,6 +8,7 @@ This plan outlines the implementation steps for the Supabase Database Adapter as
 ## Prerequisites
 
 **Completed:**
+
 - ✅ Document service contract defined (DocumentServiceContract interface)
 - ✅ Mock document service implemented (MockDocumentService)
 - ✅ Database schema defined (SCHEMAS.md)
@@ -15,6 +16,7 @@ This plan outlines the implementation steps for the Supabase Database Adapter as
 - ✅ Supabase client library installed (@supabase/supabase-js)
 
 **Required:**
+
 - Supabase project with documents table created
 - Environment variables configured (SUPABASE_URL, keys)
 
@@ -25,6 +27,7 @@ This plan outlines the implementation steps for the Supabase Database Adapter as
 **File:** `src/lib/server/services/documents/document-supabase-service.ts`
 
 **Tasks:**
+
 - [ ] Create new file following naming convention
 - [ ] Import required types from types.ts
 - [ ] Import Supabase client types from @supabase/supabase-js
@@ -32,8 +35,9 @@ This plan outlines the implementation steps for the Supabase Database Adapter as
 - [ ] Define SupabaseDocumentService class implementing DocumentServiceContract
 - [ ] Add JSDoc comments explaining purpose and usage
 
-**Pattern Reference:** 
+**Pattern Reference:**
 Follow the structure of `auth-supabase-provider.ts`:
+
 - Class-based implementation
 - Constructor initializes Supabase client
 - Private helper methods for validation and error mapping
@@ -48,6 +52,7 @@ Follow the structure of `auth-supabase-provider.ts`:
 **Location:** `SupabaseDocumentService` constructor
 
 **Tasks:**
+
 - [ ] Import environment variables (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, optional SUPABASE_SECRET_KEY)
 - [ ] Validate required environment variables exist
 - [ ] Create Supabase client instance using createClient()
@@ -56,20 +61,22 @@ Follow the structure of `auth-supabase-provider.ts`:
 - [ ] Add error handling for missing configuration
 
 **Configuration:**
+
 ```typescript
 constructor() {
   const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL || '';
   const supabaseKey = env.SUPABASE_SECRET_KEY || publicEnv.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
-  
+
   if (!supabaseUrl || !supabaseKey) {
     throw new Error('Supabase configuration missing. Check environment variables.');
   }
-  
+
   this.supabase = createClient(supabaseUrl, supabaseKey);
 }
 ```
 
 **Validation:**
+
 - Fail fast with clear error message if configuration missing
 - No fallback values or defaults
 - Use service role key for server-side operations
@@ -83,6 +90,7 @@ constructor() {
 **Location:** Private methods in `SupabaseDocumentService`
 
 **Tasks:**
+
 - [ ] Implement `validateName(name: string): void`
   - Check length (1-255 characters)
   - Check for leading/trailing whitespace
@@ -100,6 +108,7 @@ constructor() {
   - Include original error message for debugging
 
 **Validation Constants:**
+
 ```typescript
 private readonly MAX_CONTENT_SIZE = 524288; // 0.5 MB
 private readonly MAX_NAME_LENGTH = 255;
@@ -107,6 +116,7 @@ private readonly MIN_NAME_LENGTH = 1;
 ```
 
 **Error Mapping Logic:**
+
 ```typescript
 private mapDatabaseError(error: any): DocumentError {
   // Check for specific error patterns
@@ -130,6 +140,7 @@ private mapDatabaseError(error: any): DocumentError {
 **Signature:** `createDocument(params: CreateDocumentParams): Promise<Document>`
 
 **Tasks:**
+
 - [ ] Validate name using validateName()
 - [ ] Validate content using validateContent()
 - [ ] Calculate content_size_bytes using calculateContentSize()
@@ -139,17 +150,18 @@ private mapDatabaseError(error: any): DocumentError {
 - [ ] Handle errors with mapDatabaseError()
 
 **Implementation Pattern:**
+
 ```typescript
 async createDocument(params: CreateDocumentParams): Promise<Document> {
   const { owner_id, name, content } = params;
-  
+
   // Validate inputs
   this.validateName(name);
   this.validateContent(content);
-  
+
   // Calculate size
   const content_size_bytes = this.calculateContentSize(content);
-  
+
   try {
     // Insert document
     const { data, error } = await this.supabase
@@ -162,10 +174,10 @@ async createDocument(params: CreateDocumentParams): Promise<Document> {
       })
       .select()
       .single();
-    
+
     if (error) throw error;
     if (!data) throw new Error('No data returned from insert');
-    
+
     return data as Document;
   } catch (error) {
     throw this.mapDatabaseError(error);
@@ -182,6 +194,7 @@ async createDocument(params: CreateDocumentParams): Promise<Document> {
 **Signature:** `getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetadata>`
 
 **Tasks:**
+
 - [ ] Build select query for metadata fields only (excludes content)
 - [ ] Filter by both id AND owner_id for ownership validation
 - [ ] Use .single() to get exactly one result
@@ -190,6 +203,7 @@ async createDocument(params: CreateDocumentParams): Promise<Document> {
 - [ ] Handle errors with mapDatabaseError()
 
 **Implementation Pattern:**
+
 ```typescript
 async getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetadata> {
   try {
@@ -199,12 +213,12 @@ async getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetad
       .eq('id', documentId)
       .eq('owner_id', userId)
       .single();
-    
+
     if (error) throw error;
     if (!data) {
       throw new DocumentError('not_found', 'Document not found', 404);
     }
-    
+
     return data as DocumentMetadata;
   } catch (error) {
     if (error instanceof DocumentError) throw error;
@@ -224,6 +238,7 @@ async getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetad
 **Signature:** `getDocumentContent(userId: UUID, documentId: UUID): Promise<Document>`
 
 **Tasks:**
+
 - [ ] Build select query for all fields (includes content)
 - [ ] Filter by both id AND owner_id for ownership validation
 - [ ] Use .single() to get exactly one result
@@ -232,6 +247,7 @@ async getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetad
 - [ ] Handle errors with mapDatabaseError()
 
 **Implementation Pattern:**
+
 ```typescript
 async getDocumentContent(userId: UUID, documentId: UUID): Promise<Document> {
   try {
@@ -241,12 +257,12 @@ async getDocumentContent(userId: UUID, documentId: UUID): Promise<Document> {
       .eq('id', documentId)
       .eq('owner_id', userId)
       .single();
-    
+
     if (error) throw error;
     if (!data) {
       throw new DocumentError('not_found', 'Document not found', 404);
     }
-    
+
     return data as Document;
   } catch (error) {
     if (error instanceof DocumentError) throw error;
@@ -264,6 +280,7 @@ async getDocumentContent(userId: UUID, documentId: UUID): Promise<Document> {
 **Signature:** `updateDocumentContent(params: UpdateContentParams): Promise<Document>`
 
 **Tasks:**
+
 - [ ] Extract userId, documentId, content from params
 - [ ] Validate content using validateContent()
 - [ ] Calculate new content_size_bytes
@@ -274,16 +291,17 @@ async getDocumentContent(userId: UUID, documentId: UUID): Promise<Document> {
 - [ ] Handle errors with mapDatabaseError()
 
 **Implementation Pattern:**
+
 ```typescript
 async updateDocumentContent(params: UpdateContentParams): Promise<Document> {
   const { user_id, document_id, content } = params;
-  
+
   // Validate content
   this.validateContent(content);
-  
+
   // Calculate new size
   const content_size_bytes = this.calculateContentSize(content);
-  
+
   try {
     const { data, error } = await this.supabase
       .from('documents')
@@ -296,12 +314,12 @@ async updateDocumentContent(params: UpdateContentParams): Promise<Document> {
       .eq('owner_id', user_id)
       .select()
       .single();
-    
+
     if (error) throw error;
     if (!data) {
       throw new DocumentError('not_found', 'Document not found', 404);
     }
-    
+
     return data as Document;
   } catch (error) {
     if (error instanceof DocumentError) throw error;
@@ -319,6 +337,7 @@ async updateDocumentContent(params: UpdateContentParams): Promise<Document> {
 **Signature:** `updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata>`
 
 **Tasks:**
+
 - [ ] Extract userId, documentId, name from params
 - [ ] Validate name using validateName()
 - [ ] Build update query with name and timestamp
@@ -329,13 +348,14 @@ async updateDocumentContent(params: UpdateContentParams): Promise<Document> {
 - [ ] Handle errors with mapDatabaseError()
 
 **Implementation Pattern:**
+
 ```typescript
 async updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata> {
   const { user_id, document_id, name } = params;
-  
+
   // Validate name
   this.validateName(name);
-  
+
   try {
     const { data, error } = await this.supabase
       .from('documents')
@@ -347,12 +367,12 @@ async updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata> {
       .eq('owner_id', user_id)
       .select('id, owner_id, name, content_size_bytes, created_at, updated_at')
       .single();
-    
+
     if (error) throw error;
     if (!data) {
       throw new DocumentError('not_found', 'Document not found', 404);
     }
-    
+
     return data as DocumentMetadata;
   } catch (error) {
     if (error instanceof DocumentError) throw error;
@@ -370,6 +390,7 @@ async updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata> {
 **Signature:** `deleteDocument(userId: UUID, documentId: UUID): Promise<void>`
 
 **Tasks:**
+
 - [ ] Build delete query
 - [ ] Filter by both id AND owner_id for ownership validation
 - [ ] Execute delete
@@ -378,6 +399,7 @@ async updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata> {
 - [ ] Handle errors with mapDatabaseError()
 
 **Implementation Pattern:**
+
 ```typescript
 async deleteDocument(userId: UUID, documentId: UUID): Promise<void> {
   try {
@@ -386,9 +408,9 @@ async deleteDocument(userId: UUID, documentId: UUID): Promise<void> {
       .delete({ count: 'exact' })
       .eq('id', documentId)
       .eq('owner_id', userId);
-    
+
     if (error) throw error;
-    
+
     if (count === 0) {
       throw new DocumentError('not_found', 'Document not found', 404);
     }
@@ -408,6 +430,7 @@ async deleteDocument(userId: UUID, documentId: UUID): Promise<void> {
 **Signature:** `listUserDocuments(params: ListDocumentsParams): Promise<DocumentListResult>`
 
 **Tasks:**
+
 - [ ] Extract userId, limit, offset from params
 - [ ] Apply defaults (limit=50, offset=0)
 - [ ] Validate limit (max 100)
@@ -420,13 +443,14 @@ async deleteDocument(userId: UUID, documentId: UUID): Promise<void> {
 - [ ] Handle errors with mapDatabaseError()
 
 **Implementation Pattern:**
+
 ```typescript
 async listUserDocuments(params: ListDocumentsParams): Promise<DocumentListResult> {
   const { user_id, limit = 50, offset = 0 } = params;
-  
+
   // Validate limit
   const validatedLimit = Math.min(limit, 100);
-  
+
   try {
     // Get paginated documents
     const { data, error } = await this.supabase
@@ -435,17 +459,17 @@ async listUserDocuments(params: ListDocumentsParams): Promise<DocumentListResult
       .eq('owner_id', user_id)
       .order('created_at', { ascending: false })
       .range(offset, offset + validatedLimit - 1);
-    
+
     if (error) throw error;
-    
+
     // Get total count
     const { count, error: countError } = await this.supabase
       .from('documents')
       .select('*', { count: 'exact', head: true })
       .eq('owner_id', user_id);
-    
+
     if (countError) throw countError;
-    
+
     return {
       documents: data as DocumentMetadata[],
       total: count || 0,
@@ -469,24 +493,26 @@ async listUserDocuments(params: ListDocumentsParams): Promise<DocumentListResult
 **File:** `src/lib/server/services/documents/document-provider.ts`
 
 **Tasks:**
+
 - [ ] Import SupabaseDocumentService
 - [ ] Update createDocumentService() to instantiate SupabaseDocumentService when USE_DB_MOCKS=false
 - [ ] Remove TODO comment
 - [ ] Test factory switching between mock and real service
 
 **Implementation Pattern:**
+
 ```typescript
 import { SupabaseDocumentService } from './document-supabase-service';
 
 export async function createDocumentService(): Promise<DocumentServiceContract> {
-  const useMocks = env.USE_DB_MOCKS === 'true';
-  
-  if (useMocks) {
-    return new MockDocumentService();
-  }
-  
-  // Real Supabase implementation
-  return new SupabaseDocumentService();
+	const useMocks = env.USE_DB_MOCKS === 'true';
+
+	if (useMocks) {
+		return new MockDocumentService();
+	}
+
+	// Real Supabase implementation
+	return new SupabaseDocumentService();
 }
 ```
 
@@ -499,11 +525,13 @@ export async function createDocumentService(): Promise<DocumentServiceContract> 
 **File:** `src/lib/server/services/documents/index.ts`
 
 **Tasks:**
+
 - [ ] Export SupabaseDocumentService from document-supabase-service.ts
 - [ ] Verify all types are properly exported
 - [ ] Ensure documentService wrapper remains unchanged
 
 **Implementation:**
+
 ```typescript
 export { SupabaseDocumentService } from './document-supabase-service';
 export { MockDocumentService } from './document-mock-service';
@@ -519,6 +547,7 @@ export { documentService } from './document-provider';
 **File:** `src/lib/server/services/documents/document-supabase-service.test.ts`
 
 **Tasks:**
+
 - [ ] Set up test suite with Vitest
 - [ ] Mock Supabase client
 - [ ] Test createDocument with valid inputs
@@ -536,37 +565,39 @@ export { documentService } from './document-provider';
 - [ ] Test error mapping for various database errors
 
 **Test Structure:**
+
 ```typescript
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SupabaseDocumentService } from './document-supabase-service';
 import { DocumentError } from '$lib/services/documents/types';
 
 describe('SupabaseDocumentService', () => {
-  let service: SupabaseDocumentService;
-  
-  beforeEach(() => {
-    // Mock environment variables
-    vi.stubEnv('SUPABASE_URL', 'https://test.supabase.co');
-    vi.stubEnv('SUPABASE_PUBLISHABLE_KEY', 'test-key');
-    
-    service = new SupabaseDocumentService();
-  });
-  
-  describe('createDocument', () => {
-    it('should create document with valid inputs', async () => {
-      // Test implementation
-    });
-    
-    it('should throw error when name is empty', async () => {
-      // Test implementation
-    });
-  });
-  
-  // More test suites...
+	let service: SupabaseDocumentService;
+
+	beforeEach(() => {
+		// Mock environment variables
+		vi.stubEnv('SUPABASE_URL', 'https://test.supabase.co');
+		vi.stubEnv('SUPABASE_PUBLISHABLE_KEY', 'test-key');
+
+		service = new SupabaseDocumentService();
+	});
+
+	describe('createDocument', () => {
+		it('should create document with valid inputs', async () => {
+			// Test implementation
+		});
+
+		it('should throw error when name is empty', async () => {
+			// Test implementation
+		});
+	});
+
+	// More test suites...
 });
 ```
 
 **Coverage Goals:**
+
 - 100% of public methods
 - All validation logic
 - All error paths
@@ -581,6 +612,7 @@ describe('SupabaseDocumentService', () => {
 **File:** `src/lib/server/services/documents/document.contract.test.ts`
 
 **Tasks:**
+
 - [ ] Review existing contract tests
 - [ ] Run tests against SupabaseDocumentService
 - [ ] Fix any contract violations
@@ -589,17 +621,18 @@ describe('SupabaseDocumentService', () => {
 
 **Approach:**
 The existing contract tests should work with both implementations:
+
 ```typescript
 // Test both implementations
 const implementations = [
-  { name: 'MockDocumentService', service: new MockDocumentService() },
-  { name: 'SupabaseDocumentService', service: new SupabaseDocumentService() }
+	{ name: 'MockDocumentService', service: new MockDocumentService() },
+	{ name: 'SupabaseDocumentService', service: new SupabaseDocumentService() }
 ];
 
 implementations.forEach(({ name, service }) => {
-  describe(`${name} Contract Compliance`, () => {
-    // Run same tests for both
-  });
+	describe(`${name} Contract Compliance`, () => {
+		// Run same tests for both
+	});
 });
 ```
 
@@ -612,6 +645,7 @@ implementations.forEach(({ name, service }) => {
 **File:** `src/lib/server/services/documents/document.integration.test.ts`
 
 **Tasks:**
+
 - [ ] Set up test Supabase project or local instance
 - [ ] Create test database with schema
 - [ ] Test end-to-end CRUD operations
@@ -621,18 +655,16 @@ implementations.forEach(({ name, service }) => {
 - [ ] Clean up test data after each test
 
 **Setup:**
+
 ```typescript
 import { createClient } from '@supabase/supabase-js';
 
 // Use test environment variables
-const testSupabase = createClient(
-  process.env.TEST_SUPABASE_URL!,
-  process.env.TEST_SUPABASE_KEY!
-);
+const testSupabase = createClient(process.env.TEST_SUPABASE_URL!, process.env.TEST_SUPABASE_KEY!);
 
 beforeEach(async () => {
-  // Clean test database
-  await testSupabase.from('documents').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+	// Clean test database
+	await testSupabase.from('documents').delete().neq('id', '00000000-0000-0000-0000-000000000000');
 });
 ```
 
@@ -645,6 +677,7 @@ beforeEach(async () => {
 ### Step 16: Documentation Updates
 
 **Tasks:**
+
 - [ ] Update DOCUMENT_SERVICE.md with Supabase implementation notes
 - [ ] Update README.md with Supabase setup instructions
 - [ ] Add .env.example entries for Supabase configuration
@@ -653,8 +686,10 @@ beforeEach(async () => {
 **Documentation Additions:**
 
 **README.md - Environment Variables:**
+
 ```markdown
 **Production (Supabase Database):**
+
 - `USE_DB_MOCKS=false` - Use real Supabase database
 - `SUPABASE_URL` - Your Supabase project URL
 - `SUPABASE_PUBLISHABLE_KEY` - Supabase publishable key
@@ -662,8 +697,10 @@ beforeEach(async () => {
 ```
 
 **DOCUMENT_SERVICE.md - Implementation Status:**
+
 ```markdown
 **Current Implementation:**
+
 - ✅ Mock service (MockDocumentService) for development
 - ✅ Supabase service (SupabaseDocumentService) for production
 - Toggle with USE_DB_MOCKS environment variable
@@ -676,16 +713,19 @@ beforeEach(async () => {
 ### Step 17: Environment Configuration
 
 **Files:**
+
 - `.env.example` (update)
 - `.env.supabase` (update)
 
 **Tasks:**
+
 - [ ] Add Supabase database configuration to .env.example
 - [ ] Update .env.supabase with USE_DB_MOCKS=false
 - [ ] Document required vs optional variables
 - [ ] Add comments explaining each variable
 
 **Example .env entries:**
+
 ```bash
 # Database Configuration
 USE_DB_MOCKS=false  # Set to 'true' for development with mock service
@@ -703,6 +743,7 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 ## Testing Checklist
 
 ### Unit Tests
+
 - [ ] All methods have test coverage
 - [ ] Validation logic tested
 - [ ] Error mapping tested
@@ -710,17 +751,20 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 - [ ] Mocked Supabase client works correctly
 
 ### Contract Tests
+
 - [ ] All contract tests pass for SupabaseDocumentService
 - [ ] Behavior matches MockDocumentService
 - [ ] Error types and codes consistent
 
 ### Integration Tests (Optional)
+
 - [ ] CRUD operations work end-to-end
 - [ ] Ownership validation prevents unauthorized access
 - [ ] Pagination works correctly
 - [ ] TOAST optimization verified (metadata vs content queries)
 
 ### Manual Testing
+
 - [ ] Create document via API
 - [ ] List documents via API
 - [ ] Update document content via API
@@ -734,6 +778,7 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 ## Validation Criteria
 
 ### Functionality
+
 - ✅ All DocumentServiceContract methods implemented
 - ✅ Ownership validation on all operations
 - ✅ Input validation (name, content size)
@@ -741,11 +786,13 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 - ✅ Pagination support
 
 ### Performance
+
 - ✅ TOAST optimization (metadata queries exclude content)
 - ✅ Efficient indexing (uses idx_documents_owner_created)
 - ✅ Minimal data transfer
 
 ### Code Quality
+
 - ✅ TypeScript strict mode compliant
 - ✅ Consistent with existing auth adapter pattern
 - ✅ Well-documented with JSDoc comments
@@ -753,12 +800,14 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 - ✅ Proper error handling (no silent failures)
 
 ### Testing
+
 - ✅ Unit tests pass
 - ✅ Contract tests pass
 - ✅ Integration tests pass (if implemented)
 - ✅ Test coverage > 80%
 
 ### Documentation
+
 - ✅ Design document complete (SUPABASE_DATABASE_ADAPTER.md)
 - ✅ Implementation plan complete (this document)
 - ✅ README updated with Supabase instructions
@@ -769,12 +818,14 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 ## Deployment Checklist
 
 ### Prerequisites
+
 - [ ] Supabase project created
 - [ ] Database schema deployed (from SCHEMAS.md)
 - [ ] Environment variables configured in deployment platform
 - [ ] Service role key securely stored
 
 ### Deployment Steps
+
 1. [ ] Set USE_DB_MOCKS=false in production environment
 2. [ ] Configure Supabase environment variables
 3. [ ] Deploy application
@@ -783,6 +834,7 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 6. [ ] Monitor for errors in logs
 
 ### Rollback Plan
+
 - Set USE_DB_MOCKS=true to revert to mock service
 - No data loss (mock service uses in-memory storage)
 - No database changes needed
@@ -792,6 +844,7 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 ## Success Metrics
 
 ### Functional Success
+
 - ✅ All document operations work in production
 - ✅ No unauthorized data access
 - ✅ Proper error messages for users
@@ -799,12 +852,14 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 - ✅ Acceptable content queries (< 500ms for 0.5MB)
 
 ### Code Quality Success
+
 - ✅ Zero TypeScript errors
 - ✅ Zero ESLint errors
 - ✅ All tests passing
 - ✅ Code review approved
 
 ### Documentation Success
+
 - ✅ Design document reviewed and approved
 - ✅ Implementation matches design
 - ✅ README instructions tested
@@ -821,16 +876,19 @@ SUPABASE_SECRET_KEY=your-service-role-key  # Optional, for server-side operation
 ## Cross-References
 
 **Design Documents:**
+
 - [SUPABASE_DATABASE_ADAPTER.md](../designs/backend/SUPABASE_DATABASE_ADAPTER.md) - Adapter design
 - [DOCUMENT_SERVICE.md](../designs/backend/DOCUMENT_SERVICE.md) - Service architecture
 - [SCHEMAS.md](../designs/backend/SCHEMAS.md) - Database schema
 - [SERVICES.md](../designs/backend/SERVICES.md) - Service patterns
 
 **Implementation Files:**
+
 - `src/lib/server/services/documents/document-provider.ts` - Provider factory
 - `src/lib/server/services/documents/document-mock-service.ts` - Mock reference
 - `src/lib/server/services/auth/auth-supabase-provider.ts` - Pattern reference
 - `src/lib/services/documents/types.ts` - Service contract
 
 **Related Plans:**
+
 - [supabase-auth-adapter-implementation.md](./completed/supabase-auth-adapter-implementation.md) - Auth adapter (completed reference)
