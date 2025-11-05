@@ -14,7 +14,7 @@
 	--sidebar-button-size: 2.5rem; /* 40px - exact size of icon buttons */
 	--sidebar-icon-size: 1.5rem; /* 24px - size of icons within buttons */
 	--sidebar-collapsed-width: 3rem;
-	--sidebar-expanded-width: 15rem;
+	--sidebar-expanded-width: 16rem;
 
 	/* Derived tokens - calculated for perfect centering */
 	--sidebar-slot-width-collapsed: var(--sidebar-collapsed-width); /* 48px slot width */
