@@ -131,12 +131,11 @@
 		</div>
 
 		<!-- Footer -->
-		<div class="mt-12 pt-6 border-t flex gap-3">
+		<div class="mt-12 pt-6 border-t">
 			<Button variant="default" on:click={returnToApp}>
 				<ArrowLeft class="mr-2 h-4 w-4" />
 				Return to App
 			</Button>
-			<Button variant="outline" on:click={() => window.close()}>Close Tab</Button>
 		</div>
 	</div>
 </div>

@@ -117,15 +117,15 @@
 	}
 
 	function handleAbout() {
-		window.open('/about', '_blank');
+		window.location.href = '/about';
 	}
 
 	function handleTerms() {
-		window.open('/terms', '_blank');
+		window.location.href = '/terms';
 	}
 
 	function handlePrivacy() {
-		window.open('/privacy', '_blank');
+		window.location.href = '/privacy';
 	}
 
 	function handleRulerToggle() {
@@ -258,7 +258,6 @@
 				>
 					<Info class="mr-2 h-4 w-4" />
 					About Us
-					<ExternalLink class="ml-auto h-3 w-3" />
 				</DropdownMenuItem>
 
 				<DropdownMenuItem
@@ -267,7 +266,6 @@
 				>
 					<FileText class="mr-2 h-4 w-4" />
 					Terms of Use
-					<ExternalLink class="ml-auto h-3 w-3" />
 				</DropdownMenuItem>
 
 				<DropdownMenuItem
@@ -276,7 +274,6 @@
 				>
 					<Shield class="mr-2 h-4 w-4" />
 					Privacy Policy
-					<ExternalLink class="ml-auto h-3 w-3" />
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
