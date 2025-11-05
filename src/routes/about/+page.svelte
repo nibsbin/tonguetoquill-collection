@@ -13,6 +13,14 @@
 
 <div class="h-screen bg-background text-foreground overflow-y-auto">
 	<div class="container mx-auto px-4 py-8 max-w-4xl pb-24">
+		<!-- Navigation -->
+		<div class="mb-6">
+			<Button variant="outline" on:click={returnToApp}>
+				<ArrowLeft class="mr-2 h-4 w-4" />
+				Return to App
+			</Button>
+		</div>
+
 		<!-- Header -->
 		<div class="mb-8">
 			<h1 class="text-4xl font-bold mb-4">About Us</h1>
@@ -73,14 +81,6 @@
 				</p>
 				<p class="font-medium">support@tonguetoquill.com</p>
 			</section>
-		</div>
-
-		<!-- Footer -->
-		<div class="mt-12 pt-6 border-t">
-			<Button variant="default" on:click={returnToApp}>
-				<ArrowLeft class="mr-2 h-4 w-4" />
-				Return to App
-			</Button>
 		</div>
 	</div>
 </div>
