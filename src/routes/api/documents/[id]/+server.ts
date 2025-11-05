@@ -15,7 +15,10 @@ export const GET: RequestHandler = async (event) => {
 		const user = await requireAuth(event);
 		const documentId = event.params.id;
 
-		const document = await documentService.getDocumentContent(user.id, documentId);
+		const document = await documentService.getDocumentContent({
+			user_id: user.id,
+			document_id: documentId
+		});
 
 		return json(document);
 	} catch (error) {
@@ -64,7 +67,7 @@ export const DELETE: RequestHandler = async (event) => {
 		const user = await requireAuth(event);
 		const documentId = event.params.id;
 
-		await documentService.deleteDocument(user.id, documentId);
+		await documentService.deleteDocument({ user_id: user.id, document_id: documentId });
 
 		return json({ success: true }, { status: 200 });
 	} catch (error) {

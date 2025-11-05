@@ -2,11 +2,12 @@
 -- Creates Users and Documents tables with indexes and constraints
 
 -- Users Table
--- Stores core identity information and flexible profile data
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    -- Foreign Key referencing the auth.users table.
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+
     email VARCHAR(255) NOT NULL UNIQUE,
-    dodid VARCHAR(10) UNIQUE,  -- Optional: Military ID for DoD users
+    dodid_full VARCHAR(16) UNIQUE,
     profile JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -16,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
 -- Index for DODID lookups (where not null)
-CREATE INDEX IF NOT EXISTS idx_users_dodid ON users(dodid) WHERE dodid IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_users_dodid_full ON users(dodid_full) WHERE dodid_full IS NOT NULL;
 
 -- Documents Table
 -- Stores all document data including content

@@ -214,6 +214,7 @@ Breakpoints: 640px (mobile), 768px (tablet), 1024px (desktop), 1280px+ (large)
 See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for authentication security architecture.
 
 Frontend security measures:
+
 - XSS prevention via automatic Svelte escaping
 - CSRF protection via SameSite cookie attribute
 - Tokens managed server-side only (never exposed to JavaScript)

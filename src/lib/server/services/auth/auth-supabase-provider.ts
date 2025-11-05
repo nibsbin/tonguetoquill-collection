@@ -6,6 +6,7 @@
 
 import type {
 	AuthContract,
+	AuthProvider,
 	AuthProviderConfig,
 	AuthResult,
 	Session,
@@ -14,8 +15,7 @@ import type {
 	UUID
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
+import { loadSupabaseConfig } from '$lib/server/utils/supabase';
 import {
 	createClient,
 	type SupabaseClient,
@@ -27,20 +27,30 @@ import {
 /**
  * Supabase Authentication Provider
  * Delegates authentication to Supabase-hosted pages and APIs
+ * Supports both email and GitHub authentication methods simultaneously
  */
 export class SupabaseAuthProvider implements AuthContract {
 	private supabase: SupabaseClient;
+	private enableEmail: boolean;
+	private enableGithub: boolean;
 
 	constructor() {
-		const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL || '';
-		const supabasePublishableKey = publicEnv.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
+		// Load Supabase configuration
+		const config = loadSupabaseConfig();
 
-		if (!supabaseUrl || !supabasePublishableKey) {
-			throw new Error('Supabase configuration missing. Check environment variables.');
+		// Store enabled auth methods
+		this.enableEmail = config.ENABLE_EMAIL;
+		this.enableGithub = config.ENABLE_GITHUB;
+
+		// Validate that at least one auth method is enabled
+		if (!this.enableEmail && !this.enableGithub) {
+			throw new Error(
+				'No auth method enabled. Set SUPABASE_ENABLE_EMAIL or SUPABASE_ENABLE_GITHUB to true.'
+			);
 		}
 
-		// Create Supabase client
-		this.supabase = createClient(supabaseUrl, supabasePublishableKey, {
+		// Create Supabase client with publishable key (client-facing operations)
+		this.supabase = createClient(config.POSTGRES_URL, config.PUBLISHABLE_KEY, {
 			auth: {
 				autoRefreshToken: false, // We handle refresh manually
 				persistSession: false, // Server-side, no persistence needed
@@ -51,23 +61,21 @@ export class SupabaseAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Get available authentication providers
-	 * Returns list of auth methods supported by Supabase
+	 * Get the available authentication providers
 	 */
-	getAvailableProviders(): AuthProviderConfig[] {
+	async getAvailableProviders(): Promise<AuthProviderConfig[]> {
 		return [
 			{
 				id: 'github',
 				type: 'oauth',
-				name: 'Sign in with GitHub',
-				oauthProvider: 'github',
+				name: 'Continue with GitHub',
 				icon: 'github',
 				requiresInput: false
 			},
 			{
 				id: 'email',
 				type: 'magic_link',
-				name: 'Sign in with Email',
+				name: 'Continue with Email',
 				icon: 'mail',
 				requiresInput: true,
 				inputConfig: {
@@ -80,62 +88,70 @@ export class SupabaseAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Initiate authentication with a specific provider
+	 * Get the OAuth login URL for Supabase provider
+	 * Returns the Supabase hosted UI URL for authentication
+	 * Supports both email magic link and GitHub OAuth
+	 * @param redirectUri - The callback URL to return to after authentication
+	 * @param provider - Optional provider to use. If not specified and multiple providers are enabled, an error is thrown
 	 */
-	async initiateAuth(
-		providerId: string,
-		redirectUri: string,
-		data?: Record<string, string>
-	): Promise<{ url?: string; message?: string }> {
-		switch (providerId) {
-			case 'github': {
-				const { data: authData, error } = await this.supabase.auth.signInWithOAuth({
-					provider: 'github',
-					options: {
-						redirectTo: redirectUri,
-						skipBrowserRedirect: true
-					}
-				});
+	async getLoginUrl(redirectUri: string, provider?: AuthProvider): Promise<string> {
+		// Determine which provider to use
+		const targetProvider = this.determineProvider(provider);
 
-				if (error || !authData.url) {
-					throw new AuthError('network_error', 'Failed to generate GitHub login URL', 500);
+		if (targetProvider === 'github') {
+			// Use GitHub OAuth
+			const { data, error } = await this.supabase.auth.signInWithOAuth({
+				provider: 'github',
+				options: {
+					redirectTo: redirectUri,
+					skipBrowserRedirect: true // We want the URL, not to redirect immediately
 				}
+			});
 
-				return { url: authData.url };
+			if (error || !data.url) {
+				throw new AuthError('network_error', 'Failed to generate GitHub login URL', 500);
 			}
 
-			case 'email': {
-				const email = data?.email;
-				if (!email) {
-					throw new AuthError('invalid_request', 'Email is required for email auth', 400);
-				}
-
-				const { error } = await this.supabase.auth.signInWithOtp({
-					email,
-					options: {
-						emailRedirectTo: redirectUri
-					}
-				});
-
-				if (error) {
-					throw new AuthError('network_error', 'Failed to send email OTP: ' + error.message, 500);
-				}
-
-				return { message: 'Magic link sent to your email' };
-			}
-
-			default:
-				throw new AuthError('invalid_request', `Unknown provider: ${providerId}`, 400);
+			return data.url;
+		} else {
+			// For email-based auth, we need to redirect to a login page
+			// that collects the email and sends a magic link
+			// Since we're using server-side flow, we'll use Supabase's built-in email OTP
+			// The client will need to handle this differently
+			throw new AuthError(
+				'unknown_error',
+				'Email-based auth requires client-side implementation with OTP',
+				500
+			);
 		}
 	}
 
 	/**
-	 * Get the OAuth login URL for Supabase provider (GitHub)
-	 * @deprecated Use initiateAuth() instead
+	 * Determine which provider to use based on what's enabled and what was requested
 	 */
-	async getLoginUrl(redirectUri: string): Promise<string> {
-		const result = await this.initiateAuth('github', redirectUri);
-		return result.url || '';
+	private determineProvider(requestedProvider?: AuthProvider): AuthProvider {
+		// If a specific provider was requested, validate it's enabled
+		if (requestedProvider) {
+			if (requestedProvider === 'email' && !this.enableEmail) {
+				throw new AuthError('unknown_error', 'Email authentication is not enabled', 400);
+			}
+			if (requestedProvider === 'github' && !this.enableGithub) {
+				throw new AuthError('unknown_error', 'GitHub authentication is not enabled', 400);
+			}
+			return requestedProvider;
+		}
+
+		// If both are enabled and no provider specified, require explicit choice
+		if (this.enableEmail && this.enableGithub) {
+			throw new AuthError(
+				'unknown_error',
+				'Multiple authentication providers are enabled. Please specify which provider to use.',
+				400
+			);
+		}
+
+		// Return the single enabled provider
+		return this.enableGithub ? 'github' : 'email';
 	}
 
 	/**
@@ -163,6 +179,35 @@ export class SupabaseAuthProvider implements AuthContract {
 				throw error;
 			}
 			throw new AuthError('network_error', 'Failed to exchange code for tokens', 500);
+		}
+	}
+
+	/**
+	 * Send authentication email with magic link
+	 * @param email - User's email address
+	 * @param redirectUri - URL to redirect to after clicking link
+	 * @returns Success message to show user
+	 */
+	async sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }> {
+		try {
+			const { error } = await this.supabase.auth.signInWithOtp({
+				email,
+				options: {
+					emailRedirectTo: redirectUri,
+					shouldCreateUser: true
+				}
+			});
+
+			if (error) {
+				throw this.mapSupabaseError(error);
+			}
+
+			return { message: 'Check your email for a sign-in link' };
+		} catch (error) {
+			if (error instanceof AuthError) {
+				throw error;
+			}
+			throw new AuthError('network_error', 'Failed to send authentication email', 500);
 		}
 	}
 

@@ -23,7 +23,7 @@ export const POST: RequestHandler = async (event) => {
 		}
 
 		const document = await documentService.createDocument({
-			owner_id: user.id,
+			user_id: user.id,
 			name,
 			content: content || ''
 		});

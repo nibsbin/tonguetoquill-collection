@@ -106,6 +106,14 @@ export interface ListDocumentsParams {
 }
 
 /**
+ * Document identity parameters
+ */
+export interface DocumentReferenceParams {
+	user_id: UUID;
+	document_id: UUID;
+}
+
+/**
  * Document service contract interface
  * All document service providers (mock and real) must implement this interface
  */
@@ -118,12 +126,12 @@ export interface DocumentServiceContract {
 	/**
 	 * Get document metadata only (no content)
 	 */
-	getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetadata>;
+	getDocumentMetadata(params: DocumentReferenceParams): Promise<DocumentMetadata>;
 
 	/**
 	 * Get full document with content
 	 */
-	getDocumentContent(userId: UUID, documentId: UUID): Promise<Document>;
+	getDocumentContent(params: DocumentReferenceParams): Promise<Document>;
 
 	/**
 	 * Update document content
@@ -138,7 +146,7 @@ export interface DocumentServiceContract {
 	/**
 	 * Delete a document
 	 */
-	deleteDocument(userId: UUID, documentId: UUID): Promise<void>;
+	deleteDocument(params: DocumentReferenceParams): Promise<void>;
 
 	/**
 	 * List user's documents with pagination

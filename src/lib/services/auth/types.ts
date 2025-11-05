@@ -76,28 +76,26 @@ export class AuthError extends Error {
 }
 
 /**
- * Authentication provider type
+ * Supported authentication providers
  */
-export type AuthProviderType = 'oauth' | 'email_otp' | 'magic_link';
+export type AuthProvider = 'mock' | 'email' | 'github';
 
 /**
- * OAuth provider name
+ * Authentication provider type (for UI configuration)
  */
-export type OAuthProviderName = 'github' | 'google' | 'microsoft' | 'mock';
+export type AuthProviderType = 'oauth' | 'magic_link';
 
 /**
- * Authentication provider configuration
+ * Authentication provider configuration (for UI display)
  * Describes a single auth method available to users
  */
 export interface AuthProviderConfig {
 	/** Unique identifier for this provider */
-	id: string;
+	id: AuthProvider;
 	/** Type of authentication */
 	type: AuthProviderType;
 	/** Display name shown to users */
 	name: string;
-	/** OAuth provider name (only for oauth type) */
-	oauthProvider?: OAuthProviderName;
 	/** Icon identifier for UI rendering */
 	icon?: string;
 	/** Whether this provider requires user input (e.g., email) */
@@ -113,35 +111,21 @@ export interface AuthProviderConfig {
 /**
  * Authentication contract interface
  * All authentication providers (mock and real) must implement this interface
- * Focused on token validation and management only - no password handling
+ * Supports both OAuth (redirect) and email (OTP/magic link) flows
  */
 export interface AuthContract {
 	/**
-	 * Get available authentication providers
-	 * Returns a list of auth methods this provider supports
+	 * Get the available authentication providers
 	 */
-	getAvailableProviders(): AuthProviderConfig[];
-
-	/**
-	 * Initiate authentication with a specific provider
-	 * @param providerId - The provider ID from getAvailableProviders()
-	 * @param redirectUri - The callback URL to return to after authentication
-	 * @param data - Optional data (e.g., email for email-based auth)
-	 * @returns URL to redirect to (for OAuth) or success message (for email OTP)
-	 */
-	initiateAuth(
-		providerId: string,
-		redirectUri: string,
-		data?: Record<string, string>
-	): Promise<{ url?: string; message?: string }>;
+	getAvailableProviders(): Promise<AuthProviderConfig[]>;
 
 	/**
 	 * Get the OAuth login URL for this provider
 	 * Returns the URL to redirect users to for authentication
 	 * @param redirectUri - The callback URL to return to after authentication
-	 * @deprecated Use initiateAuth() instead for dynamic provider support
+	 * @param provider - Optional provider to use (required if multiple providers are enabled)
 	 */
-	getLoginUrl(redirectUri: string): Promise<string>;
+	getLoginUrl(redirectUri: string, provider?: AuthProvider): Promise<string>;
 
 	/**
 	 * Exchange OAuth authorization code for tokens
@@ -149,6 +133,13 @@ export interface AuthContract {
 	 */
 	exchangeCodeForTokens(code: string): Promise<AuthResult>;
 
+	/**
+	 * Send authentication email (OTP code or magic link)
+	 * @param email - User's email address
+	 * @param redirectUri - Callback URL for magic links
+	 * @returns Success message to display to user
+	 */
+	sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }>;
 	/**
 	 * Invalidate session
 	 */

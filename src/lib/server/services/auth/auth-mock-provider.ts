@@ -7,6 +7,7 @@
 import { webcrypto as crypto } from 'node:crypto';
 import type {
 	AuthContract,
+	AuthProvider,
 	AuthProviderConfig,
 	AuthResult,
 	Session,
@@ -33,6 +34,7 @@ interface StoredUser {
 export class MockAuthProvider implements AuthContract {
 	private users: Map<UUID, StoredUser> = new Map();
 	private emailIndex: Map<string, UUID> = new Map(); // email -> user_id mapping
+	private otpCodes: Map<string, { code: string; expiresAt: number }> = new Map(); // email -> OTP
 
 	// Session expiry times (in milliseconds)
 	private ACCESS_TOKEN_EXPIRY = 15 * 60 * 1000; // 15 minutes (per design)
@@ -59,7 +61,7 @@ export class MockAuthProvider implements AuthContract {
 		const defaultUser: StoredUser = {
 			id: userId,
 			email: 'asdf@asdf.com',
-			dodid: '1234567890',
+			dodid: '0123456789abcdef',
 			profile: {},
 			created_at: now,
 			updated_at: now
@@ -67,6 +69,22 @@ export class MockAuthProvider implements AuthContract {
 
 		this.users.set(userId, defaultUser);
 		this.emailIndex.set(defaultUser.email, userId);
+	}
+
+	/**
+	 * Get the available authentication providers
+	 */
+	async getAvailableProviders(): Promise<AuthProviderConfig[]> {
+		await this.simulateDelay();
+		return [
+			{
+				id: 'mock',
+				type: 'oauth',
+				name: 'mock',
+				icon: 'mock',
+				requiresInput: false
+			}
+		];
 	}
 
 	/**
@@ -124,52 +142,21 @@ export class MockAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Get available authentication providers
-	 * Returns list of auth methods supported by the mock provider
+	 * Get the OAuth login URL for mock provider
+	 * Returns a callback URL with a mock authorization code
+	 * @param redirectUri - The callback URL to return to after authentication
+	 * @param provider - Optional provider to use (ignored in mock mode)
 	 */
-	getAvailableProviders(): AuthProviderConfig[] {
-		return [
-			{
-				id: 'mock',
-				type: 'oauth',
-				name: 'Sign in (Mock)',
-				oauthProvider: 'mock',
-				icon: 'key',
-				requiresInput: false
-			}
-		];
-	}
-
-	/**
-	 * Initiate authentication with a specific provider
-	 */
-	async initiateAuth(
-		providerId: string,
-		redirectUri: string,
-		data?: Record<string, string>
-	): Promise<{ url?: string; message?: string }> {
+	async getLoginUrl(redirectUri: string, provider?: AuthProvider): Promise<string> {
 		await this.simulateDelay();
-
-		if (providerId !== 'mock') {
-			throw new AuthError('invalid_request', `Unknown provider: ${providerId}`, 400);
-		}
 
 		// Generate a mock authorization code
 		const mockAuthCode = 'mock_auth_code_' + Date.now();
 
 		// Return the callback URL with the mock code
 		// In mock mode, we skip the actual login page and go straight to callback
-		return { url: `${redirectUri}?code=${mockAuthCode}` };
-	}
-
-	/**
-	 * Get the OAuth login URL for mock provider
-	 * Returns a callback URL with a mock authorization code
-	 * @deprecated Use initiateAuth() instead
-	 */
-	async getLoginUrl(redirectUri: string): Promise<string> {
-		const result = await this.initiateAuth('mock', redirectUri);
-		return result.url || '';
+		// Provider parameter is ignored since mock always returns the same default user
+		return `${redirectUri}?code=${mockAuthCode}`;
 	}
 
 	/**
@@ -344,5 +331,14 @@ export class MockAuthProvider implements AuthContract {
 		this.emailIndex.clear();
 		// Reinitialize default user after clearing
 		this.initializeDefaultUser();
+	}
+
+	async sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }> {
+		// Not implemented in mock provider
+		throw new AuthError(
+			'unknown_error',
+			'Email authentication not implemented in mock provider',
+			501
+		);
 	}
 }
