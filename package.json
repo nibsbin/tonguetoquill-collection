@@ -7,6 +7,7 @@
 		"dev": "npm run dev:mock",
 		"dev:mock": "vite dev --mode mock",
 		"dev:supabase": "vite dev --mode supabase-dev",
+		"dev:supabase-prod": "vite dev --mode supabase",
 		"build": "npm run pack && vite build",
 		"preview": "vite preview --mode supabase-dev",
 		"prepare": "husky",
