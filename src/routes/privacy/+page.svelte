@@ -17,7 +17,7 @@
 		<div class="mb-8">
 			<div class="flex items-center justify-between mb-4">
 				<h1 class="text-4xl font-bold">Privacy Policy</h1>
-				<Button class="bg-foreground text-background hover:bg-foreground/90" on:click={returnToApp}>
+				<Button class="bg-foreground text-background hover:bg-foreground/90" onclick={returnToApp}>
 					<ArrowLeft class="mr-2 h-4 w-4" />
 					Return to App
 				</Button>
