@@ -8,7 +8,9 @@
 	import Label from '$lib/components/ui/label.svelte';
 	import Dialog from '$lib/components/ui/base-dialog.svelte';
 	import LoginPopover from './LoginPopover.svelte';
+	import NewDocumentDialog from '$lib/components/NewDocumentDialog';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { templateService } from '$lib/services/templates';
 	import { onMount } from 'svelte';
 	import { loginClient } from '$lib/services/auth';
 
@@ -27,6 +29,7 @@
 	let documentToDelete = $state<string | null>(null);
 	let isDarkMode = $state(true);
 	let profileModalOpen = $state(false);
+	let newDocDialogOpen = $state(false);
 
 	onMount(() => {
 		// Load dark mode preference from localStorage
@@ -61,7 +64,25 @@
 	}
 
 	function handleNewFile() {
-		documentStore.createDocument();
+		newDocDialogOpen = true;
+	}
+
+	async function handleCreateDocument(name: string, templateFilename?: string) {
+		let content = '';
+
+		// Load template content if template selected
+		if (templateFilename) {
+			try {
+				const template = await templateService.getTemplate(templateFilename);
+				content = template.content;
+			} catch (error) {
+				console.error('Failed to load template:', error);
+				// Fallback to blank document
+			}
+		}
+
+		// Create document with name and content
+		await documentStore.createDocument(name, content);
 	}
 
 	function handleFileSelect(fileId: string) {
@@ -369,6 +390,13 @@
 		<Button variant="default" size="sm" onclick={() => (profileModalOpen = false)}>Close</Button>
 	{/snippet}
 </Dialog>
+
+<!-- New Document Dialog -->
+<NewDocumentDialog
+	open={newDocDialogOpen}
+	onOpenChange={(open) => (newDocDialogOpen = open)}
+	onCreate={handleCreateDocument}
+/>
 
 <style>
 	/* Logo signature slot */
