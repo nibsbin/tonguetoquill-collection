@@ -103,7 +103,7 @@
 	<Portal>
 		<!-- Backdrop -->
 		<div
-			class="z-overlay fixed inset-0 bg-black/40 transition-opacity duration-300"
+			class="z-modal-backdrop fixed inset-0 bg-black/40 transition-opacity duration-300"
 			class:opacity-100={open}
 			class:opacity-0={!open}
 			onclick={handleBackdropClick}
@@ -113,7 +113,7 @@
 		<!-- Sheet Container -->
 		<div
 			class={cn(
-				'z-modal fixed bg-surface-elevated shadow-lg transition-transform duration-300 ease-in-out',
+				'z-modal-content fixed bg-surface-elevated shadow-lg transition-transform duration-300 ease-in-out',
 				'flex flex-col overflow-hidden',
 				sideClasses[effectiveSide],
 				transformClasses[effectiveSide],

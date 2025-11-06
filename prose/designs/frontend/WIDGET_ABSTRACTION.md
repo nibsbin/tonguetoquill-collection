@@ -613,54 +613,69 @@ All widgets implement three dismissal methods with custom Svelte code:
 
 **Location**: Design system tokens in `src/app.css`
 
+The Z-index system is simplified into three main groups for maintainability:
+
 ```css
-/* Widget Layer System */
+/* Widget Layer System - Simplified */
 :root {
-	--z-base: 0;
-	--z-ui-element: 10; /* UI elements requiring local stacking */
-	--z-canvas-overlay: 30; /* Tool overlays scoped to canvas areas */
-	--z-canvas-ui: 40; /* UI elements within canvas overlays */
-	--z-dropdown: 1000;
-	--z-sticky: 1100;
-	--z-banner: 1200;
-	--z-popover: 1300; /* Lightweight contextual UI */
-	--z-overlay: 1400; /* Dialog/modal backdrops */
-	--z-modal: 1500; /* Dialog/modal/sheet content */
-	--z-toast: 1600;
-	--z-tooltip: 1700;
+	/* Group 1: Canvas - UI elements and overlays within the main canvas/preview area */
+	--z-canvas-ui: 10; /* UI elements within the canvas (e.g., sidebar) */
+	--z-canvas-overlay: 20; /* Tool overlays scoped to canvas (e.g., ruler overlay) */
+
+	/* Group 2: Minor Widgets - Lightweight overlays that don't demand full attention */
+	--z-dropdown: 1000; /* Dropdown menus and select options */
+	--z-popover: 1100; /* Popovers - lightweight contextual UI */
+	--z-toast: 1200; /* Toast notifications */
+	--z-banner: 1300; /* Notification banners */
+
+	/* Group 3: Modals - Full attention overlays that block interaction */
+	--z-modal-backdrop: 1400; /* Dialog/modal backdrops */
+	--z-modal-content: 1500; /* Dialog/modal/sheet content */
 }
 ```
 
 **Layer Hierarchy** (lowest to highest):
 
-1. **base** (0): Normal document flow
-2. **ui-element** (10): UI elements requiring local stacking within components
-3. **canvas-overlay** (30): Tool overlays scoped to canvas/preview areas
-4. **canvas-ui** (40): UI elements within canvas overlays (banners, instructions)
-5. **dropdown** (1000): Dropdown menus, select options
-6. **sticky** (1100): Sticky headers, pinned elements
-7. **banner** (1200): Notification banners
-8. **popover** (1300): Popover content - lightweight contextual UI
-9. **overlay** (1400): Dialog/modal backdrops - demand user attention
-10. **modal** (1500): Dialog/modal/sheet content - primary user actions
-11. **toast** (1600): Toast notifications
-12. **tooltip** (1700): Tooltips (highest priority)
+**Group 1: Canvas** (10-20)
+
+1. **canvas-ui** (10): UI elements within the canvas (sidebar, editor controls)
+2. **canvas-overlay** (20): Tool overlays scoped to canvas/preview areas (ruler, selection tools)
+
+**Group 2: Minor Widgets** (1000-1300) 3. **dropdown** (1000): Dropdown menus, select options 4. **popover** (1100): Popover content - lightweight contextual UI (settings, login) 5. **toast** (1200): Toast notifications (success, error messages) 6. **banner** (1300): Notification banners
+
+**Group 3: Modals** (1400-1500) 7. **modal-backdrop** (1400): Dialog/modal backdrops - demand user attention 8. **modal-content** (1500): Dialog/modal/sheet content - primary user actions
+
+**Design Principles**:
+
+- **Simplified hierarchy**: Three clear groups make Z-layer relationships obvious
+- **No intermediate layers**: Removed rarely-used layers (sticky, tooltip, ui-element)
+- **Clear naming**: `-backdrop` and `-content` suffixes clarify modal components
+- **Maintainable**: Fewer layers means less complexity and fewer bugs
+- **Delegated to base components**: Final components should NOT specify their own z-index; base components handle all Z-layer assignment
 
 **Usage in Base Components**:
 
 ```typescript
-// BaseDialog backdrop
-class="z-overlay"  // 1400
+// BaseDialog
+class="z-modal-backdrop"  // 1400 (backdrop)
+class="z-modal-content"   // 1500 (dialog content)
 
-// BaseDialog content
-class="z-modal"    // 1500
-
-// BasePopover content
-class="z-popover"  // 1300
+// BasePopover
+class="z-popover"         // 1100
 
 // BaseSheet
-class="z-overlay"  // backdrop: 1400
-class="z-modal"    // content: 1500
+class="z-modal-backdrop"  // 1400 (backdrop)
+class="z-modal-content"   // 1500 (sheet content)
+
+// Toast
+class="z-toast"           // 1200
+
+// RulerOverlay
+class="z-canvas-overlay"  // 20 (overlay container)
+// Banner within overlay uses z-canvas-overlay + relative positioning
+
+// Sidebar
+class="z-canvas-ui"       // 10
 ```
 
 ### Overlay Coordination System
@@ -762,6 +777,7 @@ BasePopover provides the structural container but does NOT apply default padding
 - **Border Separators**: When using borders to separate sections, apply border to the appropriate element (e.g., `border-t border-border pt-3` on first item of new section)
 
 This pattern ensures:
+
 - Consistent visual spacing across all popovers
 - Predictable padding for titles, controls, and action buttons
 - Content authors control their own spacing without fighting base component defaults
