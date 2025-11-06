@@ -25,8 +25,6 @@
 	let lineNumbers = $state(true);
 	let popoverOpen = $state(false);
 	let loginPopoverOpen = $state(false);
-	let deleteDialogOpen = $state(false);
-	let documentToDelete = $state<string | null>(null);
 	let isDarkMode = $state(true);
 	let profileModalOpen = $state(false);
 	let newDocDialogOpen = $state(false);
@@ -90,23 +88,8 @@
 	}
 
 	function handleDeleteFile(fileId: string) {
-		// Always show confirmation dialog (allow deleting the last document).
-		// The store will handle selecting a new active document or clearing it.
-		documentToDelete = fileId;
-		deleteDialogOpen = true;
-	}
-
-	function confirmDelete() {
-		if (documentToDelete) {
-			documentStore.deleteDocument(documentToDelete);
-			documentToDelete = null;
-		}
-		deleteDialogOpen = false;
-	}
-
-	function cancelDelete() {
-		documentToDelete = null;
-		deleteDialogOpen = false;
+		// Delete immediately without confirmation
+		documentStore.deleteDocument(fileId);
 	}
 
 	function handleAutoSaveChange(value: boolean) {
@@ -361,40 +344,6 @@
 		</BasePopover>
 	</div>
 </div>
-
-<!-- Delete Confirmation Dialog -->
-<Dialog
-	open={deleteDialogOpen}
-	onOpenChange={(open) => {
-		deleteDialogOpen = open;
-		if (!open) {
-			documentToDelete = null;
-		}
-	}}
-	title="Delete Document"
-	description="Are you sure you want to delete this document? This action cannot be undone."
-	size="md"
->
-	{#snippet footer()}
-		<Button
-			variant="ghost"
-			size="sm"
-			class="text-muted-foreground hover:bg-accent hover:text-foreground"
-			onclick={cancelDelete}
-		>
-			Cancel
-		</Button>
-		<Button
-			variant="default"
-			size="sm"
-			class="bg-destructive text-white hover:bg-(--color-destructive-hover)"
-			onclick={confirmDelete}
-		>
-			Delete
-		</Button>
-	{/snippet}
-	{#snippet content()}{/snippet}
-</Dialog>
 
 <!-- Profile Modal -->
 <Dialog
