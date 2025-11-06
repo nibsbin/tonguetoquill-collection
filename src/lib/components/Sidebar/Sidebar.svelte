@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, Settings, Plus, LogIn, User, Info, Shield } from 'lucide-svelte';
+	import { Menu, Settings, Plus, LogIn, User, Info, Shield, FileText } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
