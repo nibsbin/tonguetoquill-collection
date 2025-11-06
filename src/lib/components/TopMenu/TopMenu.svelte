@@ -2,7 +2,6 @@
 	import {
 		Download,
 		MoreVertical,
-		Upload,
 		Check,
 		Loader2,
 		AlertCircle,
@@ -22,7 +21,6 @@
 		saveError?: string;
 		onDocumentInfo?: () => void;
 		onTitleChange?: (newTitle: string) => void;
-		onImport?: () => void;
 		onRulerToggle?: () => void;
 		onShare?: () => void;
 		hasSuccessfulPreview?: boolean;
@@ -35,7 +33,6 @@
 		saveError,
 		onDocumentInfo,
 		onTitleChange,
-		onImport,
 		onRulerToggle,
 		onShare,
 		hasSuccessfulPreview = false
@@ -101,13 +98,6 @@
 		} else if (event.key === 'Escape') {
 			cancelEditing();
 		}
-	}
-
-	function handleImport() {
-		if (onImport) {
-			onImport();
-		}
-		dropdownOpen = false;
 	}
 
 	function handleShare() {
@@ -214,14 +204,6 @@
 					<!-- Document Actions -->
 					<button
 						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
-						onclick={handleImport}
-					>
-						<Upload class="mr-2 h-4 w-4" />
-						Import
-					</button>
-
-					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
 						onclick={handleShare}
 					>
 						<Share2 class="mr-2 h-4 w-4" />
@@ -230,7 +212,7 @@
 
 					<!-- Group 2: Tools-->
 					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm border-t border-border px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
 						onclick={handleRulerToggle}
 					>
 						<Ruler class="mr-2 h-4 w-4" />
