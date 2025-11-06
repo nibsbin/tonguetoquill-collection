@@ -112,7 +112,7 @@
 
 <div class="flex h-screen bg-background">
 	<!-- Sidebar -->
-	<Sidebar {user} />
+	<Sidebar {user} onDocumentInfo={handleDocumentInfo} onRulerToggle={handleRulerToggle} />
 
 	<!-- Main Content -->
 	<div class="flex flex-1 flex-col">
@@ -122,10 +122,8 @@
 			onDownload={handleDownload}
 			saveStatus={autoSave.saveState.status}
 			saveError={autoSave.saveState.errorMessage}
-			onDocumentInfo={handleDocumentInfo}
 			onTitleChange={handleTitleChange}
 			onImport={handleImport}
-			onRulerToggle={handleRulerToggle}
 			onShare={handleShare}
 			{hasSuccessfulPreview}
 		/>

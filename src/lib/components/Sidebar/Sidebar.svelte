@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, Settings, Plus, LogIn, User } from 'lucide-svelte';
+	import { Menu, Settings, Plus, LogIn, User, Ruler, FileText, Info, Shield } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
@@ -9,14 +9,17 @@
 	import Dialog from '$lib/components/ui/base-dialog.svelte';
 	import LoginPopover from './LoginPopover.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { rulerStore } from '$lib/stores/ruler.svelte';
 	import { onMount } from 'svelte';
 	import { loginClient } from '$lib/services/auth';
 
 	type SidebarProps = {
 		user?: { email: string; id: string } | null;
+		onDocumentInfo?: () => void;
+		onRulerToggle?: () => void;
 	};
 
-	let { user }: SidebarProps = $props();
+	let { user, onDocumentInfo, onRulerToggle }: SidebarProps = $props();
 
 	let isExpanded = $state(false);
 	let autoSave = $state(true);
@@ -146,6 +149,37 @@
 
 	function handleProfileClick() {
 		profileModalOpen = true;
+	}
+
+	function handleRulerToggle() {
+		if (onRulerToggle) {
+			onRulerToggle();
+		} else {
+			rulerStore.toggle();
+		}
+		popoverOpen = false;
+	}
+
+	function handleDocumentInfo() {
+		if (onDocumentInfo) {
+			onDocumentInfo();
+		}
+		popoverOpen = false;
+	}
+
+	function handleAbout() {
+		window.location.href = '/about';
+		popoverOpen = false;
+	}
+
+	function handleTerms() {
+		window.location.href = '/terms';
+		popoverOpen = false;
+	}
+
+	function handlePrivacy() {
+		window.location.href = '/privacy';
+		popoverOpen = false;
 	}
 </script>
 
@@ -284,13 +318,59 @@
 							/>
 						</div>
 
-						<div class="flex items-center justify-between">
+						<div class="flex items-center justify-between border-b border-border pb-3">
 							<Label for="line-numbers" class="text-muted-foreground">Line Numbers</Label>
 							<Switch
 								id="line-numbers"
 								bind:checked={lineNumbers}
 								onCheckedChange={handleLineNumbersChange}
 							/>
+						</div>
+
+						<!-- Utility Buttons Section -->
+						<div class="space-y-1">
+							<button
+								class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+								onclick={handleRulerToggle}
+							>
+								<Ruler class="mr-2 h-4 w-4" />
+								Ruler Tool
+							</button>
+
+							<button
+								class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+								onclick={handleDocumentInfo}
+							>
+								<FileText class="mr-2 h-4 w-4" />
+								Document Info
+							</button>
+						</div>
+
+						<!-- Legal & About Section -->
+						<div class="space-y-1 border-t border-border pt-3">
+							<button
+								class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+								onclick={handleAbout}
+							>
+								<Info class="mr-2 h-4 w-4" />
+								About Us
+							</button>
+
+							<button
+								class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+								onclick={handleTerms}
+							>
+								<FileText class="mr-2 h-4 w-4" />
+								Terms of Use
+							</button>
+
+							<button
+								class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+								onclick={handlePrivacy}
+							>
+								<Shield class="mr-2 h-4 w-4" />
+								Privacy Policy
+							</button>
 						</div>
 					</div>
 				</div>
