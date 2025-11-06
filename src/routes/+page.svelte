@@ -167,42 +167,27 @@
 
 		<!-- Editor and Preview Area -->
 		<div class="flex flex-1 overflow-hidden" role="main" aria-label="Document editor">
-			{#if !documentStore.activeDocumentId}
-				<div class="flex h-full flex-1 items-center justify-center">
-					<div class="text-center">
-						<h2 class="text-xl font-semibold text-foreground/80">No Document Selected</h2>
-						<p class="mt-2 text-sm text-muted-foreground">
-							Select a document from the sidebar or <button
-								type="button"
-								class="text-primary underline hover:text-primary/80 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
-								onclick={handleCreateNewDocument}
-							>
-								create a new one
-							</button>
-						</p>
-					</div>
-				</div>
-			{:else}
-				<DocumentEditor
-					documentId={documentStore.activeDocumentId}
-					{autoSave}
-					onContentChange={handleContentChange}
-					onDocumentLoad={handleDocumentLoad}
-					{showDocumentInfo}
-					onDocumentInfoChange={(open) => (showDocumentInfo = open)}
-					{showImportDialog}
-					onImportDialogChange={(open) => (showImportDialog = open)}
-					{showShareModal}
-					onShareModalChange={(open) => (showShareModal = open)}
-					{showAboutModal}
-					onAboutModalChange={(open) => (showAboutModal = open)}
-					{showTermsModal}
-					onTermsModalChange={(open) => (showTermsModal = open)}
-					{showPrivacyModal}
-					onPrivacyModalChange={(open) => (showPrivacyModal = open)}
-					onPreviewStatusChange={handlePreviewStatusChange}
-				/>
-			{/if}
+			<DocumentEditor
+				documentId={documentStore.activeDocumentId ?? null}
+				hasActiveDocument={!!documentStore.activeDocumentId}
+				{autoSave}
+				onContentChange={handleContentChange}
+				onDocumentLoad={handleDocumentLoad}
+				{showDocumentInfo}
+				onDocumentInfoChange={(open) => (showDocumentInfo = open)}
+				{showImportDialog}
+				onImportDialogChange={(open) => (showImportDialog = open)}
+				{showShareModal}
+				onShareModalChange={(open) => (showShareModal = open)}
+				{showAboutModal}
+				onAboutModalChange={(open) => (showAboutModal = open)}
+				{showTermsModal}
+				onTermsModalChange={(open) => (showTermsModal = open)}
+				{showPrivacyModal}
+				onPrivacyModalChange={(open) => (showPrivacyModal = open)}
+				onPreviewStatusChange={handlePreviewStatusChange}
+				onCreateNewDocument={handleCreateNewDocument}
+			/>
 		</div>
 	</div>
 </div>

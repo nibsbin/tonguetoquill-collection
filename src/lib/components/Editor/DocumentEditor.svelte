@@ -13,7 +13,8 @@
 	import PrivacyModal from '$lib/components/PrivacyModal.svelte';
 
 	interface Props {
-		documentId: string;
+		documentId: string | null;
+		hasActiveDocument: boolean;
 		autoSave: AutoSave;
 		onContentChange?: (content: string) => void;
 		onDocumentLoad?: (doc: { name: string; content: string }) => void;
@@ -30,10 +31,12 @@
 		showPrivacyModal?: boolean;
 		onPrivacyModalChange?: (open: boolean) => void;
 		onPreviewStatusChange?: (hasSuccessfulPreview: boolean) => void;
+		onCreateNewDocument?: () => void;
 	}
 
 	let {
 		documentId,
+		hasActiveDocument,
 		autoSave,
 		onContentChange,
 		onDocumentLoad,
@@ -49,7 +52,8 @@
 		onTermsModalChange,
 		showPrivacyModal = false,
 		onPrivacyModalChange,
-		onPreviewStatusChange
+		onPreviewStatusChange,
+		onCreateNewDocument
 	}: Props = $props();
 
 	let content = $state('');
@@ -78,6 +82,20 @@
 
 	// Watch for document changes and handle unsaved changes
 	$effect(() => {
+		// Skip if no document is active
+		if (!hasActiveDocument || documentId === null) {
+			// Clear content for empty state
+			if (previousDocumentId !== null) {
+				content = '';
+				initialContent = '';
+				debouncedContent = '';
+				autoSave.reset();
+			}
+			previousDocumentId = null;
+			loading = false;
+			return;
+		}
+
 		if (previousDocumentId !== null && previousDocumentId !== documentId && isDirty) {
 			// Document is switching with unsaved changes
 			// Auto-save the current document before switching
@@ -107,8 +125,10 @@
 			debouncedContent = newContent;
 		}, 50);
 
-		// Trigger auto-save
-		autoSave.scheduleSave(documentId, newContent, autoSaveEnabled);
+		// Trigger auto-save (only if document is active)
+		if (hasActiveDocument && documentId !== null) {
+			autoSave.scheduleSave(documentId, newContent, autoSaveEnabled);
+		}
 
 		// Notify parent of content change
 		if (onContentChange) {
@@ -133,7 +153,7 @@
 
 	// Manual save handler (Ctrl+S)
 	async function handleManualSave() {
-		if (!isDirty) return;
+		if (!isDirty || !documentId) return;
 
 		try {
 			await autoSave.saveNow(documentId, content);
@@ -161,7 +181,9 @@
 		debouncedContent = importedContent;
 
 		// Trigger auto-save
-		autoSave.scheduleSave(documentId, importedContent, autoSaveEnabled);
+		if (documentId) {
+			autoSave.scheduleSave(documentId, importedContent, autoSaveEnabled);
+		}
 
 		// Notify parent of content change
 		if (onContentChange) {
@@ -173,6 +195,12 @@
 
 	// Load document content
 	async function loadDocument() {
+		// Guard: Don't load if no document active
+		if (!hasActiveDocument || documentId === null) {
+			loading = false;
+			return;
+		}
+
 		loading = true;
 		try {
 			// Skip loading for temporary documents (they don't exist yet)
@@ -258,10 +286,15 @@
 	});
 </script>
 
-<div class="relative flex h-full flex-1 flex-col" aria-busy={loading}>
-	<!-- Editor content (dimmed when loading) -->
+<div
+	class="relative flex h-full flex-1 flex-col"
+	aria-busy={loading}
+	aria-disabled={!hasActiveDocument}
+>
+	<!-- Editor content (dimmed when loading or no document) -->
 	<div
-		class="flex h-full flex-1 flex-col transition-opacity duration-224 ease-in-out {loading
+		class="flex h-full flex-1 flex-col transition-opacity duration-300 ease-in-out {loading ||
+		!hasActiveDocument
 			? 'pointer-events-none opacity-50'
 			: ''}"
 	>
@@ -291,7 +324,8 @@
 		<div class="flex flex-1 overflow-hidden">
 			<!-- Editor Section -->
 			<div
-				class="flex flex-1 flex-col border-r border-border {isMobile && mobileView !== 'editor'
+				class="relative flex flex-1 flex-col border-r border-border {isMobile &&
+				mobileView !== 'editor'
 					? 'hidden'
 					: ''}"
 			>
@@ -303,6 +337,33 @@
 					onSave={handleManualSave}
 					{showLineNumbers}
 				/>
+
+				<!-- Empty State Overlay (shown when no document) -->
+				{#if !hasActiveDocument}
+					<div
+						class="pointer-events-auto absolute inset-0 flex items-center justify-center bg-background/30 backdrop-blur-[1px] transition-opacity duration-300 ease-in-out"
+						role="status"
+						aria-live="polite"
+					>
+						<div class="px-4 text-center">
+							<p class="mt-2 text-sm text-muted-foreground">
+								Select a document from the sidebar or
+								{#if onCreateNewDocument}
+									<button
+										type="button"
+										class="text-primary underline hover:text-primary/80 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
+										onclick={onCreateNewDocument}
+										aria-label="Create a new document"
+									>
+										create a new one
+									</button>
+								{:else}
+									create a new one
+								{/if}
+							</p>
+						</div>
+					</div>
+				{/if}
 			</div>
 
 			<!-- Preview Section (Desktop: always visible, Mobile: toggled) -->

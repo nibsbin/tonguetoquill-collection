@@ -371,9 +371,9 @@
 			aria-label="PDF preview"
 		></iframe>
 	{:else}
-		<div class="flex h-full items-center justify-center">
+		<!-- <div class="flex h-full items-center justify-center">
 			<p class="text-muted-foreground">No preview available</p>
-		</div>
+		</div> -->
 	{/if}
 
 	<!-- Ruler Overlay -->

@@ -39,6 +39,7 @@
 - [LOGIN_PROFILE_UI.md](frontend/LOGIN_PROFILE_UI.md) - Auth UI in sidebar (guest/logged-in states)
 - [LOGO_SIDEBAR.md](frontend/LOGO_SIDEBAR.md) - Logo positioning and animation
 - [MARKDOWN_EDITOR.md](frontend/MARKDOWN_EDITOR.md) - CodeMirror 6 integration with QuillMark
+- [EMPTY_STATE_EDITOR.md](frontend/EMPTY_STATE_EDITOR.md) - Empty state handling when no document selected
 - [ERROR_DISPLAY.md](frontend/ERROR_DISPLAY.md) - Error display patterns and diagnostics
 - [SHARE_MODAL.md](frontend/SHARE_MODAL.md) - Share modal dialog (placeholder)
 
