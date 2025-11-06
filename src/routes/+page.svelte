@@ -19,6 +19,7 @@
 	let documentContent = $state('');
 	let documentName = $state('');
 	let hasSuccessfulPreview = $state(false);
+	let newDocDialogOpen = $state(false);
 
 	onMount(() => {
 		// Show classification message
@@ -135,11 +136,15 @@
 	function handlePreviewStatusChange(status: boolean) {
 		hasSuccessfulPreview = status;
 	}
+
+	function handleCreateNewDocument() {
+		newDocDialogOpen = true;
+	}
 </script>
 
 <div class="flex h-screen bg-background">
 	<!-- Sidebar -->
-	<Sidebar {user} />
+	<Sidebar {user} bind:newDocDialogOpen />
 
 	<!-- Main Content -->
 	<div class="flex flex-1 flex-col">
@@ -167,7 +172,13 @@
 					<div class="text-center">
 						<h2 class="text-xl font-semibold text-foreground/80">No Document Selected</h2>
 						<p class="mt-2 text-sm text-muted-foreground">
-							Select a document from the sidebar or create a new one
+							Select a document from the sidebar or <button
+								type="button"
+								class="text-primary underline hover:text-primary/80 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
+								onclick={handleCreateNewDocument}
+							>
+								create a new one
+							</button>
 						</p>
 					</div>
 				</div>

@@ -15,9 +15,11 @@
 
 	type SidebarProps = {
 		user?: { email: string; id: string } | null;
+		newDocDialogOpen?: boolean;
+		onNewDocDialogOpenChange?: (open: boolean) => void;
 	};
 
-	let { user }: SidebarProps = $props();
+	let { user, newDocDialogOpen = $bindable(false) }: SidebarProps = $props();
 
 	let isExpanded = $state(false);
 	let autoSave = $state(true);
@@ -26,7 +28,6 @@
 	let loginPopoverOpen = $state(false);
 	let isDarkMode = $state(true);
 	let profilePopoverOpen = $state(false);
-	let newDocDialogOpen = $state(false);
 
 	// Get existing document names for collision detection
 	const existingDocumentNames = $derived(documentStore.documents.map((d) => d.name));
