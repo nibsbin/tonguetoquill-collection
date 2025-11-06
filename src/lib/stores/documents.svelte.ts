@@ -50,6 +50,10 @@ class DocumentStore {
 		return this.state.documents.find((doc) => doc.id === this.state.activeDocumentId) || null;
 	}
 
+	get isGuest() {
+		return this._isGuest;
+	}
+
 	// Provide access to document client for AutoSave
 	getDocumentClient() {
 		return this.documentClient;
