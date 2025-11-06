@@ -267,7 +267,7 @@
 					/>
 				{/snippet}
 				{#snippet content()}
-					<div class="w-72 p-1">
+					<div class="w-72 p-4">
 						<h3 class="mb-4 text-lg font-semibold text-foreground">Account Information</h3>
 
 						<dl class="mb-4 space-y-4">
@@ -305,7 +305,7 @@
 				/>
 			{/snippet}
 			{#snippet content()}
-				<div class="w-64 p-0">
+				<div class="w-64 p-4">
 					<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
 
 					<div class="space-y-4">
