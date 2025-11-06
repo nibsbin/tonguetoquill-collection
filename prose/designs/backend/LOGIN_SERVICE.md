@@ -2,8 +2,6 @@
 
 This document defines the Login Service and overall authentication architecture for user authentication using third-party authentication providers. The service follows the server/client pattern established in [SERVICES.md](./SERVICES.md).
 
-> **Status**: ✅ **IMPLEMENTED** - OAuth delegation architecture implemented in Phase 9. See [Implementation Plan](../../plans/auth-delegation-implementation.md) for details.
->
 > **Related**:
 >
 > - [SERVICES.md](./SERVICES.md) for overall service architecture patterns
@@ -510,4 +508,3 @@ This is the right trade-off for most applications.
 - [SUPABASE_AUTH_ADAPTER.md](./SUPABASE_AUTH_ADAPTER.md) - Supabase auth integration design
 - [../frontend/API_INTEGRATION.md](../frontend/API_INTEGRATION.md) - Frontend API integration patterns
 - [../frontend/STATE_MANAGEMENT.md](../frontend/STATE_MANAGEMENT.md) - Session state management
-- [../../plans/supabase-auth-adapter-implementation.md](../../plans/supabase-auth-adapter-implementation.md) - Implementation plan for Supabase adapter

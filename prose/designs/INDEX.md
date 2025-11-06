@@ -35,6 +35,7 @@
 ### UI Components
 
 - [SIDEBAR.md](frontend/SIDEBAR.md) - Collapsible sidebar with button slot architecture
+- [NEW_DOCUMENT.md](frontend/NEW_DOCUMENT.md) - New document creation with template selection
 - [LOGIN_PROFILE_UI.md](frontend/LOGIN_PROFILE_UI.md) - Auth UI in sidebar (guest/logged-in states)
 - [LOGO_SIDEBAR.md](frontend/LOGO_SIDEBAR.md) - Logo positioning and animation
 - [MARKDOWN_EDITOR.md](frontend/MARKDOWN_EDITOR.md) - CodeMirror 6 integration with QuillMark

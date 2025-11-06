@@ -358,7 +358,6 @@ Test adapter methods in isolation with mocked Supabase client:
 
 - [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) - Overall authentication architecture
 - [SERVICES.md](./SERVICES.md) - Service patterns and conventions
-- [SUPABASE_AUTH_VERIFICATION.md](./SUPABASE_AUTH_VERIFICATION.md) - Verification against Supabase docs
 
 **Official Supabase Documentation:**
 

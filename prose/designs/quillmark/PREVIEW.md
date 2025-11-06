@@ -237,7 +237,7 @@ Screenshot comparisons for SVG/PDF rendering and error states.
 
 - [Quillmark Service Design](./SERVICE.md)
 - [Integration Architecture](./INTEGRATION.md)
-- [Preview Component](../frontend/UI_COMPONENTS.md)
+- Preview component in [ARCHITECTURE.md](../frontend/ARCHITECTURE.md)
 - [Preview Component Current Implementation](../../../src/lib/components/Preview/Preview.svelte)
 - [Quillmark Service Implementation](../../../src/lib/services/quillmark/service.ts)
 - [@quillmark-test/web Exporters API](https://www.npmjs.com/package/@quillmark-test/web)
