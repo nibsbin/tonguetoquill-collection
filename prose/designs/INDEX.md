@@ -3,6 +3,7 @@
 **Purpose**: Design documents describing Tonguetoquill's desired state and architectural patterns.
 
 **How to use**:
+
 - One topic per page
 - Each doc is the canonical source for its topic
 - Docs cross-reference each other (follow the links)

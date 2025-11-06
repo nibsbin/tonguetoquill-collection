@@ -11,6 +11,7 @@ This design document establishes the unified theming standard for all widget com
 ## Motivation
 
 Widget components require a consistent theming approach to ensure:
+
 - Seamless visual integration across the application
 - Predictable light/dark theme behavior
 - Maintainable single source of truth for design tokens
@@ -20,6 +21,7 @@ Widget components require a consistent theming approach to ensure:
 ### Historical Context
 
 Prior to this design, widgets exhibited inconsistent theming patterns:
+
 - Hardcoded color values bypassing the design system
 - Mixed usage of semantic tokens and direct color references
 - Varying spacing and layout structures
@@ -42,23 +44,27 @@ Prior to this design, widgets exhibited inconsistent theming patterns:
 Widgets use semantic color tokens that convey meaning rather than specific hue values. This abstraction enables theme changes without component modifications.
 
 **Surface Hierarchy:**
+
 - Base background for the application canvas
 - Secondary surfaces for embedded panels and cards
 - Elevated surfaces for floating elements (dialogs, popovers, tooltips)
 - Text colors with hierarchy (primary, secondary, muted)
 
 **Interactive States:**
+
 - Primary actions (main call-to-action buttons)
 - Secondary actions (alternative or cancel actions)
 - Accent states (hover, focus, active states)
 - Destructive actions (delete, remove operations)
 
 **UI Element Tokens:**
+
 - Border colors with default and interactive states
 - Focus ring colors for keyboard navigation
 - Shadow definitions for elevation
 
 **Status and Feedback:**
+
 - Success states (confirmations, completions)
 - Information states (helpful messages, tips)
 - Warning states (cautions, important notices)
@@ -71,22 +77,26 @@ Each semantic token includes coordinated foreground, background, and border vari
 Widgets follow a consistent spatial rhythm based on design system spacing tokens:
 
 **Container Padding:**
+
 - Dialog content receives generous padding for comfortable reading
 - Popovers use tighter padding appropriate for compact overlays
 - Modals balance between dialogs and popovers based on content density
 
 **Sectional Spacing:**
+
 - Headers separated from content with standard spacing
 - Related content grouped with tighter spacing
 - Unrelated sections separated with larger spacing
 - List items maintain consistent vertical rhythm
 
 **Interactive Element Spacing:**
+
 - Button groups maintain uniform gaps
 - Form fields follow standard vertical spacing
 - Icon-text combinations use consistent horizontal spacing
 
 **Typography Hierarchy:**
+
 - Dialog titles use prominent sizing and weight
 - Section headers use medium sizing with muted color
 - Body text uses standard sizing for readability
@@ -96,23 +106,27 @@ Widgets follow a consistent spatial rhythm based on design system spacing tokens
 
 **Dialog Components:**
 All dialogs follow a three-part structure:
+
 1. **Header**: Contains title and optional description, with close button positioned consistently
 2. **Content**: Contains the primary information or interaction elements, organized in logical sections
 3. **Footer**: Optional section for action buttons, consistently positioned and aligned
 
 **Popover Components:**
 Popovers follow a compact structure:
+
 1. **Header**: Title with close button in standard position
 2. **Content**: Sections of related information or controls
 3. **Footer**: Optional action area for confirmations
 
 **Modal Components:**
 Modals combine dialog and popover patterns based on context:
+
 - Use dialog structure for complex, multi-step interactions
 - Use popover structure for simple, focused tasks
 - Maintain consistent close button positioning across all modal types
 
 **Common Structural Rules:**
+
 - Close buttons always positioned in top-right corner
 - Headers always contain a title (description optional)
 - Content sections maintain vertical rhythm
@@ -122,7 +136,9 @@ Modals combine dialog and popover patterns based on context:
 ### 4. Widget Type Guidelines
 
 #### Information Display Widgets
+
 Widgets that present read-only information (stats, details, summaries):
+
 - Use elevated surface treatment to distinguish from main canvas
 - Emphasize primary data points through typography hierarchy
 - De-emphasize metadata (dates, sources, counts) with muted colors
@@ -130,7 +146,9 @@ Widgets that present read-only information (stats, details, summaries):
 - Group related information into logical sections
 
 #### File Operation Widgets
+
 Widgets handling file uploads, imports, or exports:
+
 - Use elevated surface for the main container
 - Provide clear visual feedback for drag-and-drop zones
 - Use border states (default, hover, active) to indicate interactivity
@@ -138,7 +156,9 @@ Widgets handling file uploads, imports, or exports:
 - Show file metadata in muted text once selected
 
 #### Tool Overlay Widgets
+
 Widgets that overlay the main canvas during active tool usage:
+
 - Use success colors for active measurement or selection indicators
 - Provide instruction banners with appropriate surface treatment
 - Maintain canvas visibility by using appropriate opacity
@@ -146,7 +166,9 @@ Widgets that overlay the main canvas during active tool usage:
 - Use cursor changes to indicate tool mode
 
 #### Authentication Widgets
+
 Widgets managing user authentication and sessions:
+
 - Highlight primary authentication method (OAuth buttons)
 - Use status colors appropriately for success/error feedback
 - Display user information in clear definition lists or key-value pairs
@@ -154,7 +176,9 @@ Widgets managing user authentication and sessions:
 - Provide clear feedback during async operations (loading states)
 
 #### Configuration Widgets
+
 Widgets for user preferences and settings:
+
 - Group related settings into logical sections
 - Use consistent spacing between control groups
 - Label all controls with appropriate text hierarchy
@@ -168,6 +192,7 @@ Widgets for user preferences and settings:
 The design system must provide complete semantic token coverage:
 
 **Color Tokens:**
+
 - All surface hierarchy levels (base, secondary, elevated)
 - Complete interactive state palette (primary, secondary, accent, destructive)
 - Full status feedback set (success, info, warning, error)
@@ -175,12 +200,14 @@ The design system must provide complete semantic token coverage:
 - Light and dark theme definitions for all tokens
 
 **Spacing Tokens:**
+
 - Standardized padding scale for containers
 - Consistent spacing scale for sectional separation
 - Uniform gap definitions for element groups
 - Typography spacing (line height, letter spacing)
 
 **Typography Tokens:**
+
 - Size scale from helper text to large titles
 - Weight definitions for hierarchy (regular, medium, semibold, bold)
 - Color pairings for text on various surfaces
@@ -209,6 +236,7 @@ Widgets meet the design standard when:
 When creating or updating a widget, verify adherence to this design:
 
 **Color Usage:**
+
 - [ ] All colors reference semantic tokens from the design system
 - [ ] No hardcoded color values (hex codes, RGB, HSL, named colors)
 - [ ] No theme-specific conditional color logic in component
@@ -216,12 +244,14 @@ When creating or updating a widget, verify adherence to this design:
 - [ ] Border colors use semantic border tokens
 
 **Spacing and Layout:**
+
 - [ ] Container padding follows widget type guidelines (dialog vs popover)
 - [ ] Section spacing uses standardized vertical rhythm
 - [ ] Interactive elements have consistent gap spacing
 - [ ] Typography hierarchy follows design system scale
 
 **Structural Patterns:**
+
 - [ ] Widget follows appropriate structural pattern (dialog, popover, modal)
 - [ ] Close button positioned consistently (top-right)
 - [ ] Header includes title (description optional)
@@ -229,6 +259,7 @@ When creating or updating a widget, verify adherence to this design:
 - [ ] Keyboard focus follows visual hierarchy
 
 **Theme and Accessibility:**
+
 - [ ] Widget appearance verified in both light and dark themes
 - [ ] All text meets WCAG AA contrast requirements (4.5:1 for normal text)
 - [ ] Interactive elements have visible focus indicators
@@ -236,6 +267,7 @@ When creating or updating a widget, verify adherence to this design:
 - [ ] Widget tested with keyboard-only navigation
 
 **Visual Consistency:**
+
 - [ ] Typography sizes and weights match similar widgets
 - [ ] Spacing matches similar widget types
 - [ ] Interactive states (hover, focus, active) follow patterns

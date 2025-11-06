@@ -292,7 +292,9 @@
 						target="_blank"
 						rel="noopener noreferrer"
 						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
-						onclick={() => { dropdownOpen = false; }}
+						onclick={() => {
+							dropdownOpen = false;
+						}}
 					>
 						<MessageSquare class="mr-2 h-4 w-4" />
 						Give Feedback

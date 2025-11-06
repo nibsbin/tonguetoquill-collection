@@ -50,18 +50,21 @@ Successfully implemented the "Validation is Domain Logic" simplification cascade
 ### Code Impact
 
 **Before**:
+
 - 3 separate validation implementations
 - ~80 lines of duplicate validation code
 - Inconsistent validation (browser storage had partial validation)
 - Risk of validation rules diverging
 
 **After**:
+
 - 1 shared validation implementation
 - 0 duplicate validation code
 - Consistent validation across all storage mechanisms
 - Single source of truth for validation rules
 
 **Net Changes**:
+
 - MockDocumentService: 297 lines → ~261 lines (-36 lines)
 - SupabaseDocumentService: 352 lines → ~308 lines (-44 lines)
 - DocumentBrowserStorage: 166 lines → ~174 lines (+8 lines)
@@ -71,6 +74,7 @@ Successfully implemented the "Validation is Domain Logic" simplification cascade
 ## Deviations from Plan
 
 None. The implementation followed the plan exactly as specified:
+
 - All validation logic extracted to shared module
 - All three storage implementations updated
 - No changes to validation rules or behavior
@@ -80,13 +84,16 @@ None. The implementation followed the plan exactly as specified:
 ## Testing & Verification
 
 ### Manual Verification
+
 - ✅ All imports and calls verified via grep
 - ✅ DocumentValidator properly exported and imported
 - ✅ All validation calls use correct method signatures
 - ✅ Code structure matches expected patterns
 
 ### Validation Preserved
+
 The implementation maintains identical validation behavior:
+
 - Document name: 1-255 characters, no leading/trailing whitespace
 - Document content: maximum 524,288 bytes (0.5 MB)
 - Size calculation: UTF-8 byte length via Buffer
@@ -105,6 +112,7 @@ The implementation maintains identical validation behavior:
 ## Way Forward
 
 ### Immediate Next Steps
+
 1. ✅ Design and plan document created
 2. ✅ Implementation completed
 3. ✅ Code committed and pushed
@@ -130,6 +138,7 @@ Based on the original simplification cascades analysis, two additional cascades 
 ### Testing Recommendations
 
 When the build environment is set up:
+
 ```bash
 npm test                    # Run full test suite
 npm run build               # Verify TypeScript compilation
@@ -137,6 +146,7 @@ npm run dev                 # Manual testing
 ```
 
 **Test cases to verify**:
+
 1. Create document with empty name → throws `invalid_name`
 2. Create document with 256-char name → throws `invalid_name`
 3. Create document with whitespace → throws `invalid_name`
@@ -146,11 +156,13 @@ npm run dev                 # Manual testing
 ## Files Changed
 
 **New Files**:
+
 - `src/lib/services/documents/document-validator.ts` (69 lines)
 - `prose/designs/validation-extraction.md` (design doc)
 - `prose/plans/completed/validation-extraction-implementation.md` (plan)
 
 **Modified Files**:
+
 - `src/lib/server/services/documents/document-mock-service.ts` (-36 lines)
 - `src/lib/server/services/documents/document-supabase-service.ts` (-44 lines)
 - `src/lib/services/documents/document-browser-storage.ts` (+8 lines)

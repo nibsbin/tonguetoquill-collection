@@ -440,20 +440,20 @@ When switching between documents after initial load, use a loading overlay patte
 
 ```svelte
 <div class="relative flex h-full flex-1 flex-col" aria-busy={loading}>
-  <!-- Editor content (dimmed when loading) -->
-  <div class={loading ? 'pointer-events-none opacity-50' : ''}>
-    <!-- Existing editor structure -->
-  </div>
+	<!-- Editor content (dimmed when loading) -->
+	<div class={loading ? 'pointer-events-none opacity-50' : ''}>
+		<!-- Existing editor structure -->
+	</div>
 
-  <!-- Loading overlay -->
-  {#if loading}
-    <div class="absolute inset-0 flex items-center justify-center bg-background/50">
-      <div class="flex flex-col items-center gap-3">
-        <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
-        <p class="text-sm text-muted-foreground">Loading document...</p>
-      </div>
-    </div>
-  {/if}
+	<!-- Loading overlay -->
+	{#if loading}
+		<div class="absolute inset-0 flex items-center justify-center bg-background/50">
+			<div class="flex flex-col items-center gap-3">
+				<Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
+				<p class="text-sm text-muted-foreground">Loading document...</p>
+			</div>
+		</div>
+	{/if}
 </div>
 ```
 
@@ -472,11 +472,11 @@ When switching between documents after initial load, use a loading overlay patte
 ```typescript
 // In document switch effect
 if (previousDocumentId !== null && previousDocumentId !== documentId && isDirty) {
-  if (autoSaveEnabled) {
-    autoSave.saveNow(previousDocumentId, content).catch(() => {
-      // Ignore errors during auto-save on switch
-    });
-  }
+	if (autoSaveEnabled) {
+		autoSave.saveNow(previousDocumentId, content).catch(() => {
+			// Ignore errors during auto-save on switch
+		});
+	}
 }
 ```
 

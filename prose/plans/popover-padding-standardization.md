@@ -40,11 +40,13 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 **File:** `src/lib/components/ui/base-popover.svelte`
 
 **Changes:**
+
 1. Line 198: Remove `p-1` from container classes
    - Before: `'fixed w-max rounded-lg border border-border bg-surface-elevated p-1 shadow-md'`
    - After: `'fixed w-max rounded-lg border border-border bg-surface-elevated shadow-md'`
 
 **Rationale:**
+
 - Removes default padding to give content authors full control
 - Aligns with design system principle: base components provide structure, not spacing
 
@@ -53,6 +55,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 **File:** `src/lib/components/Sidebar/Sidebar.svelte`
 
 **Changes:**
+
 1. Line 308: Update content container padding
    - Before: `<div class="w-64 p-0">`
    - After: `<div class="w-64 p-4">`
@@ -64,6 +67,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
    - Verify button section has `space-y-1` (line 340: currently present)
 
 **Expected Visual Result:**
+
 - Settings title, Dark Mode, Auto-save, and Line Numbers will have consistent 16px padding from edges
 - Utility pages buttons (About Us, Terms, Privacy) maintain comfortable spacing within container
 
@@ -72,6 +76,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 **File:** `src/lib/components/Sidebar/Sidebar.svelte`
 
 **Changes:**
+
 1. Line 270: Update content container padding
    - Before: `<div class="w-72 p-1">`
    - After: `<div class="w-72 p-4">`
@@ -82,6 +87,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
    - Verify button margin (line 284: currently part of button classes)
 
 **Expected Visual Result:**
+
 - Account Information title and content have consistent 16px padding
 - Definition list items maintain comfortable vertical rhythm
 
@@ -90,6 +96,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 **File:** `src/lib/components/TopMenu/TopMenu.svelte`
 
 **Changes:**
+
 1. Line 213: Update content container padding
    - Before: `<div class="min-w-[14rem] p-1">`
    - After: `<div class="min-w-[14rem] p-4">`
@@ -100,6 +107,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
    - Border separator on first tool button (line 233: `border-t border-border`)
 
 **Expected Visual Result:**
+
 - Menu items (Import, Share, Ruler Tool, Document Info) have consistent padding from popover edges
 - Maintains comfortable spacing while keeping compact menu feel
 
@@ -108,6 +116,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 **File:** `src/lib/components/Sidebar/LoginPopover.svelte`
 
 **Changes:**
+
 1. Review root container (if applicable) - verify it follows `p-4` standard
 2. Check internal spacing for consistency with other popovers
 
@@ -116,6 +125,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 ## Testing Checklist
 
 ### Visual Testing
+
 - [ ] Settings popover title, switches, and buttons have consistent comfortable padding
 - [ ] User Profile popover shows even padding around all content
 - [ ] TopMenu kebab popover items are well-spaced and aligned
@@ -125,18 +135,21 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 - [ ] Section separators (borders) appear in correct positions
 
 ### Spacing Verification
+
 - [ ] Measure padding with browser DevTools: expect 16px (1rem) on all sides of content
 - [ ] Verify title spacing below is consistent (16px / 1rem)
 - [ ] Verify section spacing is consistent (16px / 1rem between sections)
 - [ ] Verify button items maintain `px-2 py-1.5` internal padding
 
 ### Responsive Testing
+
 - [ ] Popovers display correctly on desktop (1024px+)
 - [ ] Popovers display correctly on tablet (768px-1023px)
 - [ ] Popovers display correctly on mobile (<768px)
 - [ ] Content doesn't overflow or clip at any breakpoint
 
 ### Functional Testing
+
 - [ ] All popovers open and close correctly
 - [ ] Click outside closes popovers (if applicable)
 - [ ] ESC key closes popovers
@@ -144,6 +157,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 - [ ] No regressions in popover behavior
 
 ### Cross-Browser Testing
+
 - [ ] Chrome/Edge (Chromium)
 - [ ] Firefox
 - [ ] Safari
@@ -162,6 +176,7 @@ Per [WIDGET_ABSTRACTION.md § Popover Padding Standard](../designs/frontend/WIDG
 ## Rollback Plan
 
 If issues arise:
+
 1. Revert BasePopover changes
 2. Revert individual popover content changes
 3. Test on branch before merging

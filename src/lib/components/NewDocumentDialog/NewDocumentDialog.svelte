@@ -164,7 +164,7 @@
 
 	{#snippet footer()}
 		<Button variant="ghost" onclick={handleCancel} disabled={isCreating}>Cancel</Button>
-		<Button onclick={handleCreate} disabled={!isValid || isCreating}>
+		<Button variant="default" onclick={handleCreate} disabled={!isValid || isCreating}>
 			{isCreating ? 'Creating...' : 'Create'}
 		</Button>
 	{/snippet}

@@ -22,22 +22,25 @@
 **Location**: [DIAGNOSTICS.md](../quillmark/DIAGNOSTICS.md)
 
 **Structure**:
+
 ```typescript
 interface Diagnostic {
-  severity: 'error' | 'warning' | 'info';
-  code: string;              // e.g., 'QM001'
-  message: string;           // Human-readable error
-  hint?: string;             // How to fix
-  location?: {               // Where in document
-    line: number;
-    column: number;
-    length: number;
-  };
-  source_chain?: string[];   // Error trace
+	severity: 'error' | 'warning' | 'info';
+	code: string; // e.g., 'QM001'
+	message: string; // Human-readable error
+	hint?: string; // How to fix
+	location?: {
+		// Where in document
+		line: number;
+		column: number;
+		length: number;
+	};
+	source_chain?: string[]; // Error trace
 }
 ```
 
 **Examples**:
+
 - Parse errors: Invalid YAML, missing SCOPE
 - Render errors: Unknown Quill template, compilation failure
 - Validation errors: Invalid metadata structure
@@ -47,12 +50,14 @@ interface Diagnostic {
 **Location**: [SERVICE.md](../quillmark/SERVICE.md)
 
 **Error Mapping**:
+
 - WASM errors → Service exceptions
 - Add context (document ID, user action)
 - Preserve diagnostic information
 - Return structured error responses
 
 **API Errors** (Backend):
+
 - 400 Bad Request: Client error with details
 - 401 Unauthorized: Auth failure
 - 404 Not Found: Resource missing
@@ -65,17 +70,20 @@ interface Diagnostic {
 **Error Categories**:
 
 **Network Errors**:
+
 - Timeout → Retry with backoff
 - Connection failed → Show "offline" indicator
 - 5xx → Retry up to 3 times
 
 **Client Errors**:
+
 - 400 → Display validation message
 - 401 → Trigger token refresh, then retry
 - 403 → Show "permission denied"
 - 404 → Show "not found"
 
 **Validation Errors**:
+
 - Extract field-specific errors from API response
 - Display inline next to form fields
 - Highlight invalid inputs
@@ -87,6 +95,7 @@ interface Diagnostic {
 **Display Patterns**:
 
 **Toast Notifications** (Transient errors):
+
 - API errors (save failed, load failed)
 - Network errors (connection lost)
 - Auth errors (login failed)
@@ -94,6 +103,7 @@ interface Diagnostic {
 - Actions: Retry button, close button
 
 **Inline Display** (QuillMark errors):
+
 - Shown in preview pane
 - Diagnostic information (code, message, hint)
 - Source location (line/column)
@@ -101,6 +111,7 @@ interface Diagnostic {
 - Persistent until document fixed
 
 **Form Validation** (Input errors):
+
 - Red border on invalid field
 - Error text below field
 - Real-time validation feedback
@@ -168,6 +179,7 @@ Frontend → Toast          : "Connection issue, retrying..." or "Success"
 ### Structured Errors
 
 Always include:
+
 - **Code**: Unique error identifier (e.g., 'QM001', 'AUTH_INVALID')
 - **Message**: Human-readable description
 - **Context**: What user was doing
@@ -183,23 +195,25 @@ Always include:
 
 ### Error Categorization
 
-| Type | Display | Persistence | Action |
-|------|---------|-------------|--------|
-| Validation | Inline (form field) | Until fixed | User corrects input |
-| QuillMark | Inline (preview) | Until fixed | User fixes document |
-| Network | Toast | 5 seconds | Retry automatically |
-| Auth | Toast | 5 seconds | Refresh token automatically |
-| API | Toast | 5 seconds | Retry button |
-| Fatal | Modal | Until dismissed | Reload page |
+| Type       | Display             | Persistence     | Action                      |
+| ---------- | ------------------- | --------------- | --------------------------- |
+| Validation | Inline (form field) | Until fixed     | User corrects input         |
+| QuillMark  | Inline (preview)    | Until fixed     | User fixes document         |
+| Network    | Toast               | 5 seconds       | Retry automatically         |
+| Auth       | Toast               | 5 seconds       | Refresh token automatically |
+| API        | Toast               | 5 seconds       | Retry button                |
+| Fatal      | Modal               | Until dismissed | Reload page                 |
 
 ### Silent vs. Visible Errors
 
 **Silent** (log only):
+
 - Token refresh success
 - Auto-save during navigation (prevents data loss but doesn't block)
 - Background prefetch failures
 
 **Visible** (show to user):
+
 - User-initiated actions fail (save, load, delete)
 - Document rendering errors
 - Authentication errors
@@ -210,18 +224,21 @@ Always include:
 ## Error Recovery
 
 ### Auto-Save Failure
+
 - Keep local changes in editor
 - Mark document as "unsaved"
 - Show retry button in toast
 - Don't discard user work
 
 ### Document Load Failure
+
 - Show error toast
 - Keep editor interactive
 - Allow creating new document
 - Provide retry option
 
 ### Preview Render Failure
+
 - Display diagnostic in preview pane
 - Keep editor functional
 - Highlight error location (if available)
@@ -234,16 +251,19 @@ Always include:
 ### Guidelines
 
 **Good**:
+
 - "Failed to save document: Network timeout. Retry?"
 - "Invalid YAML on line 5: Missing closing quote"
 - "Authentication expired. Signing in again..."
 
 **Bad**:
+
 - "Error" (too vague)
 - "Exception in QuillmarkService.render()" (too technical)
 - "Something went wrong" (unhelpful)
 
 **Components**:
+
 1. **What failed**: "Failed to save document"
 2. **Why**: "Network timeout"
 3. **Action**: "Retry?"

@@ -11,11 +11,11 @@
 	<title>Privacy Policy - Tongue to Quill</title>
 </svelte:head>
 
-<div class="h-screen bg-background text-foreground overflow-y-auto">
-	<div class="container mx-auto px-4 py-8 max-w-4xl pb-24">
+<div class="h-screen overflow-y-auto bg-background text-foreground">
+	<div class="container mx-auto max-w-4xl px-4 py-8 pb-24">
 		<!-- Header -->
 		<div class="mb-8">
-			<div class="flex items-center justify-between mb-4">
+			<div class="mb-4 flex items-center justify-between">
 				<h1 class="text-4xl font-bold">Privacy Policy</h1>
 				<Button class="bg-foreground text-background hover:bg-foreground/90" onclick={returnToApp}>
 					<ArrowLeft class="mr-2 h-4 w-4" />
@@ -34,7 +34,7 @@
 		<!-- Content -->
 		<div class="prose prose-neutral dark:prose-invert max-w-none space-y-6">
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">1. Introduction</h2>
+				<h2 class="mb-4 text-2xl font-semibold">1. Introduction</h2>
 				<p>
 					Tongue to Quill ("we," "our," or "us") is committed to protecting your privacy. This
 					Privacy Policy explains how we collect, use, disclose, and safeguard your information when
@@ -43,26 +43,26 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">2. Information We Collect</h2>
+				<h2 class="mb-4 text-2xl font-semibold">2. Information We Collect</h2>
 
-				<h3 class="text-xl font-semibold mt-4 mb-2">2.1 Personal Information</h3>
+				<h3 class="mt-4 mb-2 text-xl font-semibold">2.1 Personal Information</h3>
 				<p>When you create an account, we may collect:</p>
-				<ul class="list-disc pl-6 space-y-2">
+				<ul class="list-disc space-y-2 pl-6">
 					<li>Email address</li>
 					<li>Name (if provided)</li>
 					<li>Account credentials</li>
 					<li>Profile information</li>
 				</ul>
 
-				<h3 class="text-xl font-semibold mt-4 mb-2">2.2 Document Content</h3>
+				<h3 class="mt-4 mb-2 text-xl font-semibold">2.2 Document Content</h3>
 				<p>
 					We store the documents you create, edit, and manage through our Service. This includes
 					text content, formatting, and any files you upload.
 				</p>
 
-				<h3 class="text-xl font-semibold mt-4 mb-2">2.3 Usage Data</h3>
+				<h3 class="mt-4 mb-2 text-xl font-semibold">2.3 Usage Data</h3>
 				<p>We automatically collect certain information when you use the Service, including:</p>
-				<ul class="list-disc pl-6 space-y-2">
+				<ul class="list-disc space-y-2 pl-6">
 					<li>Browser type and version</li>
 					<li>Device information</li>
 					<li>IP address</li>
@@ -72,9 +72,9 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">3. How We Use Your Information</h2>
+				<h2 class="mb-4 text-2xl font-semibold">3. How We Use Your Information</h2>
 				<p>We use the information we collect to:</p>
-				<ul class="list-disc pl-6 space-y-2">
+				<ul class="list-disc space-y-2 pl-6">
 					<li>Provide, operate, and maintain the Service</li>
 					<li>Improve and personalize your experience</li>
 					<li>Process your transactions and manage your account</li>
@@ -86,7 +86,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">4. Data Storage and Security</h2>
+				<h2 class="mb-4 text-2xl font-semibold">4. Data Storage and Security</h2>
 				<p>
 					We implement appropriate technical and organizational security measures to protect your
 					information against unauthorized access, alteration, disclosure, or destruction. Your
@@ -100,34 +100,52 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">5. Data Sharing and Disclosure</h2>
-				<p>We do not sell your personal information. We may share your information only in the following circumstances:</p>
-				<ul class="list-disc pl-6 space-y-2">
-					<li><strong>With your consent:</strong> When you explicitly authorize us to share your information</li>
-					<li><strong>Service providers:</strong> With third-party vendors who perform services on our behalf (e.g., hosting, analytics)</li>
-					<li><strong>Legal requirements:</strong> When required by law, court order, or government request</li>
-					<li><strong>Business transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
-					<li><strong>Protection of rights:</strong> To protect the rights, property, or safety of Tongue to Quill, our users, or others</li>
+				<h2 class="mb-4 text-2xl font-semibold">5. Data Sharing and Disclosure</h2>
+				<p>
+					We do not sell your personal information. We may share your information only in the
+					following circumstances:
+				</p>
+				<ul class="list-disc space-y-2 pl-6">
+					<li>
+						<strong>With your consent:</strong> When you explicitly authorize us to share your information
+					</li>
+					<li>
+						<strong>Service providers:</strong> With third-party vendors who perform services on our
+						behalf (e.g., hosting, analytics)
+					</li>
+					<li>
+						<strong>Legal requirements:</strong> When required by law, court order, or government request
+					</li>
+					<li>
+						<strong>Business transfers:</strong> In connection with a merger, acquisition, or sale of
+						assets
+					</li>
+					<li>
+						<strong>Protection of rights:</strong> To protect the rights, property, or safety of Tongue
+						to Quill, our users, or others
+					</li>
 				</ul>
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">6. Your Rights and Choices</h2>
+				<h2 class="mb-4 text-2xl font-semibold">6. Your Rights and Choices</h2>
 				<p>You have the right to:</p>
-				<ul class="list-disc pl-6 space-y-2">
-					<li><strong>Access:</strong> Request a copy of the personal information we hold about you</li>
-					<li><strong>Correction:</strong> Request correction of inaccurate or incomplete information</li>
+				<ul class="list-disc space-y-2 pl-6">
+					<li>
+						<strong>Access:</strong> Request a copy of the personal information we hold about you
+					</li>
+					<li>
+						<strong>Correction:</strong> Request correction of inaccurate or incomplete information
+					</li>
 					<li><strong>Deletion:</strong> Request deletion of your account and associated data</li>
 					<li><strong>Export:</strong> Export your documents and data</li>
 					<li><strong>Opt-out:</strong> Unsubscribe from marketing communications</li>
 				</ul>
-				<p>
-					To exercise these rights, please contact us at privacy@tonguetoquill.com
-				</p>
+				<p>To exercise these rights, please contact us at privacy@tonguetoquill.com</p>
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">7. Data Retention</h2>
+				<h2 class="mb-4 text-2xl font-semibold">7. Data Retention</h2>
 				<p>
 					We retain your information for as long as your account is active or as needed to provide
 					you with the Service. If you delete your account, we will delete or anonymize your
@@ -137,7 +155,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">8. Cookies and Tracking Technologies</h2>
+				<h2 class="mb-4 text-2xl font-semibold">8. Cookies and Tracking Technologies</h2>
 				<p>
 					We use cookies and similar tracking technologies to track activity on our Service and hold
 					certain information. Cookies are files with a small amount of data that may include an
@@ -147,7 +165,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">9. Children's Privacy</h2>
+				<h2 class="mb-4 text-2xl font-semibold">9. Children's Privacy</h2>
 				<p>
 					Our Service is not intended for use by children under the age of 13. We do not knowingly
 					collect personal information from children under 13. If you become aware that a child has
@@ -156,7 +174,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">10. International Data Transfers</h2>
+				<h2 class="mb-4 text-2xl font-semibold">10. International Data Transfers</h2>
 				<p>
 					Your information may be transferred to and maintained on computers located outside of your
 					country where data protection laws may differ. By using the Service, you consent to the
@@ -165,7 +183,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">11. Changes to This Privacy Policy</h2>
+				<h2 class="mb-4 text-2xl font-semibold">11. Changes to This Privacy Policy</h2>
 				<p>
 					We may update our Privacy Policy from time to time. We will notify you of any changes by
 					posting the new Privacy Policy on this page and updating the "Last updated" date. You are
@@ -174,10 +192,8 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">12. Contact Us</h2>
-				<p>
-					If you have any questions about this Privacy Policy, please contact us at:
-				</p>
+				<h2 class="mb-4 text-2xl font-semibold">12. Contact Us</h2>
+				<p>If you have any questions about this Privacy Policy, please contact us at:</p>
 				<p class="font-medium">privacy@tonguetoquill.com</p>
 			</section>
 		</div>

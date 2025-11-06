@@ -7,6 +7,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 ## Current State
 
 ### Widgets Analyzed
+
 1. ✅ **DocumentInfoDialog.svelte** - Partially uses semantic tokens
 2. ❌ **ImportFileDialog.svelte** - Uses hardcoded neutral colors
 3. ⚠️ **RulerOverlay.svelte** - Mixed: semantic tokens + one hardcoded green
@@ -15,6 +16,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 6. ✅ **Account Information Modal** (in Sidebar.svelte) - Good semantic token usage
 
 ### Issues Identified
+
 - Missing success/info semantic tokens in `app.css`
 - Hardcoded `neutral-*` colors in ImportFileDialog
 - Hardcoded success/error backgrounds in LoginPopover
@@ -28,23 +30,23 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 **File:** `src/app.css`
 
 **Changes:**
+
 1. Add success color tokens (light theme in `:root`)
 2. Add success color tokens (dark theme in `.dark`)
 3. Add Tailwind mappings in `@theme inline`
 
 **New Tokens:**
+
 ```css
 /* Success colors */
---color-success: /* light: #16a34a, dark: #22c55e */
---color-success-foreground: /* light: #14532d, dark: #bbf7d0 */
---color-success-background: /* light: #f0fdf4, dark: #14532d */
---color-success-border: /* light: #bbf7d0, dark: #166534 */
-
-/* Info colors (optional, for future use) */
---color-info: /* light: #2563eb, dark: #3b82f6 */
---color-info-foreground: /* light: #1e3a8a, dark: #bfdbfe */
---color-info-background: /* light: #eff6ff, dark: #1e3a8a */
---color-info-border: /* light: #bfdbfe, dark: #1e40af */
+--color-success: /* light: #16a34a, dark: #22c55e */ --color-success-foreground:
+	/* light: #14532d, dark: #bbf7d0 */
+	--color-success-background: /* light: #f0fdf4, dark: #14532d */
+	--color-success-border: /* light: #bbf7d0, dark: #166534 */
+	/* Info colors (optional, for future use) */ --color-info: /* light: #2563eb, dark: #3b82f6 */
+	--color-info-foreground: /* light: #1e3a8a, dark: #bfdbfe */
+	--color-info-background: /* light: #eff6ff, dark: #1e3a8a */
+	--color-info-border: /* light: #bfdbfe, dark: #1e40af */;
 ```
 
 ### Step 2: Update ImportFileDialog.svelte
@@ -52,6 +54,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 **File:** `src/lib/components/ImportFileDialog.svelte`
 
 **Changes:**
+
 1. Line 82: `bg-white dark:bg-neutral-800` → `bg-surface-elevated`
 2. Line 90: `text-neutral-900 dark:text-neutral-100` → `text-foreground`
 3. Line 107: `text-neutral-600 dark:text-neutral-400` → `text-muted-foreground`
@@ -63,6 +66,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 9. Line 137: `text-red-600 dark:text-red-400` → `text-error` (or use error token)
 
 **Layout adjustments:**
+
 - Keep current structure, just update colors
 - Consider using `bg-surface-elevated` for elevated feel
 
@@ -71,9 +75,11 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 **File:** `src/lib/components/RulerOverlay/RulerOverlay.svelte`
 
 **Changes:**
+
 1. Line 312: `fill: #22c55e;` → `fill: var(--color-success);`
 
 **Notes:**
+
 - All other colors already use semantic tokens
 - Keep current spacing and layout
 
@@ -82,6 +88,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 **File:** `src/lib/components/Sidebar/LoginPopover.svelte`
 
 **Changes:**
+
 1. Line 146-147: Success message styling
    - `bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300`
    - → `bg-success-background text-success-foreground border border-success-border`
@@ -91,6 +98,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
    - → `bg-error-background text-error-foreground border border-error-border`
 
 **Notes:**
+
 - Add border for better definition
 - Use new semantic success tokens
 
@@ -99,6 +107,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 **File:** `src/lib/components/Sidebar/Sidebar.svelte`
 
 **Changes:**
+
 - Lines 294-341 (mobile), 447-494 (desktop): Settings PopoverContent
 - Verify spacing consistency: `p-4`, `space-y-4`, `mb-4`
 - Verify colors: Already using semantic tokens
@@ -109,6 +118,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 **File:** `src/lib/components/Sidebar/Sidebar.svelte`
 
 **Changes:**
+
 - Lines 530-560: Profile Modal DialogContent
 - Verify spacing consistency: `space-y-4`
 - Verify colors: Already using semantic tokens
@@ -119,6 +129,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 **File:** `src/lib/components/DocumentInfoDialog.svelte`
 
 **Changes:**
+
 - Line 52: Consider `bg-surface-elevated` instead of `bg-background` for elevated feel
 - Verify all colors use semantic tokens (already good)
 - Verify spacing consistency
@@ -126,23 +137,27 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 ## Testing Checklist
 
 ### Visual Testing
+
 - [ ] All widgets render correctly in light mode
 - [ ] All widgets render correctly in dark mode
 - [ ] No color shifts or inconsistencies when toggling theme
 - [ ] Consistent spacing and alignment across all widgets
 
 ### Accessibility Testing
+
 - [ ] Contrast ratios meet WCAG AA (4.5:1 for normal text)
 - [ ] Focus indicators visible on all interactive elements
 - [ ] Screen reader labels present and correct
 
 ### Functional Testing
+
 - [ ] All widgets maintain existing functionality
 - [ ] No regressions in user interactions
 - [ ] Success/error messages display correctly
 - [ ] Hover states work as expected
 
 ### Cross-Browser Testing
+
 - [ ] Chrome/Edge (Chromium)
 - [ ] Firefox
 - [ ] Safari
@@ -159,6 +174,7 @@ Transition all widget components from mixed/hardcoded theming approaches to a un
 ## Rollback Plan
 
 If issues arise:
+
 1. Revert `app.css` changes
 2. Revert individual widget changes
 3. Test on branch before merging to main

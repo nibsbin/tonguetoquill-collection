@@ -13,6 +13,7 @@ Eliminate conditional routing in DocumentClient by unifying all document storage
 **File**: `src/lib/services/documents/document-client.ts`
 
 Every method has conditional branching:
+
 - Line 22-33: `listDocuments()` - if/else on `isGuest()`
 - Line 39-54: `getDocument()` - if/else on `isGuest()`
 - Line 60-76: `createDocument()` - if/else on `isGuest()`
@@ -26,6 +27,7 @@ Every method has conditional branching:
 **File**: `src/lib/services/documents/document-browser-storage.ts`
 
 Methods don't match `DocumentServiceContract`:
+
 - `createDocument(name, content)` - should take `CreateDocumentParams`
 - `getDocumentMetadata(id)` - should take `DocumentReferenceParams`
 - `getDocumentContent(id)` - should take `DocumentReferenceParams`
@@ -41,6 +43,7 @@ Returns partial types instead of full contract types.
 **File**: `src/lib/stores/documents.svelte.ts`
 
 Line 29: Creates client with `createDocumentClient(() => this._isGuest)`
+
 - Passes guest mode accessor function
 - No user ID passed
 - Client handles routing internally
@@ -54,21 +57,23 @@ Line 29: Creates client with `createDocumentClient(() => this._isGuest)`
 **Changes**:
 
 1. Add type import at top:
+
 ```typescript
 import type {
-  CreateDocumentParams,
-  Document,
-  DocumentListResult,
-  DocumentMetadata,
-  DocumentServiceContract,
-  ListDocumentsParams,
-  UpdateContentParams,
-  UpdateNameParams,
-  DocumentReferenceParams
+	CreateDocumentParams,
+	Document,
+	DocumentListResult,
+	DocumentMetadata,
+	DocumentServiceContract,
+	ListDocumentsParams,
+	UpdateContentParams,
+	UpdateNameParams,
+	DocumentReferenceParams
 } from './types';
 ```
 
 2. Update class declaration:
+
 ```typescript
 export class DocumentBrowserStorage implements DocumentServiceContract {
 ```
@@ -101,58 +106,59 @@ export class DocumentBrowserStorage implements DocumentServiceContract {
 **Action**: Create new file `src/lib/services/documents/api-document-service.ts`
 
 **Content**:
+
 ```typescript
 import type {
-  CreateDocumentParams,
-  Document,
-  DocumentListResult,
-  DocumentMetadata,
-  DocumentServiceContract,
-  ListDocumentsParams,
-  UpdateContentParams,
-  UpdateNameParams,
-  DocumentReferenceParams
+	CreateDocumentParams,
+	Document,
+	DocumentListResult,
+	DocumentMetadata,
+	DocumentServiceContract,
+	ListDocumentsParams,
+	UpdateContentParams,
+	UpdateNameParams,
+	DocumentReferenceParams
 } from './types';
 
 export class APIDocumentService implements DocumentServiceContract {
+	async createDocument(params: CreateDocumentParams): Promise<Document> {
+		// POST to /api/documents with {name, content}
+		// Transform response to Document type
+	}
 
-  async createDocument(params: CreateDocumentParams): Promise<Document> {
-    // POST to /api/documents with {name, content}
-    // Transform response to Document type
-  }
+	async getDocumentMetadata(params: DocumentReferenceParams): Promise<DocumentMetadata> {
+		// GET /api/documents/{id} with select for metadata only
+		// Or fetch full document and strip content
+	}
 
-  async getDocumentMetadata(params: DocumentReferenceParams): Promise<DocumentMetadata> {
-    // GET /api/documents/{id} with select for metadata only
-    // Or fetch full document and strip content
-  }
+	async getDocumentContent(params: DocumentReferenceParams): Promise<Document> {
+		// GET /api/documents/{id}
+		// Return full document
+	}
 
-  async getDocumentContent(params: DocumentReferenceParams): Promise<Document> {
-    // GET /api/documents/{id}
-    // Return full document
-  }
+	async updateDocumentContent(params: UpdateContentParams): Promise<Document> {
+		// PUT /api/documents/{id} with {content}
+		// Return updated document
+	}
 
-  async updateDocumentContent(params: UpdateContentParams): Promise<Document> {
-    // PUT /api/documents/{id} with {content}
-    // Return updated document
-  }
+	async updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata> {
+		// PUT /api/documents/{id} with {name}
+		// Return metadata
+	}
 
-  async updateDocumentName(params: UpdateNameParams): Promise<DocumentMetadata> {
-    // PUT /api/documents/{id} with {name}
-    // Return metadata
-  }
+	async deleteDocument(params: DocumentReferenceParams): Promise<void> {
+		// DELETE /api/documents/{id}
+	}
 
-  async deleteDocument(params: DocumentReferenceParams): Promise<void> {
-    // DELETE /api/documents/{id}
-  }
-
-  async listUserDocuments(params: ListDocumentsParams): Promise<DocumentListResult> {
-    // GET /api/documents with ?limit&offset
-    // Return DocumentListResult
-  }
+	async listUserDocuments(params: ListDocumentsParams): Promise<DocumentListResult> {
+		// GET /api/documents with ?limit&offset
+		// Return DocumentListResult
+	}
 }
 ```
 
 **Implementation Details**:
+
 - Extract fetch logic from current DocumentClient methods
 - Add proper error handling and response parsing
 - Transform API responses to match contract types
@@ -168,12 +174,13 @@ export class APIDocumentService implements DocumentServiceContract {
 **Changes**:
 
 1. Update constructor to accept service:
+
 ```typescript
 export class DocumentClient {
-  constructor(
-    private service: DocumentServiceContract,
-    private userId: string
-  ) {}
+	constructor(
+		private service: DocumentServiceContract,
+		private userId: string
+	) {}
 }
 ```
 
@@ -185,6 +192,7 @@ export class DocumentClient {
    - Construct params with `this.userId`
 
 4. Method implementations become:
+
 ```typescript
 async listDocuments(): Promise<DocumentMetadata[]> {
   const result = await this.service.listUserDocuments({
@@ -249,16 +257,12 @@ async deleteDocument(id: string): Promise<void> {
 ```
 
 5. Update factory function:
-```typescript
-export function createDocumentClient(
-  isGuest: boolean,
-  userId: string = 'guest'
-): DocumentClient {
-  const service = isGuest
-    ? new DocumentBrowserStorage()
-    : new APIDocumentService();
 
-  return new DocumentClient(service, userId);
+```typescript
+export function createDocumentClient(isGuest: boolean, userId: string = 'guest'): DocumentClient {
+	const service = isGuest ? new DocumentBrowserStorage() : new APIDocumentService();
+
+	return new DocumentClient(service, userId);
 }
 ```
 
@@ -273,11 +277,13 @@ export function createDocumentClient(
 **Changes**:
 
 1. Add userId state:
+
 ```typescript
 private _userId = $state<string>('guest');
 ```
 
 2. Update client creation to pass userId:
+
 ```typescript
 private documentClient = $derived(
   createDocumentClient(this._isGuest, this._userId)
@@ -285,6 +291,7 @@ private documentClient = $derived(
 ```
 
 Or keep it simpler with recreation on auth change:
+
 ```typescript
 private rebuildClient() {
   this.documentClient = createDocumentClient(this._isGuest, this._userId);
@@ -292,6 +299,7 @@ private rebuildClient() {
 ```
 
 3. Add method to set userId:
+
 ```typescript
 setUserId(userId: string) {
   this._userId = userId;
@@ -300,6 +308,7 @@ setUserId(userId: string) {
 ```
 
 4. Update setGuestMode to rebuild client:
+
 ```typescript
 setGuestMode(isGuest: boolean) {
   this._isGuest = isGuest;
@@ -309,6 +318,7 @@ setGuestMode(isGuest: boolean) {
 
 **Alternative Approach** (if derived doesn't work with class instances):
 Keep current approach but update factory call:
+
 ```typescript
 // In +layout.svelte or auth handler
 documentStore.setGuestMode(false);
@@ -325,11 +335,13 @@ documentStore.setUserId(user.id);
 **Changes**:
 
 Keep singleton export for backward compatibility:
+
 ```typescript
 export const documentBrowserStorage = new DocumentBrowserStorage();
 ```
 
 But also export class for direct instantiation:
+
 ```typescript
 export { DocumentBrowserStorage };
 ```
@@ -343,6 +355,7 @@ export { DocumentBrowserStorage };
 **Changes**:
 
 Add API service to exports:
+
 ```typescript
 export * from './api-document-service';
 ```
@@ -354,16 +367,19 @@ export * from './api-document-service';
 **Action**: Search for where user ID is available and pass to client
 
 **Commands**:
+
 ```bash
 grep -r "user\.id\|userId" src/ --include="*.svelte" --include="*.ts"
 ```
 
 **Expected locations**:
+
 - `src/routes/+layout.svelte` - auth handling
 - `src/lib/components/TopMenu.svelte` - user display
 
 **Changes**:
 Update auth flow to pass user ID to document store:
+
 ```typescript
 // When user logs in
 documentStore.setGuestMode(false);
@@ -379,11 +395,13 @@ documentStore.setUserId('guest');
 **Action**: Check that all implementations properly implement contract
 
 **Commands**:
+
 ```bash
 grep -A 2 "implements DocumentServiceContract" src/lib/services/documents/
 ```
 
 **Expected**:
+
 - MockDocumentService ✅
 - SupabaseDocumentService ✅
 - DocumentBrowserStorage ✅ (after Step 1)
@@ -418,6 +436,7 @@ grep -A 2 "implements DocumentServiceContract" src/lib/services/documents/
    - Optimistic updates rolled back on failure
 
 **Commands**:
+
 ```bash
 npm run dev
 # Test in browser UI
@@ -431,6 +450,7 @@ npm run dev
 **Action**: Remove unused code and imports
 
 **Check for**:
+
 - Unused imports in DocumentClient
 - Dead code paths
 - Console logs or debug statements
@@ -438,6 +458,7 @@ npm run dev
 ## Rollback Plan
 
 Each step is independent and can be rolled back:
+
 1. Step 1-2: Can be developed without affecting existing code
 2. Step 3: Revert DocumentClient changes
 3. Step 4: Revert DocumentStore changes
@@ -446,18 +467,21 @@ Each step is independent and can be rolled back:
 ## Risk Assessment
 
 **Medium Risk**:
+
 - Significant refactoring of core document handling
 - Touches multiple files and layers
 - Changes how services are instantiated
 - Need to pass userId through layers
 
 **Mitigation**:
+
 - Implement incrementally with git commits after each step
 - Test thoroughly at each step
 - Keep backward compatibility where possible
 - Can feature-flag the change if needed
 
 **High-Risk Areas**:
+
 - DocumentStore client recreation logic
 - UserId availability and threading
 - Browser storage backward compatibility with localStorage data
@@ -465,6 +489,7 @@ Each step is independent and can be rolled back:
 ## Success Verification
 
 After completion, verify:
+
 - [ ] DocumentBrowserStorage implements DocumentServiceContract
 - [ ] APIDocumentService created and implements contract
 - [ ] DocumentClient has zero `if (isGuest())` branches
@@ -482,17 +507,20 @@ After completion, verify:
 ## Estimated Impact
 
 **Code Changes**:
+
 - DocumentBrowserStorage: 166 lines → ~180 lines (+8%)
 - APIDocumentService: 0 lines → ~150 lines (new)
 - DocumentClient: 135 lines → ~75 lines (-44%)
 - DocumentStore: ~250 lines → ~260 lines (+4%)
 
 **Complexity Reduction**:
+
 - Conditional branches in DocumentClient: 10 → 0 (100% elimination)
 - Code paths to test: 10 → 5 (50% reduction)
 - Lines of conditional routing: ~70 → 0 (100% elimination)
 
 **Maintainability**:
+
 - Document operations: 3 different interfaces → 1 unified interface
 - Service selection: Distributed → Centralized in factory
 - Extensibility: Hard to add storage → Easy (implement interface)

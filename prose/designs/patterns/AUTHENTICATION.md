@@ -22,6 +22,7 @@
 **Location**: [LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md)
 
 **Contract**: `AuthContract` interface defines provider-agnostic operations
+
 - `login(provider)` → OAuth redirect URL
 - `callback(code, state)` → JWT token
 - `logout()` → void
@@ -35,6 +36,7 @@
 **Location**: [SUPABASE_AUTH_ADAPTER.md](../backend/SUPABASE_AUTH_ADAPTER.md)
 
 **Implementation**: Maps AuthContract to Supabase Auth API
+
 - Thin adapter (no business logic)
 - Token validation and refresh
 - Error mapping to app errors
@@ -45,6 +47,7 @@
 **Location**: [API_INTEGRATION.md](../frontend/API_INTEGRATION.md)
 
 **Responsibilities**:
+
 - Call `/api/auth/login` → Get OAuth URL
 - Redirect to provider
 - Handle `/api/auth/callback` → Store JWT
@@ -57,6 +60,7 @@
 **Location**: [LOGIN_PROFILE_UI.md](../frontend/LOGIN_PROFILE_UI.md)
 
 **Components**:
+
 - Sign In button (guest mode)
 - Profile button (authenticated mode)
 - Login modal with provider selection
@@ -123,24 +127,28 @@ UI → Document Store        : Switch to guest mode (localStorage)
 ## Key Patterns
 
 ### Provider Abstraction
+
 - Service contract defines operations
 - Adapter implements provider-specific details
 - Easy to swap Supabase for another provider
 - No provider-specific code in UI/API layers
 
 ### OAuth Delegation
+
 - Don't implement OAuth ourselves
 - Delegate to provider (Supabase, Firebase, Auth0, etc.)
 - Minimal token management
 - Security best practices handled by provider
 
 ### Optimistic Guest Mode
+
 - App defaults to guest mode on load
 - No blocking auth check
 - Seamless transition when auth resolves
 - See [OPTIMISTIC_PAGE_LOADING.md](../frontend/OPTIMISTIC_PAGE_LOADING.md)
 
 ### JWT Token Management
+
 - Stored in HTTP-only cookie (secure)
 - Attached to all API requests
 - Auto-refresh on 401
@@ -150,12 +158,12 @@ UI → Document Store        : Switch to guest mode (localStorage)
 
 ## Error Handling
 
-| Error | Layer | Behavior |
-|-------|-------|----------|
-| Provider down | Adapter | Return error, UI shows toast |
-| Invalid token | API | Return 401, frontend refreshes |
-| Refresh fails | API | Logout user, redirect to guest mode |
-| Network error | Frontend | Retry with exponential backoff |
+| Error         | Layer    | Behavior                            |
+| ------------- | -------- | ----------------------------------- |
+| Provider down | Adapter  | Return error, UI shows toast        |
+| Invalid token | API      | Return 401, frontend refreshes      |
+| Refresh fails | API      | Logout user, redirect to guest mode |
+| Network error | Frontend | Retry with exponential backoff      |
 
 ---
 

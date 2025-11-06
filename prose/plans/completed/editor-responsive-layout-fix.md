@@ -9,14 +9,17 @@ Fix the responsive layout gap in DocumentEditor where the Preview panel disappea
 ### File: `src/lib/components/Editor/DocumentEditor.svelte`
 
 **Mobile Detection (lines 193-198):**
+
 ```typescript
 const checkMobile = () => {
-    isMobile = window.innerWidth < 768;
+	isMobile = window.innerWidth < 768;
 };
 ```
+
 - Switches to desktop mode at ≥768px ✓
 
 **Preview Panel Visibility (lines 273-301):**
+
 ```svelte
 <div
     class="relative flex-1 overflow-auto {isMobile
@@ -26,6 +29,7 @@ const checkMobile = () => {
         : 'hidden lg:block'}"
 >
 ```
+
 - **Problem**: Desktop mode uses `'hidden lg:block'` ✗
 - This hides Preview until 1024px (`lg:` breakpoint)
 - Creates gap from 768px-1023px where Preview is hidden but mobile tabs don't show
@@ -33,63 +37,69 @@ const checkMobile = () => {
 ## Implementation Steps
 
 ### Step 1: Fix Preview Panel Visibility
+
 **File**: `src/lib/components/Editor/DocumentEditor.svelte`
 **Location**: Line 276 (Preview div classes)
 
 **Change From:**
+
 ```svelte
 class="relative flex-1 overflow-auto {isMobile
-    ? mobileView === 'preview'
-        ? ''
-        : 'hidden'
-    : 'hidden lg:block'}"
+	? mobileView === 'preview'
+		? ''
+		: 'hidden'
+	: 'hidden lg:block'}"
 ```
 
 **Change To:**
+
 ```svelte
-class="relative flex-1 overflow-auto {isMobile
-    ? mobileView === 'preview'
-        ? ''
-        : 'hidden'
-    : ''}"
+class="relative flex-1 overflow-auto {isMobile ? (mobileView === 'preview' ? '' : 'hidden') : ''}"
 ```
 
 **Rationale:**
+
 - Remove `'hidden lg:block'` in desktop mode
 - Replace with empty string `''` so Preview is always visible when not in mobile mode
 - Mobile mode visibility logic remains unchanged
 - Aligns visibility with the 768px mobile detection breakpoint
 
 ### Step 2: Verify Editor Panel Visibility
+
 **File**: `src/lib/components/Editor/DocumentEditor.svelte`
 **Location**: Line 260 (Editor div classes)
 
 **Current Implementation:**
+
 ```svelte
 class="flex flex-1 flex-col border-r border-border {isMobile && mobileView !== 'editor'
-    ? 'hidden'
-    : ''}"
+	? 'hidden'
+	: ''}"
 ```
 
 **Status**: ✓ Already correct
+
 - Shows Editor in desktop mode (all widths ≥768px)
 - Hides Editor in mobile mode when Preview tab is active
 - No changes needed
 
 ### Step 3: Verify Tab Switcher
+
 **File**: `src/lib/components/Editor/DocumentEditor.svelte`
 **Location**: Lines 233-253
 
 **Current Implementation:**
+
 ```svelte
 {#if isMobile}
-    <div class="flex border-b border-border bg-surface-elevated">
-        <!-- Tab buttons -->
-    </div>
+	<div class="flex border-b border-border bg-surface-elevated">
+		<!-- Tab buttons -->
+	</div>
 {/if}
 ```
 
 **Status**: ✓ Already correct
+
 - Only shows when `isMobile` is true (< 768px)
 - No changes needed
 
@@ -132,11 +142,13 @@ class="flex flex-1 flex-col border-r border-border {isMobile && mobileView !== '
 **Risk Level**: Low
 
 **Risks:**
+
 - Minimal - Single line change to CSS classes
 - No logic changes to mobile detection or state management
 - No changes to component structure or lifecycle
 
 **Mitigation:**
+
 - Change only affects desktop mode visibility
 - Mobile mode logic completely unchanged
 - Easy to revert if issues arise
@@ -152,6 +164,7 @@ class="flex flex-1 flex-col border-r border-border {isMobile && mobileView !== '
 ## Rollback Plan
 
 If issues occur:
+
 ```svelte
 <!-- Revert to: -->
 class="... {isMobile ? ... : 'hidden lg:block'}"

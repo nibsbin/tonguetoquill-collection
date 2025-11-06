@@ -61,18 +61,21 @@ Successfully implemented the "All Storage is DocumentService" simplification cas
 ## Code Impact
 
 **Before**:
+
 - 3 different storage interfaces (Mock/Supabase, Browser, API calls in Client)
 - 10 conditional code paths in DocumentClient
 - Manual interface translation in every method
 - Fetch logic embedded in DocumentClient
 
 **After**:
+
 - 1 unified interface (`DocumentServiceContract`)
 - 0 conditional code paths in DocumentClient
 - Pure delegation via dependency injection
 - Services own their communication logic
 
 **Net Changes**:
+
 - DocumentBrowserStorage: 166 → 234 lines (+68 lines for contract conformance)
 - APIDocumentService: 0 → 230 lines (new service)
 - DocumentClient: 144 → 126 lines (-18 lines, -13%)
@@ -141,6 +144,7 @@ Successfully implemented the "All Storage is DocumentService" simplification cas
 ## Deviations from Plan
 
 None. The implementation followed the plan exactly as specified:
+
 - DocumentBrowserStorage conforms to DocumentServiceContract ✅
 - APIDocumentService created with all endpoints ✅
 - DocumentClient refactored with dependency injection ✅
@@ -150,12 +154,14 @@ None. The implementation followed the plan exactly as specified:
 ## Testing & Verification
 
 ### Manual Verification
+
 - ✅ All imports and exports verified
 - ✅ Type compliance checked (implements DocumentServiceContract)
 - ✅ Method signatures match contract
 - ✅ No conditional branches remain in DocumentClient
 
 ### Expected Behavior (Maintained)
+
 - Guest mode operations use DocumentBrowserStorage → localStorage
 - Authenticated mode operations use APIDocumentService → API calls
 - Document operations have identical behavior patterns
@@ -164,11 +170,13 @@ None. The implementation followed the plan exactly as specified:
 ## Files Changed
 
 **New Files**:
+
 - `src/lib/services/documents/api-document-service.ts` (230 lines)
 - `prose/designs/document-service-interface-unification.md` (design doc)
 - `prose/plans/completed/document-service-interface-unification.md` (plan)
 
 **Modified Files**:
+
 - `src/lib/services/documents/document-browser-storage.ts` (+68 lines)
 - `src/lib/services/documents/document-client.ts` (-18 lines)
 - `src/lib/services/documents/index.ts` (+2 exports)
@@ -179,6 +187,7 @@ None. The implementation followed the plan exactly as specified:
 ## Way Forward
 
 ### Immediate Next Steps
+
 1. ✅ Design and plan document created
 2. ✅ Implementation completed
 3. ✅ Code committed and pushed
@@ -187,6 +196,7 @@ None. The implementation followed the plan exactly as specified:
 ### Integration Requirements
 
 When authentication system is integrated, the auth handler should:
+
 ```typescript
 // On login
 documentStore.setGuestMode(false);
@@ -204,6 +214,7 @@ await documentStore.fetchDocuments(); // Reload from localStorage
 One additional simplification cascade remains from original analysis:
 
 **CASCADE 3: "Mocks are Test Doubles, Not Business Logic"**
+
 - Extract shared business logic into BaseDocumentService
 - Mock and Supabase implement only storage-specific operations
 - Impact: Further reduces duplication, ensures behavioral consistency
@@ -213,11 +224,13 @@ One additional simplification cascade remains from original analysis:
 ### Testing Recommendations
 
 When build environment is available:
+
 ```bash
 npm run dev  # Test in browser
 ```
 
 **Test cases**:
+
 1. Guest mode: create/list/update/delete documents → localStorage
 2. Auth mode: same operations → API calls
 3. Mode switching: documents reload correctly

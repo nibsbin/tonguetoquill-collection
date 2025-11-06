@@ -115,10 +115,7 @@ export class DocumentClient {
  * Create a document client instance
  * Factory function that selects the appropriate service based on guest mode
  */
-export function createDocumentClient(
-	isGuest: boolean,
-	userId: string = 'guest'
-): DocumentClient {
+export function createDocumentClient(isGuest: boolean, userId: string = 'guest'): DocumentClient {
 	const service = isGuest ? new DocumentBrowserStorage() : new APIDocumentService();
 
 	return new DocumentClient(service, userId);
