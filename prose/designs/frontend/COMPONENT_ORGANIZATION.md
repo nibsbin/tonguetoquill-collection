@@ -116,8 +116,6 @@ src/lib/components/
     └── toast.svelte
 ```
 
-**Note**: `DocumentInfoDialog.svelte` is at the root level as a standalone dialog component (see [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md) for specification).
-
 ## Testing Strategy
 
 ### Test Location
@@ -239,6 +237,6 @@ Most components should use Tailwind utility classes inline.
 
 ## References
 
-- [UI_COMPONENTS.md](./UI_COMPONENTS.md) - Component specifications
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) - Visual design system
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - Application architecture
+- [INDEX.md](./INDEX.md) - Frontend design documentation overview

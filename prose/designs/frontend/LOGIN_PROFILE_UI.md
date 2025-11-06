@@ -8,7 +8,7 @@ This document defines the UI integration for login and profile functionality in 
 >
 > - [SIDEBAR.md](./SIDEBAR.md) - Sidebar design patterns and structure
 > - [LOGIN_SERVICE.md](../../designs/backend/LOGIN_SERVICE.md) - Authentication service details
-> - [AUTH.md](../../designs/backend/AUTH.md) - Authentication architecture
+> - [LOGIN_SERVICE.md](../../designs/backend/LOGIN_SERVICE.md) - Authentication architecture
 > - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) - Design system and UI patterns
 
 ## Design Goals
@@ -380,7 +380,7 @@ Both buttons work identically in mobile sheet as in desktop sidebar:
 
 - [SIDEBAR.md](./SIDEBAR.md) - Sidebar structure and button patterns
 - [LOGIN_SERVICE.md](../../designs/backend/LOGIN_SERVICE.md) - Login service API
-- [AUTH.md](../../designs/backend/AUTH.md) - Authentication architecture
+- [LOGIN_SERVICE.md](../../designs/backend/LOGIN_SERVICE.md) - Authentication architecture
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) - UI components and styling
 - [API_INTEGRATION.md](./API_INTEGRATION.md) - Frontend API patterns
 - [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) - State management patterns

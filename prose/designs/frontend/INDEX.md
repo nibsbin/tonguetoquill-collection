@@ -16,16 +16,6 @@ High-level overview of application structure, routing strategy, component organi
 
 ---
 
-### [UI_COMPONENTS.md](./UI_COMPONENTS.md)
-
-**Component Specifications**
-
-Component behavior specifications including props, states, interactions, and accessibility requirements. References [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual styling.
-
-**Topics**: Layout components (Sidebar, TopMenu), editor components (Toolbar, Editor, Preview), UI library (Button, Dialog, Toast, Dropdown), responsive patterns, accessibility
-
----
-
 ### [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
 
 **Visual Design Language & Design Tokens**
@@ -76,16 +66,6 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 
 ---
 
-### [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md)
-
-**QuillMark Syntax Highlighting Design**
-
-Robust, maintainable approach to syntax highlighting for QuillMark's extended markdown using decoration-based highlighting. Supersedes complex Lezer grammar approach.
-
-**Topics**: Decoration-based highlighting, pattern detection, metadata block identification, SCOPE/QUILL keyword highlighting, YAML syntax coloring, folding support, auto-completion, theme integration
-
----
-
 ### [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md)
 
 **Component Organization Strategy**
@@ -124,13 +104,63 @@ Error handling patterns, toast notifications, inline error display, and user fee
 
 **Topics**: Toast notifications (svelte-sonner), error boundaries, validation errors, network errors, user-friendly messaging
 
-### [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md)
+### [NEW_DOCUMENT.md](./NEW_DOCUMENT.md)
 
-**UX Improvements 2025**
+**New Document Creation**
 
-Specifications for UX enhancements including Document Info dialog, keyboard shortcuts removal, and minimal markdown toolbar redesign.
+Lightweight popover interface for creating documents with template selection and custom naming.
 
-**Topics**: Document Info dialog (metadata and statistics display), keyboard shortcuts removal (rely on semantic HTML and CodeMirror), minimal markdown toolbar (streamlined formatting buttons), accessibility improvements
+**Topics**: Template selection, auto-naming, collision detection, popover design, validation, accessibility
+
+---
+
+### [SIDEBAR.md](./SIDEBAR.md)
+
+**Sidebar Design**
+
+Collapsible sidebar with document list, logo, and action buttons.
+
+**Topics**: Collapsible behavior, button slots, document list, responsive design, accessibility
+
+---
+
+### [LOGO_SIDEBAR.md](./LOGO_SIDEBAR.md)
+
+**Logo in Sidebar**
+
+Logo positioning and animation within sidebar.
+
+**Topics**: Logo placement, animations, responsive behavior
+
+---
+
+### [SHARE_MODAL.md](./SHARE_MODAL.md)
+
+**Share Modal**
+
+Modal dialog for sharing documents (placeholder for future functionality).
+
+**Topics**: Share interface, modal design
+
+---
+
+### [WIDGET_ABSTRACTION.md](./WIDGET_ABSTRACTION.md)
+
+**Widget Abstraction System**
+
+Custom widget system providing consistent UI components (BaseDialog, BasePopover, Toast, etc.).
+
+**Topics**: Widget base classes, theming, accessibility patterns, component architecture
+
+---
+
+### [WIDGET_THEME_UNIFICATION.md](./WIDGET_THEME_UNIFICATION.md)
+
+**Widget Theme Unification**
+
+Widget theming standards and design tokens for consistent styling across all widgets.
+
+**Topics**: Theme tokens, styling patterns, consistency standards
 
 ---
 
@@ -221,12 +251,11 @@ The frontend integrates with backend services documented in `prose/designs/backe
 1. Review [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual design tokens and patterns
 2. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for project structure
 3. Review [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for component structure and testing
-4. Study [UI_COMPONENTS.md](./UI_COMPONENTS.md) for component behavior
-5. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
-6. Review [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md) for syntax highlighting approach
-7. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
-8. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
-9. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
+4. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
+5. Review [../quillmark/QUILLMARK_SYNTAX_HIGHLIGHTING.md](../quillmark/QUILLMARK_SYNTAX_HIGHLIGHTING.md) for syntax highlighting approach
+6. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
+7. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
+8. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
 
 ### Development Workflow
 

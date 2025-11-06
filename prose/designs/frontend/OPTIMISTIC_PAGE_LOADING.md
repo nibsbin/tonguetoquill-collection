@@ -2,11 +2,10 @@
 
 ## Overview
 
-This document defines the strategy for eliminating loading screens through optimistic UI patterns, providing instant responsiveness and elegant UX during page initialization.
+This document defines the strategy for eliminating loading screens through optimistic UI patterns, providing instant responsiveness and elegant UX during page initialization and document switching.
 
 > **Related**:
 >
-> - [DOCUMENT_LOADING_UX.md](./DOCUMENT_LOADING_UX.md) for document switching patterns
 > - [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) for store patterns
 > - [ARCHITECTURE.md](./ARCHITECTURE.md) for application structure
 

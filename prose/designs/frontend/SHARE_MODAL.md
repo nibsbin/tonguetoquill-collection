@@ -1,9 +1,5 @@
 # Share Modal Design
 
-**Status**: In Development
-**Last Updated**: 2025-11-05
-**Design Type**: Feature Component
-
 ## Overview
 
 The Share Modal is a placeholder dialog component that will be displayed when users click the "Share" button in the Top Menu kebab menu. This initial implementation establishes the UI structure and interaction patterns that will later support document sharing functionality.

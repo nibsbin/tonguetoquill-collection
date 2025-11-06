@@ -7,7 +7,7 @@ This document specifies a **robust, maintainable approach** to syntax highlighti
 > **Related Documents:**
 >
 > - [PARSE.md](../quillmark/PARSE.md) - QuillMark syntax specification
-> - [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) - Overall editor design
+> - [MARKDOWN_EDITOR.md](../frontend/MARKDOWN_EDITOR.md) - Overall editor design
 
 ## Problem Statement
 
@@ -185,7 +185,7 @@ const quillmarkDecorator = ViewPlugin.fromClass(
 
 ### Color Palette
 
-Following [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) theme tokens:
+Following [DESIGN_SYSTEM.md](../frontend/DESIGN_SYSTEM.md) theme tokens:
 
 **Metadata Delimiters:**
 
@@ -508,7 +508,7 @@ This approach requires **no additional packages** beyond what's already installe
 - [ViewPlugin Documentation](https://codemirror.net/docs/ref/#view.ViewPlugin)
 - [Fold Service Documentation](https://codemirror.net/docs/ref/#language.foldService)
 - [QuillMark Syntax Specification](../quillmark/PARSE.md)
-- [Editor Theme System](./DESIGN_SYSTEM.md)
+- [Editor Theme System](../frontend/DESIGN_SYSTEM.md)
 
 ---
 

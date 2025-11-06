@@ -1,10 +1,5 @@
 # Widget Abstraction Design
 
-**Status**: In Progress
-**Last Updated**: 2025-11-05
-**Design Type**: Component System Architecture
-**Related**: [WIDGET_THEME_UNIFICATION.md](./WIDGET_THEME_UNIFICATION.md), [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md)
-
 ## Overview
 
 This design establishes a unified widget abstraction system that eliminates code duplication, standardizes dismissal behavior, and improves maintainability of overlay components (dialogs, modals, popovers, toasts, sheets). All widgets will be built as custom Svelte components without external UI library dependencies, providing full control over behavior, accessibility, and theming while eliminating redundant dependencies (bits-ui, svelte-sonner).
@@ -803,45 +798,6 @@ This pattern ensures:
 - Base components never check theme
 - No conditional styling based on theme
 - Toast component detects theme via `.dark` class on html element
-
-## Migration Approach
-
-This design requires a complete replacement of current widget system to eliminate external dependencies. See `prose/plans/widget-abstraction-implementation.md` for detailed phased implementation plan.
-
-### High-Level Migration Steps
-
-**Phase 1: Build Custom Widget Primitives**
-
-- Implement Dialog component (replaces bits-ui Dialog)
-- Implement Popover component (replaces bits-ui Popover)
-- Implement Sheet component (replaces bits-ui Dialog for sheets)
-- Implement Toast system (replaces svelte-sonner)
-- Add z-index tokens to design system
-
-**Phase 2: Migrate Existing Widgets**
-
-- Update DocumentInfoDialog to use new Dialog
-- Update ShareModal to use new Dialog
-- Update ImportFileDialog to use new Dialog
-- Update LoginPopover to use new Popover
-- Update Sidebar to use new Sheet
-- Replace toast usage with new toast store
-
-**Phase 3: Remove Old Dependencies**
-
-- Remove all bits-ui imports from ui/ components
-- Remove svelte-sonner imports
-- Uninstall bits-ui from package.json
-- Uninstall svelte-sonner from package.json
-- Update COMPONENT_ORGANIZATION.md documentation
-
-**Phase 4: Testing and Refinement**
-
-- Test all widgets for accessibility (keyboard nav, ARIA, focus management)
-- Test dismissal behavior (ESC, outside click, close button)
-- Verify theme compatibility (light/dark modes)
-- Check mobile responsiveness
-- Performance testing (bundle size reduction)
 
 ## Benefits
 
