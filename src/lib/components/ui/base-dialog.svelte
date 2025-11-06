@@ -81,7 +81,7 @@
 	<Portal disabled={scoped}>
 		<!-- Backdrop -->
 		<div
-			class={cn('z-overlay inset-0 bg-black/40', scoped ? 'absolute' : 'fixed')}
+			class={cn('z-modal-backdrop inset-0 bg-black/40', scoped ? 'absolute' : 'fixed')}
 			onclick={handleBackdropClick}
 			role="presentation"
 		></div>
@@ -89,7 +89,7 @@
 		<!-- Dialog Container -->
 		<div
 			class={cn(
-				'z-modal w-full rounded-lg border border-border bg-surface-elevated p-6 shadow-lg',
+				'z-modal-content w-full rounded-lg border border-border bg-surface-elevated p-6 shadow-lg',
 				scoped
 					? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
 					: 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
