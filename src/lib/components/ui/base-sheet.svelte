@@ -150,7 +150,7 @@
 							onclick={handleClose}
 							aria-label="Close sheet"
 						>
-							<X class="h-4 w-4" />
+							<X class="h-4 w-4 text-foreground" />
 						</Button>
 					{/if}
 				</div>

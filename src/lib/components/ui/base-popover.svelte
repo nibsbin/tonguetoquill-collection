@@ -222,7 +222,7 @@
 						onclick={handleClose}
 						aria-label="Close popover"
 					>
-						<X class="h-3 w-3" />
+						<X class="h-3 w-3 text-foreground" />
 					</Button>
 				{/if}
 			</div>
