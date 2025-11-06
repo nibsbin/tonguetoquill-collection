@@ -184,7 +184,7 @@
 		{:else if saveStatus === 'saved'}
 			<div class="flex items-center gap-1 text-xs text-muted-foreground">
 				<Check class="h-3 w-3" />
-				<span>Synced</span>
+				<span>{documentStore.isGuest ? 'Saved' : 'Synced'}</span>
 			</div>
 		{:else if saveStatus === 'error'}
 			<div class="flex items-center gap-1 text-xs text-destructive" title={saveError}>
