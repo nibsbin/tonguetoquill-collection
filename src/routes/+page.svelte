@@ -15,6 +15,7 @@
 	let showShareModal = $state(false);
 	let documentContent = $state('');
 	let documentName = $state('');
+	let hasSuccessfulPreview = $state(false);
 
 	onMount(() => {
 		// Show classification message
@@ -103,6 +104,10 @@
 		rulerStore.setActive(false); // Dismiss ruler overlay
 		showShareModal = true;
 	}
+
+	function handlePreviewStatusChange(status: boolean) {
+		hasSuccessfulPreview = status;
+	}
 </script>
 
 <div class="flex h-screen bg-background">
@@ -122,6 +127,7 @@
 			onImport={handleImport}
 			onRulerToggle={handleRulerToggle}
 			onShare={handleShare}
+			{hasSuccessfulPreview}
 		/>
 
 		<!-- Editor and Preview Area -->
@@ -147,6 +153,7 @@
 					onImportDialogChange={(open) => (showImportDialog = open)}
 					{showShareModal}
 					onShareModalChange={(open) => (showShareModal = open)}
+					onPreviewStatusChange={handlePreviewStatusChange}
 				/>
 			{/if}
 		</div>

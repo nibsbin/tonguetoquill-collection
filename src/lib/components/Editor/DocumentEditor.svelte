@@ -20,6 +20,7 @@
 		onImportDialogChange?: (open: boolean) => void;
 		showShareModal?: boolean;
 		onShareModalChange?: (open: boolean) => void;
+		onPreviewStatusChange?: (hasSuccessfulPreview: boolean) => void;
 	}
 
 	let {
@@ -32,7 +33,8 @@
 		showImportDialog = false,
 		onImportDialogChange,
 		showShareModal = false,
-		onShareModalChange
+		onShareModalChange,
+		onPreviewStatusChange
 	}: Props = $props();
 
 	let content = $state('');
@@ -46,6 +48,15 @@
 	let previousDocumentId = $state<string | null>(null);
 	let mobileView = $state<'editor' | 'preview'>('editor');
 	let isMobile = $state(false);
+	let hasSuccessfulPreview = $state(false);
+
+	// Handler for preview status changes
+	function handlePreviewStatusChange(status: boolean) {
+		hasSuccessfulPreview = status;
+		if (onPreviewStatusChange) {
+			onPreviewStatusChange(status);
+		}
+	}
 
 	// Track dirty state (unsaved changes)
 	let isDirty = $derived(content !== initialContent);
@@ -283,7 +294,7 @@
 						: 'hidden'
 					: ''}"
 			>
-				<Preview markdown={debouncedContent} />
+				<Preview markdown={debouncedContent} onPreviewStatusChange={handlePreviewStatusChange} />
 
 				<!-- Document Info Dialog (scoped to preview pane) -->
 				{#if showDocumentInfo !== undefined && onDocumentInfoChange}

@@ -28,6 +28,7 @@
 		onImport?: () => void;
 		onRulerToggle?: () => void;
 		onShare?: () => void;
+		hasSuccessfulPreview?: boolean;
 	};
 
 	let {
@@ -39,7 +40,8 @@
 		onTitleChange,
 		onImport,
 		onRulerToggle,
-		onShare
+		onShare,
+		hasSuccessfulPreview = false
 	}: TopMenuProps = $props();
 
 	import { documentStore } from '$lib/stores/documents.svelte';
@@ -201,7 +203,9 @@
 				size="sm"
 				class="h-7 text-foreground/80 hover:bg-accent hover:text-foreground"
 				onclick={onDownload}
+				disabled={!hasSuccessfulPreview}
 				aria-label="Download document"
+				title={!hasSuccessfulPreview ? 'No preview available to download' : 'Download document'}
 			>
 				<Download class="mr-1 h-4 w-4" />
 				Download
