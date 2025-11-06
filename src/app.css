@@ -133,10 +133,10 @@
 	--color-syntax-comment: #a1a1aa; /* zinc-400 - lighter muted gray for dark mode */
 
 	/* Error/Diagnostic colors */
-	--color-error: #e01111; /* red-500 base (unchanged) */
+	--color-error: #cc1111; /* red-500 base (unchanged) */
 	--color-error-foreground: #fecaca; /* red-200 light text */
 	--color-error-background: #450a0a; /* red-950 dark bg */
-	--color-error-border: #991b1b; /* red-800 stronger border
+	--color-error-border: #771b1b; /* red-800 stronger border */
 
 	/* Warning/Hint colors */
 	--color-warning: #f59e0b; /* amber-500 base (unchanged) */
