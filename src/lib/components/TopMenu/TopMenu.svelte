@@ -14,10 +14,7 @@
 		Ruler
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
-	import DropdownMenu from '$lib/components/ui/dropdown-menu.svelte';
-	import DropdownMenuTrigger from '$lib/components/ui/dropdown-menu-trigger.svelte';
-	import DropdownMenuContent from '$lib/components/ui/dropdown-menu-content.svelte';
-	import DropdownMenuItem from '$lib/components/ui/dropdown-menu-item.svelte';
+	import BasePopover from '$lib/components/ui/base-popover.svelte';
 	import type { SaveStatus } from '$lib/utils/auto-save.svelte';
 	import { rulerStore } from '$lib/stores/ruler.svelte';
 
@@ -49,6 +46,7 @@
 	let isEditing = $state(false);
 	let title = $state(fileName);
 	let inputEl = $state<HTMLInputElement | null>(null);
+	let dropdownOpen = $state(false);
 
 	$effect(() => {
 		if (!isEditing) {
@@ -110,18 +108,21 @@
 		if (onImport) {
 			onImport();
 		}
+		dropdownOpen = false;
 	}
 
 	function handleShare() {
 		if (onShare) {
 			onShare();
 		}
+		dropdownOpen = false;
 	}
 
 	function handleDocumentInfo() {
 		if (onDocumentInfo) {
 			onDocumentInfo();
 		}
+		dropdownOpen = false;
 	}
 
 	function handleAbout() {
@@ -142,6 +143,7 @@
 		} else {
 			rulerStore.toggle();
 		}
+		dropdownOpen = false;
 	}
 </script>
 
@@ -207,8 +209,8 @@
 		</div>
 
 		<!-- Meatball Menu -->
-		<DropdownMenu>
-			<DropdownMenuTrigger>
+		<BasePopover bind:open={dropdownOpen} side="bottom" align="end" closeOnOutsideClick={true}>
+			{#snippet trigger()}
 				<Button
 					variant="ghost"
 					size="sm"
@@ -217,70 +219,69 @@
 				>
 					<MoreVertical class="h-4 w-4" />
 				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent
-				align="end"
-				class="w-56 border-border bg-surface-elevated text-foreground"
-			>
-				<!-- Group 1: Document Actions -->
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleImport}
-				>
-					<Upload class="mr-2 h-4 w-4" />
-					Import
-				</DropdownMenuItem>
+			{/snippet}
+			{#snippet content()}
+				<div class="min-w-[14rem] p-1">
+					<!-- Group 1: Document Actions -->
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleImport}
+					>
+						<Upload class="mr-2 h-4 w-4" />
+						Import
+					</button>
 
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleShare}
-				>
-					<Share2 class="mr-2 h-4 w-4" />
-					Share
-				</DropdownMenuItem>
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleShare}
+					>
+						<Share2 class="mr-2 h-4 w-4" />
+						Share
+					</button>
 
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleRulerToggle}
-				>
-					<Ruler class="mr-2 h-4 w-4" />
-					Ruler Tool
-				</DropdownMenuItem>
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleRulerToggle}
+					>
+						<Ruler class="mr-2 h-4 w-4" />
+						Ruler Tool
+					</button>
 
-				<!-- Group 2: Info & Help -->
-				<DropdownMenuItem
-					class="border-t border-border text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleDocumentInfo}
-				>
-					<FileText class="mr-2 h-4 w-4" />
-					Document Info
-				</DropdownMenuItem>
+					<!-- Group 2: Info & Help -->
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm border-t border-border px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleDocumentInfo}
+					>
+						<FileText class="mr-2 h-4 w-4" />
+						Document Info
+					</button>
 
-				<!-- Group 3: Legal & About -->
-				<DropdownMenuItem
-					class="border-t border-border text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleAbout}
-				>
-					<Info class="mr-2 h-4 w-4" />
-					About Us
-				</DropdownMenuItem>
+					<!-- Group 3: Legal & About -->
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm border-t border-border px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleAbout}
+					>
+						<Info class="mr-2 h-4 w-4" />
+						About Us
+					</button>
 
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleTerms}
-				>
-					<FileText class="mr-2 h-4 w-4" />
-					Terms of Use
-				</DropdownMenuItem>
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleTerms}
+					>
+						<FileText class="mr-2 h-4 w-4" />
+						Terms of Use
+					</button>
 
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handlePrivacy}
-				>
-					<Shield class="mr-2 h-4 w-4" />
-					Privacy Policy
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handlePrivacy}
+					>
+						<Shield class="mr-2 h-4 w-4" />
+						Privacy Policy
+					</button>
+				</div>
+			{/snippet}
+		</BasePopover>
 	</div>
 </div>

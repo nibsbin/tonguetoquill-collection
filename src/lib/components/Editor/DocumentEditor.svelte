@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
-	import { toast } from '$lib/components/ui/sonner';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
 	import { Preview } from '$lib/components/Preview';
@@ -112,9 +112,9 @@
 		try {
 			await autoSave.saveNow(documentId, content);
 			initialContent = content;
-			toast.success('Document saved');
+			toastStore.success('Document saved');
 		} catch {
-			toast.error('Failed to save document');
+			toastStore.error('Failed to save document');
 		}
 	}
 
@@ -143,7 +143,7 @@
 			onContentChange(importedContent);
 		}
 
-		toast.success(`Imported ${filename}`);
+		toastStore.success(`Imported ${filename}`);
 	}
 
 	// Load document content
@@ -176,7 +176,7 @@
 				onDocumentLoad({ name: doc.name, content: doc.content });
 			}
 		} catch {
-			toast.error('Failed to load document');
+			toastStore.error('Failed to load document');
 		} finally {
 			loading = false;
 		}

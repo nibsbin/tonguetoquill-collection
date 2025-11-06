@@ -26,6 +26,17 @@
 	/* Top menu spacing tokens */
 	--top-menu-height: var(--sidebar-collapsed-width); /* Aligned with sidebar */
 
+	/* Z-Index Layer System */
+	--z-base: 0;
+	--z-dropdown: 1000;
+	--z-sticky: 1100;
+	--z-banner: 1200;
+	--z-overlay: 1300;
+	--z-modal: 1400;
+	--z-popover: 1500;
+	--z-toast: 1600;
+	--z-tooltip: 1700;
+
 	/* Light Theme Color Tokens */
 	/* Surface colors */
 	--color-background: #ffffff;
@@ -146,6 +157,17 @@
 
 /* Tailwind CSS Integration - required for utility class generation */
 @theme inline {
+	/* Z-Index layers */
+	--z-base: var(--z-base);
+	--z-dropdown: var(--z-dropdown);
+	--z-sticky: var(--z-sticky);
+	--z-banner: var(--z-banner);
+	--z-overlay: var(--z-overlay);
+	--z-modal: var(--z-modal);
+	--z-popover: var(--z-popover);
+	--z-toast: var(--z-toast);
+	--z-tooltip: var(--z-tooltip);
+
 	/* Surface colors */
 	--color-background: var(--color-background);
 	--color-foreground: var(--color-foreground);

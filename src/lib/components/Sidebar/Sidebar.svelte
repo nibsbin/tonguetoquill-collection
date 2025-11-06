@@ -3,17 +3,10 @@
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
-	import Popover from '$lib/components/ui/popover.svelte';
-	import PopoverContent from '$lib/components/ui/popover-content.svelte';
-	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';
+	import BasePopover from '$lib/components/ui/base-popover.svelte';
 	import Switch from '$lib/components/ui/switch.svelte';
 	import Label from '$lib/components/ui/label.svelte';
-	import { Root as Dialog } from '$lib/components/ui/dialog.svelte';
-	import DialogContent from '$lib/components/ui/dialog-content.svelte';
-	import DialogHeader from '$lib/components/ui/dialog-header.svelte';
-	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
-	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
-	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
+	import Dialog from '$lib/components/ui/base-dialog.svelte';
 	import LoginPopover from './LoginPopover.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { onMount } from 'svelte';
@@ -231,23 +224,19 @@
 	<div class="flex flex-col border-t border-border">
 		<!-- Sign-In Button (Guest Mode) -->
 		{#if !user}
-			<Popover bind:open={loginPopoverOpen}>
-				<PopoverTrigger asChild>
+			<BasePopover bind:open={loginPopoverOpen} side="right" align="start">
+				{#snippet trigger()}
 					<SidebarButtonSlot
 						icon={LogIn}
 						label="Sign in"
 						{isExpanded}
 						ariaLabel="Sign in to your account"
 					/>
-				</PopoverTrigger>
-				<PopoverContent
-					side="right"
-					align="start"
-					class="border-border bg-surface-elevated p-0 text-foreground"
-				>
+				{/snippet}
+				{#snippet content()}
 					<LoginPopover onClose={() => (loginPopoverOpen = false)} />
-				</PopoverContent>
-			</Popover>
+				{/snippet}
+			</BasePopover>
 		{/if}
 
 		<!-- User Profile Button (Logged-in Mode) -->
@@ -263,21 +252,17 @@
 		{/if}
 
 		<!-- Settings Gear Button -->
-		<Popover bind:open={popoverOpen}>
-			<PopoverTrigger asChild>
+		<BasePopover bind:open={popoverOpen} side="right" align="end">
+			{#snippet trigger()}
 				<SidebarButtonSlot
 					icon={Settings}
 					label="Settings"
 					{isExpanded}
 					ariaLabel="Open settings"
 				/>
-			</PopoverTrigger>
-			<PopoverContent
-				side="right"
-				align="end"
-				class="w-64 border-border bg-surface-elevated p-0 text-foreground"
-			>
-				<div class="p-4">
+			{/snippet}
+			{#snippet content()}
+				<div class="w-64 p-4">
 					<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
 
 					<div class="space-y-4">
@@ -309,48 +294,56 @@
 						</div>
 					</div>
 				</div>
-			</PopoverContent>
-		</Popover>
+			{/snippet}
+		</BasePopover>
 	</div>
 </div>
 
 <!-- Delete Confirmation Dialog -->
-<Dialog bind:open={deleteDialogOpen}>
-	<DialogContent>
-		<DialogHeader>
-			<DialogTitle>Delete Document</DialogTitle>
-			<DialogDescription>
-				Are you sure you want to delete this document? This action cannot be undone.
-			</DialogDescription>
-		</DialogHeader>
-		<DialogFooter>
-			<Button
-				variant="ghost"
-				size="sm"
-				class="text-muted-foreground hover:bg-accent hover:text-foreground"
-				onclick={cancelDelete}
-			>
-				Cancel
-			</Button>
-			<Button
-				variant="default"
-				size="sm"
-				class="bg-destructive text-white hover:bg-(--color-destructive-hover)"
-				onclick={confirmDelete}
-			>
-				Delete
-			</Button>
-		</DialogFooter>
-	</DialogContent>
+<Dialog
+	open={deleteDialogOpen}
+	onOpenChange={(open) => {
+		deleteDialogOpen = open;
+		if (!open) {
+			documentToDelete = null;
+		}
+	}}
+	title="Delete Document"
+	description="Are you sure you want to delete this document? This action cannot be undone."
+	size="md"
+>
+	{#snippet footer()}
+		<Button
+			variant="ghost"
+			size="sm"
+			class="text-muted-foreground hover:bg-accent hover:text-foreground"
+			onclick={cancelDelete}
+		>
+			Cancel
+		</Button>
+		<Button
+			variant="default"
+			size="sm"
+			class="bg-destructive text-white hover:bg-(--color-destructive-hover)"
+			onclick={confirmDelete}
+		>
+			Delete
+		</Button>
+	{/snippet}
+	{#snippet content()}{/snippet}
 </Dialog>
 
 <!-- Profile Modal -->
-<Dialog bind:open={profileModalOpen}>
-	<DialogContent class="max-w-md">
-		<DialogHeader>
-			<DialogTitle>Account Information</DialogTitle>
-			<DialogDescription>View your account details</DialogDescription>
-		</DialogHeader>
+<Dialog
+	open={profileModalOpen}
+	onOpenChange={(open) => {
+		profileModalOpen = open;
+	}}
+	title="Account Information"
+	description="View your account details"
+	size="md"
+>
+	{#snippet content()}
 		{#if user}
 			<dl class="space-y-4">
 				<div>
@@ -363,18 +356,18 @@
 				</div>
 			</dl>
 		{/if}
-		<DialogFooter>
-			<Button
-				variant="ghost"
-				size="sm"
-				class="text-muted-foreground hover:bg-accent hover:text-foreground"
-				onclick={handleSignOut}
-			>
-				Sign Out
-			</Button>
-			<Button variant="default" size="sm" onclick={() => (profileModalOpen = false)}>Close</Button>
-		</DialogFooter>
-	</DialogContent>
+	{/snippet}
+	{#snippet footer()}
+		<Button
+			variant="ghost"
+			size="sm"
+			class="text-muted-foreground hover:bg-accent hover:text-foreground"
+			onclick={handleSignOut}
+		>
+			Sign Out
+		</Button>
+		<Button variant="default" size="sm" onclick={() => (profileModalOpen = false)}>Close</Button>
+	{/snippet}
 </Dialog>
 
 <style>

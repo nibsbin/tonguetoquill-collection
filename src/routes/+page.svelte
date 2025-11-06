@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Toaster, toast } from '$lib/components/ui/sonner';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { rulerStore } from '$lib/stores/ruler.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
@@ -18,9 +18,8 @@
 
 	onMount(() => {
 		// Show classification message
-		toast.info('This system is not authorized for controlled information.', {
-			duration: 10000,
-			position: 'top-center'
+		toastStore.info('This system is not authorized for controlled information.', {
+			duration: 10000
 		});
 
 		// Run auth check and document fetch in background (non-blocking)
@@ -153,6 +152,3 @@
 		</div>
 	</div>
 </div>
-
-<!-- Toast Notifications using Sonner -->
-<Toaster />

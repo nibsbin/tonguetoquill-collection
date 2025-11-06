@@ -3,16 +3,6 @@
 	import { FileText } from 'lucide-svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
-	import { Root as Dialog } from '$lib/components/ui/dialog.svelte';
-	import DialogContent from '$lib/components/ui/dialog-content.svelte';
-	import DialogHeader from '$lib/components/ui/dialog-header.svelte';
-	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
-	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
-	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
-	import Button from '$lib/components/ui/button.svelte';
-
-	let showDeleteDialog = $state(false);
-	let documentToDelete = $state<string | null>(null);
 
 	async function handleCreateDocument() {
 		try {
@@ -20,25 +10,6 @@
 			toastStore.success('Document created');
 		} catch {
 			toastStore.error('Failed to create document');
-		}
-	}
-
-	function confirmDelete(id: string) {
-		documentToDelete = id;
-		showDeleteDialog = true;
-	}
-
-	async function handleDelete() {
-		if (!documentToDelete) return;
-
-		try {
-			await documentStore.deleteDocument(documentToDelete);
-			toastStore.success('Document deleted');
-		} catch {
-			toastStore.error('Failed to delete document');
-		} finally {
-			showDeleteDialog = false;
-			documentToDelete = null;
 		}
 	}
 
@@ -96,16 +67,6 @@
 								<span class="flex-1 truncate text-sm font-medium">{document.name}</span>
 							</div>
 							<span class="text-xs text-muted-foreground">{formatDate(document.created_at)}</span>
-						</button>
-						<button
-							onclick={(e) => {
-								e.stopPropagation();
-								confirmDelete(document.id);
-							}}
-							class="absolute top-2 right-4 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600 focus:opacity-100 focus:outline-none"
-							aria-label="Delete document"
-						>
-							<span class="text-lg leading-none" aria-hidden="true">×</span>
 						</button>
 					</li>
 				{/each}

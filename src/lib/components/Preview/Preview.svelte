@@ -123,7 +123,7 @@
 		} catch (err) {
 			// Extract diagnostic information
 			errorDisplay = extractErrorDisplay(err);
-			console.error('Preview render error:', err);
+			//console.error('Preview render error:', err);
 		} finally {
 			loading = false;
 		}

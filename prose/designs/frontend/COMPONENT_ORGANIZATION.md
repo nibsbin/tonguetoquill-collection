@@ -18,40 +18,43 @@ Components are organized by feature/domain rather than by file type:
 
 ### UI Library Architecture
 
-Tonguetoquill follows shadcn-svelte as the **authoritative UI foundation**. Understanding the layered architecture is critical:
+Tonguetoquill uses **custom Svelte components** for all UI widgets (dialogs, popovers, sheets, toasts). This provides full control over behavior, accessibility, and theming while reducing external dependencies.
 
-**Layer 1: Headless Primitives (bits-ui)**
+**Widget Components** (src/lib/components/ui/):
 
-- bits-ui provides unstyled, accessible, headless components
-- Handles behavior, accessibility, keyboard navigation, focus management
-- Used internally by shadcn-svelte components (not imported directly in feature code)
+- **base-dialog.svelte**: Modal dialog component with focus trapping, ESC key, and backdrop click handling
+- **base-popover.svelte**: Popover component with dynamic positioning, click outside, and ESC key dismissal
+- **base-sheet.svelte**: Slide-in drawer component with responsive behavior (mobile-friendly)
+- **toast.svelte**: Toast notification container with position control
+- **switch.svelte**: Toggle switch component with keyboard accessibility
+- All components built from scratch using Svelte 5 primitives
+- No external UI library dependencies (bits-ui and svelte-sonner removed)
 
-**Layer 2: Styled Components (shadcn-svelte)**
+**Supporting Utilities**:
 
-- Located in `src/lib/components/ui/`
-- Built on top of bits-ui, adding styling and design tokens
-- All imports from bits-ui MUST be within ui/ components only
-- Feature components import from ui/, never from bits-ui directly
+- **portal.svelte**: Teleport component for rendering outside parent DOM
+- **focus-trap.ts**: Focus management for modal dialogs
+- **use-click-outside.ts**: Click outside detection action
+- **toast.svelte.ts**: Toast state management store
 
-**Layer 3: Feature Components**
+**Shared UI Components**:
 
-- Located in feature folders (Sidebar/, Editor/, etc.)
-- Import and compose ui/ components
-- Never import from bits-ui or third-party UI libraries directly
+- **button.svelte**: Button component with variants
+- **input.svelte**: Text input component
+- **label.svelte**: Form label component
 
-**Third-Party UI Integration Pattern:**
+**Third-Party Integration**:
 
-- External UI libraries (e.g., svelte-sonner) must be wrapped in ui/ components
-- Feature code imports from `$lib/components/ui/*`, not from external packages
-- Maintains single source of truth for UI behavior and styling
-- Example: svelte-sonner → ui/sonner.svelte → feature components
+- **lucide-svelte**: Icon library
+- **Tailwind CSS**: Styling framework
+- No other UI dependencies
 
 **Import Rules:**
 
 - ✓ Feature components → `$lib/components/ui/*`
-- ✓ UI components → `bits-ui`, `svelte-sonner`, etc.
-- ✗ Feature components → `bits-ui` directly
-- ✗ Feature components → `svelte-sonner` directly
+- ✓ UI utilities → `$lib/utils/*`
+- ✗ Feature components → External UI libraries (no longer applicable)
+- ✗ Direct DOM manipulation (use Svelte actions and stores instead)
 
 ### File Structure Per Component
 
@@ -102,10 +105,15 @@ src/lib/components/
 │   ├── DocumentListItem.svelte.test.ts
 │   └── index.ts
 └── ui/
+    ├── base-dialog.svelte
+    ├── base-popover.svelte
+    ├── base-sheet.svelte
     ├── button.svelte
-    ├── dialog.svelte
-    ├── dropdown-menu.svelte
-    └── ... (shadcn-svelte components)
+    ├── input.svelte
+    ├── label.svelte
+    ├── portal.svelte
+    ├── switch.svelte
+    └── toast.svelte
 ```
 
 **Note**: `DocumentInfoDialog.svelte` is at the root level as a standalone dialog component (see [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md) for specification).
@@ -214,9 +222,9 @@ Create a new feature folder when:
 
 Keep in `ui/` when:
 
-- Component is a pure UI primitive
-- Component is reusable across features
-- Component comes from shadcn-svelte
+- Component is a pure UI primitive (button, input, label)
+- Component is a reusable widget (dialog, popover, sheet, toast)
+- Component provides utility functionality (portal, focus-trap)
 
 ### Style Files
 
