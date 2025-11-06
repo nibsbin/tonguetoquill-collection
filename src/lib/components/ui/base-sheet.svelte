@@ -4,6 +4,7 @@
 	import Button from '$lib/components/ui/button.svelte';
 	import Portal from '$lib/components/ui/portal.svelte';
 	import { cn } from '$lib/utils/cn';
+	import { overlayStore } from '$lib/stores/overlay.svelte';
 
 	interface SheetProps {
 		open: boolean;
@@ -34,6 +35,17 @@
 		header,
 		footer
 	}: SheetProps = $props();
+
+	// Generate unique ID for overlay coordination
+	const overlayId = `sheet-${Math.random().toString(36).substring(7)}`;
+
+	// Register/unregister with overlay store for coordination
+	$effect(() => {
+		if (open) {
+			overlayStore.register(overlayId, 'sheet', () => onOpenChange(false));
+			return () => overlayStore.unregister(overlayId);
+		}
+	});
 
 	// Detect if mobile (<768px) and override side to bottom
 	let isMobile = $state(false);
