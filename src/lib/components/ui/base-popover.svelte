@@ -9,12 +9,40 @@
 	interface PopoverProps {
 		open?: boolean;
 		onOpenChange?: (open: boolean) => void;
+		/**
+		 * Popover title for accessibility (optional)
+		 * @default undefined
+		 */
 		title?: string;
+		/**
+		 * A base popover component.
+		 * @default true
+		/** Whether popover should close on Escape key press*/
 		closeOnEscape?: boolean;
+		/**
+		 * Whether popover should close on outside click
+		 * @default true
+		 */
 		closeOnOutsideClick?: boolean;
+		/**
+		 * Whether to show a close button in the top-right corner
+		 * @default false
+		 */
 		showCloseButton?: boolean;
+		/**
+		 * Popover side relative to trigger element
+		 * @default 'bottom'
+		 */
 		side?: 'top' | 'right' | 'bottom' | 'left';
+		/**
+		 * Popover alignment relative to trigger element
+		 * @default 'center'
+		 */
 		align?: 'start' | 'center' | 'end';
+		/**
+		 * Offset in pixels from the trigger element
+		 * @default 8
+		 */
 		sideOffset?: number;
 		class?: string;
 		trigger: import('svelte').Snippet;
@@ -207,11 +235,11 @@
 	>
 		<!-- Header (optional) -->
 		{#if title || showCloseButton || header}
-			<div class="mb-3 flex items-center justify-between">
+			<div class="flex items-center justify-between px-4 pt-4 pb-3">
 				{#if header}
 					{@render header()}
 				{:else if title}
-					<h3 id={titleId} class="text-sm font-semibold text-foreground">{title}</h3>
+					<h3 id={titleId} class="text-lg font-semibold text-foreground">{title}</h3>
 				{/if}
 
 				{#if showCloseButton}
@@ -229,13 +257,13 @@
 		{/if}
 
 		<!-- Content -->
-		<div class="popover-content">
+		<div class="popover-content {footer ? '' : 'pb-4'}">
 			{@render content()}
 		</div>
 
 		<!-- Footer (optional) -->
 		{#if footer}
-			<div class="mt-3 flex justify-end gap-2">
+			<div class="flex justify-end gap-2 px-4 pt-3 pb-4">
 				{@render footer()}
 			</div>
 		{/if}

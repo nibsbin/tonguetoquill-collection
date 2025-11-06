@@ -1,33 +1,42 @@
 # NewDocumentDialog Component
 
-A modal dialog for creating new documents with optional template selection.
+A lightweight popover for creating new documents with template selection.
 
 ## Overview
 
-The NewDocumentDialog component provides a form-based interface for creating documents. It prompts users for a document name and allows optional template selection from the Template Service. This component follows the intentional document creation pattern, replacing instant document creation with a more deliberate workflow.
+The NewDocumentDialog component (now implemented as a popover) provides a compact form-based interface for creating documents. It prompts users for a document name and template selection from the Template Service. This component uses a popover pattern for a less intrusive UX compared to a modal dialog.
 
 ## Features
 
+- **Popover UX**: Lightweight popover instead of modal dialog
+- **In-Line Labels**: Labels and inputs on same row for compact layout
 - **Document Name Input**: Required text field with validation
-- **Template Selection**: Optional dropdown with production templates
+- **Template Selection**: Required dropdown with production templates (defaults to USAF Memo)
+- **Auto-Naming**: Automatically populates name from selected template
+- **Collision Detection**: Appends (1), (2), etc. for duplicate names
 - **Form Validation**: Client-side validation prevents invalid submissions
 - **Error Handling**: Displays inline errors for validation and creation failures
 - **Loading States**: Shows creating state while document is being created
-- **Graceful Degradation**: Works even if Template Service unavailable
 - **Keyboard Support**: Enter to submit, ESC to cancel
 
 ## Props
 
 ```typescript
 interface NewDocumentDialogProps {
-	/** Whether dialog is open */
+	/** Whether popover is open */
 	open: boolean;
 
-	/** Callback when dialog should close */
+	/** Callback when popover should close */
 	onOpenChange: (open: boolean) => void;
 
 	/** Callback when document should be created */
-	onCreate: (name: string, templateFilename?: string) => Promise<void>;
+	onCreate: (name: string, templateFilename: string) => Promise<void>;
+
+	/** List of existing document names for collision detection */
+	existingDocumentNames?: string[];
+
+	/** Trigger snippet (button or element that opens the popover) */
+	triggerContent?: import('svelte').Snippet;
 }
 ```
 
@@ -38,25 +47,21 @@ interface NewDocumentDialogProps {
 	import NewDocumentDialog from '$lib/components/NewDocumentDialog';
 	import { templateService } from '$lib/services/templates';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { Plus } from 'lucide-svelte';
 
-	let dialogOpen = $state(false);
+	let popoverOpen = $state(false);
+	const existingNames = $derived(documentStore.documents.map((d) => d.name));
 
-	function openDialog() {
-		dialogOpen = true;
-	}
-
-	async function handleCreateDocument(name: string, templateFilename?: string) {
+	async function handleCreateDocument(name: string, templateFilename: string) {
 		let content = '';
 
-		// Load template content if template selected
-		if (templateFilename) {
-			try {
-				const template = await templateService.getTemplate(templateFilename);
-				content = template.content;
-			} catch (error) {
-				console.error('Failed to load template:', error);
-				// Fallback to blank document
-			}
+		// Load template content
+		try {
+			const template = await templateService.getTemplate(templateFilename);
+			content = template.content;
+		} catch (error) {
+			console.error('Failed to load template:', error);
+			throw error;
 		}
 
 		// Create document with name and content
@@ -64,16 +69,49 @@ interface NewDocumentDialogProps {
 	}
 </script>
 
-<button onclick={openDialog}>New Document</button>
-
 <NewDocumentDialog
-	open={dialogOpen}
-	onOpenChange={(open) => (dialogOpen = open)}
+	open={popoverOpen}
+	onOpenChange={(open) => (popoverOpen = open)}
 	onCreate={handleCreateDocument}
-/>
+	existingDocumentNames={existingNames}
+>
+	{#snippet triggerContent()}
+		<button>
+			<Plus />
+			New Document
+		</button>
+	{/snippet}
+</NewDocumentDialog>
 ```
 
 ## Behavior
+
+### In-Line Label Layout
+
+**Template Field**:
+
+- Label: "Template" (right-aligned, 80px fixed width)
+- Input: Select dropdown (fills remaining space)
+- Height: Compact 36px (h-9)
+
+**Name Field**:
+
+- Label: "Name" (right-aligned, 80px fixed width)
+- Input: Text input (fills remaining space)
+- Height: Compact 36px (h-9)
+- Auto-populated from selected template
+- Manual edits prevent further auto-population
+
+### Auto-Naming
+
+When template changes:
+
+1. If user hasn't manually edited name, generate from template
+2. Check for collisions with existing documents
+3. If collision, append " (1)", " (2)", etc.
+4. Stop auto-population once user edits name
+
+Example: If "USAF Memo" exists, next one becomes "USAF Memo (1)"
 
 ### Form Validation
 
@@ -81,35 +119,36 @@ interface NewDocumentDialogProps {
 
 - Required field
 - Cannot be empty or whitespace-only
-- Validation triggered on blur and input (if error exists)
-- Error message shown inline below input
+- Validation triggered on input (if error exists)
+- Error message shown inline below input (aligned with input, not label)
 
 **Template**:
 
-- Optional field
-- Defaults to "Blank Document" (null value)
+- Required field (no blank option)
+- Defaults to "USAF Memo" when popover opens
 - Populated from Template Service (production templates only)
-- Disabled if Template Service not ready
 
 ### Creation Flow
 
-1. User opens dialog
-2. User enters document name (required)
-3. User selects template (optional)
-4. User clicks "Create"
-5. Validation runs
-6. If valid:
-   - onCreate callback called with name and optional templateFilename
+1. User clicks trigger (e.g., "New Document" button in sidebar)
+2. Popover opens below button
+3. Template defaults to "USAF Memo", name auto-populated
+4. User can change template (name updates automatically)
+5. User can edit name (stops auto-population)
+6. User clicks "Create"
+7. Validation runs
+8. If valid:
+   - onCreate callback called with name and templateFilename
    - Parent component loads template content and creates document
-   - On success: form resets and dialog closes
-   - On error: error displayed, dialog stays open for retry
+   - On success: form resets and popover closes
+   - On error: error displayed, popover stays open for retry
 
 ### Dismissal Methods
 
-- **Cancel button**: Resets form and closes dialog
-- **ESC key**: Handled by BaseDialog, closes dialog
-- **Backdrop click**: Handled by BaseDialog, closes dialog
-- **Close button (X)**: Handled by BaseDialog, closes dialog
+- **Cancel button**: Resets form and closes popover
+- **ESC key**: Handled by BasePopover, closes popover
+- **Click outside**: Handled by BasePopover, closes popover
+- **No close button**: Cleaner appearance, other methods sufficient
 
 ### Error Handling
 
@@ -128,62 +167,49 @@ interface NewDocumentDialogProps {
 
 **Template Service Errors**:
 
-- If service not ready: "Templates unavailable" helper text shown
-- Template dropdown disabled
-- Can still create blank documents
-- No blocking error - graceful degradation
+- If service not ready: Template dropdown shows "USAF Memo" as default
+- Can still create documents with available templates
+- Graceful degradation built into component
 
 ## Accessibility
 
-- **Focus Management**: Document name input auto-focused when dialog opens
+- **Focus Management**: Template dropdown focused when popover opens
 - **Keyboard Navigation**: Tab cycles through inputs and buttons, Enter submits
 - **ARIA Labels**: Proper labels for all form fields
 - **Error Announcements**: Validation errors associated with inputs
 - **Screen Reader Support**: Error messages announced, loading states communicated
+- **No Focus Trap**: Popover allows interaction with page (unlike modal dialog)
 
 ## Styling
 
-- Uses design system tokens for colors and spacing
-- Matches application theme (light/dark mode support)
-- Native select element for template dropdown (simple and accessible)
-- Consistent with other dialog components
+- **Popover Width**: Fixed ~384px (w-96) for consistent layout
+- **In-Line Labels**: 80px fixed width (w-20), right-aligned
+- **Input Heights**: 36px (h-9) for compact feel
+- **Spacing**: Tighter than dialog (space-y-3 instead of space-y-4)
+- **Text Sizes**: Smaller (text-sm for labels, text-xs for errors)
+- **Button Sizes**: Compact (size="sm")
+- **Design Tokens**: Uses design system tokens for colors and spacing
+- **Theme Support**: Automatic light/dark mode support
 
 ## Dependencies
 
-- **BaseDialog**: Widget abstraction for modal dialogs
-- **Button**: Standard button component
+- **BasePopover**: Widget abstraction for popover overlays
+- **Button**: Standard button component (size="sm" for compact buttons)
 - **Input**: Standard text input component
 - **Label**: Standard label component
 - **Template Service**: For loading template list and content
 
 ## Integration Points
 
-- **Template Service**: Must be initialized before dialog opens (done in root layout)
+- **Template Service**: Must be initialized before popover opens (done in root layout)
 - **Document Store**: Parent component delegates to document store for creation
-- **Sidebar**: Primary integration point, triggers dialog from "New Document" button
-
-## Testing
-
-### Unit Tests
-
-- Component renders with correct props
-- Form validation works (empty name, whitespace-only)
-- Template dropdown populated from service
-- Create button disabled when invalid
-- Cancel button closes dialog
-- onCreate callback called with correct arguments
-
-### Integration Tests
-
-- End-to-end document creation flow
-- Template loading and document population
-- Error handling for creation failures
-- Dialog dismissal methods
+- **Sidebar**: Primary integration point, passes trigger content via snippet
+- **Collision Detection**: Parent passes list of existing document names
 
 ## Design Reference
 
-See [prose/designs/frontend/NEW_DOCUMENT_DIALOG.md](../../../prose/designs/frontend/NEW_DOCUMENT_DIALOG.md) for detailed design documentation.
+See [prose/designs/frontend/NEW_DOCUMENT_POPOVER.md](../../../prose/designs/frontend/NEW_DOCUMENT_POPOVER.md) for detailed design documentation.
 
 ## Implementation Reference
 
-See [prose/plans/new-document-dialog-implementation.md](../../../prose/plans/new-document-dialog-implementation.md) for implementation plan.
+See [prose/plans/new-document-popover-implementation.md](../../../prose/plans/new-document-popover-implementation.md) for implementation plan.

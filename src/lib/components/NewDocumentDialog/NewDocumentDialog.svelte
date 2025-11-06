@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { templateService } from '$lib/services/templates';
 	import type { TemplateMetadata } from '$lib/services/templates';
-	import BaseDialog from '$lib/components/ui/base-dialog.svelte';
+	import BasePopover from '$lib/components/ui/base-popover.svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Input from '$lib/components/ui/input.svelte';
 	import Label from '$lib/components/ui/label.svelte';
@@ -18,13 +18,17 @@
 
 		/** List of existing document names for collision detection */
 		existingDocumentNames?: string[];
+
+		/** Trigger snippet (button or element that opens the popover) */
+		triggerContent?: import('svelte').Snippet;
 	}
 
 	let {
 		open,
 		onOpenChange,
 		onCreate,
-		existingDocumentNames = []
+		existingDocumentNames = [],
+		triggerContent
 	}: NewDocumentDialogProps = $props();
 
 	// Form state
@@ -193,56 +197,75 @@
 	}
 </script>
 
-<BaseDialog {open} {onOpenChange} title="New Document" size="md">
+<BasePopover
+	{open}
+	{onOpenChange}
+	title="New Document"
+	side="right"
+	align="end"
+	closeOnEscape={true}
+	closeOnOutsideClick={true}
+	showCloseButton={false}
+>
+	{#snippet trigger()}
+		{#if triggerContent}
+			{@render triggerContent()}
+		{/if}
+	{/snippet}
+
 	{#snippet content()}
-		<form onsubmit={handleSubmit} class="space-y-4">
-			<!-- Template Selection Field -->
-			<div>
-				<Label for="template" class="text-foreground">Template</Label>
-				<select
-					id="template"
-					bind:value={selectedTemplate}
-					disabled={isCreating || !templatesReady}
-					class="mt-2 flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-				>
-					{#each templates as template}
-						<option value={template.file}>{template.name}</option>
-					{/each}
-				</select>
-			</div>
-
-			<!-- Document Name Field -->
-			<div>
-				<Label for="doc-name" class="text-foreground">Document Name</Label>
-				<Input
-					id="doc-name"
-					type="text"
-					bind:value={documentName}
-					onkeydown={() => {
-						hasUserEditedName = true;
-					}}
-					placeholder="Enter document name"
-					disabled={isCreating}
-					class="mt-2 w-full"
-				/>
-				{#if nameError}
-					<p class="mt-1 text-sm text-destructive">{nameError}</p>
-				{/if}
-			</div>
-
-			<!-- Creation Error -->
-			{#if creationError}
-				<div class="rounded-md border border-destructive bg-destructive/10 p-3">
-					<p class="text-sm text-destructive">{creationError}</p>
+		<div class="px-4">
+			<form onsubmit={handleSubmit} class="space-y-3">
+				<!-- Template Selection Field (In-line layout) -->
+				<div class="flex items-center gap-3">
+					<Label for="template" class="shrink-0 text-left text-sm text-foreground">Template</Label>
+					<select
+						id="template"
+						bind:value={selectedTemplate}
+						disabled={isCreating || !templatesReady}
+						class="h-9 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+					>
+						{#each templates as template}
+							<option value={template.file}>{template.name}</option>
+						{/each}
+					</select>
 				</div>
-			{/if}
-		</form>
+
+				<!-- Document Name Field (In-line layout) -->
+				<div>
+					<div class="flex items-center gap-3">
+						<Label for="doc-name" class="shrink-0 text-left text-sm text-foreground">Name</Label>
+						<Input
+							id="doc-name"
+							type="text"
+							bind:value={documentName}
+							onkeydown={() => {
+								hasUserEditedName = true;
+							}}
+							placeholder="Enter document name"
+							disabled={isCreating}
+							class="h-9 flex-1 text-sm"
+						/>
+					</div>
+					{#if nameError}
+						<p class="mt-1 ml-[4.5rem] text-xs text-destructive">{nameError}</p>
+					{/if}
+				</div>
+
+				<!-- Creation Error -->
+				{#if creationError}
+					<div class="rounded-md border border-destructive bg-destructive/10 p-2">
+						<p class="text-xs text-destructive">{creationError}</p>
+					</div>
+				{/if}
+			</form>
+		</div>
 	{/snippet}
 
 	{#snippet footer()}
-		<Button variant="ghost" onclick={handleCancel} disabled={isCreating}>Cancel</Button>
-		<Button variant="default" onclick={handleCreate} disabled={!isValid || isCreating}>
+		<Button variant="ghost" size="sm" onclick={handleCancel} disabled={isCreating}>Cancel</Button>
+		<Button variant="default" size="sm" onclick={handleCreate} disabled={!isValid || isCreating}>
 			{isCreating ? 'Creating...' : 'Create'}
 		</Button>
 	{/snippet}
-</BaseDialog>
+</BasePopover>

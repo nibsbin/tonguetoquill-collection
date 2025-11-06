@@ -6,7 +6,6 @@
 	import BasePopover from '$lib/components/ui/base-popover.svelte';
 	import Switch from '$lib/components/ui/switch.svelte';
 	import Label from '$lib/components/ui/label.svelte';
-	import Dialog from '$lib/components/ui/base-dialog.svelte';
 	import LoginPopover from './LoginPopover.svelte';
 	import NewDocumentDialog from '$lib/components/NewDocumentDialog';
 	import { documentStore } from '$lib/stores/documents.svelte';
@@ -62,10 +61,6 @@
 	function handleToggle() {
 		isExpanded = !isExpanded;
 		localStorage.setItem('sidebar-expanded', isExpanded.toString());
-	}
-
-	function handleNewFile() {
-		newDocDialogOpen = true;
 	}
 
 	async function handleCreateDocument(name: string, templateFilename: string) {
@@ -189,13 +184,21 @@
 	<div class="flex-1 overflow-hidden">
 		<div>
 			<div class={documentStore.documents.length > 0 && isExpanded ? 'border-b border-border' : ''}>
-				<SidebarButtonSlot
-					icon={Plus}
-					label="New Document"
-					{isExpanded}
-					onclick={handleNewFile}
-					ariaLabel="Create new document"
-				/>
+				<NewDocumentDialog
+					open={newDocDialogOpen}
+					onOpenChange={(open) => (newDocDialogOpen = open)}
+					onCreate={handleCreateDocument}
+					{existingDocumentNames}
+				>
+					{#snippet triggerContent()}
+						<SidebarButtonSlot
+							icon={Plus}
+							label="New Document"
+							{isExpanded}
+							ariaLabel="Create new document"
+						/>
+					{/snippet}
+				</NewDocumentDialog>
 			</div>
 
 			{#if documentStore.documents.length > 0 && isExpanded}
@@ -226,7 +229,7 @@
 	<div class="flex flex-col border-t border-border">
 		<!-- Sign-In Button (Guest Mode) -->
 		{#if !user}
-			<BasePopover bind:open={loginPopoverOpen} side="right" align="start">
+			<BasePopover bind:open={loginPopoverOpen} side="right" align="start" title="Sign in">
 				{#snippet trigger()}
 					<SidebarButtonSlot
 						icon={LogIn}
@@ -243,7 +246,12 @@
 
 		<!-- User Profile Button (Logged-in Mode) -->
 		{#if user}
-			<BasePopover bind:open={profilePopoverOpen} side="right" align="start">
+			<BasePopover
+				bind:open={profilePopoverOpen}
+				side="right"
+				align="start"
+				title="Account Information"
+			>
 				{#snippet trigger()}
 					<SidebarButtonSlot
 						icon={User}
@@ -254,10 +262,8 @@
 					/>
 				{/snippet}
 				{#snippet content()}
-					<div class="w-72 p-4">
-						<h3 class="mb-4 text-lg font-semibold text-foreground">Account Information</h3>
-
-						<dl class="mb-4 space-y-4">
+					<div class="w-72 px-4">
+						<dl class="space-y-4">
 							<div>
 								<dt class="text-sm font-medium text-muted-foreground">Email</dt>
 								<dd class="text-foreground">{user.email}</dd>
@@ -282,7 +288,7 @@
 		{/if}
 
 		<!-- Settings Gear Button -->
-		<BasePopover bind:open={popoverOpen} side="right" align="end">
+		<BasePopover bind:open={popoverOpen} side="right" align="end" title="Settings">
 			{#snippet trigger()}
 				<SidebarButtonSlot
 					icon={Settings}
@@ -292,9 +298,7 @@
 				/>
 			{/snippet}
 			{#snippet content()}
-				<div class="w-64 p-4">
-					<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
-
+				<div class="w-64 px-4">
 					<div class="space-y-4">
 						<div class="flex items-center justify-between">
 							<Label for="dark-mode" class="text-muted-foreground">Dark Mode</Label>
@@ -328,14 +332,6 @@
 		</BasePopover>
 	</div>
 </div>
-
-<!-- New Document Dialog -->
-<NewDocumentDialog
-	open={newDocDialogOpen}
-	onOpenChange={(open) => (newDocDialogOpen = open)}
-	onCreate={handleCreateDocument}
-	{existingDocumentNames}
-/>
 
 <style>
 	/* Logo signature slot */

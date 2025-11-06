@@ -80,9 +80,7 @@
 	}
 </script>
 
-<div class="w-72 p-4">
-	<h3 class="mb-4 text-lg font-semibold text-foreground">Sign in</h3>
-
+<div class="w-72 px-4">
 	{#if providers.length === 0}
 		<div class="text-center text-muted-foreground">No authentication providers available</div>
 	{:else}
