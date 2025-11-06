@@ -26,19 +26,20 @@
 	/* Top menu spacing tokens */
 	--top-menu-height: var(--sidebar-collapsed-width); /* Aligned with sidebar */
 
-	/* Z-Index Layer System */
-	--z-base: 0;
-	--z-ui-element: 10; /* For UI elements requiring local stacking within components */
-	--z-canvas-overlay: 30; /* For tool overlays scoped to canvas/preview areas */
-	--z-canvas-ui: 40; /* For UI elements within canvas overlays (banners, instructions) */
-	--z-dropdown: 1000;
-	--z-sticky: 1100;
-	--z-banner: 1200;
-	--z-popover: 1300; /* Popovers - lightweight contextual UI */
-	--z-overlay: 1400; /* Dialog/modal backdrops - demand attention */
-	--z-modal: 1500; /* Dialog/modal content - primary user actions */
-	--z-toast: 1600;
-	--z-tooltip: 1700;
+	/* Z-Index Layer System - Simplified into 3 groups */
+	/* Group 1: Canvas - UI and overlays within canvas/preview area */
+	--z-canvas-ui: 10; /* UI elements within the canvas (e.g., sidebar) */
+	--z-canvas-overlay: 20; /* Tool overlays scoped to canvas (e.g., ruler) */
+
+	/* Group 2: Minor Widgets - Lightweight overlays */
+	--z-dropdown: 1000; /* Dropdown menus and select options */
+	--z-popover: 1100; /* Popovers - lightweight contextual UI */
+	--z-toast: 1200; /* Toast notifications */
+	--z-banner: 1300; /* Notification banners */
+
+	/* Group 3: Modals - Full attention overlays */
+	--z-modal-backdrop: 1400; /* Dialog/modal backdrops */
+	--z-modal-content: 1500; /* Dialog/modal/sheet content */
 
 	/* Light Theme Color Tokens */
 	/* Surface colors */
@@ -162,19 +163,15 @@
 
 /* Tailwind CSS Integration - required for utility class generation */
 @theme inline {
-	/* Z-Index layers */
-	--z-base: var(--z-base);
-	--z-ui-element: var(--z-ui-element);
-	--z-canvas-overlay: var(--z-canvas-overlay);
+	/* Z-Index layers - Simplified system */
 	--z-canvas-ui: var(--z-canvas-ui);
+	--z-canvas-overlay: var(--z-canvas-overlay);
 	--z-dropdown: var(--z-dropdown);
-	--z-sticky: var(--z-sticky);
-	--z-banner: var(--z-banner);
-	--z-overlay: var(--z-overlay);
-	--z-modal: var(--z-modal);
 	--z-popover: var(--z-popover);
 	--z-toast: var(--z-toast);
-	--z-tooltip: var(--z-tooltip);
+	--z-banner: var(--z-banner);
+	--z-modal-backdrop: var(--z-modal-backdrop);
+	--z-modal-content: var(--z-modal-content);
 
 	/* Surface colors */
 	--color-background: var(--color-background);
