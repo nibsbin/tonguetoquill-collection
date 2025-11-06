@@ -163,15 +163,15 @@
 
 /* Tailwind CSS Integration - required for utility class generation */
 @theme inline {
-	/* Z-Index layers - Simplified system */
-	--z-canvas-ui: 10;
-	--z-canvas-overlay: 20;
-	--z-dropdown: 1000;
-	--z-popover: 1100;
-	--z-toast: 1200;
-	--z-banner: 1300;
-	--z-modal-backdrop: 1400;
-	--z-modal-content: 1500;
+	/* Z-Index layers - Maps to CSS variables */
+	--z-canvas-ui: var(--z-canvas-ui);
+	--z-canvas-overlay: var(--z-canvas-overlay);
+	--z-dropdown: var(--z-dropdown);
+	--z-popover: var(--z-popover);
+	--z-toast: var(--z-toast);
+	--z-banner: var(--z-banner);
+	--z-modal-backdrop: var(--z-modal-backdrop);
+	--z-modal-content: var(--z-modal-content);
 
 	/* Surface colors */
 	--color-background: var(--color-background);
