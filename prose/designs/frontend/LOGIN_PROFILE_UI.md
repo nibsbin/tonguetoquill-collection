@@ -115,7 +115,7 @@ This document defines the UI integration for login and profile functionality in 
 - `icon`: `User` from lucide-svelte
 - `label`: User's display name or email
 - `isExpanded`: Sidebar expansion state
-- `onclick`: Opens profile modal
+- Acts as popover trigger (button rendered inside BasePopover trigger snippet)
 - `ariaLabel`: "User profile: {user.email}"
 
 **Styling:**
@@ -125,26 +125,39 @@ This document defines the UI integration for login and profile functionality in 
 - `active:scale-[0.985]` for press feedback
 - Text truncates with `overflow-hidden text-ellipsis`
 
-## Modal Dialogs
+## Profile UI Components
 
-### Profile Modal
+### Profile Popover
 
-**Component:** shadcn-svelte Dialog
+**Component:** BasePopover (see WIDGET_ABSTRACTION.md)
 
-**Purpose:** Display basic account information for logged-in users
+**Purpose:** Display basic account information for logged-in users in a lightweight, contextual popover
 
 **Structure:**
 
-- DialogHeader: "Account Information" title with description
-- Content area displaying:
+- Trigger: User profile button in sidebar (icon + user email when expanded)
+- Popover content displaying:
   - Email address (with "Email" label)
   - User ID in UUID format (with "User ID" label, monospace font)
-- DialogFooter: Sign Out button (ghost variant) and Close button (default variant)
+- Popover footer: Sign Out button (ghost variant)
+
+**Positioning:**
+
+- Side: "right" (positioned to the right of sidebar button)
+- Align: "start" (aligned with top of trigger)
+- Width: Fixed width appropriate for account info (~300px)
+
+**Dismissal:**
+
+- ESC key closes popover (default behavior)
+- Clicking outside closes popover (default behavior)
+- No close button needed (lightweight popover pattern)
+- Sign out action closes popover automatically
 
 **Behavior:**
 
-- On sign out: Close modal, call loginClient.signOut(), update UI to guest state
-- On close: Close modal without action
+- On sign out: Close popover, call loginClient.signOut(), update UI to guest state
+- On outside click or ESC: Close popover without action
 
 ## Integration with Login Service
 
@@ -177,16 +190,16 @@ This document defines the UI integration for login and profile functionality in 
 
 ### Reactive State Variables
 
-**Modal State:**
+**Popover State:**
 
-- `profileModalOpen`: Boolean controlling profile modal visibility
+- `profilePopoverOpen`: Boolean controlling profile popover visibility
 
 **User State:**
 
 - `user`: Object with `{ email: string; id: string }` or null
 - Can be derived: `isAuthenticated = user !== null`
 
-**Note:** No sign-in modal needed since authentication is delegated to provider
+**Note:** Both sign-in and profile use popover pattern for consistency and lightweight feel
 
 ### User Prop
 
@@ -221,22 +234,32 @@ The root layout should:
 - Guest mode: `LogIn` icon (arrow entering door)
 - Logged-in: `User` icon (user avatar silhouette)
 
-### Modal Appearance (Profile Modal Only)
+### Popover Appearance
 
 **Follows Design System:**
 
 - Background: `bg-surface-elevated`
 - Text: `text-foreground`
 - Borders: `border-border`
+- Shadow: `shadow-md` (lighter than modal)
 - Buttons use shadcn-svelte Button component
 
 **Size:**
 
-- Width: 400px (max-w-md)
-- Centered on screen
-- Mobile: Full width with padding
+- Width: ~300px (max-w-sm)
+- Positioned relative to trigger button
+- Compact padding for popover feel
 
-**Note:** No sign-in modal - users authenticate on provider-hosted pages
+**Positioning:**
+
+- Appears to the right of sidebar button
+- Aligned with top of trigger
+- Adjusts automatically on small screens
+
+**Consistency:**
+
+- Both sign-in and profile use BasePopover for unified experience
+- Same dismissal behavior (ESC, outside click)
 
 ## Accessibility
 
@@ -252,11 +275,11 @@ The root layout should:
 
 ### Keyboard Navigation
 
-**Profile Modal:**
+**Profile Popover:**
 
-- Focus trap within modal when open
-- Escape key closes modal
-- Tab cycles through buttons
+- Escape key closes popover (no focus trap needed for lightweight popover)
+- Tab moves focus naturally (can tab outside popover)
+- Enter/Space activates focused elements
 
 **Buttons:**
 
@@ -282,8 +305,8 @@ The root layout should:
 Both buttons work identically in mobile sheet as in desktop sidebar:
 
 - Same button structure
-- Same redirect behavior (sign in) and modal behavior (profile)
-- Profile modal appears centered over sheet
+- Same redirect behavior (sign in) and popover behavior (profile)
+- Profile popover appears positioned relative to button
 - Sheet closes on successful sign out (optional)
 
 ### Touch Targets
@@ -338,12 +361,12 @@ Both buttons work identically in mobile sheet as in desktop sidebar:
 ## Implementation Checklist
 
 - [ ] Add `LogIn` and `User` icons to Sidebar imports
-- [ ] Add state variables for profile modal
+- [ ] Add state variables for profile popover
 - [ ] Create sign-in button using SidebarButtonSlot (guest mode)
   - [ ] Button calls `loginClient.initiateLogin()` to redirect to OAuth provider
-- [ ] Create profile button using SidebarButtonSlot (logged-in mode)
+- [ ] Create profile button as BasePopover trigger (logged-in mode)
 - [ ] Position buttons above settings, under same divider
-- [ ] Implement profile modal with account info
+- [ ] Implement profile popover with account info using BasePopover
 - [ ] Connect sign-out flow to loginClient
 - [ ] Handle authentication state in layout
 - [ ] Test guest mode → OAuth redirect → provider auth → callback → logged-in mode flow
@@ -351,6 +374,7 @@ Both buttons work identically in mobile sheet as in desktop sidebar:
 - [ ] Test OAuth callback error handling
 - [ ] Test mobile sheet integration
 - [ ] Verify accessibility (keyboard nav, ARIA labels)
+- [ ] Verify popover dismissal (ESC key, outside click)
 
 ## Cross-References
 

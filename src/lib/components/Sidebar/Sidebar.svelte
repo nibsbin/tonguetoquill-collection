@@ -26,7 +26,7 @@
 	let popoverOpen = $state(false);
 	let loginPopoverOpen = $state(false);
 	let isDarkMode = $state(true);
-	let profileModalOpen = $state(false);
+	let profilePopoverOpen = $state(false);
 	let newDocDialogOpen = $state(false);
 
 	onMount(() => {
@@ -142,14 +142,10 @@
 		} catch (error) {
 			console.error('Sign out failed:', error);
 		} finally {
-			// Always close modal and reload to clear state, even on error
-			profileModalOpen = false;
+			// Always close popover and reload to clear state, even on error
+			profilePopoverOpen = false;
 			window.location.reload();
 		}
-	}
-
-	function handleProfileClick() {
-		profileModalOpen = true;
 	}
 
 	function handleAbout() {
@@ -177,7 +173,7 @@
 >
 	<!-- Hamburger Menu and Title -->
 	<div class="relative flex items-center">
-		<div class="relative flex-shrink-0 z-ui-element" style="width: 48px;">
+		<div class="z-ui-element relative flex-shrink-0" style="width: 48px;">
 			<SidebarButtonSlot
 				icon={Menu}
 				{isExpanded}
@@ -260,14 +256,42 @@
 
 		<!-- User Profile Button (Logged-in Mode) -->
 		{#if user}
-			<SidebarButtonSlot
-				icon={User}
-				label={user.email}
-				{isExpanded}
-				title={user.email}
-				onclick={handleProfileClick}
-				ariaLabel="User profile: {user.email}"
-			/>
+			<BasePopover bind:open={profilePopoverOpen} side="right" align="start">
+				{#snippet trigger()}
+					<SidebarButtonSlot
+						icon={User}
+						label={user.email}
+						{isExpanded}
+						title={user.email}
+						ariaLabel="User profile: {user.email}"
+					/>
+				{/snippet}
+				{#snippet content()}
+					<div class="w-72 p-1">
+						<h3 class="mb-4 text-lg font-semibold text-foreground">Account Information</h3>
+
+						<dl class="mb-4 space-y-4">
+							<div>
+								<dt class="text-sm font-medium text-muted-foreground">Email</dt>
+								<dd class="text-foreground">{user.email}</dd>
+							</div>
+							<div>
+								<dt class="text-sm font-medium text-muted-foreground">User ID</dt>
+								<dd class="font-mono text-sm text-foreground">{user.id}</dd>
+							</div>
+						</dl>
+
+						<Button
+							variant="ghost"
+							size="sm"
+							class="w-full text-muted-foreground hover:bg-accent hover:text-foreground"
+							onclick={handleSignOut}
+						>
+							Sign Out
+						</Button>
+					</div>
+				{/snippet}
+			</BasePopover>
 		{/if}
 
 		<!-- Settings Gear Button -->
@@ -344,43 +368,6 @@
 		</BasePopover>
 	</div>
 </div>
-
-<!-- Profile Modal -->
-<Dialog
-	open={profileModalOpen}
-	onOpenChange={(open) => {
-		profileModalOpen = open;
-	}}
-	title="Account Information"
-	description="View your account details"
-	size="md"
->
-	{#snippet content()}
-		{#if user}
-			<dl class="space-y-4">
-				<div>
-					<dt class="text-sm font-medium text-muted-foreground">Email</dt>
-					<dd class="text-foreground">{user.email}</dd>
-				</div>
-				<div>
-					<dt class="text-sm font-medium text-muted-foreground">User ID</dt>
-					<dd class="font-mono text-sm text-foreground">{user.id}</dd>
-				</div>
-			</dl>
-		{/if}
-	{/snippet}
-	{#snippet footer()}
-		<Button
-			variant="ghost"
-			size="sm"
-			class="text-muted-foreground hover:bg-accent hover:text-foreground"
-			onclick={handleSignOut}
-		>
-			Sign Out
-		</Button>
-		<Button variant="default" size="sm" onclick={() => (profileModalOpen = false)}>Close</Button>
-	{/snippet}
-</Dialog>
 
 <!-- New Document Dialog -->
 <NewDocumentDialog

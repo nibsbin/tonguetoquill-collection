@@ -666,6 +666,7 @@ class="z-modal"    // content: 1500
 **Centralized Management** (`src/lib/stores/overlay.svelte.ts`):
 
 All overlay components (dialogs, popovers, sheets) register with a centralized overlay store that:
+
 - Tracks all open overlays by type and priority
 - Automatically closes lower-priority overlays when higher-priority ones open
 - Prevents occlusion issues (e.g., popover blocking dialog)
@@ -674,6 +675,7 @@ All overlay components (dialogs, popovers, sheets) register with a centralized o
 **Priority-Based Auto-Close**:
 
 When a dialog/modal opens (priority 1500), all popovers (priority 1300) automatically close. This ensures:
+
 - Primary user actions always have user's attention
 - No visual occlusion between overlay types
 - Clean, predictable UX
