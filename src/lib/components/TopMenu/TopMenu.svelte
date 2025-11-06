@@ -31,6 +31,7 @@
 		onTerms?: () => void;
 		onPrivacy?: () => void;
 		hasSuccessfulPreview?: boolean;
+		hasActiveEditor?: boolean;
 	};
 
 	let {
@@ -45,7 +46,8 @@
 		onAbout,
 		onTerms,
 		onPrivacy,
-		hasSuccessfulPreview = false
+		hasSuccessfulPreview = false,
+		hasActiveEditor = false
 	}: TopMenuProps = $props();
 
 	import { documentStore } from '$lib/stores/documents.svelte';
@@ -234,7 +236,10 @@
 				<div class="min-w-[14rem] px-4 pt-4">
 					<!-- Document Actions -->
 					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						class={hasActiveEditor
+							? 'relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none'
+							: 'relative flex w-full cursor-not-allowed items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground opacity-50 transition-colors focus:outline-none'}
+						disabled={!hasActiveEditor}
 						onclick={handleShare}
 					>
 						<Share2 class="mr-2 h-4 w-4" />
@@ -243,14 +248,20 @@
 
 					<!-- Group 2: Tools-->
 					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						class={hasActiveEditor
+							? 'relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none'
+							: 'relative flex w-full cursor-not-allowed items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground opacity-50 transition-colors focus:outline-none'}
+						disabled={!hasActiveEditor}
 						onclick={handleRulerToggle}
 					>
 						<Ruler class="mr-2 h-4 w-4" />
 						Ruler Tool
 					</button>
 					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						class={hasActiveEditor
+							? 'relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none'
+							: 'relative flex w-full cursor-not-allowed items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground opacity-50 transition-colors focus:outline-none'}
+						disabled={!hasActiveEditor}
 						onclick={handleDocumentInfo}
 					>
 						<FileText class="mr-2 h-4 w-4" />

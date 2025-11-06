@@ -157,6 +157,7 @@
 			onTerms={handleTerms}
 			onPrivacy={handlePrivacy}
 			{hasSuccessfulPreview}
+			hasActiveEditor={!!documentStore.activeDocumentId}
 		/>
 
 		<!-- Editor and Preview Area -->
