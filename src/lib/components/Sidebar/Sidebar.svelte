@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Menu, Settings, Plus, LogIn, User, Info, Shield, FileText } from 'lucide-svelte';
+	import { Menu, Settings, Plus, LogIn, User } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
@@ -146,21 +146,6 @@
 			profilePopoverOpen = false;
 			window.location.reload();
 		}
-	}
-
-	function handleAbout() {
-		window.location.href = '/about';
-		popoverOpen = false;
-	}
-
-	function handleTerms() {
-		window.location.href = '/terms';
-		popoverOpen = false;
-	}
-
-	function handlePrivacy() {
-		window.location.href = '/privacy';
-		popoverOpen = false;
 	}
 </script>
 
@@ -327,40 +312,13 @@
 							/>
 						</div>
 
-						<div class="flex items-center justify-between border-b border-border pb-3">
+						<div class="flex items-center justify-between">
 							<Label for="line-numbers" class="text-muted-foreground">Line Numbers</Label>
 							<Switch
 								id="line-numbers"
 								bind:checked={lineNumbers}
 								onCheckedChange={handleLineNumbersChange}
 							/>
-						</div>
-
-						<!-- Legal & About Section -->
-						<div class="space-y-1">
-							<button
-								class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
-								onclick={handleAbout}
-							>
-								<Info class="mr-2 h-4 w-4" />
-								About Us
-							</button>
-
-							<button
-								class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
-								onclick={handleTerms}
-							>
-								<FileText class="mr-2 h-4 w-4" />
-								Terms of Use
-							</button>
-
-							<button
-								class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
-								onclick={handlePrivacy}
-							>
-								<Shield class="mr-2 h-4 w-4" />
-								Privacy Policy
-							</button>
 						</div>
 					</div>
 				</div>

@@ -7,7 +7,10 @@
 		AlertCircle,
 		Share2,
 		Ruler,
-		FileText
+		FileText,
+		Info,
+		Shield,
+		Scale
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import BasePopover from '$lib/components/ui/base-popover.svelte';
@@ -23,6 +26,9 @@
 		onTitleChange?: (newTitle: string) => void;
 		onRulerToggle?: () => void;
 		onShare?: () => void;
+		onAbout?: () => void;
+		onTerms?: () => void;
+		onPrivacy?: () => void;
 		hasSuccessfulPreview?: boolean;
 	};
 
@@ -35,6 +41,9 @@
 		onTitleChange,
 		onRulerToggle,
 		onShare,
+		onAbout,
+		onTerms,
+		onPrivacy,
 		hasSuccessfulPreview = false
 	}: TopMenuProps = $props();
 
@@ -119,6 +128,27 @@
 	function handleDocumentInfo() {
 		if (onDocumentInfo) {
 			onDocumentInfo();
+		}
+		dropdownOpen = false;
+	}
+
+	function handleAbout() {
+		if (onAbout) {
+			onAbout();
+		}
+		dropdownOpen = false;
+	}
+
+	function handleTerms() {
+		if (onTerms) {
+			onTerms();
+		}
+		dropdownOpen = false;
+	}
+
+	function handlePrivacy() {
+		if (onPrivacy) {
+			onPrivacy();
 		}
 		dropdownOpen = false;
 	}
@@ -224,6 +254,29 @@
 					>
 						<FileText class="mr-2 h-4 w-4" />
 						Document Info
+					</button>
+
+					<!-- Group 3: Utilities -->
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleAbout}
+					>
+						<Info class="mr-2 h-4 w-4" />
+						About Us
+					</button>
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleTerms}
+					>
+						<Scale class="mr-2 h-4 w-4" />
+						Terms of Use
+					</button>
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handlePrivacy}
+					>
+						<Shield class="mr-2 h-4 w-4" />
+						Privacy Policy
 					</button>
 				</div>
 			{/snippet}

@@ -8,6 +8,9 @@
 	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
 	import ImportFileDialog from '$lib/components/ImportFileDialog.svelte';
 	import ShareModal from '$lib/components/ShareModal.svelte';
+	import AboutModal from '$lib/components/AboutModal.svelte';
+	import TermsModal from '$lib/components/TermsModal.svelte';
+	import PrivacyModal from '$lib/components/PrivacyModal.svelte';
 
 	interface Props {
 		documentId: string;
@@ -20,6 +23,12 @@
 		onImportDialogChange?: (open: boolean) => void;
 		showShareModal?: boolean;
 		onShareModalChange?: (open: boolean) => void;
+		showAboutModal?: boolean;
+		onAboutModalChange?: (open: boolean) => void;
+		showTermsModal?: boolean;
+		onTermsModalChange?: (open: boolean) => void;
+		showPrivacyModal?: boolean;
+		onPrivacyModalChange?: (open: boolean) => void;
 		onPreviewStatusChange?: (hasSuccessfulPreview: boolean) => void;
 	}
 
@@ -34,6 +43,12 @@
 		onImportDialogChange,
 		showShareModal = false,
 		onShareModalChange,
+		showAboutModal = false,
+		onAboutModalChange,
+		showTermsModal = false,
+		onTermsModalChange,
+		showPrivacyModal = false,
+		onPrivacyModalChange,
 		onPreviewStatusChange
 	}: Props = $props();
 
@@ -322,6 +337,21 @@
 				<!-- Share Modal (scoped to preview pane) -->
 				{#if showShareModal !== undefined && onShareModalChange}
 					<ShareModal open={showShareModal} onOpenChange={onShareModalChange} />
+				{/if}
+
+				<!-- About Modal (scoped to preview pane) -->
+				{#if showAboutModal !== undefined && onAboutModalChange}
+					<AboutModal open={showAboutModal} onOpenChange={onAboutModalChange} />
+				{/if}
+
+				<!-- Terms Modal (scoped to preview pane) -->
+				{#if showTermsModal !== undefined && onTermsModalChange}
+					<TermsModal open={showTermsModal} onOpenChange={onTermsModalChange} />
+				{/if}
+
+				<!-- Privacy Modal (scoped to preview pane) -->
+				{#if showPrivacyModal !== undefined && onPrivacyModalChange}
+					<PrivacyModal open={showPrivacyModal} onOpenChange={onPrivacyModalChange} />
 				{/if}
 			</div>
 		</div>

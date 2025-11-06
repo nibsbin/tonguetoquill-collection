@@ -13,6 +13,9 @@
 	let showDocumentInfo = $state(false);
 	let showImportDialog = $state(false);
 	let showShareModal = $state(false);
+	let showAboutModal = $state(false);
+	let showTermsModal = $state(false);
+	let showPrivacyModal = $state(false);
 	let documentContent = $state('');
 	let documentName = $state('');
 	let hasSuccessfulPreview = $state(false);
@@ -105,6 +108,30 @@
 		showShareModal = true;
 	}
 
+	function handleAbout() {
+		showDocumentInfo = false; // Dismiss any existing preview modal
+		showImportDialog = false; // Dismiss any existing preview modal
+		showShareModal = false; // Dismiss any existing preview modal
+		rulerStore.setActive(false); // Dismiss ruler overlay
+		showAboutModal = true;
+	}
+
+	function handleTerms() {
+		showDocumentInfo = false; // Dismiss any existing preview modal
+		showImportDialog = false; // Dismiss any existing preview modal
+		showShareModal = false; // Dismiss any existing preview modal
+		rulerStore.setActive(false); // Dismiss ruler overlay
+		showTermsModal = true;
+	}
+
+	function handlePrivacy() {
+		showDocumentInfo = false; // Dismiss any existing preview modal
+		showImportDialog = false; // Dismiss any existing preview modal
+		showShareModal = false; // Dismiss any existing preview modal
+		rulerStore.setActive(false); // Dismiss ruler overlay
+		showPrivacyModal = true;
+	}
+
 	function handlePreviewStatusChange(status: boolean) {
 		hasSuccessfulPreview = status;
 	}
@@ -124,9 +151,11 @@
 			saveError={autoSave.saveState.errorMessage}
 			onDocumentInfo={handleDocumentInfo}
 			onTitleChange={handleTitleChange}
-			onImport={handleImport}
 			onRulerToggle={handleRulerToggle}
 			onShare={handleShare}
+			onAbout={handleAbout}
+			onTerms={handleTerms}
+			onPrivacy={handlePrivacy}
 			{hasSuccessfulPreview}
 		/>
 
@@ -153,6 +182,12 @@
 					onImportDialogChange={(open) => (showImportDialog = open)}
 					{showShareModal}
 					onShareModalChange={(open) => (showShareModal = open)}
+					{showAboutModal}
+					onAboutModalChange={(open) => (showAboutModal = open)}
+					{showTermsModal}
+					onTermsModalChange={(open) => (showTermsModal = open)}
+					{showPrivacyModal}
+					onPrivacyModalChange={(open) => (showPrivacyModal = open)}
 					onPreviewStatusChange={handlePreviewStatusChange}
 				/>
 			{/if}
