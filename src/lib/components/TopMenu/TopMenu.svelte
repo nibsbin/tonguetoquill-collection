@@ -6,19 +6,24 @@
 		Check,
 		Loader2,
 		AlertCircle,
-		Share2
+		Share2,
+		Ruler,
+		FileText
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import BasePopover from '$lib/components/ui/base-popover.svelte';
 	import type { SaveStatus } from '$lib/utils/auto-save.svelte';
+	import { rulerStore } from '$lib/stores/ruler.svelte';
 
 	type TopMenuProps = {
 		fileName: string;
 		onDownload: () => void;
 		saveStatus?: SaveStatus;
 		saveError?: string;
+		onDocumentInfo?: () => void;
 		onTitleChange?: (newTitle: string) => void;
 		onImport?: () => void;
+		onRulerToggle?: () => void;
 		onShare?: () => void;
 		hasSuccessfulPreview?: boolean;
 	};
@@ -28,8 +33,10 @@
 		onDownload,
 		saveStatus = 'idle',
 		saveError,
+		onDocumentInfo,
 		onTitleChange,
 		onImport,
+		onRulerToggle,
 		onShare,
 		hasSuccessfulPreview = false
 	}: TopMenuProps = $props();
@@ -106,6 +113,22 @@
 	function handleShare() {
 		if (onShare) {
 			onShare();
+		}
+		dropdownOpen = false;
+	}
+
+	function handleRulerToggle() {
+		if (onRulerToggle) {
+			onRulerToggle();
+		} else {
+			rulerStore.toggle();
+		}
+		dropdownOpen = false;
+	}
+
+	function handleDocumentInfo() {
+		if (onDocumentInfo) {
+			onDocumentInfo();
 		}
 		dropdownOpen = false;
 	}
@@ -203,6 +226,22 @@
 					>
 						<Share2 class="mr-2 h-4 w-4" />
 						Share
+					</button>
+
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleRulerToggle}
+					>
+						<Ruler class="mr-2 h-4 w-4" />
+						Ruler Tool
+					</button>
+
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleDocumentInfo}
+					>
+						<FileText class="mr-2 h-4 w-4" />
+						Document Info
 					</button>
 				</div>
 			{/snippet}
