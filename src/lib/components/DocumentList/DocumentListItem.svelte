@@ -31,7 +31,7 @@
 >
 	<Button
 		variant="ghost"
-		class="flex-1 justify-start overflow-hidden p-2 text-xs transition-colors hover:bg-transparent {isActive
+		class="flex-1 justify-start gap-2 overflow-hidden p-2 text-xs transition-colors hover:bg-transparent {isActive
 			? 'font-medium text-foreground'
 			: 'text-muted-foreground hover:text-foreground'}"
 		onclick={handleSelect}
