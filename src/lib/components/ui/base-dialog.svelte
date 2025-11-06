@@ -74,64 +74,64 @@
 			class={cn('z-overlay inset-0 bg-black/40', scoped ? 'absolute' : 'fixed')}
 			onclick={handleBackdropClick}
 			role="presentation"
+		></div>
+
+		<!-- Dialog Container -->
+		<div
+			class={cn(
+				'z-modal w-full rounded-lg border border-border bg-surface-elevated p-6 shadow-lg',
+				scoped
+					? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+					: 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+				sizeClasses[size],
+				className
+			)}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby={titleId}
+			aria-describedby={descId}
+			tabindex="-1"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={handleEscapeKey}
+			use:focusTrap
 		>
-			<!-- Dialog Container -->
-			<div
-				class={cn(
-					'z-modal w-full rounded-lg border border-border bg-surface-elevated p-6 shadow-lg',
-					scoped
-						? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
-						: 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-					sizeClasses[size],
-					className
-				)}
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby={titleId}
-				aria-describedby={descId}
-				tabindex="-1"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={handleEscapeKey}
-				use:focusTrap
-			>
-				<!-- Header -->
-				<div class="mb-4 flex items-center justify-between">
-					{#if header}
-						{@render header()}
-					{:else}
-						<h2 id={titleId} class="text-lg font-semibold text-foreground">{title}</h2>
-					{/if}
-
-					{#if !hideCloseButton}
-						<Button
-							variant="ghost"
-							size="icon"
-							class="h-8 w-8"
-							onclick={handleClose}
-							aria-label="Close dialog"
-						>
-							<X class="h-4 w-4" />
-						</Button>
-					{/if}
-				</div>
-
-				<!-- Description (optional) -->
-				{#if description}
-					<p id={descId} class="mb-4 text-sm text-muted-foreground">{description}</p>
+			<!-- Header -->
+			<div class="mb-4 flex items-center justify-between">
+				{#if header}
+					{@render header()}
+				{:else}
+					<h2 id={titleId} class="text-lg font-semibold text-foreground">{title}</h2>
 				{/if}
 
-				<!-- Content -->
-				<div class="dialog-content">
-					{@render content()}
-				</div>
-
-				<!-- Footer (optional) -->
-				{#if footer}
-					<div class="mt-6 flex justify-end gap-2">
-						{@render footer()}
-					</div>
+				{#if !hideCloseButton}
+					<Button
+						variant="ghost"
+						size="icon"
+						class="h-8 w-8"
+						onclick={handleClose}
+						aria-label="Close dialog"
+					>
+						<X class="h-4 w-4" />
+					</Button>
 				{/if}
 			</div>
+
+			<!-- Description (optional) -->
+			{#if description}
+				<p id={descId} class="mb-4 text-sm text-muted-foreground">{description}</p>
+			{/if}
+
+			<!-- Content -->
+			<div class="dialog-content">
+				{@render content()}
+			</div>
+
+			<!-- Footer (optional) -->
+			{#if footer}
+				<div class="mt-6 flex justify-end gap-2">
+					{@render footer()}
+				</div>
+			{/if}
 		</div>
 	</Portal>
 {/if}

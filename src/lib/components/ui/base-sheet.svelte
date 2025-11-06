@@ -96,67 +96,67 @@
 			class:opacity-0={!open}
 			onclick={handleBackdropClick}
 			role="presentation"
+		></div>
+
+		<!-- Sheet Container -->
+		<div
+			class={cn(
+				'z-modal fixed bg-surface-elevated shadow-lg transition-transform duration-300 ease-in-out',
+				'flex flex-col overflow-hidden',
+				sideClasses[effectiveSide],
+				transformClasses[effectiveSide],
+				className
+			)}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby={titleId}
+			aria-describedby={descId}
+			tabindex="-1"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={handleEscapeKey}
+			use:focusTrap
 		>
-			<!-- Sheet Container -->
-			<div
-				class={cn(
-					'z-modal fixed bg-surface-elevated shadow-lg transition-transform duration-300 ease-in-out',
-					'flex flex-col overflow-hidden',
-					sideClasses[effectiveSide],
-					transformClasses[effectiveSide],
-					className
-				)}
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby={titleId}
-				aria-describedby={descId}
-				tabindex="-1"
-				onclick={(e) => e.stopPropagation()}
-				onkeydown={handleEscapeKey}
-				use:focusTrap
-			>
-				<!-- Header -->
-				<div class="flex-shrink-0 border-b border-border p-6">
-					<div class="flex items-center justify-between">
-						{#if header}
-							{@render header()}
-						{:else}
-							<div>
-								<h2 id={titleId} class="text-lg font-semibold text-foreground">{title}</h2>
-								{#if description}
-									<p id={descId} class="mt-1 text-sm text-muted-foreground">{description}</p>
-								{/if}
-							</div>
-						{/if}
-
-						{#if !hideCloseButton}
-							<Button
-								variant="ghost"
-								size="icon"
-								class="h-8 w-8"
-								onclick={handleClose}
-								aria-label="Close sheet"
-							>
-								<X class="h-4 w-4" />
-							</Button>
-						{/if}
-					</div>
-				</div>
-
-				<!-- Content -->
-				<div class="flex-1 overflow-y-auto p-6">
-					{@render content()}
-				</div>
-
-				<!-- Footer (optional) -->
-				{#if footer}
-					<div class="flex-shrink-0 border-t border-border p-6">
-						<div class="flex justify-end gap-2">
-							{@render footer()}
+			<!-- Header -->
+			<div class="flex-shrink-0 border-b border-border p-6">
+				<div class="flex items-center justify-between">
+					{#if header}
+						{@render header()}
+					{:else}
+						<div>
+							<h2 id={titleId} class="text-lg font-semibold text-foreground">{title}</h2>
+							{#if description}
+								<p id={descId} class="mt-1 text-sm text-muted-foreground">{description}</p>
+							{/if}
 						</div>
-					</div>
-				{/if}
+					{/if}
+
+					{#if !hideCloseButton}
+						<Button
+							variant="ghost"
+							size="icon"
+							class="h-8 w-8"
+							onclick={handleClose}
+							aria-label="Close sheet"
+						>
+							<X class="h-4 w-4" />
+						</Button>
+					{/if}
+				</div>
 			</div>
+
+			<!-- Content -->
+			<div class="flex-1 overflow-y-auto p-6">
+				{@render content()}
+			</div>
+
+			<!-- Footer (optional) -->
+			{#if footer}
+				<div class="flex-shrink-0 border-t border-border p-6">
+					<div class="flex justify-end gap-2">
+						{@render footer()}
+					</div>
+				</div>
+			{/if}
 		</div>
 	</Portal>
 {/if}
