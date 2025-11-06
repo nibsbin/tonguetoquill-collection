@@ -2,16 +2,13 @@
 	import {
 		Download,
 		MoreVertical,
-		FileText,
-		Info,
-		Shield,
 		Upload,
-		ExternalLink,
 		Check,
 		Loader2,
 		AlertCircle,
 		Share2,
-		Ruler
+		Ruler,
+		FileText
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import BasePopover from '$lib/components/ui/base-popover.svelte';
@@ -120,30 +117,18 @@
 		dropdownOpen = false;
 	}
 
-	function handleDocumentInfo() {
-		if (onDocumentInfo) {
-			onDocumentInfo();
-		}
-		dropdownOpen = false;
-	}
-
-	function handleAbout() {
-		window.location.href = '/about';
-	}
-
-	function handleTerms() {
-		window.location.href = '/terms';
-	}
-
-	function handlePrivacy() {
-		window.location.href = '/privacy';
-	}
-
 	function handleRulerToggle() {
 		if (onRulerToggle) {
 			onRulerToggle();
 		} else {
 			rulerStore.toggle();
+		}
+		dropdownOpen = false;
+	}
+
+	function handleDocumentInfo() {
+		if (onDocumentInfo) {
+			onDocumentInfo();
 		}
 		dropdownOpen = false;
 	}
@@ -226,7 +211,7 @@
 			{/snippet}
 			{#snippet content()}
 				<div class="min-w-[14rem] p-1">
-					<!-- Group 1: Document Actions -->
+					<!-- Document Actions -->
 					<button
 						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
 						onclick={handleImport}
@@ -257,31 +242,6 @@
 					>
 						<FileText class="mr-2 h-4 w-4" />
 						Document Info
-					</button>
-
-					<!-- Group 3: Legal & About -->
-					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm border-t border-border px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
-						onclick={handleAbout}
-					>
-						<Info class="mr-2 h-4 w-4" />
-						About Us
-					</button>
-
-					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
-						onclick={handleTerms}
-					>
-						<FileText class="mr-2 h-4 w-4" />
-						Terms of Use
-					</button>
-
-					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
-						onclick={handlePrivacy}
-					>
-						<Shield class="mr-2 h-4 w-4" />
-						Privacy Policy
 					</button>
 				</div>
 			{/snippet}
