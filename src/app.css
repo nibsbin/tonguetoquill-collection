@@ -41,6 +41,7 @@
 	/* Surface colors */
 	--color-background: #ffffff;
 	--color-foreground: #09090b;
+	--color-muted-foreground: #52525b;
 	--color-foreground-shadow: rgb(from var(--color-foreground) r g b / 0.24);
 	--color-surface: #f4f4f5;
 	--color-surface-elevated: #fafafa;
@@ -102,6 +103,7 @@
 	/* Surface colors */
 	--color-background: #18181b;
 	--color-foreground: #f4f4f5;
+	--color-muted-foreground: #a8a8b3;
 	--color-foreground-shadow: rgb(from var(--color-foreground) r g b / 1);
 	--color-surface: #27272a;
 	--color-surface-elevated: #27272a;
@@ -131,10 +133,10 @@
 	--color-syntax-comment: #a1a1aa; /* zinc-400 - lighter muted gray for dark mode */
 
 	/* Error/Diagnostic colors */
-	--color-error: #ef4444; /* red-500 base (unchanged) */
+	--color-error: #e01111; /* red-500 base (unchanged) */
 	--color-error-foreground: #fecaca; /* red-200 light text */
 	--color-error-background: #450a0a; /* red-950 dark bg */
-	--color-error-border: #991b1b; /* red-800 stronger border */
+	--color-error-border: #991b1b; /* red-800 stronger border
 
 	/* Warning/Hint colors */
 	--color-warning: #f59e0b; /* amber-500 base (unchanged) */
