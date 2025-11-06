@@ -1,13 +1,13 @@
 [
     {
-        "name": "U.S. Air Force Memo",
-        "description": "AFH 33-337 compliant official memorandum for the U.S. Air Force.",
+        "name": "USAF Memo",
+        "description": "Official U.S. Air Force memorandum template.",
         "file": "usaf_template.md",
         "production": true
     },
     {
-        "name": "U.S. Space Force Memo",
-        "description": "Official memorandum template for the U.S. Space Force.",
+        "name": "USSF Memo",
+        "description": "Official U.S. Space Force memorandum template.",
         "file": "ussf_template.md",
         "production": true
     },
