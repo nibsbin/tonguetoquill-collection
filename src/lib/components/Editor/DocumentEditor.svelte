@@ -123,7 +123,6 @@
 		try {
 			await autoSave.saveNow(documentId, content);
 			initialContent = content;
-			toastStore.success('Document saved');
 		} catch {
 			toastStore.error('Failed to save document');
 		}
