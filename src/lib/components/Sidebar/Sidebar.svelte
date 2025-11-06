@@ -281,7 +281,7 @@
 					<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
 
 					<div class="space-y-4">
-						<div class="flex items-center justify-between border-b border-border pb-3">
+						<div class="flex items-center justify-between">
 							<Label for="dark-mode" class="text-muted-foreground">Dark Mode</Label>
 							<Switch
 								id="dark-mode"
