@@ -29,6 +29,9 @@
 	let profilePopoverOpen = $state(false);
 	let newDocDialogOpen = $state(false);
 
+	// Get existing document names for collision detection
+	const existingDocumentNames = $derived(documentStore.documents.map((d) => d.name));
+
 	onMount(() => {
 		// Load dark mode preference from localStorage
 		const savedDarkMode = localStorage.getItem('dark-mode');
@@ -65,18 +68,17 @@
 		newDocDialogOpen = true;
 	}
 
-	async function handleCreateDocument(name: string, templateFilename?: string) {
+	async function handleCreateDocument(name: string, templateFilename: string) {
 		let content = '';
 
-		// Load template content if template selected
-		if (templateFilename) {
-			try {
-				const template = await templateService.getTemplate(templateFilename);
-				content = template.content;
-			} catch (error) {
-				console.error('Failed to load template:', error);
-				// Fallback to blank document
-			}
+		// Load template content
+		try {
+			const template = await templateService.getTemplate(templateFilename);
+			content = template.content;
+		} catch (error) {
+			console.error('Failed to load template:', error);
+			// Re-throw to show error in dialog
+			throw error;
 		}
 
 		// Create document with name and content
@@ -332,6 +334,7 @@
 	open={newDocDialogOpen}
 	onOpenChange={(open) => (newDocDialogOpen = open)}
 	onCreate={handleCreateDocument}
+	{existingDocumentNames}
 />
 
 <style>

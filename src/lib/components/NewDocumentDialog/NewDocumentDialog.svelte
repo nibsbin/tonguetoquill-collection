@@ -14,17 +14,26 @@
 		onOpenChange: (open: boolean) => void;
 
 		/** Callback when document should be created */
-		onCreate: (name: string, templateFilename?: string) => Promise<void>;
+		onCreate: (name: string, templateFilename: string) => Promise<void>;
+
+		/** List of existing document names for collision detection */
+		existingDocumentNames?: string[];
 	}
 
-	let { open, onOpenChange, onCreate }: NewDocumentDialogProps = $props();
+	let {
+		open,
+		onOpenChange,
+		onCreate,
+		existingDocumentNames = []
+	}: NewDocumentDialogProps = $props();
 
 	// Form state
 	let documentName = $state('');
-	let selectedTemplate = $state<string | null>(null);
+	let selectedTemplate = $state<string>('');
 	let isCreating = $state(false);
 	let nameError = $state<string | null>(null);
 	let creationError = $state<string | null>(null);
+	let hasUserEditedName = $state(false);
 
 	// Template state
 	let templates = $state<TemplateMetadata[]>([]);
@@ -38,6 +47,25 @@
 		}
 	});
 
+	// Initialize with default template (USAF Memo) when dialog opens
+	$effect(() => {
+		if (open && templatesReady && templates.length > 0 && !selectedTemplate) {
+			// Find USAF Memo or use first template
+			const usafMemo = templates.find((t) => t.file === 'usaf_template.md');
+			selectedTemplate = usafMemo ? usafMemo.file : templates[0].file;
+		}
+	});
+
+	// Auto-populate document name when template changes (if user hasn't edited)
+	$effect(() => {
+		if (!hasUserEditedName && selectedTemplate && templatesReady) {
+			const template = templates.find((t) => t.file === selectedTemplate);
+			if (template) {
+				documentName = generateUniqueNameFromTemplate(template.name);
+			}
+		}
+	});
+
 	// Validate on document name change if there's an error
 	$effect(() => {
 		if (nameError && documentName.trim().length > 0) {
@@ -47,6 +75,59 @@
 
 	// Derived state
 	let isValid = $derived(documentName.trim().length > 0 && !nameError);
+
+	/**
+	 * Generate unique document name from template
+	 * Format: "{Template Name}" or "{Template Name} (n)"
+	 */
+	function generateUniqueNameFromTemplate(templateName: string): string {
+		const baseName = templateName;
+		let highestCounter = 0;
+
+		// Regex: Matches names like "BaseName (N)" and captures the number (N).
+		const counterRegex = new RegExp(
+			`^${baseName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s\\((\\d+)\\)$`
+		);
+
+		// 1. Determine the maximum existing counter
+		for (const existingName of existingDocumentNames) {
+			const match = existingName.match(counterRegex);
+
+			if (match) {
+				// Update highestCounter if current match is higher.
+				const currentCounter = parseInt(match[1], 10);
+				if (currentCounter > highestCounter) {
+					highestCounter = currentCounter;
+				}
+			}
+		}
+
+		// If the base name is available and no numbered versions exist, return it immediately.
+		if (!existingDocumentNames.includes(baseName) && highestCounter === 0) {
+			return baseName;
+		}
+
+		// 2. Start the counter from the next number and construct the first candidate name.
+		let counter = highestCounter + 1;
+		let candidateName: string;
+
+		// Check if the unnumbered base name is taken.
+		if (existingDocumentNames.includes(baseName) && highestCounter === 0) {
+			// If 'BaseName' exists, but no 'BaseName (N)' exists, start checking at (1).
+			candidateName = `${baseName} (${counter})`;
+		} else {
+			// Otherwise, start checking from the number immediately after the highest found number.
+			candidateName = `${baseName} (${counter})`;
+		}
+
+		// 3. Increment until a unique name is found (only runs if the *first* candidate is somehow taken).
+		while (existingDocumentNames.includes(candidateName)) {
+			counter++;
+			candidateName = `${baseName} (${counter})`;
+		}
+
+		return candidateName;
+	}
 
 	function validateDocumentName(): boolean {
 		const trimmed = documentName.trim();
@@ -62,10 +143,11 @@
 
 	function resetForm() {
 		documentName = '';
-		selectedTemplate = null;
+		selectedTemplate = '';
 		isCreating = false;
 		nameError = null;
 		creationError = null;
+		hasUserEditedName = false;
 	}
 
 	function handleCancel() {
@@ -85,7 +167,7 @@
 
 		try {
 			const trimmedName = documentName.trim();
-			const templateFilename = selectedTemplate || undefined;
+			const templateFilename = selectedTemplate;
 
 			await onCreate(trimmedName, templateFilename);
 
@@ -114,22 +196,6 @@
 <BaseDialog {open} {onOpenChange} title="New Document" size="md">
 	{#snippet content()}
 		<form onsubmit={handleSubmit} class="space-y-4">
-			<!-- Document Name Field -->
-			<div>
-				<Label for="doc-name" class="text-foreground">Document Name</Label>
-				<Input
-					id="doc-name"
-					type="text"
-					bind:value={documentName}
-					placeholder="Enter document name"
-					disabled={isCreating}
-					class="mt-2 w-full"
-				/>
-				{#if nameError}
-					<p class="mt-1 text-sm text-destructive">{nameError}</p>
-				{/if}
-			</div>
-
 			<!-- Template Selection Field -->
 			<div>
 				<Label for="template" class="text-foreground">Template</Label>
@@ -139,18 +205,29 @@
 					disabled={isCreating || !templatesReady}
 					class="mt-2 flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 				>
-					<option value={null}>Blank Document</option>
 					{#each templates as template}
 						<option value={template.file}>{template.name}</option>
 					{/each}
 				</select>
-				<p class="mt-1 text-sm text-muted-foreground">
-					{#if !templatesReady}
-						Templates unavailable
-					{:else}
-						Choose a template to start with
-					{/if}
-				</p>
+			</div>
+
+			<!-- Document Name Field -->
+			<div>
+				<Label for="doc-name" class="text-foreground">Document Name</Label>
+				<Input
+					id="doc-name"
+					type="text"
+					bind:value={documentName}
+					onkeydown={() => {
+						hasUserEditedName = true;
+					}}
+					placeholder="Enter document name"
+					disabled={isCreating}
+					class="mt-2 w-full"
+				/>
+				{#if nameError}
+					<p class="mt-1 text-sm text-destructive">{nameError}</p>
+				{/if}
 			</div>
 
 			<!-- Creation Error -->

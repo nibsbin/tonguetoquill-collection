@@ -51,17 +51,24 @@ User clicks "New Document" button in sidebar → Dialog opens
 
 ### Dialog Interaction
 
-1. Dialog displays with two input fields:
-   - **Document Name** (text input, required)
-   - **Template** (dropdown/select, optional)
+1. Dialog displays with two input fields in the following order:
+   - **Template** (dropdown/select, required, defaults to "USAF Memo")
+   - **Document Name** (text input, auto-populated from template)
 
 2. Template dropdown shows:
-   - "Blank Document" (default, no template)
    - List of production templates from Template Service
+   - No "Blank Document" option (template selection is required)
+   - Defaults to "USAF Memo" on open
 
-3. User fills form and clicks "Create" → Dialog closes, document created and opened
+3. Document name auto-populates reactively based on selected template:
+   - Format: "{Template Name}"
+   - If name collision exists, appends " ({number})" to resolve
+   - User can manually modify the auto-populated name
+   - Manual edits prevent further auto-population
 
-4. User can dismiss dialog via:
+4. User fills form and clicks "Create" → Dialog closes, document created and opened
+
+5. User can dismiss dialog via:
    - Cancel button
    - ESC key
    - Close button (X)
@@ -83,12 +90,12 @@ NewDocumentDialog
 ├─ BaseDialog (from WIDGET_ABSTRACTION.md)
 │  ├─ Dialog Header ("New Document")
 │  ├─ Dialog Content
-│  │  ├─ Label + Input (Document Name)
-│  │  └─ Label + Select (Template)
+│  │  ├─ Label + Select (Template) - First, required
+│  │  └─ Label + Input (Document Name) - Second, auto-populated
 │  └─ Dialog Footer
 │     ├─ Cancel Button
 │     └─ Create Button (primary)
-└─ (integrates with templateService)
+└─ (integrates with templateService and documentStore)
 ```
 
 ### Props Interface
@@ -102,7 +109,10 @@ interface NewDocumentDialogProps {
 	onOpenChange: (open: boolean) => void;
 
 	/** Callback when document should be created */
-	onCreate: (name: string, templateFilename?: string) => Promise<void>;
+	onCreate: (name: string, templateFilename: string) => Promise<void>;
+
+	/** List of existing document names for collision detection */
+	existingDocumentNames?: string[];
 }
 ```
 
@@ -110,15 +120,17 @@ interface NewDocumentDialogProps {
 
 Dialog manages internal form state:
 
-- `documentName: string` - User-entered document name
-- `selectedTemplate: string | null` - Selected template filename or null for blank
+- `documentName: string` - User-entered or auto-populated document name
+- `selectedTemplate: string` - Selected template filename (required, defaults to USAF Memo)
 - `isCreating: boolean` - Loading state during document creation
 - `error: string | null` - Validation or creation error message
+- `hasUserEditedName: boolean` - Tracks if user has manually edited the name
 
 Parent component (Sidebar) manages:
 
 - `dialogOpen: boolean` - Whether dialog is visible
 - Document creation logic (delegates to documentStore)
+- List of existing document names for collision detection
 
 ### Form Validation
 
@@ -126,14 +138,17 @@ Parent component (Sidebar) manages:
 
 - Required field
 - Must not be empty or only whitespace
+- Auto-populated from template name when template changes
+- Manual edits prevent auto-population
 - Show inline error if validation fails
 - Disable "Create" button when invalid
 
 **Template**:
 
-- Optional field
-- Defaults to "Blank Document" (null)
-- No validation needed (dropdown enforces valid options)
+- Required field
+- Defaults to "USAF Memo" (first production template)
+- No "Blank Document" option
+- Dropdown populated with production templates only
 
 ### Template Integration
 
@@ -146,14 +161,21 @@ Parent component (Sidebar) manages:
 **Template Loading**:
 
 - Call `templateService.listTemplates(true)` to get production templates
-- Filter and display only production-ready templates
-- Prepend "Blank Document" option to list
+- Display only production-ready templates
+- Default to "USAF Memo" (usaf_template.md)
+
+**Auto-Naming**:
+
+- When template changes and user hasn't manually edited name:
+  - Set document name to template name (e.g., "USAF Memo")
+  - Check for name collisions with existing documents
+  - If collision exists, append " (n)" where n is the first available number
 
 **Content Population**:
 
-- If template selected: load content via `templateService.getTemplate(filename)`
-- If blank selected: use empty string content
-- Pass content to `documentStore.createDocument(name, content)`
+- Load template content via `templateService.getTemplate(filename)`
+- Pass template filename and name to `onCreate` callback
+- Parent loads content and creates document
 
 ## Dialog Specifications
 
@@ -169,9 +191,11 @@ Parent component (Sidebar) manages:
 **Content**:
 
 - Two-field form with vertical stacking
+- Template field appears first
+- Document Name field appears second
 - Consistent spacing between fields (16px / 1rem)
 - Clear labels above inputs
-- Helper text for template selection
+- Helper text for fields as needed
 
 **Footer**:
 
@@ -190,14 +214,14 @@ Parent component (Sidebar) manages:
 
 **Keyboard Navigation**:
 
-- Tab order: Document Name → Template → Cancel → Create → Close (X)
+- Tab order: Template → Document Name → Cancel → Create → Close (X)
 - Enter key submits form (creates document)
 - ESC key closes dialog
 - Focus trapped within dialog
 
 **Focus Management**:
 
-- Focus "Document Name" input when dialog opens
+- Focus Template dropdown when dialog opens
 - Return focus to "New Document" button when dialog closes
 - Proper focus indicators on all interactive elements
 
@@ -359,20 +383,20 @@ src/lib/components/NewDocumentDialog/
 
   {#snippet content()}
     <form>
-      <Label for="doc-name">Document Name</Label>
-      <Input id="doc-name" bind:value={documentName} required />
-      {#if nameError}
-        <ErrorMessage>{nameError}</ErrorMessage>
-      {/if}
-
       <Label for="template">Template</Label>
       <Select id="template" bind:value={selectedTemplate}>
-        <option value={null}>Blank Document</option>
         {#each templates as template}
           <option value={template.file}>{template.name}</option>
         {/each}
       </Select>
       <HelperText>Choose a template to start with</HelperText>
+
+      <Label for="doc-name">Document Name</Label>
+      <Input id="doc-name" bind:value={documentName} required />
+      {#if nameError}
+        <ErrorMessage>{nameError}</ErrorMessage>
+      {/if}
+      <HelperText>Auto-populated from template, editable</HelperText>
     </form>
   {/snippet}
 
@@ -412,14 +436,15 @@ src/lib/components/NewDocumentDialog/
 
 ### Should Template Be Required?
 
-**Decision**: Template is optional, defaults to "Blank Document"
+**Decision**: Template is required, defaults to "USAF Memo"
 
 **Reasoning**:
 
-- **Flexibility**: Users may want blank documents for freeform content
-- **Progressive Disclosure**: Introduce templates without forcing usage
-- **Speed**: Power users can quickly create blank documents
-- **Discoverability**: Template dropdown educates users about available templates
+- **Template-First Workflow**: System designed around template usage
+- **Guided Creation**: Templates provide structure and ensure consistency
+- **Default Choice**: USAF Memo is the most common use case
+- **Simplification**: Removing blank option reduces cognitive load
+- **User Flexibility**: Users can still clear template content after creation if needed
 
 ### Should Dialog Close on Backdrop Click?
 
