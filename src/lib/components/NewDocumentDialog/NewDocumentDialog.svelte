@@ -113,17 +113,17 @@
 
 <BaseDialog {open} {onOpenChange} title="New Document" size="md">
 	{#snippet content()}
-		<form onsubmit={handleSubmit}>
+		<form onsubmit={handleSubmit} class="space-y-4">
 			<!-- Document Name Field -->
-			<div class="mb-4">
-				<Label for="doc-name" class="mb-2 block">Document Name</Label>
+			<div>
+				<Label for="doc-name" class="text-foreground">Document Name</Label>
 				<Input
 					id="doc-name"
 					type="text"
 					bind:value={documentName}
 					placeholder="Enter document name"
 					disabled={isCreating}
-					class="w-full"
+					class="mt-2 w-full"
 				/>
 				{#if nameError}
 					<p class="mt-1 text-sm text-destructive">{nameError}</p>
@@ -131,13 +131,13 @@
 			</div>
 
 			<!-- Template Selection Field -->
-			<div class="mb-4">
-				<Label for="template" class="mb-2 block">Template</Label>
+			<div>
+				<Label for="template" class="text-foreground">Template</Label>
 				<select
 					id="template"
 					bind:value={selectedTemplate}
 					disabled={isCreating || !templatesReady}
-					class="flex h-10 w-full rounded-md border border-input bg-input px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+					class="mt-2 flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 				>
 					<option value={null}>Blank Document</option>
 					{#each templates as template}
@@ -155,7 +155,7 @@
 
 			<!-- Creation Error -->
 			{#if creationError}
-				<div class="mb-4 rounded-md border border-destructive bg-destructive/10 p-3">
+				<div class="rounded-md border border-destructive bg-destructive/10 p-3">
 					<p class="text-sm text-destructive">{creationError}</p>
 				</div>
 			{/if}
