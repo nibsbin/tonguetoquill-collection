@@ -243,17 +243,16 @@
 						Share
 					</button>
 
+					<!-- Group 2: Tools-->
 					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						class="relative flex w-full cursor-pointer items-center rounded-sm border-t border-border px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
 						onclick={handleRulerToggle}
 					>
 						<Ruler class="mr-2 h-4 w-4" />
 						Ruler Tool
 					</button>
-
-					<!-- Group 2: Info & Help -->
 					<button
-						class="relative flex w-full cursor-pointer items-center rounded-sm border-t border-border px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
 						onclick={handleDocumentInfo}
 					>
 						<FileText class="mr-2 h-4 w-4" />
