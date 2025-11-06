@@ -298,7 +298,7 @@
 				/>
 			{/snippet}
 			{#snippet content()}
-				<div class="w-64 p-4">
+				<div class="w-64 p-0">
 					<h3 class="mb-4 text-lg font-semibold text-foreground">Settings</h3>
 
 					<div class="space-y-4">
