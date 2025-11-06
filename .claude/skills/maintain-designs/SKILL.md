@@ -23,16 +23,16 @@ Pull unique, still-relevant bits into the canonical. Rewrite for skim: Title, TL
 
 ### Prune
 
-Delete or replace overlaps with a one-line stub linking to the canonical. Move rough-but-useful notes to a lightweight WIP area; drop the rest.
+Delete or replace overlaps with a one-line stub linking to the canonical. Move rough-but-useful notes to a lightweight WIP area; drop the rest. Delete obsolete docs and references. Design docs should never reference plans.
 
 ### Organize
 
 Arrange under a small set of theme folders or keep flat. Use nesting sparingly and only when it clearly aids navigation.
 
-### Maintenance
+### Index
 
-Add or update a minimal top-level index (and optional per-theme) with curated links and one-liners. Periodic quick pass to remove drift and new duplicates.
+Add or update a minimal top-level index (and optional per-theme) with curated links and one-liners. Remove drift and new duplicates.
 
 ### Done when
 
-No obvious duplicate Everything is discoverable from a minimal index. Docs are short, skimmable, and easy to maintain.
+No obvious duplicates. Everything is discoverable from a minimal index. Docs are short, skimmable, and easy to maintain.
