@@ -9,7 +9,7 @@ Clarity, easy discovery, minimal redundancy, low upkeep designs with clear canon
 
 ## Principles
 
-One topic per page; one canonical per topic. Prefer deletion with consolidation instead of duplicates. Keep pages skimmable; examples over prose. Keep structure shallow; avoid deep trees.
+One topic per page; one canonical per topic. Prefer deletion with consolidation instead of duplicates. Keep pages skimmable. Stay high-level and include minimal code.
 
 ## Workflow
 
@@ -31,7 +31,7 @@ Arrange under a small set of theme folders or keep flat. Use nesting sparingly a
 
 ### Maintenance
 
-Add a minimal top-level index (and optional per-theme) with curated links and one-liners. Periodic quick pass to remove drift and new duplicates.
+Add or update a minimal top-level index (and optional per-theme) with curated links and one-liners. Periodic quick pass to remove drift and new duplicates.
 
 ### Done when
 
