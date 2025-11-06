@@ -11,9 +11,11 @@
 	interface Props {
 		/** Markdown content to preview */
 		markdown: string;
+		/** Callback when preview success status changes */
+		onPreviewStatusChange?: (hasSuccessfulPreview: boolean) => void;
 	}
 
-	let { markdown }: Props = $props();
+	let { markdown, onPreviewStatusChange }: Props = $props();
 
 	interface ErrorDisplayState {
 		code?: string;
@@ -41,6 +43,16 @@
 
 	// Container element for ruler overlay
 	let previewContainer = $state<HTMLElement | null>(null);
+
+	// Derived state: whether we have a successful preview
+	let hasSuccessfulPreview = $derived(lastSuccessfulResult !== null);
+
+	// Notify parent when preview status changes
+	$effect(() => {
+		if (onPreviewStatusChange) {
+			onPreviewStatusChange(hasSuccessfulPreview);
+		}
+	});
 
 	/**
 	 * Extract error display information from caught error
