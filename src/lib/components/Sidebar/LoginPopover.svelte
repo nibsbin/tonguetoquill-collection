@@ -80,7 +80,7 @@
 	}
 </script>
 
-<div class="w-72 p-1">
+<div class="w-72 p-4">
 	<h3 class="mb-4 text-lg font-semibold text-foreground">Sign in</h3>
 
 	{#if providers.length === 0}

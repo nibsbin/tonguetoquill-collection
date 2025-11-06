@@ -195,7 +195,7 @@
 	<div
 		bind:this={popoverElement}
 		class={cn(
-			'fixed w-max rounded-lg border border-border bg-surface-elevated p-1 shadow-md',
+			'fixed w-max rounded-lg border border-border bg-surface-elevated shadow-md',
 			className
 		)}
 		style="top: {position.top}px; left: {position.left}px; z-index: var(--z-popover);"

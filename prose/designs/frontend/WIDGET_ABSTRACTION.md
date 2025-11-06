@@ -240,7 +240,7 @@ Lightweight popover attached to trigger element.
 ```
 {@render trigger()}
 {#if open}
-  <div class="popover-content"> (positioned via JS)
+  <div class="popover-container"> (positioned via JS, no default padding)
     {#if title}
       <div class="popover-header">
         <h3>{title}</h3>
@@ -249,8 +249,8 @@ Lightweight popover attached to trigger element.
         {/if}
       </div>
     {/if}
-    <div class="popover-body">
-      {@render content()}
+    <div class="popover-content">
+      {@render content()} (content should apply its own p-4 padding)
     </div>
     {#if footer}
       <div class="popover-footer">
@@ -311,6 +311,8 @@ interface BasePopoverProps {
 - Click outside detection via document click listener
 - ESC handler on popover container
 - ARIA: role="dialog" or role="menu", aria-haspopup on trigger
+- **No default padding**: Container does not apply padding classes - content snippets control their own spacing (standard: `p-4`)
+- Base styling provides only structural necessities: positioning, background, border, shadow
 
 **Use Cases**:
 
@@ -748,6 +750,22 @@ All base components follow WIDGET_THEME_UNIFICATION.md standards:
 - Content sections: `space-y-4` (1rem between sections)
 - Footer margin: `mt-6` (1.5rem above footer)
 - Popover padding: `p-4` (1rem, more compact)
+
+**Popover Padding Standard**:
+
+BasePopover provides the structural container but does NOT apply default padding to allow content authors full control. Each content snippet should apply standard padding:
+
+- **Container Padding**: Apply `p-4` (1rem / 16px) to the root element of the content snippet for standard comfortable spacing
+- **Title Spacing**: Titles should have `mb-4` to separate from content below
+- **Section Spacing**: Use `space-y-4` for vertical rhythm between sections
+- **Button Padding**: Interactive buttons within popovers should use `px-2 py-1.5` for item padding, positioned within the `p-4` container
+- **Border Separators**: When using borders to separate sections, apply border to the appropriate element (e.g., `border-t border-border pt-3` on first item of new section)
+
+This pattern ensures:
+- Consistent visual spacing across all popovers
+- Predictable padding for titles, controls, and action buttons
+- Content authors control their own spacing without fighting base component defaults
+- Easy to audit and maintain spacing standards
 
 **Shadows**:
 

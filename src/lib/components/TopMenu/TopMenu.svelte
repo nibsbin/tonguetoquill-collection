@@ -210,7 +210,7 @@
 				</Button>
 			{/snippet}
 			{#snippet content()}
-				<div class="min-w-[14rem] p-1">
+				<div class="min-w-[14rem] p-4">
 					<!-- Document Actions -->
 					<button
 						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
