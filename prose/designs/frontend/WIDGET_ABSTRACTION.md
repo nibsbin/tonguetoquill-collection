@@ -612,15 +612,18 @@ All widgets implement three dismissal methods with custom Svelte code:
 **Location**: Design system tokens in `src/app.css`
 
 ```css
-/* Widget Layer System (proposed addition) */
+/* Widget Layer System */
 :root {
 	--z-base: 0;
+	--z-ui-element: 10; /* UI elements requiring local stacking */
+	--z-canvas-overlay: 30; /* Tool overlays scoped to canvas areas */
+	--z-canvas-ui: 40; /* UI elements within canvas overlays */
 	--z-dropdown: 1000;
 	--z-sticky: 1100;
 	--z-banner: 1200;
-	--z-overlay: 1300;
-	--z-modal: 1400;
-	--z-popover: 1500;
+	--z-popover: 1300; /* Lightweight contextual UI */
+	--z-overlay: 1400; /* Dialog/modal backdrops */
+	--z-modal: 1500; /* Dialog/modal/sheet content */
 	--z-toast: 1600;
 	--z-tooltip: 1700;
 }
@@ -629,53 +632,71 @@ All widgets implement three dismissal methods with custom Svelte code:
 **Layer Hierarchy** (lowest to highest):
 
 1. **base** (0): Normal document flow
-2. **dropdown** (1000): Dropdown menus, select options
-3. **sticky** (1100): Sticky headers, pinned elements
-4. **banner** (1200): Notification banners
-5. **overlay** (1300): Dialog/modal backdrops
-6. **modal** (1400): Dialog/modal content
-7. **popover** (1500): Popover content
-8. **toast** (1600): Toast notifications
-9. **tooltip** (1700): Tooltips (highest priority)
+2. **ui-element** (10): UI elements requiring local stacking within components
+3. **canvas-overlay** (30): Tool overlays scoped to canvas/preview areas
+4. **canvas-ui** (40): UI elements within canvas overlays (banners, instructions)
+5. **dropdown** (1000): Dropdown menus, select options
+6. **sticky** (1100): Sticky headers, pinned elements
+7. **banner** (1200): Notification banners
+8. **popover** (1300): Popover content - lightweight contextual UI
+9. **overlay** (1400): Dialog/modal backdrops - demand user attention
+10. **modal** (1500): Dialog/modal/sheet content - primary user actions
+11. **toast** (1600): Toast notifications
+12. **tooltip** (1700): Tooltips (highest priority)
 
 **Usage in Base Components**:
 
 ```typescript
 // BaseDialog backdrop
-class="z-overlay"  // instead of z-40
+class="z-overlay"  // 1400
 
 // BaseDialog content
-class="z-modal"    // instead of z-50
+class="z-modal"    // 1500
 
 // BasePopover content
-class="z-popover"  // instead of z-50
+class="z-popover"  // 1300
+
+// BaseSheet
+class="z-overlay"  // backdrop: 1400
+class="z-modal"    // content: 1500
 ```
 
-### Nested Widget Strategy
+### Overlay Coordination System
 
-**Stacking Context Rules**:
+**Centralized Management** (`src/lib/stores/overlay.svelte.ts`):
 
-- Each widget type gets dedicated z-index from layer system
-- Nested widgets inherit parent stacking context
-- Multiple widgets of same type stack naturally (DOM order)
-- No manual z-index calculation needed
+All overlay components (dialogs, popovers, sheets) register with a centralized overlay store that:
+- Tracks all open overlays by type and priority
+- Automatically closes lower-priority overlays when higher-priority ones open
+- Prevents occlusion issues (e.g., popover blocking dialog)
+- Provides consistent ESC key handling across all overlays
+
+**Priority-Based Auto-Close**:
+
+When a dialog/modal opens (priority 1500), all popovers (priority 1300) automatically close. This ensures:
+- Primary user actions always have user's attention
+- No visual occlusion between overlay types
+- Clean, predictable UX
 
 **Example Scenarios**:
 
 ```
-Scenario 1: Dialog over page
-- Backdrop: z-overlay (1300)
-- Dialog: z-modal (1400)
+Scenario 1: Dialog opens while popover is open
+1. User opens login popover from sidebar (z-popover: 1300)
+2. User clicks "New Document" button
+3. Overlay store detects dialog opening (priority 1500)
+4. Login popover auto-closes (priority 1300 < 1500)
+5. Dialog displays without occlusion
 
-Scenario 2: Popover from dialog
-- Dialog backdrop: z-overlay (1300)
-- Dialog content: z-modal (1400)
-- Popover: z-popover (1500) - appears above dialog
+Scenario 2: Multiple dialogs
+- First dialog: z-overlay (1400), z-modal (1500)
+- Second dialog: z-overlay (1400), z-modal (1500)
+- Both backdrops stack (darker), dialogs stack by DOM order
 
 Scenario 3: Toast during dialog
-- Dialog backdrop: z-overlay (1300)
-- Dialog content: z-modal (1400)
-- Toast: z-toast (1600) - appears above everything
+- Dialog backdrop: z-overlay (1400)
+- Dialog content: z-modal (1500)
+- Toast: z-toast (1600) - appears above, never auto-closed
 ```
 
 ### Scoped Positioning and Z-Index

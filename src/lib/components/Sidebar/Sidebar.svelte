@@ -194,7 +194,7 @@
 >
 	<!-- Hamburger Menu and Title -->
 	<div class="relative flex items-center">
-		<div class="relative flex-shrink-0" style="width: 48px; z-index: 10;">
+		<div class="relative flex-shrink-0 z-ui-element" style="width: 48px;">
 			<SidebarButtonSlot
 				icon={Menu}
 				{isExpanded}

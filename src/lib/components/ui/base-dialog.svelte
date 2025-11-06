@@ -4,6 +4,7 @@
 	import Button from '$lib/components/ui/button.svelte';
 	import Portal from '$lib/components/ui/portal.svelte';
 	import { cn } from '$lib/utils/cn';
+	import { overlayStore } from '$lib/stores/overlay.svelte';
 
 	interface DialogProps {
 		open: boolean;
@@ -45,6 +46,19 @@
 		full: 'max-w-4xl'
 	};
 
+	// Generate unique IDs for overlay coordination and ARIA attributes
+	const overlayId = `dialog-${Math.random().toString(36).substring(7)}`;
+	const titleId = `dialog-title-${Math.random().toString(36).substring(7)}`;
+	const descId = description ? `dialog-desc-${Math.random().toString(36).substring(7)}` : undefined;
+
+	// Register/unregister with overlay store for coordination
+	$effect(() => {
+		if (open) {
+			overlayStore.register(overlayId, 'dialog', () => onOpenChange(false));
+			return () => overlayStore.unregister(overlayId);
+		}
+	});
+
 	function handleEscapeKey(event: KeyboardEvent) {
 		if (event.key === 'Escape' && closeOnEscape) {
 			event.preventDefault();
@@ -61,10 +75,6 @@
 	function handleClose() {
 		onOpenChange(false);
 	}
-
-	// Generate unique IDs for ARIA attributes
-	const titleId = `dialog-title-${Math.random().toString(36).substring(7)}`;
-	const descId = description ? `dialog-desc-${Math.random().toString(36).substring(7)}` : undefined;
 </script>
 
 {#if open}

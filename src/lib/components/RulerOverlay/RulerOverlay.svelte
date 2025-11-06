@@ -283,7 +283,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		z-index: 30;
+		z-index: var(--z-canvas-overlay);
 		cursor: crosshair;
 		pointer-events: auto;
 	}
@@ -337,7 +337,7 @@
 		bottom: 1.5rem;
 		left: 50%;
 		transform: translateX(-50%);
-		z-index: 40;
+		z-index: var(--z-canvas-ui);
 		pointer-events: auto;
 		animation: slideUp 0.3s ease-out;
 		transition: opacity 0.2s ease-in-out;

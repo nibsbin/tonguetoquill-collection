@@ -4,6 +4,7 @@
 	import Button from '$lib/components/ui/button.svelte';
 	import { cn } from '$lib/utils/cn';
 	import { onMount } from 'svelte';
+	import { overlayStore } from '$lib/stores/overlay.svelte';
 
 	interface PopoverProps {
 		open?: boolean;
@@ -42,6 +43,20 @@
 	let triggerElement: HTMLElement | undefined = $state();
 	let popoverElement: HTMLElement | undefined = $state();
 	let position = $state({ top: 0, left: 0 });
+
+	// Generate unique ID for overlay coordination
+	const overlayId = `popover-${Math.random().toString(36).substring(7)}`;
+
+	// Register/unregister with overlay store for coordination
+	$effect(() => {
+		if (open) {
+			overlayStore.register(overlayId, 'popover', () => {
+				open = false;
+				onOpenChange?.(false);
+			});
+			return () => overlayStore.unregister(overlayId);
+		}
+	});
 
 	function handleEscapeKey(event: KeyboardEvent) {
 		if (event.key === 'Escape' && closeOnEscape) {
