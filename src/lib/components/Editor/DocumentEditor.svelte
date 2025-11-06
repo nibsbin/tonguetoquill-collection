@@ -213,6 +213,11 @@
 		};
 		window.addEventListener('storage', handleStorageChange);
 
+		// Load the initial document content
+		// This ensures the first document loads properly on mount
+		previousDocumentId = documentId;
+		loadDocument();
+
 		return () => {
 			window.removeEventListener('storage', handleStorageChange);
 			window.removeEventListener('resize', checkMobile);
