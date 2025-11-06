@@ -185,8 +185,7 @@ The bottom border should:
 
 ## Cross-References
 
-- **Sidebar Architecture**: See [SIDEBAR.md](./SIDEBAR.md) for button slot system
-- **Button Slot Refactor**: See [SIDEBAR_BUTTON_SLOT_REFACTOR.md](./SIDEBAR_BUTTON_SLOT_REFACTOR.md)
+- **Sidebar Architecture**: See [SIDEBAR.md](./SIDEBAR.md) for button slot system and button architecture
 - **Design System**: See [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for tokens and spacing
 - **Logo Asset**: `/static/logo.svg`
 

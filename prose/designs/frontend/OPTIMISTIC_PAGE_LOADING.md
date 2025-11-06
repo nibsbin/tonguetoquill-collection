@@ -421,9 +421,81 @@ This creates a poor first impression:
 4. **Infinite scroll**: Load more documents as user scrolls sidebar
 5. **Stale-while-revalidate**: Show cached data immediately, update in background
 
+## Document Switching UX
+
+### Overview
+
+When switching between documents after initial load, use a loading overlay pattern instead of replacing the entire editor.
+
+### Loading Overlay Pattern
+
+**Visual Behavior**:
+
+- Editor remains visible but dimmed (`opacity-50`)
+- Semi-transparent overlay appears with loading spinner
+- Prevents interaction with `pointer-events-none`
+- Smooth fade transition (200ms)
+
+**Implementation**:
+
+```svelte
+<div class="relative flex h-full flex-1 flex-col" aria-busy={loading}>
+  <!-- Editor content (dimmed when loading) -->
+  <div class={loading ? 'pointer-events-none opacity-50' : ''}>
+    <!-- Existing editor structure -->
+  </div>
+
+  <!-- Loading overlay -->
+  {#if loading}
+    <div class="absolute inset-0 flex items-center justify-center bg-background/50">
+      <div class="flex flex-col items-center gap-3">
+        <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
+        <p class="text-sm text-muted-foreground">Loading document...</p>
+      </div>
+    </div>
+  {/if}
+</div>
+```
+
+### Auto-Save on Switch
+
+**Behavior**:
+
+- When switching documents with unsaved changes:
+  1. Check if auto-save is enabled in settings
+  2. If enabled, trigger immediate save before loading new document
+  3. Handle save errors silently (don't block navigation)
+  4. Proceed to load new document
+
+**Implementation**:
+
+```typescript
+// In document switch effect
+if (previousDocumentId !== null && previousDocumentId !== documentId && isDirty) {
+  if (autoSaveEnabled) {
+    autoSave.saveNow(previousDocumentId, content).catch(() => {
+      // Ignore errors during auto-save on switch
+    });
+  }
+}
+```
+
+**Rationale**:
+
+- Prevents data loss when navigating between documents
+- Silent save avoids interrupting user workflow
+- Respects user's auto-save preference
+
+### Accessibility
+
+- `aria-busy="true"` on editor container during loading
+- Loading state announced to screen readers
+- Keyboard navigation remains available
+
+---
+
 ## Cross-References
 
-- [DOCUMENT_LOADING_UX.md](./DOCUMENT_LOADING_UX.md) - Document switching patterns
 - [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) - Store and state patterns
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - Application architecture
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) - Visual design tokens

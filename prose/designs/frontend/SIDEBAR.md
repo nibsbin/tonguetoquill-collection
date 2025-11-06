@@ -514,6 +514,6 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 - Button slot component: `src/lib/components/SidebarButtonSlot.svelte`
 - Design system: `prose/designs/frontend/DESIGN_SYSTEM.md`
 - Login and profile UI: `prose/designs/frontend/LOGIN_PROFILE_UI.md`
-- Document loading UX: `prose/designs/frontend/DOCUMENT_LOADING_UX.md`
+- Document loading and switching: `prose/designs/frontend/OPTIMISTIC_PAGE_LOADING.md`
 - Component library: shadcn-svelte
 - Icon library: lucide-svelte

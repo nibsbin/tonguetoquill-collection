@@ -396,4 +396,4 @@ class DocumentStore {
 - [LOGIN_SERVICE.md](./LOGIN_SERVICE.md) - Authentication service design
 - [../frontend/ARCHITECTURE.md](../frontend/ARCHITECTURE.md) - Client architecture
 - [../frontend/STATE_MANAGEMENT.md](../frontend/STATE_MANAGEMENT.md) - Store patterns
-- [../frontend/DOCUMENT_LOADING_UX.md](../frontend/DOCUMENT_LOADING_UX.md) - Document loading user experience
+- [../frontend/OPTIMISTIC_PAGE_LOADING.md](../frontend/OPTIMISTIC_PAGE_LOADING.md) - Document loading and switching UX

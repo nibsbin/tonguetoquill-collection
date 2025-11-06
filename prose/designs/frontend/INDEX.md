@@ -96,11 +96,11 @@ Feature-based component organization with co-located tests and optional styles. 
 
 ---
 
-### [DOCUMENT_LOADING_UX.md](./DOCUMENT_LOADING_UX.md)
+### [OPTIMISTIC_PAGE_LOADING.md](./OPTIMISTIC_PAGE_LOADING.md)
 
-**Document Loading User Experience**
+**Optimistic Page Loading and Document Switching**
 
-User experience patterns for loading, switching, and managing documents. Covers auto-save behavior during transitions, loading states, and error handling.
+User experience patterns for initial page load and document switching. Eliminates loading screens through optimistic UI, covers document switching overlay patterns, auto-save behavior during transitions, and error handling.
 
 **Topics**: Document switching flow, auto-save before switch, loading states, error recovery, optimistic updates
 
@@ -113,16 +113,6 @@ User experience patterns for loading, switching, and managing documents. Covers 
 Authentication UI integration in the sidebar and top menu, including sign-in flows, user profile display, and provider selection.
 
 **Topics**: Guest mode UI, authenticated user display, login popover, profile management, provider selection, responsive behavior
-
----
-
-### [SIDEBAR_BUTTON_SLOT_REFACTOR.md](./SIDEBAR_BUTTON_SLOT_REFACTOR.md)
-
-**Sidebar Button Slot Architecture**
-
-Three-layer nested button architecture for consistent sizing and centering across collapsed and expanded sidebar states.
-
-**Topics**: Button slot container, button element, icon element, semantic tokens, centering strategy, reusable component pattern
 
 ---
 

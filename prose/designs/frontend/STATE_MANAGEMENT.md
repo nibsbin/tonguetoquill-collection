@@ -222,13 +222,13 @@ interface LocalStorageDocumentService {
 
 ### Auto-Save Pattern
 
-See [DESIGN_SYSTEM.md - Auto-Save Behavior](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for complete auto-save specifications.
+See [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md#auto-save-behavior) for complete auto-save specifications.
 
-See [DOCUMENT_LOADING_UX.md](./DOCUMENT_LOADING_UX.md) for auto-save behavior when switching documents.
+See [OPTIMISTIC_PAGE_LOADING.md - Document Switching](./OPTIMISTIC_PAGE_LOADING.md#document-switching-ux) for auto-save behavior when switching documents.
 
 **Implementation**:
 
-- Debounced saves (4000ms / 4 seconds after last keystroke, configurable)
+- Debounced saves (timing configured per DESIGN_SYSTEM.md)
 - Cancel pending saves on unmount
 - Optimistic UI updates
 - Error handling and rollback
@@ -241,10 +241,9 @@ The AutoSave class is implemented in `src/lib/utils/auto-save.svelte.ts`:
 
 ```typescript
 class AutoSave {
-	// 4-second default debounce timer (configurable)
+	// Configurable debounce timer (default from DESIGN_SYSTEM.md)
 	// Save status tracking (idle, saving, saved, error)
 	// Support for both guest (localStorage) and authenticated (API) modes
-	// Configurable debounce interval
 	// Proper cleanup of timers
 	// Manual save support (Ctrl/Cmd+S bypasses debounce)
 }
