@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { EditorView, keymap, lineNumbers } from '@codemirror/view';
-	import { EditorState } from '@codemirror/state';
+	import { EditorState, type StateEffect } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-	import { foldKeymap, foldState, codeFolding } from '@codemirror/language';
+	import {
+		foldKeymap,
+		foldState,
+		codeFolding,
+		foldedRanges,
+		unfoldEffect
+	} from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
 	import {
 		quillmarkDecorator,
@@ -330,12 +336,22 @@
 	// Update editor when value changes externally
 	$effect(() => {
 		if (editorView && editorView.state.doc.toString() !== value) {
+			// Clear all existing folds before replacing content to prevent
+			// fold state from the previous document interfering with the new document
+			const effects: StateEffect<unknown>[] = [];
+			const folded = foldedRanges(editorView.state);
+			folded.between(0, editorView.state.doc.length, (from, to) => {
+				effects.push(unfoldEffect.of({ from, to }));
+			});
+
+			// Dispatch transaction with content replacement and fold clearing
 			editorView.dispatch({
 				changes: {
 					from: 0,
 					to: editorView.state.doc.length,
 					insert: value
-				}
+				},
+				effects
 			});
 		}
 	});
