@@ -8,6 +8,7 @@
 	import { Sidebar, SidebarBackdrop } from '$lib/components/Sidebar';
 	import { TopMenu } from '$lib/components/TopMenu';
 	import { DocumentEditor } from '$lib/components/Editor';
+	import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
 
 	let user = $state<{ email: string; id: string } | null>(null);
 	let autoSave = new AutoSave();
@@ -60,20 +61,48 @@
 	});
 
 	async function handleDownload() {
-		if (!documentStore.activeDocumentId) return;
+		if (!documentStore.activeDocumentId || !hasSuccessfulPreview) return;
 
-		// Fetch full document with content
-		const doc = await documentStore.fetchDocument(documentStore.activeDocumentId);
+		try {
+			// Fetch full document with content
+			const doc = await documentStore.fetchDocument(documentStore.activeDocumentId);
 
-		const blob = new Blob([doc.content], {
-			type: 'text/markdown'
-		});
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = doc.name;
-		a.click();
-		URL.revokeObjectURL(url);
+			// Render using Quillmark service (auto-detects backend and format)
+			const result = await quillmarkService.render(doc.content, 'pdf');
+
+			// Convert to blob based on format
+			let blob: Blob;
+			let extension: string;
+
+			if (result.outputFormat === 'pdf') {
+				blob = resultToBlob(result);
+				extension = '.pdf';
+			} else if (result.outputFormat === 'svg') {
+				// For SVG, download the first page
+				const svgPages = resultToSVGPages(result);
+				blob = new Blob([svgPages[0]], { type: 'image/svg+xml' });
+				extension = '.svg';
+			} else {
+				// Fallback to markdown
+				blob = new Blob([doc.content], { type: 'text/markdown' });
+				extension = '.md';
+			}
+
+			// Create filename with proper extension
+			const baseName = doc.name.replace(/\.(md|markdown)$/i, '');
+			const filename = baseName + extension;
+
+			// Download
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = filename;
+			a.click();
+			URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error('Download failed:', error);
+			toastStore.error('Failed to download document');
+		}
 	}
 
 	function handleContentChange(content: string) {
