@@ -203,7 +203,7 @@
 
 <svelte:window onkeydown={handleGlobalKeyDown} />
 
-<div class="flex h-screen bg-background">
+<div class="flex h-dvh bg-background">
 	<!-- Sidebar -->
 	<Sidebar {user} bind:newDocDialogOpen bind:isExpanded={sidebarExpanded} />
 
