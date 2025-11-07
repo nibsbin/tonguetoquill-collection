@@ -10,9 +10,9 @@
 	let { open, onOpenChange }: TermsModalProps = $props();
 </script>
 
-<Dialog {open} {onOpenChange} title="Terms of Use" scoped size="lg">
+<Dialog {open} {onOpenChange} title="Terms of Use" scoped size="fullscreen">
 	{#snippet content()}
-		<DialogContent prose>
+		<DialogContent prose fullscreen>
 			{#snippet children()}
 				<section>
 					<h2 class="mb-4 text-2xl">1. Acceptance of Terms</h2>

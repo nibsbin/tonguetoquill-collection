@@ -15,7 +15,7 @@
 		closeOnOutsideClick?: boolean;
 		hideCloseButton?: boolean;
 		scoped?: boolean;
-		size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+		size?: 'sm' | 'md' | 'lg' | 'xl' | 'full' | 'fullscreen';
 		class?: string;
 		content: import('svelte').Snippet;
 		header?: import('svelte').Snippet;
@@ -43,7 +43,8 @@
 		md: 'max-w-md',
 		lg: 'max-w-lg',
 		xl: 'max-w-xl',
-		full: 'max-w-4xl'
+		full: 'max-w-4xl',
+		fullscreen: 'w-full h-full max-w-none'
 	};
 
 	// Generate unique IDs for overlay coordination and ARIA attributes
@@ -89,10 +90,15 @@
 		<!-- Dialog Container -->
 		<div
 			class={cn(
-				'z-modal-content w-full rounded-lg border border-border bg-surface-elevated p-6 shadow-lg',
-				scoped
-					? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
-					: 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+				'z-modal-content bg-surface-elevated shadow-lg',
+				size === 'fullscreen'
+					? 'absolute inset-0 flex flex-col'
+					: cn(
+							'w-full rounded-lg border border-border p-6',
+							scoped
+								? 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+								: 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+						),
 				sizeClasses[size],
 				className
 			)}
@@ -106,7 +112,9 @@
 			use:focusTrap
 		>
 			<!-- Header -->
-			<div class="mb-4 flex items-center justify-between">
+			<div
+				class={cn('flex items-center justify-between', size === 'fullscreen' ? 'p-6 pb-0' : 'mb-4')}
+			>
 				{#if header}
 					{@render header()}
 				{:else}
@@ -128,17 +136,26 @@
 
 			<!-- Description (optional) -->
 			{#if description}
-				<p id={descId} class="mb-4 text-sm text-muted-foreground">{description}</p>
+				<p
+					id={descId}
+					class={cn('text-sm text-muted-foreground', size === 'fullscreen' ? 'px-6 pb-2' : 'mb-4')}
+				>
+					{description}
+				</p>
 			{/if}
 
 			<!-- Content -->
-			<div class="dialog-content">
+			<div
+				class={cn('dialog-content', size === 'fullscreen' ? 'flex-1 overflow-auto px-6 pb-6' : '')}
+			>
 				{@render content()}
 			</div>
 
 			<!-- Footer (optional) -->
 			{#if footer}
-				<div class="mt-6 flex justify-end gap-2">
+				<div
+					class={cn('flex justify-end gap-2', size === 'fullscreen' ? 'px-6 pt-4 pb-6' : 'mt-6')}
+				>
 					{@render footer()}
 				</div>
 			{/if}

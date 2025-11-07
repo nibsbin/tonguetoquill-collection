@@ -10,9 +10,9 @@
 	let { open, onOpenChange }: AboutModalProps = $props();
 </script>
 
-<Dialog {open} {onOpenChange} title="About Us" scoped size="lg">
+<Dialog {open} {onOpenChange} title="About Us" scoped size="fullscreen">
 	{#snippet content()}
-		<DialogContent prose>
+		<DialogContent prose fullscreen>
 			{#snippet children()}
 				<section>
 					<h2 class="mb-4 text-2xl">Welcome to Tongue to Quill</h2>

@@ -10,9 +10,9 @@
 	let { open, onOpenChange }: PrivacyModalProps = $props();
 </script>
 
-<Dialog {open} {onOpenChange} title="Privacy Policy" scoped size="lg">
+<Dialog {open} {onOpenChange} title="Privacy Policy" scoped size="fullscreen">
 	{#snippet content()}
-		<DialogContent prose>
+		<DialogContent prose fullscreen>
 			{#snippet children()}
 				<section>
 					<h2 class="mb-4 text-2xl">1. Introduction</h2>
