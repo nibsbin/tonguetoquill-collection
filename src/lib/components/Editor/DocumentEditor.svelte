@@ -231,6 +231,11 @@
 			if (onDocumentLoad) {
 				onDocumentLoad({ name: doc.name, content: doc.content });
 			}
+
+			// Collapse frontmatter after content loads
+			requestAnimationFrame(() => {
+				handleFormat('toggleFrontmatter');
+			});
 		} catch {
 			toastStore.error('Failed to load document');
 		} finally {
