@@ -237,8 +237,7 @@
 
 				if (closingLineNum !== null) {
 					const closingLine = doc.line(closingLineNum);
-					const foldTo = closingLine.to < doc.length ? closingLine.to + 1 : closingLine.to;
-					metadataBlocks.push({ from: line.from, to: foldTo });
+					metadataBlocks.push({ from: line.from, to: closingLine.to });
 					lineNum = closingLineNum;
 				}
 			}
@@ -249,7 +248,9 @@
 		for (const block of metadataBlocks) {
 			let isFolded = false;
 			folded.between(block.from, block.to, (from, to) => {
-				if (from === block.from && to === block.to) {
+				// Check for overlapping fold (not just exact match)
+				// A fold overlaps if it starts at or before block.from and ends at or after block.to
+				if (from <= block.from && to >= block.to) {
 					isFolded = true;
 					return false;
 				}
@@ -262,12 +263,20 @@
 
 		// Toggle: if ALL are folded, unfold all. Otherwise (if any are expanded), fold all.
 		if (allFolded) {
-			// Unfold all metadata blocks
+			// Unfold all metadata blocks - use exact fold ranges to avoid duplicates
 			for (const block of metadataBlocks) {
-				effects.push(unfoldEffect.of({ from: block.from, to: block.to }));
+				folded.between(block.from, block.to, (from, to) => {
+					effects.push(unfoldEffect.of({ from, to }));
+				});
 			}
 		} else {
-			// Fold all metadata blocks
+			// First unfold any existing folds in the metadata regions to prevent duplicates
+			for (const block of metadataBlocks) {
+				folded.between(block.from, block.to, (from, to) => {
+					effects.push(unfoldEffect.of({ from, to }));
+				});
+			}
+			// Then fold all metadata blocks
 			for (const block of metadataBlocks) {
 				effects.push(foldEffect.of({ from: block.from, to: block.to }));
 			}
