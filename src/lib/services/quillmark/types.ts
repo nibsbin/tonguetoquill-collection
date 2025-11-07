@@ -133,24 +133,14 @@ export interface QuillmarkService {
 	getAvailableQuills(): QuillMetadata[];
 
 	/**
-	 * Render markdown content to PDF blob.
+	 * Render markdown content to specified format.
 	 *
 	 * @param markdown - Markdown content to render
-	 * @param quillName - Name of Quill template to use
-	 * @returns PDF blob
+	 * @param format - Output format (pdf or svg)
+	 * @returns RenderResult from Quillmark engine
 	 * @throws {QuillmarkError} If service is not initialized or Quill not found
 	 */
-	renderToPDF(markdown: string, quillName: string): Promise<Blob>;
-
-	/**
-	 * Render markdown for preview with auto-detected format and backend.
-	 * Does not specify quill or output format - allows engine to auto-detect based on content.
-	 *
-	 * @param markdown - Markdown content to render
-	 * @returns RenderResult from Quillmark engine
-	 * @throws {QuillmarkError} If service is not initialized
-	 */
-	renderForPreview(markdown: string): Promise<QuillmarkRenderResult>;
+	render(markdown: string, format?: RenderFormat): Promise<QuillmarkRenderResult>;
 
 	/**
 	 * Download rendered document to user's file system.
