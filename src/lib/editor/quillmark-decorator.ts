@@ -6,7 +6,7 @@ import {
 	WidgetType
 } from '@codemirror/view';
 import { RangeSetBuilder } from '@codemirror/state';
-import { foldedRanges } from '@codemirror/language';
+import { foldedRanges, foldEffect, unfoldEffect } from '@codemirror/language';
 import {
 	findMetadataBlocks,
 	findScopeQuillKeywords,
@@ -63,8 +63,21 @@ class QuillMarkDecorator {
 		this.decorations = this.computeDecorations(view);
 	}
 
-	update(update: { docChanged: boolean; viewportChanged: boolean; view: EditorView }) {
-		if (update.docChanged || update.viewportChanged) {
+	update(update: any) {
+		// Check if any fold/unfold effects were applied
+		let hasFoldChange = false;
+		for (const transaction of update.transactions) {
+			for (const effect of transaction.effects) {
+				if (effect.is(foldEffect) || effect.is(unfoldEffect)) {
+					hasFoldChange = true;
+					break;
+				}
+			}
+			if (hasFoldChange) break;
+		}
+
+		// Recompute decorations if document changed, viewport changed, or fold state changed
+		if (update.docChanged || update.viewportChanged || hasFoldChange) {
 			this.decorations = this.computeDecorations(update.view);
 		}
 	}
