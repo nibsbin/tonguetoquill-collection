@@ -15,7 +15,7 @@
 
 <div
 	class={cn(
-		'widget-scrollbar max-h-[60vh] overflow-y-auto pr-2',
+		'widget-scrollbar max-h-[60dvh] overflow-y-auto pr-2',
 		prose && 'widget-prose space-y-6',
 		className
 	)}

@@ -81,9 +81,9 @@
 
 	// Side-specific classes for positioning and animation
 	const sideClasses = {
-		top: 'top-0 left-0 right-0 h-auto max-h-[80vh]',
+		top: 'top-0 left-0 right-0 h-auto max-h-[80dvh]',
 		right: 'top-0 right-0 bottom-0 w-full max-w-md',
-		bottom: 'bottom-0 left-0 right-0 h-auto max-h-[80vh]',
+		bottom: 'bottom-0 left-0 right-0 h-auto max-h-[80dvh]',
 		left: 'top-0 left-0 bottom-0 w-full max-w-md'
 	};
 
