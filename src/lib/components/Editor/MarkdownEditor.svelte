@@ -16,6 +16,7 @@
 		quillmarkDecorator,
 		createQuillmarkTheme,
 		quillmarkFoldService,
+		foldAllMetadataBlocks,
 		toggleAllMetadataBlocks
 	} from '$lib/editor';
 
@@ -78,7 +79,7 @@
 			quillmarkFoldService,
 			foldState,
 			codeFolding({
-				preparePlaceholder: (state, range) => range,
+				preparePlaceholder: (_state, range) => range,
 				placeholderDOM: (view, onclick, prepared) => {
 					const wrapper = document.createElement('span');
 					wrapper.className = 'cm-foldPlaceholder';
@@ -214,6 +215,11 @@
 		toggleAllMetadataBlocks(editorView);
 	}
 
+	function handleFoldFrontmatter() {
+		if (!editorView) return;
+		foldAllMetadataBlocks(editorView);
+	}
+
 	function handleBulletList() {
 		const state = editorView?.state;
 		if (!state) return;
@@ -296,6 +302,9 @@
 				break;
 			case 'toggleFrontmatter':
 				handleToggleFrontmatter();
+				break;
+			case 'foldFrontmatter':
+				handleFoldFrontmatter();
 				break;
 		}
 	}

@@ -23,6 +23,39 @@ export function foldMetadataBlockAtPosition(view: EditorView, pos: number): bool
 }
 
 /**
+ * Fold all metadata blocks (unconditionally)
+ * This is useful for auto-folding when loading documents
+ */
+export function foldAllMetadataBlocks(view: EditorView): void {
+	const state = view.state;
+	const doc = state.doc;
+	const effects = [];
+
+	// Get currently folded ranges
+	const folded = foldedRanges(state);
+
+	// Find all metadata blocks
+	const metadataBlocks = findMetadataBlocks(doc);
+
+	// First unfold any existing folds in the metadata regions to prevent duplicates
+	for (const block of metadataBlocks) {
+		folded.between(block.from, block.to, (from, to) => {
+			effects.push(unfoldEffect.of({ from, to }));
+		});
+	}
+
+	// Then fold all metadata blocks
+	for (const block of metadataBlocks) {
+		effects.push(foldEffect.of({ from: block.from, to: block.to }));
+	}
+
+	// Apply all effects at once
+	if (effects.length > 0) {
+		view.dispatch({ effects });
+	}
+}
+
+/**
  * Toggle all metadata blocks (fold if any are expanded, unfold if all are folded)
  */
 export function toggleAllMetadataBlocks(view: EditorView): void {
