@@ -5,6 +5,7 @@
 	import Button from '$lib/components/ui/button.svelte';
 	import Input from '$lib/components/ui/input.svelte';
 	import Label from '$lib/components/ui/label.svelte';
+	import TemplateSelector from '$lib/components/NewDocumentDialog/TemplateSelector.svelte';
 
 	interface NewDocumentDialogProps {
 		/** Whether dialog is open */
@@ -216,19 +217,17 @@
 	{#snippet content()}
 		<div class="px-4">
 			<form onsubmit={handleSubmit} class="space-y-3">
-				<!-- Template Selection Field (In-line layout) -->
-				<div class="flex items-center gap-3">
-					<Label for="template" class="shrink-0 text-left text-sm text-foreground">Template</Label>
-					<select
-						id="template"
-						bind:value={selectedTemplate}
+				<!-- Template Selection Field -->
+				<div class="space-y-2">
+					<Label class="text-sm text-foreground">Template</Label>
+					<TemplateSelector
+						{templates}
+						bind:selectedTemplate
+						onTemplateChange={(file) => {
+							selectedTemplate = file;
+						}}
 						disabled={isCreating || !templatesReady}
-						class="h-9 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						{#each templates as template}
-							<option value={template.file}>{template.name}</option>
-						{/each}
-					</select>
+					/>
 				</div>
 
 				<!-- Document Name Field (In-line layout) -->
