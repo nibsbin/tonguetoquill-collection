@@ -31,6 +31,11 @@
 	--z-canvas-ui: 10; /* UI elements within the canvas (e.g., sidebar) */
 	--z-canvas-overlay: 20; /* Tool overlays scoped to canvas (e.g., ruler) */
 
+	/* Sidebar specific z-indices */
+	--z-content: 0; /* Main content base layer */
+	--z-sidebar-backdrop: 40; /* Backdrop overlay when sidebar is expanded */
+	--z-sidebar: 50; /* Sidebar overlay */
+
 	/* Group 2: Minor Widgets - Lightweight overlays */
 	--z-dropdown: 1000; /* Dropdown menus and select options */
 	--z-popover: 1100; /* Popovers - lightweight contextual UI */
@@ -166,6 +171,9 @@
 	/* Z-Index layers - Maps to CSS variables */
 	--z-canvas-ui: var(--z-canvas-ui);
 	--z-canvas-overlay: var(--z-canvas-overlay);
+	--z-content: var(--z-content);
+	--z-sidebar-backdrop: var(--z-sidebar-backdrop);
+	--z-sidebar: var(--z-sidebar);
 	--z-dropdown: var(--z-dropdown);
 	--z-popover: var(--z-popover);
 	--z-toast: var(--z-toast);
@@ -439,6 +447,18 @@ pre code {
 
 .z-canvas-overlay {
 	z-index: var(--z-canvas-overlay);
+}
+
+.z-content {
+	z-index: var(--z-content);
+}
+
+.z-sidebar-backdrop {
+	z-index: var(--z-sidebar-backdrop);
+}
+
+.z-sidebar {
+	z-index: var(--z-sidebar);
 }
 
 .z-dropdown {

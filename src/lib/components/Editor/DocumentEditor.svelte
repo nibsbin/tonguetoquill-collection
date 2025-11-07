@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
+	import { responsiveStore } from '$lib/stores/responsive.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
 	import { EditorToolbar, MarkdownEditor } from '$lib/components/Editor';
 	import { Preview } from '$lib/components/Preview';
@@ -66,8 +67,10 @@
 	let showLineNumbers = $state(true);
 	let previousDocumentId = $state<string | null>(null);
 	let mobileView = $state<'editor' | 'preview'>('editor');
-	let isMobile = $state(false);
 	let hasSuccessfulPreview = $state(false);
+
+	// Use centralized responsive store
+	const isMobile = $derived(responsiveStore.isMobile);
 
 	// Handler for preview status changes
 	function handlePreviewStatusChange(status: boolean) {
@@ -248,12 +251,8 @@
 			showLineNumbers = savedLineNumbers === 'true';
 		}
 
-		// Check if mobile
-		const checkMobile = () => {
-			isMobile = window.innerWidth < 768;
-		};
-		checkMobile();
-		window.addEventListener('resize', checkMobile);
+		// Initialize responsive store (safe to call multiple times)
+		responsiveStore.initialize();
 
 		// Listen for storage events (when settings change)
 		const handleStorageChange = (e: StorageEvent) => {
@@ -273,7 +272,6 @@
 
 		return () => {
 			window.removeEventListener('storage', handleStorageChange);
-			window.removeEventListener('resize', checkMobile);
 		};
 	});
 

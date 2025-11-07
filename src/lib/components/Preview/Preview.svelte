@@ -113,8 +113,6 @@
 				svgPages = [];
 				const blob = resultToBlob(result);
 				pdfObjectUrl = URL.createObjectURL(blob);
-				console.log('Length of PDF blob:', blob.size);
-				console.log('Created PDF object URL:', pdfObjectUrl);
 			} else {
 				svgPages = [];
 			}

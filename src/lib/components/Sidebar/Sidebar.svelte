@@ -9,6 +9,7 @@
 	import LoginPopover from './LoginPopover.svelte';
 	import NewDocumentDialog from '$lib/components/NewDocumentDialog';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { responsiveStore } from '$lib/stores/responsive.svelte';
 	import { templateService } from '$lib/services/templates';
 	import { onMount } from 'svelte';
 	import { loginClient } from '$lib/services/auth';
@@ -17,17 +18,23 @@
 		user?: { email: string; id: string } | null;
 		newDocDialogOpen?: boolean;
 		onNewDocDialogOpenChange?: (open: boolean) => void;
+		isExpanded?: boolean;
 	};
 
-	let { user, newDocDialogOpen = $bindable(false) }: SidebarProps = $props();
-
-	let isExpanded = $state(false);
+	let {
+		user,
+		newDocDialogOpen = $bindable(false),
+		isExpanded = $bindable(false)
+	}: SidebarProps = $props();
 	let autoSave = $state(true);
 	let lineNumbers = $state(true);
 	let popoverOpen = $state(false);
 	let loginPopoverOpen = $state(false);
 	let isDarkMode = $state(true);
 	let profilePopoverOpen = $state(false);
+
+	// Use centralized responsive store
+	const isMobile = $derived(responsiveStore.isMobile);
 
 	// Get existing document names for collision detection
 	const existingDocumentNames = $derived(documentStore.documents.map((d) => d.name));
@@ -148,8 +155,13 @@
 </script>
 
 <!-- Sidebar -->
-<div
-	class="flex h-screen flex-col overflow-hidden border-r border-border bg-background text-foreground transition-all duration-300"
+<aside
+	role="navigation"
+	aria-label="Main navigation"
+	class="sidebar flex h-screen flex-col overflow-hidden overflow-x-hidden border-r border-border bg-background text-foreground transition-all duration-300"
+	class:sidebar-mobile={isMobile}
+	class:sidebar-desktop={!isMobile}
+	class:sidebar-expanded={isExpanded}
 	style="width: {isExpanded
 		? 'var(--sidebar-expanded-width)'
 		: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
@@ -162,6 +174,7 @@
 				{isExpanded}
 				onclick={handleToggle}
 				ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+				ariaExpanded={isExpanded}
 			/>
 		</div>
 
@@ -332,9 +345,37 @@
 			{/snippet}
 		</BasePopover>
 	</div>
-</div>
+</aside>
 
 <style>
+	/* Sidebar base styles */
+	.sidebar {
+		box-shadow: none;
+		transition:
+			width 300ms cubic-bezier(0.165, 0.85, 0.45, 1),
+			box-shadow 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
+	}
+
+	/* Desktop mode: relative positioning, pushes layout */
+	.sidebar-desktop {
+		position: relative;
+		z-index: var(--z-canvas-ui, 10);
+	}
+
+	/* Mobile mode: fixed positioning, overlays content */
+	.sidebar-mobile {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		z-index: var(--z-sidebar, 50);
+	}
+
+	/* Expanded state shadow (only on mobile overlay mode) */
+	.sidebar-mobile.sidebar-expanded {
+		box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+	}
+
 	/* Logo signature slot */
 	.sidebar-logo-slot {
 		height: 48px;
@@ -358,5 +399,12 @@
 	:global(.sidebar-icon-small) {
 		width: calc(var(--sidebar-icon-size) * 0.6);
 		height: calc(var(--sidebar-icon-size) * 0.6);
+	}
+
+	/* Reduced motion support */
+	@media (prefers-reduced-motion: reduce) {
+		.sidebar {
+			transition-duration: 0.01ms !important;
+		}
 	}
 </style>

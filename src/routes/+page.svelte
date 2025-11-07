@@ -2,9 +2,10 @@
 	import { onMount } from 'svelte';
 	import { toastStore } from '$lib/stores/toast.svelte';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { responsiveStore } from '$lib/stores/responsive.svelte';
 	import { rulerStore } from '$lib/stores/ruler.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
-	import { Sidebar } from '$lib/components/Sidebar';
+	import { Sidebar, SidebarBackdrop } from '$lib/components/Sidebar';
 	import { TopMenu } from '$lib/components/TopMenu';
 	import { DocumentEditor } from '$lib/components/Editor';
 
@@ -20,8 +21,14 @@
 	let documentName = $state('');
 	let hasSuccessfulPreview = $state(false);
 	let newDocDialogOpen = $state(false);
+	let sidebarExpanded = $state(false);
+
+	// Use centralized responsive store
+	const isMobile = $derived(responsiveStore.isMobile);
 
 	onMount(() => {
+		// Initialize responsive store
+		responsiveStore.initialize();
 		// Show classification message
 		toastStore.info('This system is not authorized for controlled information.', {
 			duration: 10000
@@ -140,14 +147,42 @@
 	function handleCreateNewDocument() {
 		newDocDialogOpen = true;
 	}
+
+	function handleCollapseSidebar() {
+		sidebarExpanded = false;
+	}
+
+	function handleGlobalKeyDown(event: KeyboardEvent) {
+		// Only collapse sidebar with Escape if it's expanded and in mobile mode
+		// Don't interfere with modals or other overlays
+		if (event.key === 'Escape' && isMobile && sidebarExpanded) {
+			// Check if any modals are open - if so, don't collapse sidebar
+			const hasOpenModal =
+				showDocumentInfo ||
+				showImportDialog ||
+				showShareModal ||
+				showAboutModal ||
+				showTermsModal ||
+				showPrivacyModal;
+
+			if (!hasOpenModal) {
+				handleCollapseSidebar();
+			}
+		}
+	}
 </script>
+
+<svelte:window onkeydown={handleGlobalKeyDown} />
 
 <div class="flex h-screen bg-background">
 	<!-- Sidebar -->
-	<Sidebar {user} bind:newDocDialogOpen />
+	<Sidebar {user} bind:newDocDialogOpen bind:isExpanded={sidebarExpanded} />
+
+	<!-- Backdrop overlay (only on mobile when sidebar is expanded) -->
+	<SidebarBackdrop visible={isMobile && sidebarExpanded} onClick={handleCollapseSidebar} />
 
 	<!-- Main Content -->
-	<div class="flex flex-1 flex-col">
+	<main class="z-content flex flex-1 flex-col" style="margin-left: {isMobile ? '48px' : '0'};">
 		<!-- Top Menu -->
 		<TopMenu
 			fileName={documentName}
@@ -189,5 +224,5 @@
 				onCreateNewDocument={handleCreateNewDocument}
 			/>
 		</div>
-	</div>
+	</main>
 </div>

@@ -8,6 +8,7 @@
 		variant?: 'ghost' | 'default';
 		onclick?: (event: MouseEvent) => void;
 		ariaLabel?: string;
+		ariaExpanded?: boolean;
 		title?: string;
 		disabled?: boolean;
 		children?: Snippet;
@@ -21,6 +22,7 @@
 		variant = 'ghost',
 		onclick,
 		ariaLabel,
+		ariaExpanded,
 		title,
 		disabled = false,
 		children,
@@ -41,6 +43,7 @@
 			class="sidebar-button-unwrapped {variant}"
 			{onclick}
 			aria-label={ariaLabel}
+			aria-expanded={ariaExpanded}
 			{title}
 			{disabled}
 		>
@@ -52,7 +55,14 @@
 	{:else}
 		<!-- Standard mode: Button wrapped in slot for consistent sizing -->
 		<div class="sidebar-button-slot">
-			<button class="sidebar-button {variant}" {onclick} aria-label={ariaLabel} {title} {disabled}>
+			<button
+				class="sidebar-button {variant}"
+				{onclick}
+				aria-label={ariaLabel}
+				aria-expanded={ariaExpanded}
+				{title}
+				{disabled}
+			>
 				<Icon class="sidebar-icon" />
 				{#if label}
 					<span class="sidebar-label" class:visible={isExpanded}>{label}</span>
