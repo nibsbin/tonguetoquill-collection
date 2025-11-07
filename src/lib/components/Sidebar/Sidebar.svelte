@@ -158,11 +158,11 @@
 <aside
 	role="navigation"
 	aria-label="Main navigation"
-	class="sidebar flex h-screen flex-col overflow-hidden overflow-x-hidden border-r border-border bg-background text-foreground transition-all duration-300"
+	class="sidebar flex flex-col overflow-hidden overflow-x-hidden border-r border-border bg-background text-foreground transition-all duration-300"
 	class:sidebar-mobile={isMobile}
 	class:sidebar-desktop={!isMobile}
 	class:sidebar-expanded={isExpanded}
-	style="width: {isExpanded
+	style="height: 100dvh; width: {isExpanded
 		? 'var(--sidebar-expanded-width)'
 		: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
 >
