@@ -7,6 +7,7 @@ import { json, type RequestEvent } from '@sveltejs/kit';
 import { AuthError } from '$lib/services/auth';
 import { DocumentError } from '$lib/services/documents';
 import { env } from '$env/dynamic/private';
+import { config } from '$lib/config';
 /**
  * Standard error response format
  */
@@ -102,11 +103,20 @@ export function clearAuthCookies(event: RequestEvent) {
  * Handles local development, Vercel preview, and production deployments
  */
 export function getSiteURL(event?: RequestEvent): string {
-	// In order of priority:
-	// 1. Request origin (detects actual host and port from the incoming request)
-	// 2. Vercel URL (automatically set by Vercel for preview/production)
-	// 3. Local development fallback
-	let url = (event ? event.url.origin : null) ?? env.VERCEL_URL ?? 'http://localhost:5173';
+	const url_prod = config.urls.production;
+	const url_stag = config.urls.staging;
+
+	const isProduction = env.VERCEL_ENV === 'production';
+
+	let url;
+	if (isProduction && url_prod) {
+		url = url_prod;
+	} else if (url_stag) {
+		url = url_stag;
+	} else {
+		// Fallback to request origin or Vercel URL or localhost
+		url = (event ? event.url.origin : null) ?? env.VERCEL_URL ?? 'http://localhost:5173';
+	}
 
 	console.log('Determined site URL:', url);
 
