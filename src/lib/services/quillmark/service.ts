@@ -105,47 +105,19 @@ class QuillmarkServiceImpl implements QuillmarkService {
 	 * Render markdown to specified format
 	 * Does not specify quill or output format - allows engine to auto-detect
 	 */
-	async render(markdown: string, format: RenderFormat): Promise<RenderResult> {
+	async render(markdown: string, format?: RenderFormat): Promise<RenderResult> {
 		this.validateInitialized();
 
 		try {
 			// Render without quill name or format - let engine auto-detect based on content
-			const result = exporters!.render(this.engine!, markdown, {
-				format: format
-			});
-
-			return result;
-		} catch (error) {
-			// Extract diagnostic information if available
-			const diagnostic = this.extractDiagnostic(error);
-
-			if (diagnostic) {
-				// Throw with diagnostic information
-				throw new QuillmarkError(
-					'render_error',
-					diagnostic.message || 'Failed to render preview',
-					diagnostic
-				);
+			let result: RenderResult;
+			if (format) {
+				result = exporters!.render(this.engine!, markdown, {
+					format
+				});
 			} else {
-				// Fallback to generic error
-				const message = error instanceof Error ? error.message : 'Unknown error';
-				throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
+				result = exporters!.render(this.engine!, markdown);
 			}
-		}
-	}
-
-	/**
-	 * Render markdown for preview with auto-detected format and backend
-	 * Does not specify quill or output format - allows engine to auto-detect
-	 */
-	async renderForPreview(markdown: string): Promise<RenderResult> {
-		this.validateInitialized();
-
-		try {
-			// Render without quill name or format - let engine auto-detect based on content
-			const result = exporters!.render(this.engine!, markdown, {
-				// No quillName or format specified - engine auto-detects backend
-			});
 
 			return result;
 		} catch (error) {

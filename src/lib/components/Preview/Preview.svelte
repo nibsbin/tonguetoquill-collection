@@ -96,7 +96,7 @@
 
 		try {
 			// Render with Quillmark - engine auto-detects backend from content
-			const result = await quillmarkService.renderForPreview(markdown);
+			const result = await quillmarkService.render(markdown);
 			renderResult = result;
 
 			// Clean up previous PDF object URL before creating new one

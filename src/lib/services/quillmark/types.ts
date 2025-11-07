@@ -140,17 +140,7 @@ export interface QuillmarkService {
 	 * @returns RenderResult from Quillmark engine
 	 * @throws {QuillmarkError} If service is not initialized or Quill not found
 	 */
-	renderToFormat(markdown: string, format: RenderFormat): Promise<QuillmarkRenderResult>;
-
-	/**
-	 * Render markdown for preview with auto-detected format and backend.
-	 * Does not specify quill or output format - allows engine to auto-detect based on content.
-	 *
-	 * @param markdown - Markdown content to render
-	 * @returns RenderResult from Quillmark engine
-	 * @throws {QuillmarkError} If service is not initialized
-	 */
-	renderForPreview(markdown: string): Promise<QuillmarkRenderResult>;
+	render(markdown: string, format?: RenderFormat): Promise<QuillmarkRenderResult>;
 
 	/**
 	 * Download rendered document to user's file system.
