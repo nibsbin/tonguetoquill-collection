@@ -101,29 +101,35 @@ class QuillmarkServiceImpl implements QuillmarkService {
 		this.validateInitialized();
 		return this.manifest?.quills ?? [];
 	}
-
 	/**
-	 * Render markdown to PDF
+	 * Render markdown to specified format
+	 * Does not specify quill or output format - allows engine to auto-detect
 	 */
-	async renderToPDF(markdown: string, quillName: string): Promise<Blob> {
+	async render(markdown: string, format: RenderFormat): Promise<RenderResult> {
 		this.validateInitialized();
-		this.validateQuillExists(quillName);
 
 		try {
+			// Render without quill name or format - let engine auto-detect based on content
 			const result = exporters!.render(this.engine!, markdown, {
-				quillName: quillName,
-				format: 'pdf'
+				format: format
 			});
 
-			return exporters!.toBlob(result);
+			return result;
 		} catch (error) {
+			// Extract diagnostic information if available
 			const diagnostic = this.extractDiagnostic(error);
 
 			if (diagnostic) {
-				throw new QuillmarkError('render_error', diagnostic.message, diagnostic);
+				// Throw with diagnostic information
+				throw new QuillmarkError(
+					'render_error',
+					diagnostic.message || 'Failed to render preview',
+					diagnostic
+				);
 			} else {
+				// Fallback to generic error
 				const message = error instanceof Error ? error.message : 'Unknown error';
-				throw new QuillmarkError('render_error', `Failed to render PDF: ${message}`);
+				throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
 			}
 		}
 	}

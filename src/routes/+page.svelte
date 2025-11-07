@@ -61,7 +61,7 @@
 			const doc = await documentStore.fetchDocument(documentStore.activeDocumentId);
 
 			// Render using Quillmark service (auto-detects backend and format)
-			const result = await quillmarkService.renderForPreview(doc.content);
+			const result = await quillmarkService.render(doc.content, 'pdf');
 
 			// Convert to blob based on format
 			let blob: Blob;
