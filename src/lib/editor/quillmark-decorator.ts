@@ -6,7 +6,7 @@ import {
 	WidgetType
 } from '@codemirror/view';
 import { RangeSetBuilder } from '@codemirror/state';
-import { foldEffect, foldedRanges } from '@codemirror/language';
+import { foldedRanges } from '@codemirror/language';
 import {
 	findMetadataBlocks,
 	findScopeQuillKeywords,
@@ -14,7 +14,7 @@ import {
 	findYamlComments,
 	type MetadataBlock
 } from './quillmark-patterns';
-import { findClosingDelimiter } from './quillmark-folding';
+import { foldMetadataBlockAtPosition } from './quillmark-fold-utils';
 
 /**
  * Widget for clickable opening delimiter that triggers folding
@@ -31,21 +31,8 @@ class FoldableDelimiterWidget extends WidgetType {
 		span.style.cursor = 'pointer';
 		span.onclick = (e) => {
 			e.preventDefault();
-			const state = view.state;
-			const doc = state.doc;
-			const line = doc.line(this.lineNumber);
-
-			// Find the closing delimiter
-			const closingLineNum = findClosingDelimiter(this.lineNumber, state);
-			if (closingLineNum !== null) {
-				const closingLine = doc.line(closingLineNum);
-				const foldTo = closingLine.to < doc.length ? closingLine.to + 1 : closingLine.to;
-
-				// Fold the block
-				view.dispatch({
-					effects: foldEffect.of({ from: line.from, to: foldTo })
-				});
-			}
+			const line = view.state.doc.line(this.lineNumber);
+			foldMetadataBlockAtPosition(view, line.from);
 		};
 		return span;
 	}
