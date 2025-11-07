@@ -8,18 +8,13 @@ node_modules
 .wrangler
 /.svelte-kit
 /build
-/static/templates
-/static/quills
 
 # OS
 .DS_Store
 Thumbs.db
 
 # Env
-.env
-.env.*
-!.env.example
-!.env.test
+.env.*.local
 
 # Vite
 vite.config.js.timestamp-*
@@ -29,3 +24,8 @@ prompts
 .idea
 
 AGENTS.md
+
+# Supabase
+.branches
+.temp
+.env.local

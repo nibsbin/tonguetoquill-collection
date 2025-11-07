@@ -1,143 +1,122 @@
 /**
  * Document Client Service
  * Centralizes all document-related communication for client-side code
- * Handles branching between guest mode (localStorage) and authenticated mode (API)
+ * Uses dependency injection to work with any DocumentServiceContract implementation
  */
 
-import type { DocumentMetadata } from './types';
-import { documentBrowserStorage } from './document-browser-storage';
+import type { DocumentMetadata, DocumentServiceContract } from './types';
+import { DocumentBrowserStorage } from './document-browser-storage';
+import { APIDocumentService } from './api-document-service';
 
 /**
  * Document Client
- * Provides a unified interface for document operations that automatically
- * routes to either browser storage (guest mode) or API (authenticated mode)
+ * Provides a unified interface for document operations via dependency injection
+ * Delegates all operations to an injected DocumentServiceContract implementation
  */
 export class DocumentClient {
-	constructor(private isGuest: () => boolean) {}
+	constructor(
+		private service: DocumentServiceContract,
+		private userId: string
+	) {}
 
 	/**
 	 * List all documents for the current user
 	 */
 	async listDocuments(): Promise<DocumentMetadata[]> {
-		if (this.isGuest()) {
-			return await documentBrowserStorage.listUserDocuments();
-		}
-
-		const response = await fetch('/api/documents');
-		if (!response.ok) {
-			throw new Error('Failed to fetch documents');
-		}
-
-		const data = await response.json();
-		return data.documents || [];
+		const result = await this.service.listUserDocuments({
+			user_id: this.userId
+		});
+		return result.documents;
 	}
 
 	/**
 	 * Get a document with its content
 	 */
 	async getDocument(id: string): Promise<{ id: string; content: string; name: string }> {
-		if (this.isGuest()) {
-			const doc = await documentBrowserStorage.getDocumentContent(id);
-			if (!doc) {
-				throw new Error('Document not found');
-			}
-			return doc;
-		}
+		const doc = await this.service.getDocumentContent({
+			user_id: this.userId,
+			document_id: id
+		});
 
-		const response = await fetch(`/api/documents/${id}`);
-		if (!response.ok) {
-			throw new Error('Failed to fetch document');
-		}
-
-		const data = await response.json();
-		return data.document ?? data;
+		return {
+			id: doc.id,
+			name: doc.name,
+			content: doc.content
+		};
 	}
 
 	/**
 	 * Create a new document
 	 */
 	async createDocument(name: string, content: string = ''): Promise<DocumentMetadata> {
-		if (this.isGuest()) {
-			return await documentBrowserStorage.createDocument(name, content);
-		}
-
-		const response = await fetch('/api/documents', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ name, content })
+		const doc = await this.service.createDocument({
+			owner_id: this.userId,
+			name,
+			content
 		});
 
-		if (!response.ok) {
-			throw new Error('Failed to create document');
-		}
-
-		const data = await response.json();
-		return data.metadata ?? data;
+		// Return metadata (exclude content)
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { content: _, ...metadata } = doc;
+		return metadata;
 	}
 
 	/**
-	 * Update document content
+	 * Update document content and/or name
 	 */
 	async updateDocument(
 		id: string,
 		updates: { content?: string; name?: string }
 	): Promise<{ content_size_bytes?: number; updated_at?: string }> {
-		if (this.isGuest()) {
-			if (updates.content !== undefined) {
-				await documentBrowserStorage.updateDocumentContent(id, updates.content);
-			}
-			if (updates.name !== undefined) {
-				await documentBrowserStorage.updateDocumentName(id, updates.name);
-			}
+		let result: { content_size_bytes?: number; updated_at?: string } = {};
 
-			// Return metadata for store update
-			const metadata = await documentBrowserStorage.getDocumentMetadata(id);
-			return {
-				content_size_bytes: metadata?.content_size_bytes,
-				updated_at: metadata?.updated_at
+		// Update content if provided
+		if (updates.content !== undefined) {
+			const doc = await this.service.updateDocumentContent({
+				user_id: this.userId,
+				document_id: id,
+				content: updates.content
+			});
+			result = {
+				content_size_bytes: doc.content_size_bytes,
+				updated_at: doc.updated_at
 			};
 		}
 
-		const response = await fetch(`/api/documents/${id}`, {
-			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(updates)
-		});
-
-		if (!response.ok) {
-			throw new Error('Failed to update document');
+		// Update name if provided
+		if (updates.name !== undefined) {
+			const metadata = await this.service.updateDocumentName({
+				user_id: this.userId,
+				document_id: id,
+				name: updates.name
+			});
+			result = {
+				...result,
+				content_size_bytes: metadata.content_size_bytes,
+				updated_at: metadata.updated_at
+			};
 		}
 
-		const data = await response.json();
-		return {
-			content_size_bytes: data.document?.content_size_bytes ?? data.content_size_bytes,
-			updated_at: data.document?.updated_at ?? data.updated_at
-		};
+		return result;
 	}
 
 	/**
 	 * Delete a document
 	 */
 	async deleteDocument(id: string): Promise<void> {
-		if (this.isGuest()) {
-			await documentBrowserStorage.deleteDocument(id);
-			return;
-		}
-
-		const response = await fetch(`/api/documents/${id}`, {
-			method: 'DELETE'
+		await this.service.deleteDocument({
+			user_id: this.userId,
+			document_id: id
 		});
-
-		if (!response.ok) {
-			throw new Error('Failed to delete document');
-		}
 	}
 }
 
 /**
  * Create a document client instance
- * The isGuest function should return the current guest mode state
+ * Factory function that selects the appropriate service based on guest mode
  */
-export function createDocumentClient(isGuest: () => boolean): DocumentClient {
-	return new DocumentClient(isGuest);
+export function createDocumentClient(isGuest: boolean, userId: string = 'guest'): DocumentClient {
+	const service = isGuest ? new DocumentBrowserStorage() : new APIDocumentService();
+
+	return new DocumentClient(service, userId);
 }

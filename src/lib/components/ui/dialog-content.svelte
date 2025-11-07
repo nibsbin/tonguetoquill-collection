@@ -1,26 +1,33 @@
 <script lang="ts">
-	import { Dialog as DialogPrimitive } from 'bits-ui';
 	import { cn } from '$lib/utils/cn';
 
-	type DialogContentProps = {
+	interface DialogContentProps {
+		/** Content to render inside the scrollable area */
+		children: import('svelte').Snippet;
+		/** Additional CSS classes */
 		class?: string;
-		children?: import('svelte').Snippet;
-	};
+		/** Whether to apply prose styling (for long-form content) */
+		prose?: boolean;
+		/** Whether the dialog is in fullscreen mode (removes max-height) */
+		fullscreen?: boolean;
+	}
 
-	let { class: className, children, ...restProps }: DialogContentProps = $props();
+	let {
+		children,
+		class: className,
+		prose = false,
+		fullscreen = false
+	}: DialogContentProps = $props();
 </script>
 
-<DialogPrimitive.Portal>
-	<DialogPrimitive.Overlay class="fixed inset-0 z-50 bg-black/50" />
-	<DialogPrimitive.Content
-		class={cn(
-			'fixed top-[50%] left-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg border border-border bg-background p-6 shadow-lg',
-			className
-		)}
-		{...restProps}
-	>
-		{#if children}
-			{@render children()}
-		{/if}
-	</DialogPrimitive.Content>
-</DialogPrimitive.Portal>
+<div
+	class={cn(
+		'widget-scrollbar pr-2',
+		!fullscreen && 'max-h-[60dvh] overflow-y-auto',
+		fullscreen && 'h-full',
+		prose && 'widget-prose space-y-6',
+		className
+	)}
+>
+	{@render children()}
+</div>

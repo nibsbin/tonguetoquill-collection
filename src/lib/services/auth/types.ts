@@ -52,15 +52,11 @@ export interface TokenPayload {
  * Authentication error codes
  */
 export type AuthErrorCode =
-	| 'invalid_credentials'
-	| 'user_not_found'
-	| 'email_already_exists'
 	| 'invalid_token'
 	| 'token_expired'
-	| 'invalid_email'
-	| 'weak_password'
 	| 'unauthorized'
 	| 'session_expired'
+	| 'invalid_refresh_token'
 	| 'network_error'
 	| 'unknown_error';
 
@@ -80,52 +76,70 @@ export class AuthError extends Error {
 }
 
 /**
- * Sign up parameters
+ * Supported authentication providers
  */
-export interface SignUpParams {
-	email: string;
-	password: string;
-	dodid?: string;
-	profile?: Record<string, unknown>;
-}
+export type AuthProvider = 'mock' | 'email' | 'github';
 
 /**
- * Sign in parameters
+ * Authentication provider type (for UI configuration)
  */
-export interface SignInParams {
-	email: string;
-	password: string;
-}
+export type AuthProviderType = 'oauth' | 'magic_link';
 
 /**
- * Password reset parameters
+ * Authentication provider configuration (for UI display)
+ * Describes a single auth method available to users
  */
-export interface ResetPasswordParams {
-	email: string;
-}
-
-/**
- * Email verification parameters
- */
-export interface VerifyEmailParams {
-	token: string;
+export interface AuthProviderConfig {
+	/** Unique identifier for this provider */
+	id: AuthProvider;
+	/** Type of authentication */
+	type: AuthProviderType;
+	/** Display name shown to users */
+	name: string;
+	/** Icon identifier for UI rendering */
+	icon?: string;
+	/** Whether this provider requires user input (e.g., email) */
+	requiresInput?: boolean;
+	/** Input field configuration if requiresInput is true */
+	inputConfig?: {
+		type: 'email' | 'text';
+		placeholder: string;
+		label: string;
+	};
 }
 
 /**
  * Authentication contract interface
  * All authentication providers (mock and real) must implement this interface
+ * Supports both OAuth (redirect) and email (OTP/magic link) flows
  */
 export interface AuthContract {
 	/**
-	 * Create a new user account
+	 * Get the available authentication providers
 	 */
-	signUp(params: SignUpParams): Promise<AuthResult>;
+	getAvailableProviders(): Promise<AuthProviderConfig[]>;
 
 	/**
-	 * Authenticate user and create session
+	 * Get the OAuth login URL for this provider
+	 * Returns the URL to redirect users to for authentication
+	 * @param redirectUri - The callback URL to return to after authentication
+	 * @param provider - Optional provider to use (required if multiple providers are enabled)
 	 */
-	signIn(params: SignInParams): Promise<AuthResult>;
+	getLoginUrl(redirectUri: string, provider?: AuthProvider): Promise<string>;
 
+	/**
+	 * Exchange OAuth authorization code for tokens
+	 * This is called after the user authenticates with the provider
+	 */
+	exchangeCodeForTokens(code: string): Promise<AuthResult>;
+
+	/**
+	 * Send authentication email (OTP code or magic link)
+	 * @param email - User's email address
+	 * @param redirectUri - Callback URL for magic links
+	 * @returns Success message to display to user
+	 */
+	sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }>;
 	/**
 	 * Invalidate session
 	 */
@@ -140,16 +154,6 @@ export interface AuthContract {
 	 * Retrieve user from access token
 	 */
 	getCurrentUser(accessToken: string): Promise<User | null>;
-
-	/**
-	 * Initiate password reset flow
-	 */
-	resetPassword(params: ResetPasswordParams): Promise<void>;
-
-	/**
-	 * Confirm email verification
-	 */
-	verifyEmail(params: VerifyEmailParams): Promise<void>;
 
 	/**
 	 * Validate JWT token and return payload

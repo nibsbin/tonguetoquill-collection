@@ -2,7 +2,7 @@
 	import { cn } from '$lib/utils/cn';
 
 	type ButtonProps = {
-		variant?: 'default' | 'ghost' | 'outline';
+		variant?: 'default' | 'ghost' | 'outline' | 'destructive' | 'success';
 		size?: 'default' | 'sm' | 'lg' | 'icon';
 		class?: string;
 		children?: import('svelte').Snippet;
@@ -28,8 +28,9 @@
 
 	const variants = {
 		default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-		ghost: 'hover:bg-accent hover:text-accent-foreground',
-		outline: 'border border-border hover:bg-accent hover:text-accent-foreground'
+		ghost: 'text-foreground hover:bg-accent hover:text-accent-foreground',
+		outline: 'border border-border hover:bg-accent hover:text-accent-foreground',
+		destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
 	};
 
 	const sizes = {

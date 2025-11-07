@@ -44,6 +44,14 @@ export interface YamlPair {
 }
 
 /**
+ * Represents a YAML comment
+ */
+export interface YamlComment {
+	from: number;
+	to: number;
+}
+
+/**
  * Check if a line containing `---` is a metadata delimiter or a horizontal rule.
  * A horizontal rule has blank lines both above AND below it.
  * A metadata delimiter does NOT have blank lines both above and below.
@@ -195,7 +203,11 @@ export function findYamlPairs(from: number, to: number, doc: Text): YamlPair[] {
 
 			// Only add decoration if there's a value on the same line
 			if (value.trim().length > 0) {
-				const valueStart = currentPos + line.indexOf(value);
+				// Search for the value starting AFTER the colon to avoid finding the key
+				// when key and value are identical (e.g., "asdf: asdf")
+				const colonIndex = indent.length + key.length;
+				const valueStartInLine = line.indexOf(value, colonIndex + 1);
+				const valueStart = currentPos + valueStartInLine;
 				const valueEnd = valueStart + value.length;
 
 				// Determine value type
@@ -235,4 +247,29 @@ export function findYamlPairs(from: number, to: number, doc: Text): YamlPair[] {
 	}
 
 	return pairs;
+}
+
+/**
+ * Find YAML comments within a range
+ * Comments start with # and continue to the end of the line
+ */
+export function findYamlComments(from: number, to: number, doc: Text): YamlComment[] {
+	const text = doc.sliceString(from, to);
+	const comments: YamlComment[] = [];
+
+	// Match # character followed by any content to end of line
+	const regex = /#[^\n]*/g;
+
+	let match;
+	while ((match = regex.exec(text)) !== null) {
+		const commentStart = from + match.index;
+		const commentEnd = commentStart + match[0].length;
+
+		comments.push({
+			from: commentStart,
+			to: commentEnd
+		});
+	}
+
+	return comments;
 }

@@ -4,8 +4,9 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MockAuthProvider } from '$lib/services/auth/mock-provider';
+import { MockAuthProvider } from '$lib/server/services/auth/auth-mock-provider';
 import { MockDocumentService } from './document-mock-service';
+import { DocumentError } from '$lib/services/documents';
 
 describe('Document API Integration', () => {
 	let authProvider: MockAuthProvider;
@@ -13,16 +14,13 @@ describe('Document API Integration', () => {
 	let userId: string;
 
 	beforeEach(async () => {
-		authProvider = new MockAuthProvider('test-secret');
+		authProvider = await MockAuthProvider.create();
 		documentService = new MockDocumentService();
 		authProvider.clearAllData();
 		documentService.clearAllData();
 
-		// Create a test user and get access token
-		const result = await authProvider.signUp({
-			email: 'test@example.com',
-			password: 'password123'
-		});
+		// Create a test user and get access token using OAuth-like flow
+		const result = await authProvider.exchangeCodeForTokens('test_auth_code');
 		userId = result.user.id;
 	});
 
@@ -107,7 +105,7 @@ describe('Document API Integration', () => {
 				content: 'Content'
 			});
 
-			await documentService.deleteDocument(userId, doc.id);
+			await documentService.deleteDocument({ user_id: userId, document_id: doc.id });
 
 			const result = await documentService.listUserDocuments({ user_id: userId });
 			expect(result.total).toBe(0);
@@ -116,12 +114,9 @@ describe('Document API Integration', () => {
 
 	describe('Authorization Flow', () => {
 		it('should verify ownership before operations', async () => {
-			// Create another user
-			const result2 = await authProvider.signUp({
-				email: 'other@example.com',
-				password: 'password123'
-			});
-			const otherUserId = result2.user.id;
+			// Create another user for testing
+			const otherUser = authProvider.createTestUser('other@example.com', 'OTHER123');
+			const otherUserId = otherUser.id;
 
 			// Create document as first user
 			const doc = await documentService.createDocument({
@@ -131,7 +126,9 @@ describe('Document API Integration', () => {
 			});
 
 			// Try to access as second user (should fail)
-			await expect(documentService.getDocumentContent(otherUserId, doc.id)).rejects.toThrow();
+			await expect(
+				documentService.getDocumentContent({ user_id: otherUserId, document_id: doc.id })
+			).rejects.toThrow(DocumentError);
 		});
 	});
 });

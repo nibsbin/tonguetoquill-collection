@@ -101,49 +101,26 @@ class QuillmarkServiceImpl implements QuillmarkService {
 		this.validateInitialized();
 		return this.manifest?.quills ?? [];
 	}
-
 	/**
-	 * Render markdown to PDF
-	 */
-	async renderToPDF(markdown: string, quillName: string): Promise<Blob> {
-		this.validateInitialized();
-		this.validateQuillExists(quillName);
-
-		try {
-			const result = exporters!.render(this.engine!, markdown, {
-				quillName: quillName,
-				format: 'pdf'
-			});
-
-			return exporters!.toBlob(result);
-		} catch (error) {
-			const diagnostic = this.extractDiagnostic(error);
-
-			if (diagnostic) {
-				throw new QuillmarkError('render_error', diagnostic.message, diagnostic);
-			} else {
-				const message = error instanceof Error ? error.message : 'Unknown error';
-				throw new QuillmarkError('render_error', `Failed to render PDF: ${message}`);
-			}
-		}
-	}
-
-	/**
-	 * Render markdown for preview with auto-detected format and backend
+	 * Render markdown to specified format
 	 * Does not specify quill or output format - allows engine to auto-detect
 	 */
-	async renderForPreview(markdown: string): Promise<RenderResult> {
+	async render(markdown: string, format?: RenderFormat): Promise<RenderResult> {
 		this.validateInitialized();
 
 		try {
 			// Render without quill name or format - let engine auto-detect based on content
-			const result = exporters!.render(this.engine!, markdown, {
-				// No quillName or format specified - engine auto-detects backend
-			});
+			let result: RenderResult;
+			if (format) {
+				result = exporters!.render(this.engine!, markdown, {
+					format
+				});
+			} else {
+				result = exporters!.render(this.engine!, markdown);
+			}
 
 			return result;
 		} catch (error) {
-			console.log('Error during renderForPreview:', error);
 			// Extract diagnostic information if available
 			const diagnostic = this.extractDiagnostic(error);
 

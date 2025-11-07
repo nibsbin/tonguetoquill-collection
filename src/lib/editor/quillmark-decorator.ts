@@ -6,14 +6,15 @@ import {
 	WidgetType
 } from '@codemirror/view';
 import { RangeSetBuilder } from '@codemirror/state';
-import { foldEffect, foldedRanges } from '@codemirror/language';
+import { foldedRanges, foldEffect, unfoldEffect } from '@codemirror/language';
 import {
 	findMetadataBlocks,
 	findScopeQuillKeywords,
 	findYamlPairs,
+	findYamlComments,
 	type MetadataBlock
 } from './quillmark-patterns';
-import { findClosingDelimiter } from './quillmark-folding';
+import { foldMetadataBlockAtPosition } from './quillmark-fold-utils';
 
 /**
  * Widget for clickable opening delimiter that triggers folding
@@ -30,21 +31,8 @@ class FoldableDelimiterWidget extends WidgetType {
 		span.style.cursor = 'pointer';
 		span.onclick = (e) => {
 			e.preventDefault();
-			const state = view.state;
-			const doc = state.doc;
-			const line = doc.line(this.lineNumber);
-
-			// Find the closing delimiter
-			const closingLineNum = findClosingDelimiter(this.lineNumber, state);
-			if (closingLineNum !== null) {
-				const closingLine = doc.line(closingLineNum);
-				const foldTo = closingLine.to < doc.length ? closingLine.to + 1 : closingLine.to;
-
-				// Fold the block
-				view.dispatch({
-					effects: foldEffect.of({ from: line.from, to: foldTo })
-				});
-			}
+			const line = view.state.doc.line(this.lineNumber);
+			foldMetadataBlockAtPosition(view, line.from);
 		};
 		return span;
 	}
@@ -62,6 +50,7 @@ const yamlKeyMark = Decoration.mark({ class: 'cm-quillmark-yaml-key' });
 const yamlStringMark = Decoration.mark({ class: 'cm-quillmark-yaml-string' });
 const yamlNumberMark = Decoration.mark({ class: 'cm-quillmark-yaml-number' });
 const yamlBooleanMark = Decoration.mark({ class: 'cm-quillmark-yaml-bool' });
+const yamlCommentMark = Decoration.mark({ class: 'cm-quillmark-yaml-comment' });
 
 /**
  * QuillMark decorator plugin
@@ -74,8 +63,21 @@ class QuillMarkDecorator {
 		this.decorations = this.computeDecorations(view);
 	}
 
-	update(update: { docChanged: boolean; viewportChanged: boolean; view: EditorView }) {
-		if (update.docChanged || update.viewportChanged) {
+	update(update: any) {
+		// Check if any fold/unfold effects were applied
+		let hasFoldChange = false;
+		for (const transaction of update.transactions) {
+			for (const effect of transaction.effects) {
+				if (effect.is(foldEffect) || effect.is(unfoldEffect)) {
+					hasFoldChange = true;
+					break;
+				}
+			}
+			if (hasFoldChange) break;
+		}
+
+		// Recompute decorations if document changed, viewport changed, or fold state changed
+		if (update.docChanged || update.viewportChanged || hasFoldChange) {
 			this.decorations = this.computeDecorations(update.view);
 		}
 	}
@@ -241,6 +243,17 @@ class QuillMarkDecorator {
 					isLine: false
 				});
 			}
+		}
+
+		// Decorate YAML comments
+		const yamlComments = findYamlComments(block.contentFrom, block.contentTo, doc);
+		for (const comment of yamlComments) {
+			decorations.push({
+				from: comment.from,
+				to: comment.to,
+				decoration: yamlCommentMark,
+				isLine: false
+			});
 		}
 	}
 }

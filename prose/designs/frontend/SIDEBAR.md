@@ -24,21 +24,123 @@ The new sidebar design is inspired by `prose/claude-theme/claude-sidebar.html`, 
 
 ## Layout & Proportions
 
+### Positioning Strategy
+
+**Responsive Hybrid Architecture**:
+
+The sidebar uses a **responsive positioning strategy** that adapts behavior based on viewport size:
+
+**Desktop Mode (≥ 768px)**:
+
+- **Positioning**: `position: relative` - Sidebar is part of normal document flow
+- **Layout behavior**: Sidebar pushes content (traditional sidebar pattern)
+- **Collapsed State (48px)**: Content area has full remaining width
+- **Expanded State (288px)**: Content area shrinks by 240px to accommodate sidebar
+- **No backdrop**: Content remains fully interactive
+
+**Mobile Mode (< 768px)**:
+
+- **Positioning**: `position: fixed` - Sidebar overlays content
+- **Layout behavior**: Sidebar does not affect content width
+- **Collapsed State (48px)**: Content has 48px left margin to avoid sidebar overlap
+- **Expanded State (288px)**: Content still has 48px margin; additional 240px overlays content
+- **Backdrop**: Semi-transparent overlay dims content and provides click-to-dismiss
+
 ### Dimensions
 
-**Desktop (≥1024px)**:
+**Width Values**:
 
-- **Expanded width**: 18rem (288px / w-72) - updated October 2025
+- **Expanded width**: 18rem (288px / w-72)
 - **Collapsed width**: 3rem (48px / w-12)
 - **Transition**: 300ms duration with cubic-bezier(0.165, 0.85, 0.45, 1) easing
 
-**Mobile (<1024px)**:
+**Layout Footprint by Mode**:
 
-- Full-screen drawer overlay
-- Width: 18rem (288px / w-72) when open
-- Slides in from left with shadow
+- **Desktop (≥ 768px)**:
+  - Collapsed: 48px layout space
+  - Expanded: 288px layout space
+  - Main content has no left margin (flows next to sidebar)
 
-**Implementation Status**: ✅ Implemented (October 2025). See `prose/debriefs/sidebar-redesign.md`
+- **Mobile (< 768px)**:
+  - Collapsed: 48px layout space (fixed positioning, content has 48px margin)
+  - Expanded: 48px layout space (overlay mode, additional 240px overlays content)
+  - Main content maintains constant 48px left margin
+
+**Implementation Status**: ✅ Responsive hybrid pattern (November 2025)
+
+**Note**: The sidebar uses responsive CSS to adapt positioning strategy based on viewport width (768px breakpoint).
+
+### Z-Index Layering
+
+**Mobile Mode (< 768px) - Overlay Pattern**:
+
+Layer stack (from bottom to top):
+
+1. **Main Content**: `z-index: 0` (base layer)
+2. **Backdrop Overlay**: `z-index: 40` (appears when sidebar is expanded)
+3. **Sidebar**: `z-index: 50` (always above backdrop and content)
+
+**Desktop Mode (≥ 768px) - Flow Pattern**:
+
+- **Sidebar**: `z-index: 10` (canvas-ui layer, for internal UI elements only)
+- **Main Content**: No z-index (normal document flow)
+- **No backdrop**: Not used in desktop mode
+
+### Backdrop Overlay
+
+**Mobile Only (< 768px)**:
+
+**Purpose**: When the sidebar is expanded in mobile mode, a semi-transparent backdrop overlays the main content to:
+
+1. Visually indicate the sidebar is in an "active" overlay state
+2. Provide a click target to collapse the sidebar
+3. Improve sidebar content readability by dimming background content
+
+**Backdrop Behavior**:
+
+- **Desktop Mode**: Backdrop never renders (not applicable)
+- **Mobile Collapsed**: Backdrop not rendered (display: none or removed from DOM)
+- **Mobile Expanded**: Backdrop fades in over content area
+- **Interaction**: Clicking backdrop collapses sidebar (mobile only)
+- **Animation**: Fade in/out over 200ms (faster than sidebar width transition)
+
+**Backdrop Styling**:
+
+```css
+.sidebar-backdrop {
+	position: fixed;
+	top: 0;
+	left: 48px; /* Start after collapsed sidebar width */
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
+	z-index: var(--z-sidebar-backdrop, 40);
+	transition: opacity 200ms cubic-bezier(0.165, 0.85, 0.45, 1);
+}
+
+/* Fade in when expanded */
+.sidebar-backdrop.visible {
+	opacity: 1;
+}
+
+/* Hidden state */
+.sidebar-backdrop.hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+```
+
+**Alternative Backdrop Colors**:
+
+- **Dark theme**: `rgba(0, 0, 0, 0.4)` - Black with 40% opacity
+- **Light theme**: `rgba(0, 0, 0, 0.2)` - Black with 20% opacity (less aggressive)
+- **Themed**: `rgba(var(--color-background-rgb), 0.8)` - Uses theme background color
+
+**Accessibility Considerations**:
+
+- Backdrop should not trap focus (sidebar itself handles focus management)
+- Escape key should also collapse sidebar (in addition to backdrop click)
+- ARIA attributes on sidebar: `aria-expanded="true/false"`
 
 ### Structure
 
@@ -177,6 +279,29 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 
 ## Component Structure
 
+### Overview
+
+**Overlay Drawer Components**:
+
+The sidebar overlay drawer architecture requires three coordinated components:
+
+1. **`Sidebar.svelte`**: Main sidebar component with fixed positioning
+2. **`SidebarBackdrop.svelte`**: Overlay backdrop (new component)
+3. **`+layout.svelte`**: Root layout that coordinates sidebar, backdrop, and main content
+
+**File Structure**:
+
+```
+src/lib/components/
+├── Sidebar.svelte              # Main sidebar (update positioning)
+├── SidebarBackdrop.svelte      # New backdrop component
+├── SidebarButtonSlot.svelte    # Existing button component (no changes)
+└── ...
+
+src/routes/
+└── +layout.svelte              # Root layout (update structure)
+```
+
 ### Header Section
 
 **Layout**:
@@ -191,7 +316,8 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 - Icon-only design (no text label)
 - Dual-icon pattern: sidebar-open and sidebar-collapsed icons
 - Smooth crossfade animation on hover
-- ARIA label for accessibility
+- `aria-expanded` attribute reflects sidebar state
+- `aria-label` for accessibility ("Expand sidebar" / "Collapse sidebar")
 
 ### Primary Actions
 
@@ -237,12 +363,14 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 
 ### Footer Section
 
-**User Profile Display**:
+**Authentication UI**:
 
-- Avatar/initials display (circular)
-- User name and secondary info (email or plan type)
-- Chevron/dropdown indicator for menu access
-- Layout: horizontal flex with proper alignment
+See [LOGIN_PROFILE_UI.md](./LOGIN_PROFILE_UI.md) for detailed authentication UI integration:
+
+- **Guest Mode**: Sign-in button with `log-in` icon
+- **Logged-in Mode**: User profile button with user icon and user email
+- Position: Above settings button, under same divider
+- Clicking triggers authentication modals (sign-in or profile)
 
 **Settings**:
 
@@ -252,22 +380,65 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 
 ## Responsive Behavior
 
-### Desktop (≥1024px)
+### Breakpoint-Based Architecture
 
-- Sidebar persistent and fixed/sticky
-- Width transitions smoothly between collapsed (48px) and expanded (288px)
-- Border on right edge: `border-r-0.5` or `border-r`
-- Shadow: `shadow-lg` on desktop (optional)
+**Breakpoint**: 768px (matches Tailwind's `md` breakpoint)
 
-### Tablet/Mobile (<1024px)
+### Desktop Mode (≥ 768px)
 
-- Sidebar becomes full-screen drawer overlay
-- Activated by hamburger menu button (top-left)
-- Width: 18rem (288px) when open
-- Overlay background with opacity
-- Slides in from left with transition
-- Shadow: `shadow-lg` for depth
-- Z-index: `z-sidebar` (high value)
+**Layout Behavior**:
+
+- **Positioning**: `position: relative` - part of normal document flow
+- **Collapsed (48px)**: Content flows next to sidebar with full remaining width
+- **Expanded (288px)**: Content is pushed right, width reduced by 240px
+- **No backdrop**: Content remains fully visible and interactive
+- **Z-index**: Uses `--z-canvas-ui: 10` for internal sidebar UI only
+
+**User Experience**:
+
+- Traditional sidebar pattern familiar to desktop users
+- Sidebar expansion does not obscure content
+- Content naturally reflows when sidebar changes width
+- Toggle button switches between collapsed/expanded states
+- State can be persisted to localStorage for user preference
+
+**Default State**: Consider expanded by default on desktop (more screen space available)
+
+### Mobile Mode (< 768px)
+
+**Layout Behavior**:
+
+- **Positioning**: `position: fixed` - overlays content
+- **Collapsed (48px)**: Content has 48px left margin to avoid overlap
+- **Expanded (288px)**: Sidebar overlays content; backdrop dims background
+- **Backdrop**: Semi-transparent `rgba(0, 0, 0, 0.4)` overlay
+- **Z-index**: Uses `--z-sidebar: 50` and `--z-sidebar-backdrop: 40`
+
+**User Experience**:
+
+- Drawer pattern familiar to mobile users
+- Content width remains constant (no reflow)
+- Backdrop provides visual focus and click-to-dismiss
+- Escape key collapses sidebar (in addition to backdrop click)
+- Ideal for touch interfaces with limited screen width
+
+**Default State**: Collapsed by default on mobile (maximize content space)
+
+**Interaction Patterns**:
+
+- Tap toggle button to expand/collapse
+- Tap backdrop to collapse (when expanded)
+- Press Escape to collapse (when expanded)
+- Future: Swipe gestures (swipe right to expand, left to collapse)
+
+### Responsive Width
+
+**Implemented Approach** (Consistent Width):
+
+- Collapsed: 48px across all screen sizes
+- Expanded: 288px across all screen sizes
+- Simple and predictable behavior
+- No viewport-specific width calculations needed
 
 ## Accessibility
 
@@ -276,246 +447,36 @@ Uses semantic CSS custom properties defined in the theme system (see DESIGN_SYST
 - All interactive elements focusable
 - Visible focus indicators (ring)
 - Logical tab order
-- Escape key closes mobile drawer
+- **Escape key collapses sidebar when expanded** (critical for overlay drawer)
+- Tab should not cycle through backdrop (backdrop is not focusable, only clickable)
+- Focus remains on sidebar toggle button after collapse
 
 ### ARIA Attributes
 
 - `aria-label` on icon-only buttons
-- `aria-expanded` on toggle button
+- `aria-expanded="true|false"` on toggle button (reflects sidebar state)
 - `aria-current` on active navigation item
 - `role="navigation"` on sidebar
-- `aria-hidden` on decorative elements
+- `aria-hidden="true"` on decorative elements
+- **`aria-modal="false"` on sidebar** - sidebar is not a modal, users can still interact with content
+- `aria-hidden="true"` on backdrop (purely visual, not interactive for screen readers)
 
 ### Screen Reader Support
 
 - Meaningful button labels
-- Status announcements for state changes
+- **Status announcements for state changes**: "Sidebar expanded" / "Sidebar collapsed"
 - Skip to main content link
 - Proper heading hierarchy
+- Backdrop should be ignored by screen readers (aria-hidden)
 
-## Animation Details
+### Focus Management
 
-### Transition Timing
+**Overlay Drawer Specific**:
 
-- **Standard duration**: 300ms for most transitions
-- **Fast micro-interactions**: 100-150ms for immediate feedback
-- **Slower deliberate actions**: 500ms for emphasis
-- **Easing curve**: Custom cubic-bezier(0.165, 0.85, 0.45, 1) for natural movement
-
-### Scale Effects
-
-- **Button press**: Subtle shrink to 98.5% on active state
-- **Hover grow**: Slight scale increase (105-110%) for emphasis
-- **No scale on active items**: Prevent double-animation when item is already selected
-
-### Transform Patterns
-
-- **Rotation**: Micro rotations (-3° to 6°) for playfulness
-- **Translation**: Pixel-level movements (0.5-2.8px) for subtle shifts
-- **Combined transforms**: Rotation + translation + scale for rich interactions
-- **Performance**: Use CSS transforms for GPU acceleration
-
-## Implementation Notes
-
-### Collapse/Expand Logic
-
-**Collapsed State (48px width)**:
-
-- Display icons only, hide text labels
-- Maintain consistent icon button sizes
-- Show user avatar only (hide name/plan)
-- Hide recent items section entirely
-- Consider tooltips on hover for context
-
-**Expanded State (288px width)**:
-
-- Display icons with text labels
-- Show full user profile information
-- Display recent items with scrolling
-- Show all section headers and dividers
-
-### Mobile Considerations
-
-**Drawer Pattern**:
-
-- Hamburger menu trigger: fixed position, high z-index
-- Drawer slides in from left edge
-- Full height, 288px width
-- Semi-transparent backdrop overlay
-- Close triggers: backdrop click, escape key, navigation
-
-**Touch Optimization**:
-
-- Minimum 44x44px touch targets
-- Adequate spacing between interactive elements
-- Prevent accidental activation
-- Body scroll lock when drawer is open
-
-### Performance
-
-**Optimization Strategies**:
-
-- Use CSS transforms for GPU acceleration
-- Avoid animating layout-triggering properties
-- Debounce resize event handlers
-- Consider virtual scrolling for very long lists
-- Lazy load non-critical assets
-
-## Button Slot Architecture
-
-### Concept
-
-The sidebar button slot is a three-layer nested structure designed to maintain consistent sizing and centering across collapsed and expanded states:
-
-**Layer 1: Button Slot Container**
-
-- Size: Square of `--sidebar-collapsed-width` (56px) in collapsed state
-- Expands: Horizontally to full sidebar width when expanded
-- Purpose: Provides consistent vertical rhythm and horizontal padding
-- Centering: Uses flexbox to center child elements
-
-**Layer 2: Button Element**
-
-- Size: Square of `--sidebar-button-size` (40px)
-- Behavior: Remains fixed size in both collapsed and expanded states
-- Purpose: Interactive click target with consistent touch area
-- Centering: Centered within the slot container
-
-**Layer 3: Icon Element**
-
-- Size: Square of `--sidebar-icon-size` (24px)
-- Behavior: Fixed size, centered within button
-- Purpose: Visual indicator
-- Spacing: When text is present (expanded state), icon has right margin
-
-### Component Implementation
-
-**SidebarButtonSlot Component**:
-
-- Reusable component for all sidebar buttons
-- Handles centering logic automatically
-- Supports both icon-only (collapsed) and icon+label (expanded) states
-- Maintains consistent padding in both states
-- Props:
-  - `icon`: Icon component to display
-  - `label`: Text label (shown only when expanded)
-  - `variant`: Button style variant ('ghost', 'primary', etc.)
-  - `onclick`: Click handler
-  - `ariaLabel`: Accessibility label
-  - Other button props as needed
-
-### Semantic Tokens
-
-**Size Tokens** (already defined):
-
-- `--sidebar-collapsed-width`: 3.5rem (56px) - Full slot width when collapsed
-- `--sidebar-button-size`: 2.5rem (40px) - Button element size
-- `--sidebar-icon-size`: 1.5rem (24px) - Icon size
-- `--sidebar-padding`: 0.5rem (8px) - Consistent padding
-
-**Derived Tokens** (for clarity and DRY):
-
-- `--sidebar-slot-width-collapsed`: var(--sidebar-collapsed-width)
-- `--sidebar-slot-height`: var(--sidebar-collapsed-width) - Maintains square aspect ratio
-- `--sidebar-button-spacing`: calc((var(--sidebar-collapsed-width) - var(--sidebar-button-size)) / 2) - Auto-calculates centering offset (8px)
-
-### Centering Strategy
-
-**Horizontal Centering**:
-
-- Collapsed state: Button centered in slot using flexbox (`justify-center`)
-- Expanded state: Button aligned to start with consistent left padding (`--sidebar-padding`)
-
-**Vertical Centering**:
-
-- Always centered using flexbox (`items-center`)
-- Slot height equals `--sidebar-collapsed-width` for perfect square in collapsed state
-
-**Nested Centering**:
-
-- Icon centered within button using flexbox
-- Text aligned with icon baseline when present
-
-### Implementation
-
-**File**: `src/lib/components/SidebarButtonSlot.svelte`
-
-**Usage Example**:
-
-```svelte
-<SidebarButtonSlot
-  icon={Menu}
-  label="Settings"  // Optional, shown only when expanded
-  {isExpanded}
-  class="custom-classes"
-  onclick={handleClick}
-  ariaLabel="Descriptive label for accessibility"
-/>
-```
-
-**Features**:
-
-- Automatic layout switching between icon-only and icon+label states
-- Proper centering at all three layers (slot, button, icon)
-- Consistent padding in both collapsed and expanded states
-- Supports all standard button props (variant, onclick, disabled, etc.)
-- Maintains visual consistency across all sidebar buttons
-
-## Design Tokens Reference
-
-**Background Tokens**:
-
-- bg-200: Main sidebar background (zinc-900, #18181b)
-- bg-300: Intermediate level (between 900 and 800)
-- bg-400: Elevated surfaces and hover states (zinc-800, #27272a)
-
-**Text Tokens**:
-
-- text-100: Primary text (zinc-100, #f4f4f5)
-- text-200: Secondary text (zinc-300, #d4d4d8)
-- text-300: Muted/tertiary text (zinc-400, #a1a1aa)
-
-**Border Tokens**:
-
-- border-300: Standard borders (zinc-700, #3f3f46)
-
-**Accent Tokens**:
-
-- accent-main-000: Primary brand color (USAF Blue #355e93)
-- accent-main-100: Lighter variant for text on dark backgrounds
-- accent-brand: Alias for main accent color
-
-**Special Tokens**:
-
-- always-white: Pure white (#ffffff) for high contrast
-- always-black: Pure black (#000000) for masks and overlays
-
-## Migration Path
-
-1. **Phase 1**: Update dimensions and spacing
-   - Change expanded width to 18rem
-   - Adjust item heights (h-9 for nav, h-8 for recents)
-   - Update padding/margin values
-
-2. **Phase 2**: Enhance button styles
-   - Add hover scale effects
-   - Implement icon animations
-   - Add gradient text masks
-
-3. **Phase 3**: Improve visual hierarchy
-   - Add section headers with sticky positioning
-   - Implement gradient fades
-   - Update typography weights
-
-4. **Phase 4**: Polish interactions
-   - Smooth transitions
-   - Hover state improvements
-   - Focus indicators
-
-5. **Phase 5**: Mobile refinements
-   - Adjust drawer behavior
-   - Optimize touch targets
-   - Test gestures
+- When sidebar expands: Focus stays on toggle button (or moves to sidebar if triggered programmatically)
+- When sidebar collapses: Focus returns to toggle button
+- **Do not trap focus**: Unlike modals, sidebar overlay does not trap focus - users can tab to main content
+- Backdrop is not focusable (only clickable with mouse/touch)
 
 ## Future Enhancements
 
@@ -533,5 +494,7 @@ The sidebar button slot is a three-layer nested structure designed to maintain c
 - Current implementation: `src/lib/components/Sidebar.svelte`
 - Button slot component: `src/lib/components/SidebarButtonSlot.svelte`
 - Design system: `prose/designs/frontend/DESIGN_SYSTEM.md`
+- Login and profile UI: `prose/designs/frontend/LOGIN_PROFILE_UI.md`
+- Document loading and switching: `prose/designs/frontend/OPTIMISTIC_PAGE_LOADING.md`
 - Component library: shadcn-svelte
 - Icon library: lucide-svelte

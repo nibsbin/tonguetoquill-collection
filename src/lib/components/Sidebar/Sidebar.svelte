@@ -1,41 +1,43 @@
 <script lang="ts">
-	import { Menu, Settings, User, Plus } from 'lucide-svelte';
+	import { Menu, Settings, Plus, LogIn, User } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { SidebarButtonSlot } from '$lib/components/Sidebar';
 	import { DocumentListItem } from '$lib/components/DocumentList';
-	import Separator from '$lib/components/ui/separator.svelte';
-	import Popover from '$lib/components/ui/popover.svelte';
-	import PopoverTrigger from '$lib/components/ui/popover-trigger.svelte';
-	import PopoverContent from '$lib/components/ui/popover-content.svelte';
+	import BasePopover from '$lib/components/ui/base-popover.svelte';
 	import Switch from '$lib/components/ui/switch.svelte';
 	import Label from '$lib/components/ui/label.svelte';
-	import Sheet from '$lib/components/ui/sheet.svelte';
-	import SheetTrigger from '$lib/components/ui/sheet-trigger.svelte';
-	import SheetContent from '$lib/components/ui/sheet-content.svelte';
-	import { Root as Dialog } from '$lib/components/ui/dialog.svelte';
-	import DialogContent from '$lib/components/ui/dialog-content.svelte';
-	import DialogHeader from '$lib/components/ui/dialog-header.svelte';
-	import DialogTitle from '$lib/components/ui/dialog-title.svelte';
-	import DialogDescription from '$lib/components/ui/dialog-description.svelte';
-	import DialogFooter from '$lib/components/ui/dialog-footer.svelte';
+	import LoginPopover from './LoginPopover.svelte';
+	import NewDocumentDialog from '$lib/components/NewDocumentDialog';
 	import { documentStore } from '$lib/stores/documents.svelte';
+	import { responsiveStore } from '$lib/stores/responsive.svelte';
+	import { templateService } from '$lib/services/templates';
 	import { onMount } from 'svelte';
+	import { loginClient } from '$lib/services/auth';
 
 	type SidebarProps = {
 		user?: { email: string; id: string } | null;
+		newDocDialogOpen?: boolean;
+		onNewDocDialogOpenChange?: (open: boolean) => void;
+		isExpanded?: boolean;
 	};
 
-	let { user }: SidebarProps = $props();
-
-	let isExpanded = $state(false);
+	let {
+		user,
+		newDocDialogOpen = $bindable(false),
+		isExpanded = $bindable(false)
+	}: SidebarProps = $props();
 	let autoSave = $state(true);
 	let lineNumbers = $state(true);
 	let popoverOpen = $state(false);
-	let mobileSheetOpen = $state(false);
-	let isMobile = $state(false);
-	let deleteDialogOpen = $state(false);
-	let documentToDelete = $state<string | null>(null);
+	let loginPopoverOpen = $state(false);
 	let isDarkMode = $state(true);
+	let profilePopoverOpen = $state(false);
+
+	// Use centralized responsive store
+	const isMobile = $derived(responsiveStore.isMobile);
+
+	// Get existing document names for collision detection
+	const existingDocumentNames = $derived(documentStore.documents.map((d) => d.name));
 
 	onMount(() => {
 		// Load dark mode preference from localStorage
@@ -62,17 +64,6 @@
 		if (savedLineNumbers !== null) {
 			lineNumbers = savedLineNumbers === 'true';
 		}
-
-		// Check if mobile
-		const checkMobile = () => {
-			isMobile = window.innerWidth < 1024;
-		};
-		checkMobile();
-		window.addEventListener('resize', checkMobile);
-
-		return () => {
-			window.removeEventListener('resize', checkMobile);
-		};
 	});
 
 	function handleToggle() {
@@ -80,40 +71,30 @@
 		localStorage.setItem('sidebar-expanded', isExpanded.toString());
 	}
 
-	function handleNewFile() {
-		documentStore.createDocument();
-		// Close mobile sheet after creating file
-		if (isMobile) {
-			mobileSheetOpen = false;
+	async function handleCreateDocument(name: string, templateFilename: string) {
+		let content = '';
+
+		// Load template content
+		try {
+			const template = await templateService.getTemplate(templateFilename);
+			content = template.content;
+		} catch (error) {
+			console.error('Failed to load template:', error);
+			// Re-throw to show error in dialog
+			throw error;
 		}
+
+		// Create document with name and content
+		await documentStore.createDocument(name, content);
 	}
 
 	function handleFileSelect(fileId: string) {
 		documentStore.setActiveDocumentId(fileId);
-		// Close mobile sheet after selecting file
-		if (isMobile) {
-			mobileSheetOpen = false;
-		}
 	}
 
 	function handleDeleteFile(fileId: string) {
-		// Always show confirmation dialog (allow deleting the last document).
-		// The store will handle selecting a new active document or clearing it.
-		documentToDelete = fileId;
-		deleteDialogOpen = true;
-	}
-
-	function confirmDelete() {
-		if (documentToDelete) {
-			documentStore.deleteDocument(documentToDelete);
-			documentToDelete = null;
-		}
-		deleteDialogOpen = false;
-	}
-
-	function cancelDelete() {
-		documentToDelete = null;
-		deleteDialogOpen = false;
+		// Delete immediately without confirmation
+		documentStore.deleteDocument(fileId);
 	}
 
 	function handleAutoSaveChange(value: boolean) {
@@ -159,368 +140,271 @@
 		localStorage.setItem('dark-mode', value.toString());
 		updateDarkMode(value);
 	}
+
+	async function handleSignOut() {
+		try {
+			await loginClient.signOut();
+		} catch (error) {
+			console.error('Sign out failed:', error);
+		} finally {
+			// Always close popover and reload to clear state, even on error
+			profilePopoverOpen = false;
+			window.location.reload();
+		}
+	}
 </script>
 
-<!-- Note: the main sidebar content is rendered inside the mobile Sheet or the desktop sidebar below
-	 to avoid duplicating DOM and to ensure layout matches the selected container. -->
-{#if isMobile}
-	<!-- Mobile Sheet -->
-	<div>
-		<Sheet bind:open={mobileSheetOpen}>
-			<SheetTrigger>
-				<Button
-					variant="ghost"
-					size="icon"
-					class="fixed top-2 left-2 z-40 text-muted-foreground hover:bg-accent hover:text-foreground lg:hidden"
+<!-- Sidebar -->
+<aside
+	role="navigation"
+	aria-label="Main navigation"
+	class="sidebar flex flex-col overflow-hidden overflow-x-hidden border-r border-border bg-background text-foreground transition-all duration-300"
+	class:sidebar-mobile={isMobile}
+	class:sidebar-desktop={!isMobile}
+	class:sidebar-expanded={isExpanded}
+	style="height: 100dvh; width: {isExpanded
+		? 'var(--sidebar-expanded-width)'
+		: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
+>
+	<!-- Hamburger Menu and Title -->
+	<div class="relative flex items-center">
+		<div class="z-canvas-ui relative flex-shrink-0" style="width: 48px;">
+			<SidebarButtonSlot
+				icon={Menu}
+				{isExpanded}
+				onclick={handleToggle}
+				ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
+				ariaExpanded={isExpanded}
+			/>
+		</div>
+
+		<span
+			class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground transition-opacity duration-300 {isExpanded
+				? 'opacity-100'
+				: 'opacity-0'}"
+		>
+			<span class="">
+				<span style="color: #3C79AA;">tongueto</span>quill
+			</span>
+		</span>
+	</div>
+
+	<!-- Logo Signature -->
+	<div class="sidebar-logo-slot border-b border-border" class:expanded={isExpanded}>
+		<img src="/logo.svg" alt="Tonguetoquill logo" aria-hidden="true" class="sidebar-logo" />
+	</div>
+
+	<!-- Menu Items -->
+	<div class="flex-1 overflow-hidden">
+		<div>
+			<div class={documentStore.documents.length > 0 && isExpanded ? 'border-b border-border' : ''}>
+				<NewDocumentDialog
+					open={newDocDialogOpen}
+					onOpenChange={(open) => (newDocDialogOpen = open)}
+					onCreate={handleCreateDocument}
+					{existingDocumentNames}
 				>
-					<Menu class="h-5 w-5" />
-				</Button>
-			</SheetTrigger>
-			<SheetContent side="left" class="flex w-72 flex-col bg-background p-0 text-foreground">
-				<!-- Hamburger Menu and Title -->
-				<div class="relative flex items-center">
-					<SidebarButtonSlot
-						icon={Menu}
-						{isExpanded}
-						class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
-						onclick={handleToggle}
-						ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-					/>
-
-					<span
-						class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground italic transition-opacity duration-300 {isExpanded
-							? 'opacity-100'
-							: 'opacity-0'}"
-					>
-						Tonguetoquill
-					</span>
-				</div>
-
-				<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
-				<Separator class="bg-border" />
-
-				<!-- Menu Items -->
-				<div class="flex-1 overflow-hidden">
-					<div>
+					{#snippet triggerContent()}
 						<SidebarButtonSlot
 							icon={Plus}
 							label="New Document"
 							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
-							onclick={handleNewFile}
 							ariaLabel="Create new document"
 						/>
+					{/snippet}
+				</NewDocumentDialog>
+			</div>
 
-						{#if !isExpanded}
-							<Separator class="bg-border" />
-						{/if}
-
-						{#if documentStore.documents.length > 0 && isExpanded}
-							<Separator class="bg-border" />
-
-							<!-- Recents Section Header -->
-							<div
-								class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
-							>
-								<h3 class="text-xs text-muted-foreground">Recents</h3>
-							</div>
-
-							<!-- Scrollable Recent Items -->
-							<div
-								class="space-y-px overflow-x-hidden overflow-y-auto"
-								style="max-height: calc(100vh - 300px);"
-							>
-								{#each documentStore.documents as doc (doc.id)}
-									<DocumentListItem
-										document={doc}
-										isActive={doc.id === documentStore.activeDocumentId}
-										onSelect={handleFileSelect}
-										onDelete={handleDeleteFile}
-									/>
-								{/each}
-
-								<!-- Bottom gradient fade -->
-								<div
-									class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
-								></div>
-							</div>
-						{/if}
-					</div>
-				</div>
-
-				<!-- User Profile and Settings Section -->
-				<div class="space-y-1 border-t border-border">
-					<!-- User Profile Button -->
-					{#if user}
-						<SidebarButtonSlot
-							icon={User}
-							label={user.email}
-							{isExpanded}
-							class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
-							title={user.email}
-							ariaLabel="User profile: {user.email}"
+			{#if documentStore.documents.length > 0 && isExpanded}
+				<!-- Scrollable Recent Items -->
+				<div
+					class="space-y-px overflow-x-hidden overflow-y-auto px-1 pt-1"
+					style="max-height: calc(100dvh - 300px);"
+				>
+					{#each documentStore.documents as doc (doc.id)}
+						<DocumentListItem
+							document={doc}
+							isActive={doc.id === documentStore.activeDocumentId}
+							onSelect={handleFileSelect}
+							onDelete={handleDeleteFile}
 						/>
-					{/if}
+					{/each}
 
-					<!-- Settings Gear Button -->
-					<div class="sidebar-button-slot">
-						<Popover bind:open={popoverOpen}>
-							<PopoverTrigger
-								class="sidebar-slot-button {isExpanded
-									? 'sidebar-slot-button-full'
-									: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
-							>
-								<Settings class="sidebar-icon" />
-								{#if isExpanded}
-									<span>Settings</span>
-								{/if}
-							</PopoverTrigger>
-							<PopoverContent
-								side="right"
-								align="end"
-								class="w-64 border-border bg-surface-elevated p-0 text-foreground"
-							>
-								<div class="p-4">
-									<h3 class="mb-4 text-lg font-semibold">Settings</h3>
+					<!-- Bottom gradient fade -->
+					<div
+						class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
+					></div>
+				</div>
+			{/if}
+		</div>
+	</div>
 
-									<div class="space-y-4">
-										<div class="flex items-center justify-between">
-											<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
-											<Switch
-												id="dark-mode"
-												bind:checked={isDarkMode}
-												onCheckedChange={handleDarkModeChange}
-											/>
-										</div>
+	<!-- User Profile and Settings Section -->
+	<div class="flex flex-col border-t border-border">
+		<!-- Sign-In Button (Guest Mode) -->
+		{#if !user}
+			<BasePopover bind:open={loginPopoverOpen} side="right" align="start" title="Sign in">
+				{#snippet trigger()}
+					<SidebarButtonSlot
+						icon={LogIn}
+						label="Sign in"
+						{isExpanded}
+						ariaLabel="Sign in to your account"
+					/>
+				{/snippet}
+				{#snippet content()}
+					<LoginPopover onClose={() => (loginPopoverOpen = false)} />
+				{/snippet}
+			</BasePopover>
+		{/if}
 
-										<Separator class="my-3 bg-border" />
+		<!-- User Profile Button (Logged-in Mode) -->
+		{#if user}
+			<BasePopover
+				bind:open={profilePopoverOpen}
+				side="right"
+				align="start"
+				title="Account Information"
+			>
+				{#snippet trigger()}
+					<SidebarButtonSlot
+						icon={User}
+						label={user.email}
+						{isExpanded}
+						title={user.email}
+						ariaLabel="User profile: {user.email}"
+					/>
+				{/snippet}
+				{#snippet content()}
+					<div class="w-72 px-4">
+						<dl class="space-y-4">
+							<div>
+								<dt class="text-sm font-medium text-muted-foreground">Email</dt>
+								<dd class="text-foreground">{user.email}</dd>
+							</div>
+							<div>
+								<dt class="text-sm font-medium text-muted-foreground">User ID</dt>
+								<dd class="font-mono text-sm text-foreground">{user.id}</dd>
+							</div>
+						</dl>
 
-										<div class="flex items-center justify-between">
-											<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
-											<Switch
-												id="auto-save"
-												bind:checked={autoSave}
-												onCheckedChange={handleAutoSaveChange}
-											/>
-										</div>
+						<Button
+							variant="ghost"
+							size="sm"
+							class="w-full text-muted-foreground hover:bg-accent hover:text-foreground"
+							onclick={handleSignOut}
+						>
+							Sign Out
+						</Button>
+					</div>
+				{/snippet}
+			</BasePopover>
+		{/if}
 
-										<div class="flex items-center justify-between">
-											<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
-											<Switch
-												id="line-numbers"
-												bind:checked={lineNumbers}
-												onCheckedChange={handleLineNumbersChange}
-											/>
-										</div>
-									</div>
-								</div>
-							</PopoverContent>
-						</Popover>
+		<!-- Settings Gear Button -->
+		<BasePopover bind:open={popoverOpen} side="right" align="end" title="Settings">
+			{#snippet trigger()}
+				<SidebarButtonSlot
+					icon={Settings}
+					label="Settings"
+					{isExpanded}
+					ariaLabel="Open settings"
+				/>
+			{/snippet}
+			{#snippet content()}
+				<div class="w-64 px-4">
+					<div class="space-y-4">
+						<div class="flex items-center justify-between">
+							<Label for="dark-mode" class="text-muted-foreground">Dark Mode</Label>
+							<Switch
+								id="dark-mode"
+								bind:checked={isDarkMode}
+								onCheckedChange={handleDarkModeChange}
+							/>
+						</div>
+
+						<div class="flex items-center justify-between">
+							<Label for="auto-save" class="text-muted-foreground">Auto-save</Label>
+							<Switch
+								id="auto-save"
+								bind:checked={autoSave}
+								onCheckedChange={handleAutoSaveChange}
+							/>
+						</div>
+
+						<div class="flex items-center justify-between">
+							<Label for="line-numbers" class="text-muted-foreground">Line Numbers</Label>
+							<Switch
+								id="line-numbers"
+								bind:checked={lineNumbers}
+								onCheckedChange={handleLineNumbersChange}
+							/>
+						</div>
 					</div>
 				</div>
-			</SheetContent>
-		</Sheet>
+			{/snippet}
+		</BasePopover>
 	</div>
-{:else}
-	<!-- Desktop Sidebar -->
-	<div
-		class="flex h-screen flex-col overflow-hidden border-r border-border bg-background text-foreground transition-all duration-300"
-		style="width: {isExpanded
-			? 'var(--sidebar-expanded-width)'
-			: 'var(--sidebar-collapsed-width)'}; transition-timing-function: cubic-bezier(0.165, 0.85, 0.45, 1);"
-	>
-		<!-- Hamburger Menu and Title -->
-		<div class="relative flex items-center">
-			<SidebarButtonSlot
-				icon={Menu}
-				{isExpanded}
-				class="text-muted-foreground hover:bg-accent hover:text-foreground active:scale-95"
-				onclick={handleToggle}
-				ariaLabel={isExpanded ? 'Collapse sidebar' : 'Expand sidebar'}
-			/>
-
-			<span
-				class="pointer-events-none absolute right-0 left-0 text-center font-mono text-lg whitespace-nowrap text-foreground italic transition-opacity duration-300 {isExpanded
-					? 'opacity-100'
-					: 'opacity-0'}"
-			>
-				Tonguetoquill
-			</span>
-		</div>
-
-		<!-- Separator directly after hamburger/title so top border aligns with TopMenu -->
-		<Separator class="bg-border" />
-
-		<!-- Menu Items -->
-		<div class="flex-1 overflow-hidden">
-			<div>
-				<SidebarButtonSlot
-					icon={Plus}
-					label="New Document"
-					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-foreground/80 hover:bg-accent hover:text-foreground active:scale-[0.985]"
-					onclick={handleNewFile}
-					ariaLabel="Create new document"
-				/>
-
-				{#if !isExpanded}
-					<Separator class="bg-border" />
-				{/if}
-
-				{#if documentStore.documents.length > 0 && isExpanded}
-					<Separator class="bg-border" />
-
-					<!-- Recents Section Header -->
-					<div
-						class="sticky top-0 z-10 mt-1 bg-gradient-to-b from-background from-50% to-background/40 pb-2 pl-2"
-					>
-						<h3 class="text-xs text-muted-foreground">Recents</h3>
-					</div>
-
-					<!-- Scrollable Recent Items -->
-					<div
-						class="space-y-px overflow-x-hidden overflow-y-auto"
-						style="max-height: calc(100vh - 300px);"
-					>
-						{#each documentStore.documents as doc (doc.id)}
-							<DocumentListItem
-								document={doc}
-								isActive={doc.id === documentStore.activeDocumentId}
-								onSelect={handleFileSelect}
-								onDelete={handleDeleteFile}
-							/>
-						{/each}
-
-						<!-- Bottom gradient fade -->
-						<div
-							class="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-background to-transparent"
-						></div>
-					</div>
-				{/if}
-			</div>
-		</div>
-
-		<!-- User Profile and Settings Section -->
-		<div class="space-y-1 border-t border-border">
-			<!-- User Profile Button -->
-			{#if user}
-				<SidebarButtonSlot
-					icon={User}
-					label={user.email}
-					{isExpanded}
-					class="w-full justify-start overflow-hidden text-sm text-muted-foreground hover:bg-accent hover:text-foreground active:scale-[0.985]"
-					title={user.email}
-					ariaLabel="User profile: {user.email}"
-				/>
-			{/if}
-
-			<!-- Settings Gear Button -->
-			<div class="sidebar-button-slot">
-				<Popover bind:open={popoverOpen}>
-					<PopoverTrigger
-						class="sidebar-slot-button {isExpanded
-							? 'sidebar-slot-button-full'
-							: ''} inline-flex items-center overflow-hidden rounded-md text-sm font-medium whitespace-nowrap text-muted-foreground transition-transform hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.985] disabled:pointer-events-none disabled:opacity-50"
-					>
-						<Settings class="sidebar-icon" />
-						{#if isExpanded}
-							<span>Settings</span>
-						{/if}
-					</PopoverTrigger>
-					<PopoverContent
-						side="right"
-						align="end"
-						class="w-64 border-border bg-surface-elevated p-0 text-foreground"
-					>
-						<div class="p-4">
-							<h3 class="mb-4 text-lg font-semibold">Settings</h3>
-
-							<div class="space-y-4">
-								<div class="flex items-center justify-between">
-									<Label for="dark-mode" class="text-foreground/80">Dark Mode</Label>
-									<Switch
-										id="dark-mode"
-										bind:checked={isDarkMode}
-										onCheckedChange={handleDarkModeChange}
-									/>
-								</div>
-
-								<Separator class="my-3 bg-border" />
-
-								<div class="flex items-center justify-between">
-									<Label for="auto-save" class="text-foreground/80">Auto-save</Label>
-									<Switch
-										id="auto-save"
-										bind:checked={autoSave}
-										onCheckedChange={handleAutoSaveChange}
-									/>
-								</div>
-
-								<div class="flex items-center justify-between">
-									<Label for="line-numbers" class="text-foreground/80">Line Numbers</Label>
-									<Switch
-										id="line-numbers"
-										bind:checked={lineNumbers}
-										onCheckedChange={handleLineNumbersChange}
-									/>
-								</div>
-							</div>
-						</div>
-					</PopoverContent>
-				</Popover>
-			</div>
-		</div>
-	</div>
-{/if}
-
-<!-- Delete Confirmation Dialog -->
-<Dialog bind:open={deleteDialogOpen}>
-	<DialogContent>
-		<DialogHeader>
-			<DialogTitle>Delete Document</DialogTitle>
-			<DialogDescription>
-				Are you sure you want to delete this document? This action cannot be undone.
-			</DialogDescription>
-		</DialogHeader>
-		<DialogFooter>
-			<Button
-				variant="ghost"
-				size="sm"
-				class="text-muted-foreground hover:bg-accent hover:text-foreground"
-				onclick={cancelDelete}
-			>
-				Cancel
-			</Button>
-			<Button
-				variant="default"
-				size="sm"
-				class="bg-destructive text-white hover:bg-(--color-destructive-hover)"
-				onclick={confirmDelete}
-			>
-				Delete
-			</Button>
-		</DialogFooter>
-	</DialogContent>
-</Dialog>
+</aside>
 
 <style>
-	:global(.sidebar-icon) {
-		width: var(--sidebar-icon-size);
-		height: var(--sidebar-icon-size);
+	/* Sidebar base styles */
+	.sidebar {
+		box-shadow: none;
+		transition:
+			width 300ms cubic-bezier(0.165, 0.85, 0.45, 1),
+			box-shadow 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
+	}
+
+	/* Desktop mode: relative positioning, pushes layout */
+	.sidebar-desktop {
+		position: relative;
+		z-index: var(--z-canvas-ui, 10);
+	}
+
+	/* Mobile mode: fixed positioning, overlays content */
+	.sidebar-mobile {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		z-index: var(--z-sidebar, 50);
+	}
+
+	/* Expanded state shadow (only on mobile overlay mode) */
+	.sidebar-mobile.sidebar-expanded {
+		box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+	}
+
+	/* Logo signature slot */
+	.sidebar-logo-slot {
+		height: 48px;
+		min-height: 48px;
+		max-height: 48px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 4px;
+	}
+
+	.sidebar-logo {
+		width: 30px;
+		height: 30px;
 		flex-shrink: 0;
+		transition: transform 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
+		transform: translateY(-4px);
 	}
 
-	:global(.sidebar-icon:has(+ *)) {
-		margin-right: 0.5rem;
-	}
-
+	/* Legacy styles - kept for document list items */
 	:global(.sidebar-icon-small) {
-		/* This calculates 60% of the parent's --sidebar-icon-size */
 		width: calc(var(--sidebar-icon-size) * 0.6);
 		height: calc(var(--sidebar-icon-size) * 0.6);
 	}
 
-	:global(.sidebar-section-height) {
-		height: calc(var(--sidebar-button-size) + var(--sidebar-padding) * 2);
+	/* Reduced motion support */
+	@media (prefers-reduced-motion: reduce) {
+		.sidebar {
+			transition-duration: 0.01ms !important;
+		}
 	}
 </style>

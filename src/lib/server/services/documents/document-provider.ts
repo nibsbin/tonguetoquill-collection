@@ -5,54 +5,67 @@
 
 import type { DocumentServiceContract } from '$lib/services/documents/types';
 import { MockDocumentService } from './document-mock-service';
+import { SupabaseDocumentService } from './document-supabase-service';
+import { env } from '$env/dynamic/private';
 
 let cachedService: DocumentServiceContract | null = null;
 
 /**
  * Create document service based on environment
  */
-export function createDocumentService(): DocumentServiceContract {
-	const useMocks = process.env.USE_DB_MOCKS === 'true';
+export async function createDocumentService(): Promise<DocumentServiceContract> {
+	const useMocks = env.USE_DB_MOCKS === 'true';
 
 	if (useMocks) {
 		return new MockDocumentService();
 	}
 
-	// TODO: Phase 10 - Implement SupabaseDocumentService
-	throw new Error('Real Supabase document service not yet implemented. Set USE_DB_MOCKS=true');
+	// Real Supabase implementation
+	return new SupabaseDocumentService();
 }
 
 /**
  * Get document service instance (lazy-loaded singleton)
  */
-export function getDocumentService(): DocumentServiceContract {
+export async function getDocumentService(): Promise<DocumentServiceContract> {
 	if (!cachedService) {
-		cachedService = createDocumentService();
+		cachedService = await createDocumentService();
 	}
 	return cachedService;
 }
 
 // Export as documentService for backwards compatibility
 export const documentService = {
-	get createDocument() {
-		return getDocumentService().createDocument.bind(getDocumentService());
+	async createDocument(params: { user_id: string; name: string; content: string }) {
+		const service = await getDocumentService();
+		return service.createDocument({
+			owner_id: params.user_id,
+			name: params.name,
+			content: params.content
+		});
 	},
-	get getDocumentMetadata() {
-		return getDocumentService().getDocumentMetadata.bind(getDocumentService());
+	async getDocumentMetadata(params: { user_id: string; document_id: string }) {
+		const service = await getDocumentService();
+		return service.getDocumentMetadata(params);
 	},
-	get getDocumentContent() {
-		return getDocumentService().getDocumentContent.bind(getDocumentService());
+	async getDocumentContent(params: { user_id: string; document_id: string }) {
+		const service = await getDocumentService();
+		return service.getDocumentContent(params);
 	},
-	get updateDocumentContent() {
-		return getDocumentService().updateDocumentContent.bind(getDocumentService());
+	async updateDocumentContent(params: { user_id: string; document_id: string; content: string }) {
+		const service = await getDocumentService();
+		return service.updateDocumentContent(params);
 	},
-	get updateDocumentName() {
-		return getDocumentService().updateDocumentName.bind(getDocumentService());
+	async updateDocumentName(params: { user_id: string; document_id: string; name: string }) {
+		const service = await getDocumentService();
+		return service.updateDocumentName(params);
 	},
-	get deleteDocument() {
-		return getDocumentService().deleteDocument.bind(getDocumentService());
+	async deleteDocument(params: { user_id: string; document_id: string }) {
+		const service = await getDocumentService();
+		return service.deleteDocument(params);
 	},
-	get listUserDocuments() {
-		return getDocumentService().listUserDocuments.bind(getDocumentService());
+	async listUserDocuments(params: { user_id: string; limit?: number; offset?: number }) {
+		const service = await getDocumentService();
+		return service.listUserDocuments(params);
 	}
 };

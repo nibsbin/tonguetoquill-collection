@@ -479,7 +479,7 @@ This section outlines the centralized theme architecture for tonguetoquill-web t
 
 #### CSS Custom Properties Foundation
 
-All theme tokens are defined as CSS custom properties in `src/app.css`, following the Tailwind CSS 4.0 `@theme inline` pattern.
+All theme tokens are defined as CSS custom properties in `src/app.css` using standard `:root` and `.dark` selectors. These properties are then registered with Tailwind CSS v4 via the `@theme inline` directive to generate utility classes.
 
 **Rationale**: CSS custom properties provide:
 
@@ -487,6 +487,7 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 - Access from both CSS (Tailwind) and JavaScript (CodeMirror)
 - Browser-native support with excellent performance
 - Standard CSS cascade and inheritance behavior
+- Reactive theme switching when combined with the `.dark` class
 
 #### Theme Token Structure
 
@@ -512,6 +513,8 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 
 **Dark Theme**: Dark mode class overrides with inverted values (dark backgrounds, light text)
 
+**Shared Values**: Colors that are identical across both themes are defined only once in `:root` to avoid duplication and simplify maintenance. Examples include destructive colors and some neutral tones that work well in both contexts.
+
 **Zinc Palette Mapping**: Current zinc color scale maps to semantic tokens:
 
 - zinc-900 → background (dark mode)
@@ -524,15 +527,51 @@ All theme tokens are defined as CSS custom properties in `src/app.css`, followin
 
 #### Tailwind CSS Integration
 
-**Approach**: Use Tailwind's `@theme inline` directive to map CSS custom properties to Tailwind utility classes.
+**Approach**: Tailwind CSS v4 uses the `@theme inline` directive to register CSS custom properties as theme values, enabling Tailwind to generate utility classes.
+
+**How It Works**: The `@theme inline` block in `app.css` maps CSS custom properties to Tailwind theme tokens:
+
+```css
+@theme inline {
+	--color-background: var(--color-background);
+	--color-foreground: var(--color-foreground);
+	/* ... etc */
+}
+```
+
+This syntax tells Tailwind: "Create utility classes for `--color-background` that reference the CSS custom property `var(--color-background)`". The left side becomes the utility name; the right side is the value source.
 
 **Benefits**:
 
 - Enables usage of semantic tokens in standard Tailwind classes (e.g., `bg-background`, `text-foreground`)
 - Maintains consistency between custom properties and utility classes
-- Allows theme switching without rebuilding CSS
+- Allows theme switching without rebuilding CSS (utilities reference live CSS variables)
+- Single source of truth: color values defined once in `:root`/`.dark`, referenced everywhere
+- Theme changes via `.dark` class instantly affect all utilities
 
-**Pattern**: Map each CSS custom property to a corresponding Tailwind theme value, creating a bidirectional relationship between design tokens and utility classes.
+**Pattern**: CSS custom properties defined in `:root` and `.dark` are registered via `@theme inline`, making them available as Tailwind utilities. For example, `--color-background` becomes usable as `bg-background` and `text-background` classes that reactively update when the theme changes.
+
+#### CSS Structure Best Practices
+
+**Selector Organization**: The `app.css` file follows a strict organization pattern for maintainability:
+
+1. **`:root` Block**: Contains only CSS custom property definitions (CSS variables), never nested selectors or style rules
+2. **`.dark` Class**: Contains only CSS custom property overrides for dark theme
+3. **Global Selectors**: Placed at root level (not nested), including utility classes, element selectors, and component-specific styles
+4. **Font Family**: Applied to `body` selector rather than `:root` to follow CSS best practices
+
+**Invalid Patterns to Avoid**:
+
+- Nesting class selectors or element selectors inside `:root` or `.dark` blocks (violates CSS custom property scope rules)
+- Applying non-custom-property styles to `:root` (like `font-family` - these belong on `body` or other selectors)
+- Forgetting to register custom properties in the `@theme inline` block (prevents Tailwind utility generation)
+
+**Rationale**: This structure ensures:
+
+- Clear separation between design tokens (variables) and style rules
+- Easier maintenance and refactoring
+- Better compatibility with CSS processing tools
+- Reduced specificity conflicts
 
 #### CodeMirror Theme Integration
 
@@ -583,12 +622,12 @@ This ensures compile-time validation of token usage and prevents typos in token 
 
 #### Custom Components to Replace
 
-1. **Dialog.svelte** → Replace with shadcn-svelte Dialog component
+1. **Dialog.svelte** → ✅ **Replaced** with shadcn-svelte Dialog component
    - **Reasoning**: shadcn-svelte provides a more feature-rich, accessible dialog with better keyboard navigation, focus trapping, and animation support
    - **Components needed**: dialog, dialog-content, dialog-header, dialog-title, dialog-description
-2. **Toast.svelte** → Keep as-is (svelte-sonner wrapper)
-   - **Reasoning**: svelte-sonner is already well-integrated and provides excellent toast functionality. The wrapper is minimal and just configures the toaster.
-   - **Action**: Update wrapper to use theme tokens for consistency
+2. **Toast.svelte** → ✅ **Removed** (replaced by shadcn-svelte Sonner)
+   - **Reasoning**: svelte-sonner is already well-integrated and provides excellent toast functionality via shadcn-svelte
+   - **Action**: Toast notifications now use svelte-sonner directly, no custom wrapper needed
 
 #### shadcn-svelte Components to Add
 

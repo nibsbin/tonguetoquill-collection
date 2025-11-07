@@ -16,65 +16,114 @@ Components are organized by feature/domain rather than by file type:
 - **Preview**: Rendered markdown output (may be merged with Editor)
 - **ui**: Reusable UI primitives from shadcn-svelte
 
+### UI Library Architecture
+
+Tonguetoquill uses **custom Svelte components** for all UI widgets (dialogs, popovers, sheets, toasts). This provides full control over behavior, accessibility, and theming while reducing external dependencies.
+
+**Widget Components** (src/lib/components/ui/):
+
+- **base-dialog.svelte**: Modal dialog component with focus trapping, ESC key, and backdrop click handling
+- **base-popover.svelte**: Popover component with dynamic positioning, click outside, and ESC key dismissal
+- **base-sheet.svelte**: Slide-in drawer component with responsive behavior (mobile-friendly)
+- **toast.svelte**: Toast notification container with position control
+- **switch.svelte**: Toggle switch component with keyboard accessibility
+- All components built from scratch using Svelte 5 primitives
+- No external UI library dependencies (bits-ui and svelte-sonner removed)
+
+**Supporting Utilities**:
+
+- **portal.svelte**: Teleport component for rendering outside parent DOM
+- **focus-trap.ts**: Focus management for modal dialogs
+- **use-click-outside.ts**: Click outside detection action
+- **toast.svelte.ts**: Toast state management store
+
+**Shared UI Components**:
+
+- **button.svelte**: Button component with variants
+- **input.svelte**: Text input component
+- **label.svelte**: Form label component
+
+**Third-Party Integration**:
+
+- **lucide-svelte**: Icon library
+- **Tailwind CSS**: Styling framework
+- No other UI dependencies
+
+**Import Rules:**
+
+- ✓ Feature components → `$lib/components/ui/*`
+- ✓ UI utilities → `$lib/utils/*`
+- ✗ Feature components → External UI libraries (no longer applicable)
+- ✗ Direct DOM manipulation (use Svelte actions and stores instead)
+
 ### File Structure Per Component
 
 Each feature folder contains:
 
 ```
 ComponentName/
-├── ComponentName.svelte       # Component implementation
-├── style.css                  # Component-specific styles (optional)
-└── ComponentName.svelte.ts    # Component tests
+├── ComponentName.svelte            # Component implementation
+├── style.css                       # Component-specific styles (optional)
+└── ComponentName.svelte.test.ts    # Component tests
 ```
 
 **Notes**:
 
 - `style.css` is optional - only create if component needs styles beyond Tailwind classes
-- Tests use `.svelte.ts` extension and are co-located with components
+- Tests use `.svelte.test.ts` extension and are co-located with components
 - Follow vitest and vitest-browser-svelte testing patterns
 
 ## Directory Structure
 
 ```
 src/lib/components/
+├── DocumentInfoDialog.svelte
 ├── Sidebar/
 │   ├── Sidebar.svelte
-│   ├── Sidebar.svelte.ts
+│   ├── Sidebar.svelte.test.ts
 │   ├── SidebarButtonSlot.svelte
-│   └── SidebarButtonSlot.svelte.ts
+│   ├── SidebarButtonSlot.svelte.test.ts
+│   └── index.ts
 ├── TopMenu/
 │   ├── TopMenu.svelte
-│   └── TopMenu.svelte.ts
+│   └── TopMenu.svelte.test.ts
 ├── Editor/
 │   ├── EditorToolbar.svelte
-│   ├── EditorToolbar.svelte.ts
+│   ├── EditorToolbar.svelte.test.ts
 │   ├── MarkdownEditor.svelte
-│   ├── MarkdownEditor.svelte.ts
+│   ├── MarkdownEditor.svelte.test.ts
 │   ├── DocumentEditor.svelte
-│   └── DocumentEditor.svelte.ts
+│   └── DocumentEditor.svelte.test.ts
 ├── Preview/
-│   ├── MarkdownPreview.svelte
-│   └── MarkdownPreview.svelte.ts
+│   ├── Preview.svelte
+│   ├── Preview.svelte.test.ts
+│   └── index.ts
 ├── DocumentList/
 │   ├── DocumentList.svelte
-│   ├── DocumentList.svelte.ts
+│   ├── DocumentList.svelte.test.ts
 │   ├── DocumentListItem.svelte
-│   └── DocumentListItem.svelte.ts
+│   ├── DocumentListItem.svelte.test.ts
+│   └── index.ts
 └── ui/
+    ├── base-dialog.svelte
+    ├── base-popover.svelte
+    ├── base-sheet.svelte
     ├── button.svelte
-    ├── dialog.svelte
-    ├── dropdown-menu.svelte
-    └── ... (shadcn-svelte components)
+    ├── input.svelte
+    ├── label.svelte
+    ├── portal.svelte
+    ├── switch.svelte
+    └── toast.svelte
 ```
 
 ## Testing Strategy
 
 ### Test Location
 
-Tests are co-located with components using the `.svelte.ts` extension:
+Tests are co-located with components using the `.svelte.test.ts` extension:
 
 - Component: `ComponentName.svelte`
-- Tests: `ComponentName.svelte.ts`
+- Tests: `ComponentName.svelte.test.ts`
 
 ### Testing Framework
 
@@ -110,48 +159,26 @@ Each component should have tests for:
 - States (loading, error, success)
 - Accessibility (ARIA labels, keyboard navigation, screen reader support)
 
-## Migration from Current Structure
+## Import Patterns
 
-The current flat structure in `src/lib/components/` will be reorganized into feature folders:
-
-**Current** → **New**:
-
-- `Sidebar.svelte` → `Sidebar/Sidebar.svelte`
-- `SidebarButtonSlot.svelte` → `Sidebar/SidebarButtonSlot.svelte`
-- `TopMenu.svelte` → `TopMenu/TopMenu.svelte`
-- `EditorToolbar.svelte` → `Editor/EditorToolbar.svelte`
-- `MarkdownEditor.svelte` → `Editor/MarkdownEditor.svelte`
-- `DocumentEditor.svelte` → `Editor/DocumentEditor.svelte`
-- `MarkdownPreview.svelte` → `Preview/MarkdownPreview.svelte`
-- `DocumentList.svelte` → `DocumentList/DocumentList.svelte`
-- `DocumentListItem.svelte` → `DocumentList/DocumentListItem.svelte`
-- `Toast.svelte` → (replaced by shadcn-svelte Sonner, can be removed)
-- `ui/*` → `ui/*` (unchanged)
-
-## Import Path Updates
-
-After reorganization, imports will change:
+Components can be imported using index files for convenience:
 
 ```typescript
-// Before
-import Sidebar from '$lib/components/Sidebar.svelte';
+// Feature folder exports (via index.ts)
+import { Sidebar, SidebarButtonSlot } from '$lib/components/Sidebar';
+import { DocumentList, DocumentListItem } from '$lib/components/DocumentList';
+import { Preview } from '$lib/components/Preview';
 
-// After
+// Or direct import
 import Sidebar from '$lib/components/Sidebar/Sidebar.svelte';
 ```
 
-Consider creating index files for convenience:
+Each feature folder includes an `index.ts` that exports its components:
 
 ```typescript
-// src/lib/components/Sidebar/index.ts
+// Example: src/lib/components/Sidebar/index.ts
 export { default as Sidebar } from './Sidebar.svelte';
 export { default as SidebarButtonSlot } from './SidebarButtonSlot.svelte';
-```
-
-Then imports become:
-
-```typescript
-import { Sidebar, SidebarButtonSlot } from '$lib/components/Sidebar';
 ```
 
 ## Benefits
@@ -193,9 +220,9 @@ Create a new feature folder when:
 
 Keep in `ui/` when:
 
-- Component is a pure UI primitive
-- Component is reusable across features
-- Component comes from shadcn-svelte
+- Component is a pure UI primitive (button, input, label)
+- Component is a reusable widget (dialog, popover, sheet, toast)
+- Component provides utility functionality (portal, focus-trap)
 
 ### Style Files
 
@@ -210,6 +237,6 @@ Most components should use Tailwind utility classes inline.
 
 ## References
 
-- [UI_COMPONENTS.md](./UI_COMPONENTS.md) - Component specifications
 - [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) - Visual design system
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - Application architecture
+- [INDEX.md](./INDEX.md) - Frontend design documentation overview

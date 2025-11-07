@@ -106,7 +106,10 @@ describe('DocumentServiceContract - MockDocumentService', () => {
 				content: '# Content'
 			});
 
-			const retrieved = await documentService.getDocumentContent(userId, created.id);
+			const retrieved = await documentService.getDocumentContent({
+				user_id: userId,
+				document_id: created.id
+			});
 
 			expect(retrieved.id).toBe(created.id);
 			expect(retrieved.content).toBe('# Content');
@@ -119,15 +122,15 @@ describe('DocumentServiceContract - MockDocumentService', () => {
 				content: 'secret'
 			});
 
-			await expect(documentService.getDocumentContent(otherUserId, doc.id)).rejects.toThrow(
-				DocumentError
-			);
+			await expect(
+				documentService.getDocumentContent({ user_id: otherUserId, document_id: doc.id })
+			).rejects.toThrow(DocumentError);
 		});
 
 		it('should reject non-existent document', async () => {
-			await expect(documentService.getDocumentContent(userId, 'non-existent-id')).rejects.toThrow(
-				DocumentError
-			);
+			await expect(
+				documentService.getDocumentContent({ user_id: userId, document_id: 'non-existent-id' })
+			).rejects.toThrow(DocumentError);
 		});
 	});
 
@@ -139,7 +142,10 @@ describe('DocumentServiceContract - MockDocumentService', () => {
 				content: '# Large content here'
 			});
 
-			const metadata = await documentService.getDocumentMetadata(userId, created.id);
+			const metadata = await documentService.getDocumentMetadata({
+				user_id: userId,
+				document_id: created.id
+			});
 
 			expect(metadata.id).toBe(created.id);
 			expect(metadata.name).toBe('Test Doc');
@@ -253,11 +259,11 @@ describe('DocumentServiceContract - MockDocumentService', () => {
 				content: 'content'
 			});
 
-			await documentService.deleteDocument(userId, doc.id);
+			await documentService.deleteDocument({ user_id: userId, document_id: doc.id });
 
-			await expect(documentService.getDocumentContent(userId, doc.id)).rejects.toThrow(
-				DocumentError
-			);
+			await expect(
+				documentService.getDocumentContent({ user_id: userId, document_id: doc.id })
+			).rejects.toThrow(DocumentError);
 		});
 
 		it('should reject delete by non-owner', async () => {
@@ -267,9 +273,9 @@ describe('DocumentServiceContract - MockDocumentService', () => {
 				content: 'content'
 			});
 
-			await expect(documentService.deleteDocument(otherUserId, doc.id)).rejects.toThrow(
-				DocumentError
-			);
+			await expect(
+				documentService.deleteDocument({ user_id: otherUserId, document_id: doc.id })
+			).rejects.toThrow(DocumentError);
 		});
 	});
 

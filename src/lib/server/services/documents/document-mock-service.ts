@@ -16,6 +16,7 @@ import type {
 	UUID
 } from '$lib/services/documents/types';
 import { DocumentError } from '$lib/services/documents/types';
+import { DocumentValidator } from '$lib/services/documents/document-validator';
 
 /**
  * Mock Document Service
@@ -24,66 +25,12 @@ import { DocumentError } from '$lib/services/documents/types';
 export class MockDocumentService implements DocumentServiceContract {
 	private documents: Map<UUID, Document> = new Map();
 
-	// Constraints
-	private MAX_CONTENT_SIZE = 524288; // 0.5 MB in bytes
-	private MAX_NAME_LENGTH = 255;
-	private MIN_NAME_LENGTH = 1;
-
 	/**
 	 * Simulate network delay for realistic testing
 	 */
 	private async simulateDelay(): Promise<void> {
 		const delay = Math.random() * 150 + 50; // 50-200ms
 		await new Promise((resolve) => setTimeout(resolve, delay));
-	}
-
-	/**
-	 * Calculate byte length of string (UTF-8)
-	 */
-	private getByteLength(str: string): number {
-		return Buffer.from(str, 'utf-8').length;
-	}
-
-	/**
-	 * Validate document name
-	 */
-	private validateName(name: string): void {
-		const trimmedName = name.trim();
-
-		if (trimmedName.length < this.MIN_NAME_LENGTH) {
-			throw new DocumentError('invalid_name', 'Document name cannot be empty', 400);
-		}
-
-		if (trimmedName.length > this.MAX_NAME_LENGTH) {
-			throw new DocumentError(
-				'invalid_name',
-				`Document name must be ${this.MAX_NAME_LENGTH} characters or less`,
-				400
-			);
-		}
-
-		if (trimmedName !== name) {
-			throw new DocumentError(
-				'invalid_name',
-				'Document name cannot have leading or trailing whitespace',
-				400
-			);
-		}
-	}
-
-	/**
-	 * Validate content size
-	 */
-	private validateContent(content: string): void {
-		const byteLength = this.getByteLength(content);
-
-		if (byteLength > this.MAX_CONTENT_SIZE) {
-			throw new DocumentError(
-				'content_too_large',
-				`Content size (${byteLength} bytes) exceeds maximum of ${this.MAX_CONTENT_SIZE} bytes`,
-				413
-			);
-		}
 	}
 
 	/**
@@ -105,12 +52,12 @@ export class MockDocumentService implements DocumentServiceContract {
 	async createDocument(params: CreateDocumentParams): Promise<Document> {
 		await this.simulateDelay();
 
-		this.validateName(params.name);
-		this.validateContent(params.content);
+		DocumentValidator.validateName(params.name);
+		DocumentValidator.validateContent(params.content);
 
 		const documentId = crypto.randomUUID();
 		const now = new Date().toISOString();
-		const contentSizeBytes = this.getByteLength(params.content);
+		const contentSizeBytes = DocumentValidator.getByteLength(params.content);
 
 		const document: Document = {
 			id: documentId,
@@ -130,16 +77,19 @@ export class MockDocumentService implements DocumentServiceContract {
 	/**
 	 * Get document metadata only (no content)
 	 */
-	async getDocumentMetadata(userId: UUID, documentId: UUID): Promise<DocumentMetadata> {
+	async getDocumentMetadata(params: {
+		user_id: UUID;
+		document_id: UUID;
+	}): Promise<DocumentMetadata> {
 		await this.simulateDelay();
 
-		const document = this.documents.get(documentId);
+		const document = this.documents.get(params.document_id);
 
 		if (!document) {
 			throw new DocumentError('not_found', 'Document not found', 404);
 		}
 
-		this.verifyOwnership(document, userId);
+		this.verifyOwnership(document, params.user_id);
 
 		return {
 			id: document.id,
@@ -154,16 +104,16 @@ export class MockDocumentService implements DocumentServiceContract {
 	/**
 	 * Get full document with content
 	 */
-	async getDocumentContent(userId: UUID, documentId: UUID): Promise<Document> {
+	async getDocumentContent(params: { user_id: UUID; document_id: UUID }): Promise<Document> {
 		await this.simulateDelay();
 
-		const document = this.documents.get(documentId);
+		const document = this.documents.get(params.document_id);
 
 		if (!document) {
 			throw new DocumentError('not_found', 'Document not found', 404);
 		}
 
-		this.verifyOwnership(document, userId);
+		this.verifyOwnership(document, params.user_id);
 
 		return document;
 	}
@@ -181,9 +131,9 @@ export class MockDocumentService implements DocumentServiceContract {
 		}
 
 		this.verifyOwnership(document, params.user_id);
-		this.validateContent(params.content);
+		DocumentValidator.validateContent(params.content);
 
-		const contentSizeBytes = this.getByteLength(params.content);
+		const contentSizeBytes = DocumentValidator.getByteLength(params.content);
 
 		document.content = params.content;
 		document.content_size_bytes = contentSizeBytes;
@@ -205,7 +155,7 @@ export class MockDocumentService implements DocumentServiceContract {
 		}
 
 		this.verifyOwnership(document, params.user_id);
-		this.validateName(params.name);
+		DocumentValidator.validateName(params.name);
 
 		document.name = params.name;
 		document.updated_at = new Date().toISOString();
@@ -223,7 +173,13 @@ export class MockDocumentService implements DocumentServiceContract {
 	/**
 	 * Delete a document
 	 */
-	async deleteDocument(userId: UUID, documentId: UUID): Promise<void> {
+	async deleteDocument({
+		user_id: userId,
+		document_id: documentId
+	}: {
+		user_id: UUID;
+		document_id: UUID;
+	}): Promise<void> {
 		await this.simulateDelay();
 
 		const document = this.documents.get(documentId);

@@ -16,16 +16,6 @@ High-level overview of application structure, routing strategy, component organi
 
 ---
 
-### [UI_COMPONENTS.md](./UI_COMPONENTS.md)
-
-**Component Specifications**
-
-Component behavior specifications including props, states, interactions, and accessibility requirements. References [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual styling.
-
-**Topics**: Layout components (Sidebar, TopMenu), editor components (Toolbar, Editor, Preview), UI library (Button, Dialog, Toast, Dropdown), responsive patterns, accessibility
-
----
-
 ### [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md)
 
 **Visual Design Language & Design Tokens**
@@ -60,7 +50,7 @@ State management approach using Svelte 5 runes, global stores, and server-side s
 
 **Backend Integration**
 
-Backend API integration patterns for authentication, document management, and data synchronization. See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for authentication details.
+Backend API integration patterns for authentication, document management, and data synchronization. See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for authentication details.
 
 **Topics**: API client architecture, authentication flows, document CRUD, error handling, optimistic updates, type safety
 
@@ -76,31 +66,101 @@ CodeMirror 6 integration with custom language mode for Quillmark's extended mark
 
 ---
 
-### [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md)
-
-**QuillMark Syntax Highlighting Design**
-
-Robust, maintainable approach to syntax highlighting for QuillMark's extended markdown using decoration-based highlighting. Supersedes complex Lezer grammar approach.
-
-**Topics**: Decoration-based highlighting, pattern detection, metadata block identification, SCOPE/QUILL keyword highlighting, YAML syntax coloring, folding support, auto-completion, theme integration
-
----
-
 ### [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md)
 
 **Component Organization Strategy**
 
 Feature-based component organization with co-located tests and optional styles. Defines directory structure, file naming conventions, and testing patterns.
 
-**Topics**: Feature folders (Sidebar, TopMenu, Editor, Preview), file structure per component, testing strategy, migration from flat structure, import patterns
+**Topics**: Feature folders (Sidebar, TopMenu, Editor, Preview, DocumentList, RulerOverlay), file structure per component, testing strategy, import patterns
 
-### [UX_IMPROVEMENTS_2025.md](./UX_IMPROVEMENTS_2025.md)
+---
 
-**UX Improvements 2025**
+### [OPTIMISTIC_PAGE_LOADING.md](./OPTIMISTIC_PAGE_LOADING.md)
 
-Specifications for UX enhancements including Document Info dialog, keyboard shortcuts removal, and minimal markdown toolbar redesign.
+**Optimistic Page Loading and Document Switching**
 
-**Topics**: Document Info dialog (metadata and statistics display), keyboard shortcuts removal (rely on semantic HTML and CodeMirror), minimal markdown toolbar (streamlined formatting buttons), accessibility improvements
+User experience patterns for initial page load and document switching. Eliminates loading screens through optimistic UI, covers document switching overlay patterns, auto-save behavior during transitions, and error handling.
+
+**Topics**: Document switching flow, auto-save before switch, loading states, error recovery, optimistic updates
+
+---
+
+### [LOGIN_PROFILE_UI.md](./LOGIN_PROFILE_UI.md)
+
+**Login and Profile UI Integration**
+
+Authentication UI integration in the sidebar and top menu, including sign-in flows, user profile display, and provider selection.
+
+**Topics**: Guest mode UI, authenticated user display, login popover, profile management, provider selection, responsive behavior
+
+---
+
+### [ERROR_DISPLAY.md](./ERROR_DISPLAY.md)
+
+**Error Display and User Feedback**
+
+Error handling patterns, toast notifications, inline error display, and user feedback mechanisms throughout the application.
+
+**Topics**: Toast notifications (svelte-sonner), error boundaries, validation errors, network errors, user-friendly messaging
+
+### [NEW_DOCUMENT.md](./NEW_DOCUMENT.md)
+
+**New Document Creation**
+
+Lightweight popover interface for creating documents with template selection and custom naming.
+
+**Topics**: Template selection, auto-naming, collision detection, popover design, validation, accessibility
+
+---
+
+### [SIDEBAR.md](./SIDEBAR.md)
+
+**Sidebar Design**
+
+Collapsible sidebar with document list, logo, and action buttons.
+
+**Topics**: Collapsible behavior, button slots, document list, responsive design, accessibility
+
+---
+
+### [LOGO_SIDEBAR.md](./LOGO_SIDEBAR.md)
+
+**Logo in Sidebar**
+
+Logo positioning and animation within sidebar.
+
+**Topics**: Logo placement, animations, responsive behavior
+
+---
+
+### [SHARE_MODAL.md](./SHARE_MODAL.md)
+
+**Share Modal**
+
+Modal dialog for sharing documents (placeholder for future functionality).
+
+**Topics**: Share interface, modal design
+
+---
+
+### [WIDGET_ABSTRACTION.md](./WIDGET_ABSTRACTION.md)
+
+**Widget Abstraction System**
+
+Custom widget system providing consistent UI components (BaseDialog, BasePopover, Toast, etc.).
+
+**Topics**: Widget base classes, theming, accessibility patterns, component architecture
+
+---
+
+### [WIDGET_THEME_UNIFICATION.md](./WIDGET_THEME_UNIFICATION.md)
+
+**Widget Theme Unification**
+
+Widget theming standards and design tokens for consistent styling across all widgets.
+
+**Topics**: Theme tokens, styling patterns, consistency standards
 
 ---
 
@@ -156,7 +216,7 @@ The new design maintains visual compatibility with the legacy React implementati
 - **Layout**: Collapsible sidebar, split editor/preview, top menu
 - **Typography**: System fonts for UI, monospace for editor, serif for preview
 - **Interactions**: 300ms transitions, hover states, toast notifications
-- **Components**: Sidebar, TopMenu, EditorToolbar, MarkdownEditor, MarkdownPreview
+- **Components**: Sidebar, TopMenu, EditorToolbar, MarkdownEditor, Preview
 
 ### Modernized Elements
 
@@ -171,7 +231,7 @@ The new design maintains visual compatibility with the legacy React implementati
 
 The frontend integrates with backend services documented in `prose/designs/backend/`:
 
-### Authentication (AUTH.md)
+### Authentication (LOGIN_SERVICE.md)
 
 - JWT-based authentication (Keycloak or Supabase)
 - HTTP-only cookies for token storage
@@ -191,12 +251,11 @@ The frontend integrates with backend services documented in `prose/designs/backe
 1. Review [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) for all visual design tokens and patterns
 2. Review [ARCHITECTURE.md](./ARCHITECTURE.md) for project structure
 3. Review [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for component structure and testing
-4. Study [UI_COMPONENTS.md](./UI_COMPONENTS.md) for component behavior
-5. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
-6. Review [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md) for syntax highlighting approach
-7. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
-8. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
-9. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
+4. Review [MARKDOWN_EDITOR.md](./MARKDOWN_EDITOR.md) for editor implementation details
+5. Review [../quillmark/QUILLMARK_SYNTAX_HIGHLIGHTING.md](../quillmark/QUILLMARK_SYNTAX_HIGHLIGHTING.md) for syntax highlighting approach
+6. Implement [ACCESSIBILITY.md](./ACCESSIBILITY.md) requirements
+7. Use [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) patterns for state
+8. Follow [API_INTEGRATION.md](./API_INTEGRATION.md) for backend communication
 
 ### Development Workflow
 
@@ -256,7 +315,7 @@ See [STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md) for detailed patterns.
 
 See [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md#auto-save-behavior) for complete specification.
 
-- 7-second debounce after last keystroke
+- 4-second debounce after last keystroke (configurable)
 - Manual save via Ctrl/Cmd+S
 - Conflict resolution: last write wins
 
@@ -281,7 +340,7 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 - Single-user document editing
 - Markdown editor with formatting toolbar
 - Live preview pane
-- Auto-save with 7-second debounce
+- Auto-save with 4-second debounce
 - Document list (create, open, delete)
 - User authentication
 - Classification message (toast notification)
@@ -318,7 +377,7 @@ See [DESIGN_SYSTEM.md - Form Validation Strategy](./DESIGN_SYSTEM.md#form-valida
 ### Backend
 
 - See `prose/designs/backend/` for API specifications
-- See `prose/designs/backend/AUTH.md` for authentication details
+- See `prose/designs/backend/LOGIN_SERVICE.md` for authentication details
 
 ## Document Maintenance
 

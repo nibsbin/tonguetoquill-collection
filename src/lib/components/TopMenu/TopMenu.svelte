@@ -2,23 +2,21 @@
 	import {
 		Download,
 		MoreVertical,
-		FileText,
-		Info,
-		Shield,
-		Upload,
-		ExternalLink,
 		Check,
 		Loader2,
 		AlertCircle,
-		Share2
+		Share2,
+		Ruler,
+		FileText,
+		Info,
+		Shield,
+		Scale,
+		MessageSquare
 	} from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
-	import DropdownMenu from '$lib/components/ui/dropdown-menu.svelte';
-	import DropdownMenuTrigger from '$lib/components/ui/dropdown-menu-trigger.svelte';
-	import DropdownMenuContent from '$lib/components/ui/dropdown-menu-content.svelte';
-	import DropdownMenuItem from '$lib/components/ui/dropdown-menu-item.svelte';
-	import DropdownMenuSeparator from '$lib/components/ui/dropdown-menu-separator.svelte';
+	import BasePopover from '$lib/components/ui/base-popover.svelte';
 	import type { SaveStatus } from '$lib/utils/auto-save.svelte';
+	import { rulerStore } from '$lib/stores/ruler.svelte';
 
 	type TopMenuProps = {
 		fileName: string;
@@ -26,6 +24,14 @@
 		saveStatus?: SaveStatus;
 		saveError?: string;
 		onDocumentInfo?: () => void;
+		onTitleChange?: (newTitle: string) => void;
+		onRulerToggle?: () => void;
+		onShare?: () => void;
+		onAbout?: () => void;
+		onTerms?: () => void;
+		onPrivacy?: () => void;
+		hasSuccessfulPreview?: boolean;
+		hasActiveEditor?: boolean;
 	};
 
 	let {
@@ -33,13 +39,22 @@
 		onDownload,
 		saveStatus = 'idle',
 		saveError,
-		onDocumentInfo
+		onDocumentInfo,
+		onTitleChange,
+		onRulerToggle,
+		onShare,
+		onAbout,
+		onTerms,
+		onPrivacy,
+		hasSuccessfulPreview = false,
+		hasActiveEditor = false
 	}: TopMenuProps = $props();
 
 	import { documentStore } from '$lib/stores/documents.svelte';
 	let isEditing = $state(false);
 	let title = $state(fileName);
 	let inputEl = $state<HTMLInputElement | null>(null);
+	let dropdownOpen = $state(false);
 
 	$effect(() => {
 		if (!isEditing) {
@@ -59,13 +74,32 @@
 		title = fileName;
 	}
 
-	function commitEditing() {
+	async function commitEditing() {
 		isEditing = false;
 		const newName = (title || '').trim() || 'Untitled Document';
-		// update local title immediately so UI reflects the committed name
+		// Update local title immediately
 		title = newName;
+
+		// Notify parent of title change immediately (for TopMenu display)
+		if (onTitleChange) {
+			onTitleChange(newName);
+		}
+
+		// Persist to store (this will update sidebar reactively)
+		// Authenticated mode: optimistic update (immediate sidebar update)
+		// Guest mode: updates after localStorage write (slight delay)
 		if (documentStore.activeDocumentId) {
-			documentStore.updateDocument(documentStore.activeDocumentId, { name: newName });
+			try {
+				await documentStore.updateDocument(documentStore.activeDocumentId, { name: newName });
+			} catch (err) {
+				// Error is already handled by the store, just log for debugging
+				console.error('Failed to update document name:', err);
+				// Revert local title on error
+				title = fileName;
+				if (onTitleChange) {
+					onTitleChange(fileName);
+				}
+			}
 		}
 	}
 
@@ -78,32 +112,48 @@
 		}
 	}
 
-	function handleImport() {
-		// TODO: Open file picker
-		console.log('Import document');
+	function handleShare() {
+		if (onShare) {
+			onShare();
+		}
+		dropdownOpen = false;
 	}
 
-	function handleShare() {
-		// TODO: Open share dialog
-		console.log('Share document');
+	function handleRulerToggle() {
+		if (onRulerToggle) {
+			onRulerToggle();
+		} else {
+			rulerStore.toggle();
+		}
+		dropdownOpen = false;
 	}
 
 	function handleDocumentInfo() {
 		if (onDocumentInfo) {
 			onDocumentInfo();
 		}
+		dropdownOpen = false;
 	}
 
 	function handleAbout() {
-		window.open('/about', '_blank');
+		if (onAbout) {
+			onAbout();
+		}
+		dropdownOpen = false;
 	}
 
 	function handleTerms() {
-		window.open('/terms', '_blank');
+		if (onTerms) {
+			onTerms();
+		}
+		dropdownOpen = false;
 	}
 
 	function handlePrivacy() {
-		window.open('/privacy', '_blank');
+		if (onPrivacy) {
+			onPrivacy();
+		}
+		dropdownOpen = false;
 	}
 </script>
 
@@ -112,13 +162,6 @@
 	style="height: var(--top-menu-height);"
 >
 	<div class="flex items-center gap-2" style="height: 3.1rem;">
-		<!-- Logo to the left of document title (decorative) -->
-		<img
-			src="/logo.svg"
-			alt="Tonguetoquill logo"
-			aria-hidden="true"
-			class="mr-3 h-8 w-auto shrink-0"
-		/>
 		{#if isEditing}
 			<input
 				bind:this={inputEl}
@@ -151,7 +194,7 @@
 		{:else if saveStatus === 'saved'}
 			<div class="flex items-center gap-1 text-xs text-muted-foreground">
 				<Check class="h-3 w-3" />
-				<span>Saved</span>
+				<span>{documentStore.isGuest ? 'Saved' : 'Synced'}</span>
 			</div>
 		{:else if saveStatus === 'error'}
 			<div class="flex items-center gap-1 text-xs text-destructive" title={saveError}>
@@ -168,7 +211,9 @@
 				size="sm"
 				class="h-7 text-foreground/80 hover:bg-accent hover:text-foreground"
 				onclick={onDownload}
+				disabled={!hasSuccessfulPreview}
 				aria-label="Download document"
+				title={!hasSuccessfulPreview ? 'No preview available to download' : 'Download document'}
 			>
 				<Download class="mr-1 h-4 w-4" />
 				Download
@@ -176,8 +221,8 @@
 		</div>
 
 		<!-- Meatball Menu -->
-		<DropdownMenu>
-			<DropdownMenuTrigger>
+		<BasePopover bind:open={dropdownOpen} side="bottom" align="end" closeOnOutsideClick={true}>
+			{#snippet trigger()}
 				<Button
 					variant="ghost"
 					size="sm"
@@ -186,69 +231,87 @@
 				>
 					<MoreVertical class="h-4 w-4" />
 				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent
-				align="end"
-				class="w-56 border-border bg-surface-elevated text-foreground"
-			>
-				<!-- Group 1: Document Actions -->
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleImport}
-				>
-					<Upload class="mr-2 h-4 w-4" />
-					Import
-				</DropdownMenuItem>
+			{/snippet}
+			{#snippet content()}
+				<div class="min-w-[14rem] px-4 pt-4">
+					<!-- Document Actions -->
+					<button
+						class={hasActiveEditor
+							? 'relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none'
+							: 'relative flex w-full cursor-not-allowed items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground opacity-50 transition-colors focus:outline-none'}
+						disabled={!hasActiveEditor}
+						onclick={handleShare}
+					>
+						<Share2 class="mr-2 h-4 w-4" />
+						Share
+					</button>
 
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleShare}
-				>
-					<Share2 class="mr-2 h-4 w-4" />
-					Share
-				</DropdownMenuItem>
+					<!-- Group 2: Tools-->
+					<button
+						class={hasActiveEditor
+							? 'relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none'
+							: 'relative flex w-full cursor-not-allowed items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground opacity-50 transition-colors focus:outline-none'}
+						disabled={!hasActiveEditor}
+						onclick={handleRulerToggle}
+					>
+						<Ruler class="mr-2 h-4 w-4" />
+						Ruler Tool
+					</button>
+					<button
+						class={hasActiveEditor
+							? 'relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none'
+							: 'relative flex w-full cursor-not-allowed items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground opacity-50 transition-colors focus:outline-none'}
+						disabled={!hasActiveEditor}
+						onclick={handleDocumentInfo}
+					>
+						<FileText class="mr-2 h-4 w-4" />
+						Document Info
+					</button>
 
-				<DropdownMenuSeparator class="bg-border" />
+					<!-- Divider -->
+					<div class="my-2 border-t border-border"></div>
 
-				<!-- Group 2: Info & Help -->
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleDocumentInfo}
-				>
-					<FileText class="mr-2 h-4 w-4" />
-					Document Info
-				</DropdownMenuItem>
+					<!-- Group 3: Utilities -->
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleAbout}
+					>
+						<Info class="mr-2 h-4 w-4" />
+						About Us
+					</button>
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handleTerms}
+					>
+						<Scale class="mr-2 h-4 w-4" />
+						Terms of Use
+					</button>
+					<button
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={handlePrivacy}
+					>
+						<Shield class="mr-2 h-4 w-4" />
+						Privacy Policy
+					</button>
 
-				<DropdownMenuSeparator class="bg-border" />
+					<!-- Divider -->
+					<div class="my-2 border-t border-border"></div>
 
-				<!-- Group 3: Legal & About -->
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleAbout}
-				>
-					<Info class="mr-2 h-4 w-4" />
-					About Us
-					<ExternalLink class="ml-auto h-3 w-3" />
-				</DropdownMenuItem>
-
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handleTerms}
-				>
-					<FileText class="mr-2 h-4 w-4" />
-					Terms of Use
-					<ExternalLink class="ml-auto h-3 w-3" />
-				</DropdownMenuItem>
-
-				<DropdownMenuItem
-					class="text-foreground/80 focus:bg-accent focus:text-foreground"
-					onclick={handlePrivacy}
-				>
-					<Shield class="mr-2 h-4 w-4" />
-					Privacy Policy
-					<ExternalLink class="ml-auto h-3 w-3" />
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+					<!-- Group 4: Feedback -->
+					<a
+						href="https://docs.google.com/forms/d/e/1FAIpQLSfvYBIubtn55yEwPctCY92czFhyBJxnAgJ_tLPPEJ1wabNvow/viewform?usp=header"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="relative flex w-full cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-accent hover:text-foreground focus:bg-accent focus:text-foreground focus:outline-none"
+						onclick={() => {
+							dropdownOpen = false;
+						}}
+					>
+						<MessageSquare class="mr-2 h-4 w-4" />
+						Give Feedback
+					</a>
+				</div>
+			{/snippet}
+		</BasePopover>
 	</div>
 </div>

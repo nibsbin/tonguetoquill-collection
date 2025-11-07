@@ -4,7 +4,7 @@
 
 Tonguetoquill integrates with a RESTful backend API for authentication, document management, and user profiles. The frontend handles API communication, error handling, and state synchronization while maintaining a responsive user experience.
 
-For authentication details, see [prose/designs/backend/AUTH.md](../backend/AUTH.md).
+For authentication details, see [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md).
 
 ## API Architecture
 
@@ -12,87 +12,73 @@ For authentication details, see [prose/designs/backend/AUTH.md](../backend/AUTH.
 
 **API Settings**:
 
-- Base URL (environment-specific)
-- Timeout: 30 seconds (see [DESIGN_SYSTEM.md - Auto-Save](../frontend/DESIGN_SYSTEM.md#auto-save-behavior) for save timeout)
-- Retry strategy: Up to 3 attempts with exponential backoff
-- Credentials: Include cookies (for JWT tokens)
+- Base URL: Relative paths (same-origin API routes)
+- Timeout: Default browser timeout
+- Retry strategy: Application-level retry for transient failures
+- Credentials: Automatic cookie inclusion (HTTP-only cookies for JWT)
 
 **Endpoints**:
 
-- Authentication: `/auth/*`
-- Documents: `/api/documents/*`
-- User: `/api/profile`, `/api/preferences`
+- Authentication: `/api/auth/*` (login, callback, me, logout, refresh)
+- Documents: `/api/documents/*` (list, get, create, update, delete)
+- Document Metadata: `/api/documents/[id]/metadata`
 
 ### API Client Pattern
 
+**Implementation**:
+
+The application uses two complementary approaches:
+
+1. **DocumentClient**: Centralized service for document operations
+   - Routes between localStorage (guest mode) and API (authenticated mode)
+   - Provides unified interface: `listDocuments()`, `getDocument()`, `createDocument()`, `updateDocument()`, `deleteDocument()`
+   - Used by documentStore for all document I/O
+
+2. **Direct fetch() calls**: For authentication and simple operations
+   - Used in LoginClient for auth operations
+   - Used in page components for user session checks
+
 **Features**:
 
-- Centralized request handling
-- Automatic error handling
-- Token refresh on 401
-- Request/response interceptors
-- Timeout management
-- Retry logic
+- Simple fetch() API with async/await
+- Error handling via try/catch
+- Optimistic updates in document store
+- Guest mode fallback to localStorage
 
 **HTTP Methods**:
 
-- GET: Fetch resources
-- POST: Create resources
-- PUT: Update resources
-- DELETE: Remove resources
+- GET: Fetch resources (documents, user info)
+- POST: Create resources, trigger actions (create document, logout)
+- PUT: Update resources (update document)
+- DELETE: Remove resources (delete document)
 
 **Error Handling**:
 
-- Network errors
-- Timeout errors
-- HTTP error codes
-- Retry on transient failures
-- Redirect on authentication failure
+- Network errors caught via try/catch
+- HTTP error codes checked via `response.ok`
+- Toast notifications for user feedback
+- Optimistic update rollback on failure
+- Guest mode fallback on authentication errors
 
 ## Authentication Integration
 
-See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for complete authentication architecture and specifications.
+See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for complete authentication architecture, OAuth flow, and token management specifications.
 
-### Login Flow
+### Frontend Integration Points
 
-**Process**:
+**Client-Side Authentication Check**:
 
-1. User submits credentials via form action
-2. Server validates and sets HTTP-only cookie with JWT
-3. User redirected to app
-4. Session verified on protected routes
+- Check session via `GET /api/auth/me` on page load
+- Set documentStore guest mode based on response (401 = guest, 200 = authenticated)
+- Guest mode: documents stored in localStorage
+- Authenticated mode: documents synced via API
 
-**Token Management**:
+**Protected API Calls**:
 
-- JWT stored in HTTP-only cookies (never accessible to JavaScript)
-- Automatic token refresh before expiration (proactive, ~5 minutes before)
-- Logout clears session cookie
-- Failed refresh redirects to login
-
-### Protected Routes
-
-**Server-Side Protection**:
-
-- Verify authentication in SvelteKit server hooks
-- Load user data in layout server load function
-- Redirect to login if not authenticated
-- Pass user to client via page data
-
-**Client-Side Behavior**:
-
-- Access user from page data
-- Handle auth errors gracefully (show toast, redirect)
-- Redirect to login when session expires
-
-### Session Management
-
-See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and refresh specifications.
-
-**Features**:
-
-- Automatic token refresh (proactive, before expiration)
-- Session timeout warnings (optional, based on backend config)
-- Logout on inactivity (optional, based on backend config)
+- Server-side routes use `requireAuth()` utility to verify JWT
+- Returns 401 if not authenticated or token invalid
+- Client falls back to guest mode on 401
+- Toast notifications for errors
 
 ## Document Management
 
@@ -119,9 +105,9 @@ See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and 
 
 **Loading Documents**: Fetch on page load via load function
 
-**Creating Documents**: Form action or API call, optimistic UI update
+**Creating Documents**: API call via DocumentClient, optimistic UI update
 
-**Updating Documents**: Auto-save with debounce (see [DESIGN_SYSTEM.md - Auto-Save](../frontend/DESIGN_SYSTEM.md#auto-save-behavior)), optimistic updates
+**Updating Documents**: Auto-save with debounce (4000ms / 4 seconds default, configurable), optimistic updates
 
 **Deleting Documents**: Confirmation dialog, optimistic removal, rollback on error
 
@@ -147,13 +133,13 @@ See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and 
 
 ### User Feedback
 
-**Error Toasts**: Brief, actionable error messages (see [UI_COMPONENTS.md - Toast](../frontend/UI_COMPONENTS.md#toast-component))
+**Toast Notifications**: Brief, actionable messages using svelte-sonner
 
-**Inline Errors**: Next to form fields (see [DESIGN_SYSTEM.md - Form Validation](../frontend/DESIGN_SYSTEM.md#form-validation-strategy))
+**Inline Errors**: Next to form fields for validation errors
 
 **Error Pages**: For fatal errors with retry/home options
 
-**Loading States**: Indicate pending operations (see [DESIGN_SYSTEM.md - Loading States](../frontend/DESIGN_SYSTEM.md#loading-states))
+**Loading States**: Skeleton loaders and spinners for pending operations
 
 ## Optimistic Updates
 
@@ -221,73 +207,73 @@ See [prose/designs/backend/AUTH.md](../backend/AUTH.md) for session timeout and 
 
 **TypeScript Interfaces**:
 
-- Define types for all API responses
-- Share types between frontend and backend
-- Runtime validation of responses
-- Type-safe error handling
+- Type definitions in service files (e.g., `src/lib/services/documents/types.ts`)
+- `DocumentMetadata`, `User`, `Session` interfaces
+- Error response types (`ErrorResponse`)
+- Type-safe service methods
 
-**Type Generation**:
+**Implementation**:
 
-- Generate from OpenAPI spec (optional)
-- Manual type definitions
-- Zod schemas for validation
+- Manual TypeScript interfaces for API contracts
+- Runtime checks via `response.ok` and error handling
+- Zod schemas available for validation (package.json dependency)
 
 ### Request/Response Validation
 
-**Client-Side**: Type checking, basic validation
+**Client-Side**: TypeScript type checking, basic validation in services
 
-**Server-Side**: Full validation, sanitization, authorization
+**Server-Side**: Validation in API routes, error responses for invalid requests
 
-**Runtime**: Validate unexpected responses, handle gracefully
+**Runtime**: Error handling via try/catch, user-friendly error messages
 
 ## Performance Optimization
 
 ### Request Optimization
 
-**Batching**: Combine multiple requests where possible
+**Debouncing**: Auto-save debounced to 4 seconds to reduce API calls
 
-**Debouncing**: Delay requests until user pauses
+**Caching**: DocumentStore maintains in-memory cache of document list
 
-**Caching**: Reuse responses for repeated requests
+**Guest Mode**: LocalStorage for offline-capable guest experience
 
-**Prefetching**: Load likely-needed data in advance
+**Optimistic Updates**: Immediate UI feedback, rollback on error
 
 ### Response Handling
 
-**Streaming**: Use for large responses
+**JSON Parsing**: Standard `response.json()` for all API responses
 
-**Compression**: Enable gzip/brotli
+**Error Handling**: Check `response.ok` before parsing
 
-**Minimal Payloads**: Request only needed fields
-
-**Pagination**: Load data in chunks
+**State Updates**: Atomic updates to stores after successful responses
 
 ## API Integration Best Practices
 
 ### Request Practices
 
-- Always include timeout
-- Set appropriate headers
-- Handle all error cases
-- Log errors for debugging
-- Use HTTPS in production
+- Use relative URLs for same-origin API routes
+- Include proper Content-Type headers for JSON
+- Handle all error cases with try/catch
+- Provide user feedback via toast notifications
+- Use HTTPS in production (enforced by secure cookie flag)
 
 ### Response Practices
 
-- Validate response structure
-- Handle empty responses
-- Parse errors gracefully
-- Update state atomically
-- Show user feedback
+- Check `response.ok` before parsing
+- Handle empty responses gracefully
+- Parse errors with fallback messages
+- Update store state atomically
+- Show user feedback via toasts
 
 ### Security Practices
 
-- Never expose tokens to client JavaScript
-- Validate all user input
-- Use CSRF protection
-- Sanitize responses
-- Rate limit requests
-- Monitor for suspicious activity
+See [prose/designs/backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for authentication security architecture.
+
+**Frontend Security**:
+
+- Validate all user input server-side
+- CSRF protection via SameSite cookie attribute
+- XSS protection via automatic Svelte escaping
+- Secure cookies in production (secure flag)
 
 ## Testing Strategies
 

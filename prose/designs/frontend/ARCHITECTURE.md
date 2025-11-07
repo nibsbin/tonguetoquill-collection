@@ -15,16 +15,27 @@ Tonguetoquill is a professional single-page application built with SvelteKit 5, 
 
 ## Routing Architecture
 
-### Route Groups and URL Structure
+### Route Structure
 
-**Important**: Route groups use parentheses `(groupname)` to organize routes **without affecting the URL path**.
+The application uses a simple, flat route structure:
 
-Example:
-
-- `src/routes/(auth)/login/+page.svelte` → URL is `/login` (not `/auth/login`)
-- `src/routes/(auth)/register/+page.svelte` → URL is `/register` (not `/auth/register`)
-
-The parentheses create a folder for organization but are removed from the final URL.
+```
+src/routes/
+├── +layout.svelte         # Root layout component
+├── +page.svelte           # Main application page at /
+└── api/                   # API endpoints
+    ├── auth/              # Authentication endpoints
+    │   ├── login/
+    │   ├── callback/
+    │   ├── me/
+    │   ├── logout/
+    │   ├── refresh/
+    │   ├── providers/
+    │   └── email/
+    └── documents/         # Document CRUD endpoints
+        ├── +server.ts     # List and create documents
+        └── [id]/          # Individual document operations
+```
 
 ### Main Routes
 
@@ -32,14 +43,12 @@ The parentheses create a folder for organization but are removed from the final 
 
 - Guest users can explore the app and create documents (stored in browser localStorage only)
 - Authenticated users get full functionality with server persistence
-- Shows login/register prompts for features requiring authentication
-- Login/register buttons visible in header for guests
+- Login/profile button visible in top menu
+- Seamless transition between guest and authenticated modes
 
-**Auth Routes**:
+**Authentication Flow**:
 
-- `/login` - Login page (from `(auth)/login/+page.svelte`)
-- `/register` - Registration page (from `(auth)/register/+page.svelte`)
-- After authentication, redirect back to `/` with full features unlocked
+See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for complete OAuth flow and authentication architecture. Frontend initiates login via `/api/auth/login` redirect.
 
 ### Guest Mode vs Authenticated Mode
 
@@ -47,16 +56,16 @@ The parentheses create a folder for organization but are removed from the final 
 
 - Access to app interface at `/`
 - Can create and edit documents
-- Documents stored in browser localStorage only
-- "Sign in to save your work" banner displayed
+- Documents stored in browser localStorage only (5MB limit)
 - Limited to browser-local functionality
+- No cross-device sync
 
 **Authenticated Mode** (After Login):
 
 - Full document CRUD with server persistence
 - Documents synced to user account
-- Option to import localStorage documents on first login
 - Access to all features without restrictions
+- Cross-device document access
 
 ### Data Loading Strategy
 
@@ -69,7 +78,16 @@ The parentheses create a folder for organization but are removed from the final 
 
 ### Component Organization
 
-Components are organized by feature in `src/lib/components/`. See [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for detailed structure, testing patterns, and file naming conventions.
+Components are organized by feature in `src/lib/components/`:
+
+- **DocumentList/**: Document list and item components
+- **Editor/**: Markdown editor components (DocumentEditor, MarkdownEditor, EditorToolbar)
+- **Preview/**: Document preview components
+- **Sidebar/**: Sidebar navigation and drawer components
+- **TopMenu/**: Top menu bar component
+- **ui/**: Reusable UI primitives from shadcn-svelte (Button, Dialog, Dropdown, etc.)
+
+See [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for detailed structure, testing patterns, and file naming conventions.
 
 ### Component Hierarchy
 
@@ -81,7 +99,8 @@ Components are organized by feature in `src/lib/components/`. See [COMPONENT_ORG
 
 - Parent to child via props
 - Child to parent via callbacks/events
-- Cross-component via global stores
+- Cross-component via global stores (documentStore, toastStore)
+- Notifications via svelte-sonner (Toaster component)
 
 ## State Management
 
@@ -99,11 +118,11 @@ SvelteKit 5 provides reactive primitives for component state, derived values, an
 
 ### Global Stores
 
-Application-wide state for:
+Application-wide state using Svelte 5 runes (`$state`, `$derived`, `$effect`):
 
-- Authentication status
-- User preferences
-- Document management
+- **documentStore**: Document list, active document, loading states
+- **toastStore**: Toast notifications (wrapper around svelte-sonner)
+- Authentication state managed via server-side session (HTTP-only cookies)
 
 ### Form State
 
@@ -116,27 +135,28 @@ Server-side validation with progressive enhancement:
 
 ### API Routes
 
-RESTful endpoints for:
+RESTful API endpoints in `src/routes/api/`:
 
-- Document operations
-- User management
-- Settings
+**Authentication** (`/api/auth/*`):
 
-### Form Actions
+- `GET /api/auth/login` - Initiate OAuth flow
+- `GET /api/auth/callback` - OAuth callback handler
+- `GET /api/auth/me` - Get current user
+- `POST /api/auth/logout` - Sign out
+- `POST /api/auth/refresh` - Refresh token
 
-Handle server-side:
+**Documents** (`/api/documents/*`):
 
-- Form validation
-- Database operations
-- File handling
-- Authentication
+- `GET /api/documents` - List user documents
+- `POST /api/documents` - Create document
+- `GET /api/documents/[id]` - Get document with content
+- `PUT /api/documents/[id]` - Update document
+- `DELETE /api/documents/[id]` - Delete document
+- `GET /api/documents/[id]/metadata` - Get metadata only
 
 ### Session Management
 
-- HTTP-only cookies for tokens
-- Automatic token refresh
-- Protected route verification
-- Redirect handling
+See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for token management and session details. Frontend supports guest mode fallback for unauthenticated users.
 
 ## Progressive Enhancement
 
@@ -148,10 +168,10 @@ Handle server-side:
 
 ### Enhancement Patterns
 
-- Forms submit via HTTP POST by default
-- Enhanced with optimistic UI and validation
+- API communication via fetch() for authenticated users
+- Guest mode uses localStorage for client-side persistence
 - Navigation server-rendered, client-enhanced
-- Loading states added progressively
+- Loading states added progressively with Svelte transitions
 
 ## Performance Strategy
 
@@ -165,7 +185,8 @@ Handle server-side:
 
 - SSR for initial page load
 - Client hydration for interactivity
-- Debounced updates for live preview
+- Debounced updates for auto-save (4 seconds)
+- Live preview updates with Quillmark integration
 
 ### Data Fetching
 
@@ -205,10 +226,13 @@ Breakpoints: 640px (mobile), 768px (tablet), 1024px (desktop), 1280px+ (large)
 
 ### Authentication Security
 
-- JWT in HTTP-only cookies
-- Automatic token refresh
-- Session management
-- Attack prevention (CSRF, XSS, injection)
+See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for authentication security architecture.
+
+Frontend security measures:
+
+- XSS prevention via automatic Svelte escaping
+- CSRF protection via SameSite cookie attribute
+- Tokens managed server-side only (never exposed to JavaScript)
 
 ## Build & Deployment
 

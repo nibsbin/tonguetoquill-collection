@@ -6,13 +6,16 @@
 		type RenderResult
 		// type QuillmarkDiagnostic
 	} from '$lib/services/quillmark/types';
+	import { RulerOverlay } from '$lib/components/RulerOverlay';
 
 	interface Props {
 		/** Markdown content to preview */
 		markdown: string;
+		/** Callback when preview success status changes */
+		onPreviewStatusChange?: (hasSuccessfulPreview: boolean) => void;
 	}
 
-	let { markdown }: Props = $props();
+	let { markdown, onPreviewStatusChange }: Props = $props();
 
 	interface ErrorDisplayState {
 		code?: string;
@@ -37,6 +40,19 @@
 
 	// Debounce timer
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+	// Container element for ruler overlay
+	let previewContainer = $state<HTMLElement | null>(null);
+
+	// Derived state: whether we have a successful preview
+	let hasSuccessfulPreview = $derived(lastSuccessfulResult !== null);
+
+	// Notify parent when preview status changes
+	$effect(() => {
+		if (onPreviewStatusChange) {
+			onPreviewStatusChange(hasSuccessfulPreview);
+		}
+	});
 
 	/**
 	 * Extract error display information from caught error
@@ -80,7 +96,7 @@
 
 		try {
 			// Render with Quillmark - engine auto-detects backend from content
-			const result = await quillmarkService.renderForPreview(markdown);
+			const result = await quillmarkService.render(markdown);
 			renderResult = result;
 
 			// Clean up previous PDF object URL before creating new one
@@ -97,8 +113,6 @@
 				svgPages = [];
 				const blob = resultToBlob(result);
 				pdfObjectUrl = URL.createObjectURL(blob);
-				console.log('Length of PDF blob:', blob.size);
-				console.log('Created PDF object URL:', pdfObjectUrl);
 			} else {
 				svgPages = [];
 			}
@@ -119,7 +133,7 @@
 		} catch (err) {
 			// Extract diagnostic information
 			errorDisplay = extractErrorDisplay(err);
-			console.error('Preview render error:', err);
+			//console.error('Preview render error:', err);
 		} finally {
 			loading = false;
 		}
@@ -188,7 +202,8 @@
 </script>
 
 <div
-	class="h-full overflow-auto bg-background"
+	bind:this={previewContainer}
+	class="preview-wrapper h-full overflow-auto bg-background"
 	role="region"
 	aria-label="Document preview"
 	aria-live="polite"
@@ -354,13 +369,20 @@
 			aria-label="PDF preview"
 		></iframe>
 	{:else}
-		<div class="flex h-full items-center justify-center">
+		<!-- <div class="flex h-full items-center justify-center">
 			<p class="text-muted-foreground">No preview available</p>
-		</div>
+		</div> -->
 	{/if}
+
+	<!-- Ruler Overlay -->
+	<RulerOverlay containerElement={previewContainer} />
 </div>
 
 <style>
+	.preview-wrapper {
+		position: relative;
+	}
+
 	.preview-svg-container {
 		padding: 0.5rem;
 		display: flex;

@@ -4,20 +4,13 @@
 	import { EditorState } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-	import {
-		foldKeymap,
-		foldEffect,
-		foldState,
-		unfoldEffect,
-		foldedRanges,
-		codeFolding
-	} from '@codemirror/language';
+	import { foldKeymap, foldState, codeFolding } from '@codemirror/language';
 	import { createEditorTheme } from '$lib/utils/editor-theme';
 	import {
 		quillmarkDecorator,
 		createQuillmarkTheme,
 		quillmarkFoldService,
-		isMetadataDelimiter
+		toggleAllMetadataBlocks
 	} from '$lib/editor';
 
 	interface Props {
@@ -212,73 +205,7 @@
 
 	function handleToggleFrontmatter() {
 		if (!editorView) return;
-
-		const state = editorView.state;
-		const doc = state.doc;
-		const effects = [];
-
-		// Get currently folded ranges
-		const folded = foldedRanges(state);
-		const metadataBlocks = [];
-
-		// Find all metadata blocks
-		for (let lineNum = 1; lineNum <= doc.lines; lineNum++) {
-			if (isMetadataDelimiter(lineNum, doc)) {
-				const line = doc.line(lineNum);
-
-				// Find the closing delimiter
-				let closingLineNum = null;
-				for (let j = lineNum + 1; j <= doc.lines; j++) {
-					if (isMetadataDelimiter(j, doc)) {
-						closingLineNum = j;
-						break;
-					}
-				}
-
-				if (closingLineNum !== null) {
-					const closingLine = doc.line(closingLineNum);
-					const foldTo = closingLine.to < doc.length ? closingLine.to + 1 : closingLine.to;
-					metadataBlocks.push({ from: line.from, to: foldTo });
-					lineNum = closingLineNum;
-				}
-			}
-		}
-
-		// Check if ALL metadata blocks are currently folded
-		let allFolded = metadataBlocks.length > 0;
-		for (const block of metadataBlocks) {
-			let isFolded = false;
-			folded.between(block.from, block.to, (from, to) => {
-				if (from === block.from && to === block.to) {
-					isFolded = true;
-					return false;
-				}
-			});
-			if (!isFolded) {
-				allFolded = false;
-				break;
-			}
-		}
-
-		// Toggle: if ALL are folded, unfold all. Otherwise (if any are expanded), fold all.
-		if (allFolded) {
-			// Unfold all metadata blocks
-			for (const block of metadataBlocks) {
-				effects.push(unfoldEffect.of({ from: block.from, to: block.to }));
-			}
-		} else {
-			// Fold all metadata blocks
-			for (const block of metadataBlocks) {
-				effects.push(foldEffect.of({ from: block.from, to: block.to }));
-			}
-		}
-
-		// Apply all effects at once
-		if (effects.length > 0) {
-			editorView.dispatch({ effects });
-		}
-
-		editorView.focus();
+		toggleAllMetadataBlocks(editorView);
 	}
 
 	function handleBulletList() {

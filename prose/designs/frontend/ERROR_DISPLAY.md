@@ -253,8 +253,6 @@ Using semantic tokens from `app.css`:
 }
 ```
 
-**Note:** These semantic tokens need to be added to `app.css` as documented in [prose/plans/informative-errors.md](../../plans/informative-errors.md#1-add-semantic-tokens-for-error-display).
-
 ## Accessibility
 
 ### ARIA Attributes

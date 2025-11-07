@@ -123,7 +123,7 @@ Per PARSE.md specifications:
 
 ## QuillMark Syntax Highlighting
 
-> **See:** [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md) for complete syntax highlighting design
+> **See:** [QUILLMARK_SYNTAX_HIGHLIGHTING.md](../quillmark/QUILLMARK_SYNTAX_HIGHLIGHTING.md) for complete syntax highlighting design
 
 ### Approach
 
@@ -176,10 +176,6 @@ Follows [DESIGN_SYSTEM.md - Theme System](./DESIGN_SYSTEM.md#theme-system):
 
 **Note**: All colors use semantic tokens that automatically adapt to light/dark themes with appropriate contrast adjustments.
 
-### Implementation Status
-
-See [prose/plans/quillmark-syntax-highlighting-plan.md](../../plans/quillmark-syntax-highlighting-plan.md) for implementation roadmap.
-
 ---
 
 ### Deprecated: Lezer Grammar Approach
@@ -191,7 +187,7 @@ See [prose/plans/quillmark-syntax-highlighting-plan.md](../../plans/quillmark-sy
 - Specialized knowledge required
 - Additional build tooling overhead
 
-The decoration-based approach (see [QUILLMARK_SYNTAX_HIGHLIGHTING.md](./QUILLMARK_SYNTAX_HIGHLIGHTING.md)) supersedes the Lezer grammar approach.
+The decoration-based approach (see [QUILLMARK_SYNTAX_HIGHLIGHTING.md](../quillmark/QUILLMARK_SYNTAX_HIGHLIGHTING.md)) supersedes the Lezer grammar approach.
 
 ## Code Folding
 
@@ -253,7 +249,7 @@ CodeMirror supports nested folds naturally:
 
 ### Formatting Toolbar Integration
 
-Per [UI_COMPONENTS.md - EditorToolbar](./UI_COMPONENTS.md), the toolbar provides markdown formatting controls.
+The toolbar provides markdown formatting controls.
 
 **Toolbar Actions:**
 
@@ -459,14 +455,14 @@ Lezer parser updates incrementally:
 
 Per [DESIGN_SYSTEM.md - Auto-Save Behavior](./DESIGN_SYSTEM.md):
 
-- 7-second debounce after last keystroke
+- 4-second debounce after last keystroke (configurable)
 - Editor content changes trigger auto-save timer
 - Manual save (Ctrl/Cmd+S) bypasses debounce
 - Save status indicator updates in TopMenu
 
 **Preview Updates:**
 
-Coordinate with MarkdownPreview component:
+Coordinate with Preview component:
 
 - Debounced preview rendering (50-300ms)
 - Editor emits content change events
@@ -819,7 +815,6 @@ Development and build dependencies:
 ### Related Design Documents
 
 - [prose/designs/quillmark/PARSE.md](../quillmark/PARSE.md): Extended markdown specification
-- [prose/designs/frontend/UI_COMPONENTS.md](./UI_COMPONENTS.md): Editor component specs
 - [prose/designs/frontend/DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md): Visual design tokens
 - [prose/designs/frontend/STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md): State patterns
 - [prose/designs/frontend/ACCESSIBILITY.md](./ACCESSIBILITY.md): Section 508 compliance
