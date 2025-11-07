@@ -79,7 +79,7 @@
 	/* Syntax highlighting colors (light mode) */
 	--color-syntax-keyword: #355e93;
 	--color-syntax-key: #355e93;
-	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.03);
+	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.035);
 	--color-syntax-comment: #71717a; /* zinc-500 - muted gray for comments */
 
 	/* Error/Diagnostic colors */
@@ -138,7 +138,7 @@
 	/* Syntax highlighting colors (dark mode) */
 	--color-syntax-keyword: #7aacd4;
 	--color-syntax-key: #3a85b6;
-	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.08);
+	--color-syntax-metadata-bg: rgba(53, 94, 147, 0.05);
 	--color-syntax-comment: #a1a1aa; /* zinc-400 - lighter muted gray for dark mode */
 
 	/* Error/Diagnostic colors */

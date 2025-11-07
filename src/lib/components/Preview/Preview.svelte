@@ -80,6 +80,11 @@
 	 * Render markdown using Quillmark service
 	 */
 	async function renderPreview(): Promise<void> {
+		// Keep showing loading screen while service initializes
+		if (!quillmarkService.isReady()) {
+			return;
+		}
+
 		if (!markdown) {
 			renderResult = null;
 			svgPages = [];

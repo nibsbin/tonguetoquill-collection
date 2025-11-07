@@ -234,7 +234,7 @@
 
 			// Collapse frontmatter after content loads
 			requestAnimationFrame(() => {
-				handleFormat('toggleFrontmatter');
+				handleFormat('foldFrontmatter');
 			});
 		} catch {
 			toastStore.error('Failed to load document');
