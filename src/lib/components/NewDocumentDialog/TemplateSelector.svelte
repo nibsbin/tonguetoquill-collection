@@ -54,7 +54,7 @@
 				role="option"
 				aria-selected={isSelected}
 				class={cn(
-					'flex h-10 w-full items-center justify-between gap-2 px-3 text-sm transition-colors',
+					'relative flex h-10 w-full items-center gap-2 px-3 text-sm transition-colors',
 					isSelected
 						? 'bg-accent text-accent-foreground'
 						: 'hover:bg-accent/50 hover:text-accent-foreground',
@@ -65,20 +65,16 @@
 					type="button"
 					onclick={() => handleTemplateClick(template)}
 					{disabled}
-					class="flex min-w-0 flex-1 items-center gap-2 text-left"
+					class="absolute inset-0 flex w-full items-center gap-2 px-3 text-left"
 				>
-					{#if isSelected}
-						<Check class="h-4 w-4 shrink-0 text-primary" />
-					{:else}
-						<div class="h-4 w-4 shrink-0"></div>
-					{/if}
+					<div class="h-4 w-4 shrink-0"></div>
 					<span class="truncate">{template.name}</span>
 				</button>
 				<Tooltip content={template.description} position="left" delay={300}>
 					{#snippet children()}
 						<button
 							type="button"
-							class="flex h-6 w-6 shrink-0 items-center justify-center rounded hover:bg-background/10"
+							class="relative z-10 ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded hover:bg-background/10"
 							onclick={(e) => {
 								// Info button - does not trigger template selection
 								e.stopPropagation();
