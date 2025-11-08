@@ -608,22 +608,28 @@ All widgets implement three dismissal methods with custom Svelte code:
 
 **Location**: Design system tokens in `src/app.css`
 
-The Z-index system is simplified into three main groups for maintainability:
+The Z-index system is simplified into main groups for maintainability:
 
 ```css
-/* Widget Layer System - Simplified */
+/* Widget Layer System */
 :root {
 	/* Group 1: Canvas - UI elements and overlays within the main canvas/preview area */
 	--z-canvas-ui: 10; /* UI elements within the canvas (e.g., sidebar) */
 	--z-canvas-overlay: 20; /* Tool overlays scoped to canvas (e.g., ruler overlay) */
 
-	/* Group 2: Minor Widgets - Lightweight overlays that don't demand full attention */
+	/* Group 2: Minor Widgets - Lightweight overlays */
 	--z-dropdown: 1000; /* Dropdown menus and select options */
+
+	/* Group 3: Scoped Content - Informational overlays within containers */
+	--z-scoped-backdrop: 1050; /* Scoped modal backdrops (utility pages) */
+	--z-scoped-content: 1075; /* Scoped modal content (utility pages) */
+
+	/* Group 4: Navigation Overlays - Must be above scoped content */
 	--z-popover: 1100; /* Popovers - lightweight contextual UI */
 	--z-toast: 1200; /* Toast notifications */
 	--z-banner: 1300; /* Notification banners */
 
-	/* Group 3: Modals - Full attention overlays that block interaction */
+	/* Group 5: Modals - Full attention overlays that block interaction */
 	--z-modal-backdrop: 1400; /* Dialog/modal backdrops */
 	--z-modal-content: 1500; /* Dialog/modal/sheet content */
 }
@@ -636,27 +642,49 @@ The Z-index system is simplified into three main groups for maintainability:
 1. **canvas-ui** (10): UI elements within the canvas (sidebar, editor controls)
 2. **canvas-overlay** (20): Tool overlays scoped to canvas/preview areas (ruler, selection tools)
 
-**Group 2: Minor Widgets** (1000-1300) 3. **dropdown** (1000): Dropdown menus, select options 4. **popover** (1100): Popover content - lightweight contextual UI (settings, login) 5. **toast** (1200): Toast notifications (success, error messages) 6. **banner** (1300): Notification banners
+**Group 2: Minor Widgets** (1000)
 
-**Group 3: Modals** (1400-1500) 7. **modal-backdrop** (1400): Dialog/modal backdrops - demand user attention 8. **modal-content** (1500): Dialog/modal/sheet content - primary user actions
+3. **dropdown** (1000): Dropdown menus, select options
+
+**Group 3: Scoped Content** (1050-1075)
+
+4. **scoped-backdrop** (1050): Scoped modal backdrops - informational overlays within containers
+5. **scoped-content** (1075): Scoped modal content - utility pages (About, Terms, Privacy)
+
+**Group 4: Navigation Overlays** (1100-1300)
+
+6. **popover** (1100): Popover content - navigation and contextual UI (kebab menu, settings) - **must be above scoped content**
+7. **toast** (1200): Toast notifications (success, error messages)
+8. **banner** (1300): Notification banners
+
+**Group 5: Modals** (1400-1500)
+
+9. **modal-backdrop** (1400): Dialog/modal backdrops - demand user attention
+10. **modal-content** (1500): Dialog/modal/sheet content - primary user actions
 
 **Design Principles**:
 
-- **Simplified hierarchy**: Three clear groups make Z-layer relationships obvious
-- **No intermediate layers**: Removed rarely-used layers (sticky, tooltip, ui-element)
-- **Clear naming**: `-backdrop` and `-content` suffixes clarify modal components
-- **Maintainable**: Fewer layers means less complexity and fewer bugs
+- **Clear hierarchy**: Five groups make Z-layer relationships and priorities obvious
+- **Scoped content layer**: New layer (1050-1075) for informational overlays that should not block navigation
+- **Navigation priority**: Popovers and navigation UI (1100+) always above scoped informational content
+- **Clear naming**: `-backdrop` and `-content` suffixes clarify modal components, `scoped-` prefix for scoped overlays
+- **Maintainable**: Well-organized layers reduce complexity and prevent z-index conflicts
 - **Delegated to base components**: Final components should NOT specify their own z-index; base components handle all Z-layer assignment
 
 **Usage in Base Components**:
 
 ```typescript
-// BaseDialog
+// BaseDialog (Global)
 class="z-modal-backdrop"  // 1400 (backdrop)
 class="z-modal-content"   // 1500 (dialog content)
 
+// BaseDialog (Scoped) - NEW
+class="z-scoped-backdrop"  // 1050 (scoped backdrop)
+class="z-scoped-content"   // 1075 (scoped dialog content)
+// Used by: AboutModal, TermsModal, PrivacyModal
+
 // BasePopover
-class="z-popover"         // 1100
+class="z-popover"         // 1100 (above scoped content)
 
 // BaseSheet
 class="z-modal-backdrop"  // 1400 (backdrop)

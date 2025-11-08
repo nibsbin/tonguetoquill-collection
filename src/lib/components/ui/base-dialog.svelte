@@ -82,7 +82,11 @@
 	<Portal disabled={scoped}>
 		<!-- Backdrop -->
 		<div
-			class={cn('z-modal-backdrop inset-0 bg-black/40', scoped ? 'absolute' : 'fixed')}
+			class={cn(
+				scoped ? 'z-scoped-backdrop' : 'z-modal-backdrop',
+				'inset-0 bg-black/40',
+				scoped ? 'absolute' : 'fixed'
+			)}
 			onclick={handleBackdropClick}
 			role="presentation"
 		></div>
@@ -90,7 +94,8 @@
 		<!-- Dialog Container -->
 		<div
 			class={cn(
-				'z-modal-content bg-surface-elevated shadow-lg',
+				scoped ? 'z-scoped-content' : 'z-modal-content',
+				'bg-surface-elevated shadow-lg',
 				size === 'fullscreen'
 					? 'absolute inset-0 flex flex-col'
 					: cn(

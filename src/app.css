@@ -38,11 +38,17 @@
 
 	/* Group 2: Minor Widgets - Lightweight overlays */
 	--z-dropdown: 1000; /* Dropdown menus and select options */
+
+	/* Group 3: Scoped Content - Informational overlays within containers */
+	--z-scoped-backdrop: 1050; /* Scoped modal backdrops (utility pages) */
+	--z-scoped-content: 1075; /* Scoped modal content (utility pages) */
+
+	/* Group 4: Navigation Overlays - Must be above scoped content */
 	--z-popover: 1100; /* Popovers - lightweight contextual UI */
 	--z-toast: 1200; /* Toast notifications */
 	--z-banner: 1300; /* Notification banners */
 
-	/* Group 3: Modals - Full attention overlays */
+	/* Group 5: Modals - Full attention overlays */
 	--z-modal-backdrop: 1400; /* Dialog/modal backdrops */
 	--z-modal-content: 1500; /* Dialog/modal/sheet content */
 
@@ -175,6 +181,8 @@
 	--z-sidebar-backdrop: var(--z-sidebar-backdrop);
 	--z-sidebar: var(--z-sidebar);
 	--z-dropdown: var(--z-dropdown);
+	--z-scoped-backdrop: var(--z-scoped-backdrop);
+	--z-scoped-content: var(--z-scoped-content);
 	--z-popover: var(--z-popover);
 	--z-toast: var(--z-toast);
 	--z-banner: var(--z-banner);
