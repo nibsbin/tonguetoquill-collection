@@ -44,10 +44,22 @@
 	<Button
 		variant="ghost"
 		size="icon"
-		class="h-5 w-5 shrink-0 p-0 text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-transparent hover:text-red-400 active:scale-95"
+		class="delete-btn h-5 w-5 shrink-0 p-0 opacity-0 transition-all group-hover:opacity-60 hover:bg-transparent hover:!opacity-100 active:scale-95 {isActive
+			? 'opacity-60'
+			: ''}"
 		onclick={handleDelete}
 		aria-label="Delete {document.name}"
 	>
 		<Trash2 class="h-5 w-5" />
 	</Button>
 </div>
+
+<style>
+	.delete-btn {
+		color: var(--color-muted-foreground);
+	}
+
+	.delete-btn:hover {
+		color: var(--color-destructive-muted);
+	}
+</style>
