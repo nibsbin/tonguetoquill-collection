@@ -39,9 +39,20 @@ class FoldableDelimiterWidget extends WidgetType {
 }
 
 /**
+ * Widget for non-clickable closing delimiter
+ */
+class ClosingDelimiterWidget extends WidgetType {
+	toDOM(_view: EditorView): HTMLElement {
+		const span = document.createElement('span');
+		span.className = 'cm-quillmark-delimiter';
+		span.textContent = '---';
+		return span;
+	}
+}
+
+/**
  * Decoration marks for QuillMark syntax elements
  */
-const delimiterMark = Decoration.mark({ class: 'cm-quillmark-delimiter' });
 const blockMark = Decoration.line({ class: 'cm-quillmark-block' });
 const scopeKeywordMark = Decoration.mark({ class: 'cm-quillmark-scope-keyword' });
 const quillKeywordMark = Decoration.mark({ class: 'cm-quillmark-quill-keyword' });
@@ -192,7 +203,9 @@ class QuillMarkDecorator {
 			decorations.push({
 				from: closeLine.from,
 				to: closeLine.to,
-				decoration: delimiterMark,
+				decoration: Decoration.replace({
+					widget: new ClosingDelimiterWidget()
+				}),
 				isLine: false
 			});
 		}
