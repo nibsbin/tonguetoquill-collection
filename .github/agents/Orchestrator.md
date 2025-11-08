@@ -1,5 +1,5 @@
 ---
-name: architect
+name: orchestrator
 description: Specialized agent that crafts high level designs and plans
 ---
 
