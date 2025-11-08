@@ -1,1 +1,1 @@
-Flow through the architect skill to design and plan. Then use the programmer skill to implement the solution.
+Follow instructions in `.github/agents/Architect.md` through the architect skill to design and plan. Then follow instructions in `.github/agents/Programmer.md` to implement the solution.
