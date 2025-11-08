@@ -197,23 +197,24 @@
 	<!-- Menu Items -->
 	<div class="flex-1 overflow-hidden">
 		<div>
-			<div class={documentStore.documents.length > 0 && isExpanded ? 'border-b border-border' : ''}>
-				<NewDocumentDialog
-					open={newDocDialogOpen}
-					onOpenChange={(open) => (newDocDialogOpen = open)}
-					onCreate={handleCreateDocument}
-					{existingDocumentNames}
-				>
-					{#snippet triggerContent()}
-						<SidebarButtonSlot
-							icon={Plus}
-							label="New Document"
-							{isExpanded}
-							ariaLabel="Create new document"
-						/>
-					{/snippet}
-				</NewDocumentDialog>
-			</div>
+			<NewDocumentDialog
+				open={newDocDialogOpen}
+				onOpenChange={(open) => (newDocDialogOpen = open)}
+				onCreate={handleCreateDocument}
+				{existingDocumentNames}
+			>
+				{#snippet triggerContent()}
+					<SidebarButtonSlot
+						icon={Plus}
+						label="New Document"
+						{isExpanded}
+						ariaLabel="Create new document"
+					/>
+				{/snippet}
+			</NewDocumentDialog>
+
+			<!-- Soft divider under New Document button -->
+			<div class="sidebar-soft-divider"></div>
 
 			{#if documentStore.documents.length > 0 && isExpanded}
 				<!-- Scrollable Recent Items -->

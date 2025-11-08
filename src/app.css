@@ -253,6 +253,13 @@ button {
 	border-bottom-width: 1.5px;
 }
 
+/* Sidebar soft divider - consistent horizontal padding for expanded and collapsed states */
+.sidebar-soft-divider {
+	border-bottom: 1px solid var(--color-border);
+	margin-left: 0.25rem; /* 4px - matches sidebar button slot padding */
+	margin-right: 0.25rem; /* 4px - matches sidebar button slot padding */
+}
+
 /* Typography Utilities - Consistent text styling using semantic tokens */
 
 /* Base text colors */
