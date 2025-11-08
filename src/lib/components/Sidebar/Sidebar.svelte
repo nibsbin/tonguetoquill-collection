@@ -247,7 +247,7 @@
 				{#snippet trigger()}
 					<SidebarButtonSlot
 						icon={LogIn}
-						label="Sign in"
+						label="Sign in to sync"
 						{isExpanded}
 						ariaLabel="Sign in to your account"
 					/>
