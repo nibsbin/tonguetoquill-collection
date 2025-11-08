@@ -244,7 +244,7 @@
 	<div class="flex flex-col border-t border-border">
 		<!-- Sign-In Button (Guest Mode) -->
 		{#if !user}
-			<BasePopover bind:open={loginPopoverOpen} side="right" align="start" title="Sign in">
+			<BasePopover bind:open={loginPopoverOpen} side="right" align="start" sideOffset={0} title="Sign in">
 				{#snippet trigger()}
 					<SidebarButtonSlot
 						icon={LogIn}
@@ -265,6 +265,7 @@
 				bind:open={profilePopoverOpen}
 				side="right"
 				align="start"
+				sideOffset={0}
 				title="Account Information"
 			>
 				{#snippet trigger()}
@@ -303,7 +304,7 @@
 		{/if}
 
 		<!-- Settings Gear Button -->
-		<BasePopover bind:open={popoverOpen} side="right" align="end" title="Settings">
+		<BasePopover bind:open={popoverOpen} side="right" align="end" sideOffset={0} title="Settings">
 			{#snippet trigger()}
 				<SidebarButtonSlot
 					icon={Settings}

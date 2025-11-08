@@ -204,6 +204,7 @@
 	title="New Document"
 	side="right"
 	align="end"
+	sideOffset={0}
 	closeOnEscape={true}
 	closeOnOutsideClick={true}
 	showCloseButton={false}
