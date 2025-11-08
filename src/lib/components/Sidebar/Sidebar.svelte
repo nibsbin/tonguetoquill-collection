@@ -30,7 +30,7 @@
 	let lineNumbers = $state(true);
 	let popoverOpen = $state(false);
 	let loginPopoverOpen = $state(false);
-	let isDarkMode = $state(true);
+	let isDarkMode = $state(false);
 	let profilePopoverOpen = $state(false);
 
 	// Use centralized responsive store
