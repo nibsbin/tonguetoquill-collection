@@ -17,6 +17,7 @@ CREATE TABLE Users (
     email VARCHAR(255) NOT NULL UNIQUE,
     dodid VARCHAR(10) UNIQUE,  -- Optional: Military ID for DoD users
     profile JSONB,
+    first_login_at TIMESTAMP WITH TIME ZONE,  -- Timestamp when first login actions completed
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -47,6 +48,9 @@ The `profile` field stores flexible user profile data that may evolve over time:
 	"unit": "123rd Squadron"
 }
 ```
+
+**First Login Timestamp:**
+The `first_login_at` field stores when first login actions were completed. See [USER_SERVICE.md](./USER_SERVICE.md) for details. This is `NULL` until the user's first login actions complete, then set to the timestamp of completion.
 
 ## Documents
 

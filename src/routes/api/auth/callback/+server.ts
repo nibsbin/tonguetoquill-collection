@@ -7,6 +7,7 @@ import { isRedirect, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { authService } from '$lib/server/services/auth';
 import { setAuthCookies } from '$lib/server/utils/api';
+import { runFirstLoginActions } from '$lib/server/services/user';
 
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -23,6 +24,12 @@ export const GET: RequestHandler = async (event) => {
 
 		// Set authentication cookies
 		setAuthCookies(event, result.session.access_token, result.session.refresh_token);
+
+		// Run first login actions (non-blocking)
+		// Errors are logged but don't block login flow
+		runFirstLoginActions(result.user.id, result.session.access_token).catch((error) => {
+			console.error('Failed to run first login actions:', error);
+		});
 
 		// Redirect to home page after successful authentication
 		console.log('Authentication successful, redirecting to home page');

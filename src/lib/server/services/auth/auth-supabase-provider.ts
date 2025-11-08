@@ -328,6 +328,7 @@ export class SupabaseAuthProvider implements AuthContract {
 			email: supabaseUser.email || '',
 			dodid: supabaseUser.user_metadata?.dodid || null,
 			profile: supabaseUser.user_metadata || {},
+			first_login_at: supabaseUser.user_metadata?.first_login_at || null,
 			created_at: supabaseUser.created_at || new Date().toISOString(),
 			updated_at: supabaseUser.updated_at || new Date().toISOString()
 		};
@@ -381,6 +382,30 @@ export class SupabaseAuthProvider implements AuthContract {
 			return payload;
 		} catch (error) {
 			throw new AuthError('invalid_token', 'Failed to decode token payload', 401);
+		}
+	}
+
+	/**
+	 * Mark user's first login as completed
+	 * Used by the user service for first login actions
+	 */
+	async markFirstLoginCompleted(userId: UUID): Promise<void> {
+		try {
+			// Update user metadata with first_login_at timestamp
+			const { error } = await this.supabase.auth.admin.updateUserById(userId, {
+				user_metadata: {
+					first_login_at: new Date().toISOString()
+				}
+			});
+
+			if (error) {
+				throw this.mapSupabaseError(error);
+			}
+		} catch (error) {
+			if (error instanceof AuthError) {
+				throw error;
+			}
+			throw new AuthError('network_error', 'Failed to mark first login completed', 500);
 		}
 	}
 }

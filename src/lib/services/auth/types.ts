@@ -14,6 +14,7 @@ export interface User {
 	email: string;
 	dodid?: string | null;
 	profile: Record<string, unknown>;
+	first_login_at?: string | null; // ISO 8601 timestamp of first login completion
 	created_at: string; // ISO 8601 timestamp
 	updated_at: string; // ISO 8601 timestamp
 }

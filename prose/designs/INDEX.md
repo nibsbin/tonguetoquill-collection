@@ -22,6 +22,7 @@
 - [TEMPLATE_SERVICE.md](backend/TEMPLATE_SERVICE.md) - Read-only template service
 - [SUPABASE_AUTH_ADAPTER.md](backend/SUPABASE_AUTH_ADAPTER.md) - Supabase auth adapter implementation
 - [SUPABASE_DATABASE_ADAPTER.md](backend/SUPABASE_DATABASE_ADAPTER.md) - Supabase database adapter implementation
+- [USER_SERVICE.md](backend/USER_SERVICE.md) - User service with first login actions
 
 ### Frontend Core
 

@@ -22,6 +22,7 @@ interface StoredUser {
 	email: string;
 	dodid?: string | null;
 	profile: Record<string, unknown>;
+	first_login_at?: string | null;
 	created_at: string;
 	updated_at: string;
 }
@@ -63,6 +64,7 @@ export class MockAuthProvider implements AuthContract {
 			email: 'asdf@asdf.com',
 			dodid: '0123456789abcdef',
 			profile: {},
+			first_login_at: null,
 			created_at: now,
 			updated_at: now
 		};
@@ -288,6 +290,7 @@ export class MockAuthProvider implements AuthContract {
 			email: user.email,
 			dodid: user.dodid,
 			profile: user.profile,
+			first_login_at: user.first_login_at,
 			created_at: user.created_at,
 			updated_at: user.updated_at
 		};
@@ -313,6 +316,7 @@ export class MockAuthProvider implements AuthContract {
 			email: email.toLowerCase(),
 			dodid: dodid || null,
 			profile: {},
+			first_login_at: null,
 			created_at: now,
 			updated_at: now
 		};
@@ -340,5 +344,24 @@ export class MockAuthProvider implements AuthContract {
 			'Email authentication not implemented in mock provider',
 			501
 		);
+	}
+
+	/**
+	 * Mark user's first login as completed
+	 * Used by the user service for first login actions
+	 */
+	async markFirstLoginCompleted(userId: UUID): Promise<void> {
+		await this.simulateDelay();
+
+		const user = this.users.get(userId);
+		if (!user) {
+			throw new Error(`User ${userId} not found`);
+		}
+
+		// Mark first login timestamp
+		user.first_login_at = new Date().toISOString();
+		user.updated_at = new Date().toISOString();
+
+		this.users.set(userId, user);
 	}
 }
