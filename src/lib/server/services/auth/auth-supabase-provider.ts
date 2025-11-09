@@ -127,6 +127,48 @@ export class SupabaseAuthProvider implements AuthContract {
 	}
 
 	/**
+	 * Ensure user exists in public.users table
+	 * Creates the user if they don't exist (idempotent)
+	 * This provides defense-in-depth against trigger failures or race conditions
+	 *
+	 * This is centralized in the auth provider so all services can rely on
+	 * users existing in the public.users table after authentication
+	 */
+	private async ensureUserExists(userId: UUID, email: string): Promise<void> {
+		try {
+			// Upsert user into public.users table
+			// This is idempotent - if user exists, nothing happens
+			const { error } = await this.supabase.from('users').upsert(
+				{
+					id: userId,
+					email: email,
+					created_at: new Date().toISOString(),
+					updated_at: new Date().toISOString()
+				},
+				{
+					onConflict: 'id',
+					ignoreDuplicates: true
+				}
+			);
+
+			if (error) {
+				// Log warning but don't throw if user already exists
+				// Only throw for unexpected errors
+				if (error.code !== '23505') {
+					// Not a duplicate key error
+					console.error('Failed to ensure user exists:', error);
+					throw new AuthError('unknown_error', 'Failed to create user record', 500);
+				}
+			}
+		} catch (error) {
+			if (error instanceof AuthError) {
+				throw error;
+			}
+			throw new AuthError('unknown_error', 'Failed to verify user', 500);
+		}
+	}
+
+	/**
 	 * Determine which provider to use based on what's enabled and what was requested
 	 */
 	private determineProvider(requestedProvider?: AuthProvider): AuthProvider {
@@ -168,6 +210,13 @@ export class SupabaseAuthProvider implements AuthContract {
 
 			if (!data.session || !data.user) {
 				throw new AuthError('invalid_token', 'Failed to get session from code', 401);
+			}
+
+			// Ensure user exists in public.users table
+			// This provides defense-in-depth against trigger failures or race conditions
+			const email = data.user.email;
+			if (email) {
+				await this.ensureUserExists(data.user.id, email);
 			}
 
 			return {
@@ -310,6 +359,13 @@ export class SupabaseAuthProvider implements AuthContract {
 
 			if (error || !data.user) {
 				return null;
+			}
+
+			// Ensure user exists in public.users table as a safety net
+			// This handles cases where getCurrentUser is called directly
+			const email = data.user.email;
+			if (email) {
+				await this.ensureUserExists(data.user.id, email);
 			}
 
 			return this.mapSupabaseUserToUser(data.user);
