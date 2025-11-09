@@ -50,7 +50,7 @@ export class SupabaseAuthProvider implements AuthContract {
 		}
 
 		// Create Supabase client with publishable key (client-facing operations)
-		this.supabase = createClient(config.POSTGRES_URL, config.PUBLISHABLE_KEY, {
+		this.supabase = createClient(config.POSTGRES_URL, config.SECRET_KEY, {
 			auth: {
 				autoRefreshToken: false, // We handle refresh manually
 				persistSession: false, // Server-side, no persistence needed
