@@ -207,6 +207,8 @@
 	closeOnEscape={true}
 	closeOnOutsideClick={true}
 	showCloseButton={false}
+	title="New Document"
+	style="width: var(--sidebar-expanded-width);"
 >
 	{#snippet trigger()}
 		{#if triggerContent}
@@ -217,9 +219,26 @@
 	{#snippet content()}
 		<div class="px-4">
 			<form onsubmit={handleSubmit} class="space-y-3">
+				<!-- Document Name Field -->
+				<div>
+					<Input
+						id="doc-name"
+						type="text"
+						bind:value={documentName}
+						onkeydown={() => {
+							hasUserEditedName = true;
+						}}
+						placeholder="Enter document name"
+						disabled={isCreating}
+						class="h-9 text-sm"
+					/>
+					{#if nameError}
+						<p class="mt-1 text-xs text-destructive">{nameError}</p>
+					{/if}
+				</div>
+
 				<!-- Template Selection Field -->
 				<div class="space-y-2">
-					<Label class="text-sm text-foreground">Template</Label>
 					<TemplateSelector
 						{templates}
 						bind:selectedTemplate
@@ -228,27 +247,6 @@
 						}}
 						disabled={isCreating || !templatesReady}
 					/>
-				</div>
-
-				<!-- Document Name Field (In-line layout) -->
-				<div>
-					<div class="flex items-center gap-3">
-						<Label for="doc-name" class="shrink-0 text-left text-sm text-foreground">Name</Label>
-						<Input
-							id="doc-name"
-							type="text"
-							bind:value={documentName}
-							onkeydown={() => {
-								hasUserEditedName = true;
-							}}
-							placeholder="Enter document name"
-							disabled={isCreating}
-							class="h-9 flex-1 text-sm"
-						/>
-					</div>
-					{#if nameError}
-						<p class="mt-1 ml-[4.5rem] text-xs text-destructive">{nameError}</p>
-					{/if}
 				</div>
 
 				<!-- Creation Error -->

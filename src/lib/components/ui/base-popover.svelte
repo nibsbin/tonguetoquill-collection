@@ -45,6 +45,7 @@
 		 */
 		sideOffset?: number;
 		class?: string;
+		style?: string;
 		trigger: import('svelte').Snippet;
 		content: import('svelte').Snippet;
 		header?: import('svelte').Snippet;
@@ -62,6 +63,7 @@
 		align = 'center',
 		sideOffset = 8,
 		class: className,
+		style,
 		trigger,
 		content,
 		header,
@@ -226,7 +228,7 @@
 			'fixed w-max rounded-lg border border-border bg-surface-elevated shadow-md',
 			className
 		)}
-		style="top: {position.top}px; left: {position.left}px; z-index: var(--z-popover);"
+		style="top: {position.top}px; left: {position.left}px; z-index: var(--z-popover); {style || ''}"
 		role="dialog"
 		aria-labelledby={titleId}
 		tabindex="-1"
@@ -257,7 +259,11 @@
 		{/if}
 
 		<!-- Content -->
-		<div class="popover-content {footer ? '' : 'pb-4'}">
+		<div
+			class="popover-content {title || showCloseButton || header ? '' : 'pt-4'} {footer
+				? ''
+				: 'pb-4'}"
+		>
 			{@render content()}
 		</div>
 
