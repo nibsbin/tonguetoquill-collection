@@ -201,7 +201,6 @@
 <BasePopover
 	{open}
 	{onOpenChange}
-	title="New Document"
 	side="right"
 	align="end"
 	sideOffset={0}
