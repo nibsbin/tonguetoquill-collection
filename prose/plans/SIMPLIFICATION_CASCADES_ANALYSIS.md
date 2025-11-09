@@ -262,29 +262,29 @@ This leads to the "god component" anti-pattern with many conditional branches. T
 
 ## Cascade 3: Error Handling Duplication
 
-### Current Variations (15+ implementations)
+### Current Duplication
 
-**Error Types Across Layers**:
+**Error Classes** (4 similar implementations):
 
-- QuillMark diagnostics (WASM errors)
-- Service errors (auth, documents, templates, user)
-- API errors (400, 401, 403, 404, 500)
-- Network errors (timeout, connection)
-- Validation errors (form, content)
+- `DocumentError` (code, message, statusCode)
+- `AuthError` (code, message, statusCode)
+- `TemplateError` (code, message)
+- `QuillmarkError` (code, message, diagnostic)
 
-**Error Display Components**:
+**Server Error Handlers** (`src/lib/server/utils/api.ts`):
 
-- Toast notifications (transient)
-- Inline error displays (preview pane)
-- Form validation messages
-- Error boundaries (future?)
+```typescript
+// Nearly identical functions:
+handleAuthError(error) { if (error instanceof AuthError) { ... } }
+handleDocumentError(error) { if (error instanceof DocumentError) { ... } }
+```
 
-**Error Handling Code**:
+**Error Message Extraction** (repeated ~10+ times):
 
-- Each service: custom error classes
-- Each API route: custom error responses
-- Each component: custom error display
-- Each store: custom error state
+```typescript
+// Pattern repeated everywhere:
+err instanceof Error ? err.message : 'Failed to...';
+```
 
 **Design Documents**:
 
@@ -294,74 +294,103 @@ This leads to the "god component" anti-pattern with many conditional branches. T
 
 ### The Problem
 
-Each layer defines its own:
+**Duplication without value**:
 
-- Error class hierarchy (8+ custom classes: `NotFoundError`, `UnauthorizedError`, `AuthError`, `TokenExpiredError`, etc.)
-- Error codes and messages (inconsistent formats)
-- Error transformation logic
-- Retry strategies (6+ implementations)
-- Display patterns (toast vs inline vs modal decisions)
+- Two nearly identical error handler functions (only differ by error type)
+- Error message extraction pattern repeated across stores, services, components
+- Each error class implements the same base structure independently
+- No shared utilities for common operations (retry, display, message extraction)
+
+**Missing abstractions**:
+
+- No base error class (shared statusCode, hint, context)
+- No utilities for error display (must manually call toastStore)
+- No retry utilities (when needed, must be implemented from scratch)
 
 ### Unifying Insight
 
-**"All errors are structured messages with codes, context, and recovery strategies"**
+**"Extract shared error structure and utilities, but keep control explicit"**
 
-Every error needs:
+All errors share:
 
-1. **Code**: Machine-readable identifier
-2. **Message**: Human-readable description
-3. **Context**: What was being attempted
-4. **Hint**: How to fix (optional)
-5. **Recovery**: What actions are available
+1. **Structure**: code, message, statusCode, optional hint/context
+2. **Message extraction**: Safe error → string conversion
+3. **Server handling**: Check instanceof, return JSON response
+4. **Common operations**: Display, retry (when explicitly needed)
 
-The only differences are:
+But **control must remain explicit**:
 
-- Domain-specific error codes
-- Recovery strategies (retry, refresh token, show form error)
+- Developer chooses when to retry (not automatic)
+- Developer chooses when to display (not automatic)
+- Developer chooses error recovery strategy (context-dependent)
 
 ### Proposed Abstraction
 
-**Unified Error System**:
+**1. Base Error Class** (shared structure):
 
 ```typescript
-// Single error class with recovery metadata
-class AppError extends Error {
-	constructor(code: ErrorCode, message: string, context?, hint?, cause?);
-	get retryable(): boolean;
-	get refreshableAuth(): boolean;
-	get displayMode(): 'toast' | 'inline' | 'modal';
+abstract class AppError extends Error {
+	abstract code: string;
+	statusCode: number;
+	hint?: string;
+	context?: Record<string, unknown>;
 }
+```
 
-// Typed error codes (namespaced)
-const ErrorCodes = {
-	NETWORK_TIMEOUT: 'network.timeout',
-	AUTH_EXPIRED: 'auth.expired',
-	DOCUMENT_NOT_FOUND: 'document.not_found'
-	// ... etc
-};
+**2. Service Errors Extend Base** (preserve type safety):
 
-// Automatic error handling wrapper
-async function handleServiceCall<T>(fn, context): Promise<Result<T, AppError>>;
-// - Auto-retry for network errors
-// - Auto-refresh for auth errors
-// - Auto-display with appropriate UI
+```typescript
+class DocumentError extends AppError {
+	code: DocumentErrorCode; // 'not_found' | 'unauthorized' | ...
+}
+```
+
+**3. Single Generic Error Handler** (eliminates duplication):
+
+```typescript
+// Replaces handleAuthError, handleDocumentError
+function handleServiceError(error: unknown) {
+	if (error instanceof AppError) {
+		return errorResponse(error.code, error.message, error.statusCode);
+	}
+	return errorResponse('unknown_error', 'An unexpected error occurred', 500);
+}
+```
+
+**4. Composable Utilities** (not automatic):
+
+```typescript
+// Safe message extraction (replaces 10+ inline checks)
+function getErrorMessage(error: unknown, fallback?: string): string;
+
+// Explicit retry wrapper (use when needed)
+async function withRetry<T>(fn: () => Promise<T>, options?): Promise<T>;
+
+// Explicit error display (use when appropriate)
+function displayError(error: unknown, toastStore);
 ```
 
 ### What Becomes Unnecessary
 
-- ❌ 8+ custom error classes across services
-- ❌ Repeated try/catch boilerplate (automatic handling)
-- ❌ Manual retry logic (6+ implementations)
-- ❌ Manual token refresh (3+ implementations)
-- ❌ Custom error display decisions (automatic)
-- ❌ 3 design documents explaining error patterns
+- ❌ Duplicate error handler functions → 1 generic `handleServiceError`
+- ❌ Repeated message extraction (10+ instances) → 1 `getErrorMessage` utility
+- ❌ Repeated base error structure → shared `AppError` base class
+- ❌ Manual retry implementations (when needed) → composable `withRetry` utility
+
+**What Stays** (important!):
+
+- ✅ Service-specific error classes with typed codes
+- ✅ Explicit error handling (no automatic magic)
+- ✅ Developer control over retry/display/recovery
+- ✅ Type safety via instanceof checks
 
 **Estimated Impact**:
 
-- **Eliminates**: ~400 lines of error handling code
-- **Consolidates**: 3 design documents → 1 ERROR_SYSTEM.md
-- **Standardizes**: All error display patterns
-- **Reduces**: Error handling bugs (single source of truth)
+- **Eliminates**: ~200 lines of duplicated error code
+- **Consolidates**: 2 error handlers → 1 generic handler
+- **Standardizes**: Error structure via base class
+- **Provides**: Optional utilities for common operations (retry, display)
+- **Preserves**: Type safety, developer control, flexibility
 
 ---
 
@@ -599,14 +628,14 @@ Based on **impact** (10x wins, not 10% improvements):
 - Preserves clean server-side factory pattern (no forced abstraction)
 - **ROI**: Medium-High - improves velocity for browser-side features
 
-### 3. Cascade 3: Error Handling Duplication (High Impact)
+### 3. Cascade 3: Error Handling Duplication (Medium Impact)
 
-**Impact**: 5x improvement in error handling
+**Impact**: 3x reduction in error handling boilerplate
 
-- Eliminates 400+ lines of error code
-- Automatic retry/recovery logic
-- Consistent error UX across app
-- **ROI**: High - reduces bugs and improves UX
+- Eliminates ~200 lines of duplicated error code
+- 1 generic error handler replaces 2+ specialized handlers
+- Shared base class and composable utilities
+- **ROI**: Medium - reduces duplication without losing flexibility
 
 ### 4. Cascade 4: State Store Fragmentation (Medium Impact)
 
@@ -665,19 +694,18 @@ Steps:
 
 ### Phase 3: Error System (Cascade 3)
 
-**Duration**: 2-3 days  
-**Risk**: Medium (touches all layers)
+**Duration**: 1 day
+**Risk**: Low (mostly internal refactor)
 
 Steps:
 
-1. Create `AppError` class with typed codes
-2. Create automatic error handler
-3. Migrate service errors
-4. Migrate API errors
-5. Migrate UI error display
-6. Update design docs
+1. Create `AppError` base class (abstract)
+2. Migrate service errors to extend base class
+3. Create `handleServiceError` to replace duplicate handlers
+4. Create optional utilities (`getErrorMessage`, `withRetry`, `displayError`)
+5. Update design docs
 
-**Validation**: Error UX unchanged, automatic recovery works
+**Validation**: Error handling behavior unchanged, type safety preserved
 
 ### Phase 4: State Patterns (Cascade 4)
 
@@ -715,9 +743,9 @@ Steps:
 
 - Widget code: -400-500 lines (60-70% behavior duplication eliminated)
 - Client service code: -150-200 lines (boilerplate elimination)
-- Error handling: -400 lines (50% reduction)
+- Error handling: -200 lines (duplicated handlers and utilities)
 - Store code: -200 lines (30% reduction)
-- **Total**: ~1,150-1,300 lines removed
+- **Total**: ~950-1,100 lines removed
 
 **Documentation Reduction**:
 
@@ -728,7 +756,7 @@ Steps:
 
 - Widget behavior duplication: 13 implementations → 5 shared hooks (60-70% reduction)
 - Client service patterns: 3-4 → base + thin services (60% reduction in boilerplate)
-- Error classes: 8+ → 1 unified (87% reduction)
+- Error handlers: 2+ duplicate handlers → 1 generic handler + base class + utilities
 - Store patterns: 5 unique → 2 generic (60% reduction)
 
 ### Qualitative Improvements
@@ -783,19 +811,19 @@ The tonguetoquill-web codebase demonstrates **excellent architectural discipline
 
 1. **Widget system**: Extract 5 shared behavior hooks from 13+ implementations (preserve semantic components)
 2. **Client service layer**: 3-4 client services → ClientService base + thin services (server services keep factory pattern)
-3. **Error handling**: 8+ classes → 1 unified system with automatic recovery
+3. **Error handling**: Base class + composable utilities → eliminate duplicate handlers and boilerplate
 4. **State stores**: 5 unique → 2 generic patterns
 5. **Documentation**: 36 docs → 15-20 consolidated patterns
 
 **Total Impact**:
 
-- Remove ~1,150-1,300 lines of code (17-19% reduction)
+- Remove ~950-1,100 lines of code (14-16% reduction)
 - Consolidate 36 docs to 15-20 (45% reduction)
-- Reduce complexity by 60-90% in affected areas
+- Reduce complexity by 60-70% in affected areas
 - Increase feature velocity by 3-5x
-- Preserve accessibility and semantic clarity
-- Avoid over-abstraction (maintain appropriate patterns)
+- Preserve accessibility, semantic clarity, and type safety
+- Avoid over-abstraction (maintain developer control and appropriate patterns)
 
 **Recommended Action**: Implement in priority order (Cascades 2, 1, 3, 4, 5) over 2-3 weeks.
 
-The key insight across all cascades: **"Separate what varies from what stays the same"**. The codebase already follows good patterns but hasn't yet extracted the common abstractions that make those patterns trivial to apply.
+The key insight across all cascades: **"Extract shared behaviors as composable tools, not automatic magic"**. The codebase already follows good patterns but hasn't yet extracted the common abstractions that make those patterns trivial to apply while preserving developer control.
