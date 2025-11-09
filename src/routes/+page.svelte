@@ -9,6 +9,7 @@
 	import { TopMenu } from '$lib/components/TopMenu';
 	import { DocumentEditor } from '$lib/components/Editor';
 	import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
+	import { runGuestFirstVisitActions } from '$lib/services/guest';
 
 	let user = $state<{ email: string; id: string } | null>(null);
 	let autoSave = new AutoSave();
@@ -46,6 +47,11 @@
 				} else {
 					// Guest mode - no authentication
 					documentStore.setGuestMode(true);
+
+					// Run guest first visit actions (mirrors runFirstLoginActions for authenticated users)
+					await runGuestFirstVisitActions().catch((error) => {
+						console.error('Failed to run guest first visit actions:', error);
+					});
 				}
 
 				// Fetch documents (from API or LocalStorage depending on mode)
@@ -53,6 +59,12 @@
 			} catch {
 				// Guest mode on error
 				documentStore.setGuestMode(true);
+
+				// Run guest first visit actions (mirrors runFirstLoginActions for authenticated users)
+				// Must await to ensure welcome document is created before fetching
+				await runGuestFirstVisitActions().catch((error) => {
+					console.error('Failed to run guest first visit actions:', error);
+				});
 
 				// Fetch from LocalStorage
 				await documentStore.fetchDocuments();
