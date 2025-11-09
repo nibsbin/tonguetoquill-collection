@@ -301,12 +301,10 @@ Consistent error display with toast notifications
 5. Add fallback for non-AppError errors
 6. Mark handleAuthError as deprecated (add comment)
 7. Mark handleDocumentError as deprecated (add comment)
-8. Keep deprecated functions temporarily for backward compatibility
 
 **Acceptance Criteria**:
 
 - handleServiceError handles all AppError subclasses
-- Deprecated handlers still work (backward compatible)
 - Error response format unchanged
 - TypeScript types correct
 - Logging preserved
@@ -592,52 +590,6 @@ If issues discovered post-migration:
 - New service errors: Extend AppError (~5 lines instead of ~12)
 - Error handling: Use handleServiceError (already works)
 - Message extraction: Use getErrorMessage (already implemented)
-
-## Risk Assessment
-
-### Low Risk
-
-- **Scope**: Mostly internal refactor, preserves external behavior
-- **Type Safety**: TypeScript enforces correct usage
-- **Backward Compatibility**: Deprecated handlers kept temporarily
-- **Reversibility**: Easy to revert if issues found
-
-### Potential Issues
-
-**Issue**: Breaking change to error structure
-**Mitigation**: Preserve all existing error properties, only add base class
-
-**Issue**: instanceof checks fail after migration
-**Mitigation**: Test extensively, verify AppError extends Error correctly
-
-**Issue**: Error response format changes
-**Mitigation**: Compare before/after API responses, maintain exact format
-
-**Issue**: TypeScript type errors
-**Mitigation**: Abstract code property ensures subclasses define typed codes
-
-## Dependencies
-
-### Prerequisites
-
-- None (internal refactor)
-
-### Blocks
-
-- None (can proceed immediately)
-
-## Timeline Estimate
-
-**Total**: 6-8 hours
-
-- Phase 1 (Base class): 1 hour
-- Phase 2 (Migrate errors): 1.5 hours
-- Phase 3 (Generic handler): 0.5 hour
-- Phase 4 (Utilities): 1.5 hours
-- Phase 5 (Update sites): 1.5 hours
-- Phase 6 (Migrate routes): 1 hour
-- Phase 7 (Remove deprecated): 0.5 hour
-- Phase 8 (Documentation): 0.5-1 hour
 
 ## Next Steps
 
