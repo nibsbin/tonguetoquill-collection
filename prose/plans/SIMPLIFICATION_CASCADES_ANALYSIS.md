@@ -45,6 +45,7 @@ This analysis identifies **5 major simplification cascade opportunities** in the
 - Similar error handling patterns
 
 **Example redundancy** (repeated in templates, quillmark, etc.):
+
 - Private static instance field
 - Private initialized boolean
 - Static getInstance() method (~10 lines)
@@ -59,12 +60,14 @@ This analysis identifies **5 major simplification cascade opportunities** in the
 After analyzing actual implementations, we observe **two distinct patterns**:
 
 **Client Services** (templates, quillmark):
+
 - All implement singleton pattern with getInstance()
 - All have async initialize() with idempotency checks
 - All have isReady() and validateInitialized() boilerplate
 - ~100-150 lines of repeated code per service
 
 **Server Services** (document-provider, auth-provider):
+
 - Already use simple factory functions with environment-based selection
 - No initialization boilerplate - just mock vs real implementation switching
 - Already clean and appropriate for their use case
@@ -74,24 +77,28 @@ After analyzing actual implementations, we observe **two distinct patterns**:
 ### Proposed Abstraction
 
 **1. ClientService Base Class** (for browser services):
+
 - Abstract base class with generic singleton pattern
 - Provides: getInstance(), initialize(), isReady(), validateInitialized()
 - Eliminates 100-150 lines of boilerplate per client service
 - Client services (templates, quillmark) extend this and only implement business logic
 
 **2. Server Services - Keep Factory Pattern**:
+
 - Server services (document-provider, auth-provider) already use appropriate factory pattern
 - No base class needed - current approach is already clean
 - Factory functions handle mock vs real implementation selection
 - No boilerplate to eliminate
 
 **3. Optional DualModeProvider Utility** (client-side):
+
 - Generic helper for services with guest/authenticated mode switching
 - Used by client services that need localStorage vs API toggling
 
 ### What Becomes Unnecessary
 
 **Client Services Only**:
+
 - ❌ Repeated singleton implementations in client services (~3-4 eliminated)
 - ❌ Repeated initialization patterns in client services
 - ❌ Repeated isReady() and validateInitialized() boilerplate
@@ -161,72 +168,95 @@ Each widget type implements its own:
 
 ### Unifying Insight
 
-**"All overlays are portaled elements with dismissal, focus, and positioning"**
+**"All overlays share common behaviors but require different semantics"**
 
-The differences are cosmetic:
+**Shared behaviors** (can be extracted):
 
-- Dialog = centered with backdrop
-- Popover = positioned near trigger
-- Sheet = slide-in from edge
-- Toast = positioned corner
-- Select = positioned below trigger
-
-Core behavior is identical:
-
-- Show/hide state management
-- Dismissal methods (ESC, backdrop, close button)
-- Focus trap or return
 - Portal rendering
 - Z-index layering
+- Dismissal methods (ESC, backdrop, outside click)
+- Focus management (trap/return/none)
+- Show/hide state management
+- Positioning strategies
+
+**Semantic differences** (must be preserved):
+
+- ARIA roles: `dialog` vs `tooltip` vs `menu` vs `status`
+- Keyboard interactions: Tab trap vs arrow navigation vs none
+- Focus strategies: Trap (dialog) vs return (popover) vs none (toast)
+- Mobile adaptations: Fullscreen (dialog) vs sheet (select)
 
 ### Proposed Abstraction
 
-**Unified Overlay Primitive**:
+**Compositional Strategy**: Extract shared behaviors into composable hooks, maintain semantic components
 
 ```typescript
-// Single overlay component with behavior composition
-<Overlay
-  open={open}
-  onOpenChange={handleChange}
+// Composable behavior hooks (internal, shared)
+function useDismissible(handlers: { onEscape?, onBackdrop?, onOutside? })
+function useFocusTrap(enabled: boolean)
+function usePortal(target?: HTMLElement)
+function useZIndex(layer: 'modal' | 'popover' | 'toast')
+function usePositioning(config: PositioningConfig)
 
-  // Behavior (all opt-in with defaults)
-  dismissOn={{ escape: true, backdrop: true, outside: true }}
-  focusTrap={true}
-  returnFocus={true}
+// Semantic components (public API - unchanged interface)
+function Dialog({ open, onOpenChange, children }) {
+  useDismissible({ onEscape: close, onBackdrop: close })
+  useFocusTrap(true)
+  usePortal()
+  useZIndex('modal')
+  usePositioning({ center: true })
+  return <div role="dialog" aria-modal="true">...</div>
+}
 
-  // Positioning (one of these)
-  position="center"           // Dialog
-  position={{ near: trigger, side: 'bottom' }}  // Popover
-  position={{ edge: 'right' }}                  // Sheet
-  position={{ corner: 'top-right' }}            // Toast
-
-  // Styling
-  backdrop={true}
-  zLayer="modal"
-  animation="fade" | "slide" | "scale"
->
-  {@render content()}
-</Overlay>
+function Popover({ open, trigger, children }) {
+  useDismissible({ onEscape: close, onOutside: close })
+  usePortal()
+  useZIndex('popover')
+  usePositioning({ near: trigger })
+  return <div role="tooltip">...</div>
+}
 ```
 
-**Result**: All widget types become styling variations of ONE component.
+**Result**: Eliminate duplication in behaviors while preserving semantic clarity and accessibility.
+
+**Why Compositional vs Unified Component?**
+
+A single unified `<Overlay>` component would require complex configuration to handle:
+
+- Different ARIA roles (`dialog`, `tooltip`, `menu`, `status`)
+- Different keyboard behaviors (focus trap, arrow nav, tab flow)
+- Different focus strategies (trap, return, none, active descendant)
+
+This leads to the "god component" anti-pattern with many conditional branches. The compositional approach:
+
+- ✅ Eliminates behavior duplication (hooks)
+- ✅ Maintains semantic clarity (`<Dialog>` vs `<Popover>`)
+- ✅ Preserves accessibility (appropriate ARIA per type)
+- ✅ Easier to test (hooks tested independently)
+- ✅ Better DX (clear intent vs configuration)
 
 ### What Becomes Unnecessary
 
-- ❌ 5 separate base widget components → 1 Overlay
-- ❌ Repeated dismissal logic (ESC, backdrop, close)
-- ❌ Repeated focus management
-- ❌ Repeated portal rendering
-- ❌ Separate overlay coordination store (built-in)
-- ❌ 4 design documents about widgets
+- ❌ Repeated dismissal logic across 5 base components → shared `useDismissible` hook
+- ❌ Repeated focus management → shared `useFocusTrap` hook
+- ❌ Repeated portal rendering → shared `usePortal` hook
+- ❌ Repeated z-index logic → shared `useZIndex` hook
+- ❌ Repeated positioning calculations → shared `usePositioning` hook
+- ❌ 4 design documents about widgets → 1 OVERLAY_SYSTEM.md
 - ❌ 1,051 lines of WIDGET_ABSTRACTION.md explaining complexity
+
+**What Stays** (preserved for accessibility):
+
+- ✅ Semantic component types (Dialog, Popover, Sheet, Toast, Select)
+- ✅ Appropriate ARIA roles per component type
+- ✅ Type-specific keyboard interactions
 
 **Estimated Impact**:
 
-- **Eliminates**: ~800 lines of widget code
+- **Eliminates**: ~400-500 lines of duplicated behavior code
 - **Consolidates**: 4 design documents → 1 OVERLAY_SYSTEM.md
-- **Simplifies**: All feature dialogs by 30-50%
-- **Reduces**: Z-index conflicts to zero (single system)
+- **Maintains**: Semantic clarity and accessibility standards
+- **Reduces**: Z-index conflicts to zero (shared system)
 
 ---
 
@@ -266,43 +296,11 @@ Core behavior is identical:
 
 Each layer defines its own:
 
-- Error class hierarchy
-- Error codes and messages
+- Error class hierarchy (8+ custom classes: `NotFoundError`, `UnauthorizedError`, `AuthError`, `TokenExpiredError`, etc.)
+- Error codes and messages (inconsistent formats)
 - Error transformation logic
-- Retry strategies
-- Display patterns
-
-**Example of redundancy**:
-
-```typescript
-// documents service
-export class NotFoundError extends Error {
-	code = 'not_found';
-}
-export class UnauthorizedError extends Error {
-	code = 'unauthorized';
-}
-export class ValidationError extends Error {
-	code = 'validation_error';
-}
-
-// auth service
-export class AuthError extends Error {
-	code = 'auth_invalid';
-}
-export class TokenExpiredError extends Error {
-	code = 'token_expired';
-}
-
-// templates service
-export class TemplateError extends Error {
-	code = 'not_found' | 'load_error';
-}
-
-// API routes
-return json({ error: 'not_found', message: '...' }, { status: 404 });
-return json({ error: 'unauthorized', message: '...' }, { status: 401 });
-```
+- Retry strategies (6+ implementations)
+- Display patterns (toast vs inline vs modal decisions)
 
 ### Unifying Insight
 
@@ -326,81 +324,27 @@ The only differences are:
 **Unified Error System**:
 
 ```typescript
-// Single error class with composition
+// Single error class with recovery metadata
 class AppError extends Error {
-	constructor(
-		public code: ErrorCode,
-		public message: string,
-		public context?: Record<string, unknown>,
-		public hint?: string,
-		public cause?: Error
-	) {
-		super(message);
-	}
-
-	// Recovery strategies
-	get retryable(): boolean {
-		/* ... */
-	}
-	get refreshableAuth(): boolean {
-		/* ... */
-	}
-	get userFixable(): boolean {
-		/* ... */
-	}
-
-	// Display strategy
-	get displayMode(): 'toast' | 'inline' | 'modal' {
-		/* ... */
-	}
+	constructor(code: ErrorCode, message: string, context?, hint?, cause?);
+	get retryable(): boolean;
+	get refreshableAuth(): boolean;
+	get displayMode(): 'toast' | 'inline' | 'modal';
 }
 
-// Error codes as typed constants
+// Typed error codes (namespaced)
 const ErrorCodes = {
-	// Network
 	NETWORK_TIMEOUT: 'network.timeout',
-	NETWORK_OFFLINE: 'network.offline',
-
-	// Auth
 	AUTH_EXPIRED: 'auth.expired',
-	AUTH_INVALID: 'auth.invalid',
+	DOCUMENT_NOT_FOUND: 'document.not_found'
+	// ... etc
+};
 
-	// Documents
-	DOCUMENT_NOT_FOUND: 'document.not_found',
-	DOCUMENT_TOO_LARGE: 'document.too_large',
-
-	// QuillMark
-	QUILLMARK_PARSE_ERROR: 'quillmark.parse',
-	QUILLMARK_RENDER_ERROR: 'quillmark.render'
-} as const;
-
-// Automatic error handling
-async function handleServiceCall<T>(
-	fn: () => Promise<T>,
-	context: string
-): Promise<Result<T, AppError>> {
-	try {
-		return { ok: true, value: await fn() };
-	} catch (error) {
-		const appError = AppError.from(error, context);
-
-		// Automatic retry for retryable errors
-		if (appError.retryable) {
-			return retry(fn, 3);
-		}
-
-		// Automatic token refresh for auth errors
-		if (appError.refreshableAuth) {
-			await refreshAuth();
-			return fn();
-		}
-
-		// Display error appropriately
-		displayError(appError);
-
-		return { ok: false, error: appError };
-	}
-}
+// Automatic error handling wrapper
+async function handleServiceCall<T>(fn, context): Promise<Result<T, AppError>>;
+// - Auto-retry for network errors
+// - Auto-refresh for auth errors
+// - Auto-display with appropriate UI
 ```
 
 ### What Becomes Unnecessary
@@ -446,38 +390,11 @@ async function handleServiceCall<T>(
 
 Each store reinvents:
 
-- Loading state management
-- Error state management
-- Collection management (add, remove, update)
-- Active item selection
-- State persistence (some use localStorage)
-
-**Example redundancy**:
-
-```typescript
-// documents store
-class DocumentsStore {
-	documents = $state<DocumentMetadata[]>([]);
-	activeDocumentId = $state<string | null>(null);
-	loading = $state(false);
-	error = $state<string | null>(null);
-
-	async fetchDocuments() {
-		this.loading = true;
-		this.error = null;
-		try {
-			const docs = await documentClient.listDocuments();
-			this.documents = docs;
-		} catch (err) {
-			this.error = err.message;
-		} finally {
-			this.loading = false;
-		}
-	}
-}
-
-// Similar pattern would exist for templates, users, etc.
-```
+- Loading/error state management (5+ stores)
+- Collection CRUD operations (add, remove, update)
+- Active item selection logic
+- State persistence (localStorage sync in 2+ stores)
+- Derived state calculations (activeItem, filteredItems, etc.)
 
 ### Unifying Insight
 
@@ -495,69 +412,26 @@ Common patterns:
 **Generic Store Patterns**:
 
 ```typescript
-// Collection store pattern
-function createCollectionStore<T, TId>(config: {
+// Collection store factory
+function createCollectionStore<T>(config: {
 	idKey: keyof T;
 	fetcher: () => Promise<T[]>;
 	operations?: CRUD<T>;
 }) {
-	const items = $state<T[]>([]);
-	const loading = $state(false);
-	const error = $state<string | null>(null);
-	const activeId = $state<TId | null>(null);
-
-	// Automatic derived values
-	const activeItem = $derived(items.find((item) => item[config.idKey] === activeId));
-
-	// Generic operations
-	async function fetch() {
-		/* ... */
-	}
-	async function create(item: T) {
-		/* ... */
-	}
-	async function update(id: TId, updates: Partial<T>) {
-		/* ... */
-	}
-	async function remove(id: TId) {
-		/* ... */
-	}
-
-	return { items, loading, error, activeId, activeItem, fetch, create, update, remove };
+	// Auto-provides: items, loading, error, activeId, activeItem
+	// Auto-generates: fetch, create, update, remove
 }
 
-// Usage becomes trivial:
+// Usage
 const documents = createCollectionStore({
 	idKey: 'id',
 	fetcher: () => documentClient.listDocuments(),
 	operations: documentClient
 });
 
-const templates = createCollectionStore({
-	idKey: 'file',
-	fetcher: () => templateService.listTemplates()
-	// Read-only (no operations)
-});
-```
-
-**Persistent Store Pattern**:
-
-```typescript
-function createPersistedStore<T>(key: string, defaultValue: T) {
-	const value = $state<T>(loadFromStorage(key) ?? defaultValue);
-
-	$effect(() => {
-		saveToStorage(key, value);
-	});
-
-	return { value };
-}
-
-// Usage:
-const preferences = createPersistedStore('preferences', {
-	autoSave: true,
-	theme: 'dark'
-});
+// Persistent store factory
+function createPersistedStore<T>(key: string, defaultValue: T);
+// Auto-syncs to localStorage via $effect
 ```
 
 ### What Becomes Unnecessary
@@ -706,13 +580,14 @@ Based on **impact** (10x wins, not 10% improvements):
 
 ### 1. Cascade 2: Widget Overlay System (Highest Impact)
 
-**Impact**: 10x reduction in widget complexity
+**Impact**: 60-70% reduction in overlay behavior duplication
 
-- Eliminates 800+ lines of repeated code
-- Reduces 13 implementations to 1
+- Eliminates 400-500 lines of repeated behavior code
+- Extracts 5 shared behavior hooks from 13+ implementations
 - Collapses 4 design docs to 1
+- Preserves semantic components for accessibility
 - Eliminates z-index conflicts entirely
-- **ROI**: Highest - touches most UI code
+- **ROI**: Highest - touches most UI code, maintains quality
 
 ### 2. Cascade 1: Client Service Layer Duplication (Medium-High Impact)
 
@@ -757,19 +632,19 @@ Based on **impact** (10x wins, not 10% improvements):
 
 ### Phase 1: Widget Overlay System (Cascade 2)
 
-**Duration**: 2-3 days  
-**Risk**: Medium (touches many components)
+**Duration**: 2-3 days
+**Risk**: Low-Medium (incremental extraction, preserves interfaces)
 
 Steps:
 
-1. Create unified `Overlay` component
-2. Migrate one widget type (dialog)
-3. Migrate remaining widget types
-4. Remove old base components
-5. Update all feature components
-6. Consolidate design docs
+1. Create composable behavior hooks (`useDismissible`, `useFocusTrap`, `usePortal`, `useZIndex`, `usePositioning`)
+2. Refactor Dialog component to use hooks (internal change only)
+3. Refactor Popover component to use hooks
+4. Refactor remaining overlay components (Sheet, Toast, Select)
+5. Remove duplicated behavior code from old implementations
+6. Consolidate design docs → OVERLAY_SYSTEM.md
 
-**Validation**: All existing UI tests pass without modification
+**Validation**: All existing UI tests pass without modification (public APIs unchanged)
 
 ### Phase 2: Client Service Layer (Cascade 1)
 
@@ -838,11 +713,11 @@ Steps:
 
 **Code Reduction**:
 
-- Widget code: -800 lines (60% reduction)
+- Widget code: -400-500 lines (60-70% behavior duplication eliminated)
 - Client service code: -150-200 lines (boilerplate elimination)
 - Error handling: -400 lines (50% reduction)
 - Store code: -200 lines (30% reduction)
-- **Total**: ~1,550-1,600 lines removed
+- **Total**: ~1,150-1,300 lines removed
 
 **Documentation Reduction**:
 
@@ -851,7 +726,7 @@ Steps:
 
 **Complexity Reduction**:
 
-- Widget implementations: 13 → 1 (92% reduction)
+- Widget behavior duplication: 13 implementations → 5 shared hooks (60-70% reduction)
 - Client service patterns: 3-4 → base + thin services (60% reduction in boilerplate)
 - Error classes: 8+ → 1 unified (87% reduction)
 - Store patterns: 5 unique → 2 generic (60% reduction)
@@ -906,7 +781,7 @@ Steps:
 
 The tonguetoquill-web codebase demonstrates **excellent architectural discipline** but has accumulated complexity in five key areas where **simplification cascades** can deliver significant improvements:
 
-1. **Widget system**: 13 implementations → 1 unified overlay
+1. **Widget system**: Extract 5 shared behavior hooks from 13+ implementations (preserve semantic components)
 2. **Client service layer**: 3-4 client services → ClientService base + thin services (server services keep factory pattern)
 3. **Error handling**: 8+ classes → 1 unified system with automatic recovery
 4. **State stores**: 5 unique → 2 generic patterns
@@ -914,11 +789,12 @@ The tonguetoquill-web codebase demonstrates **excellent architectural discipline
 
 **Total Impact**:
 
-- Remove ~1,550-1,600 lines of code (23% reduction)
+- Remove ~1,150-1,300 lines of code (17-19% reduction)
 - Consolidate 36 docs to 15-20 (45% reduction)
 - Reduce complexity by 60-90% in affected areas
 - Increase feature velocity by 3-5x
-- Avoid over-abstraction (preserve appropriate patterns like server-side factories)
+- Preserve accessibility and semantic clarity
+- Avoid over-abstraction (maintain appropriate patterns)
 
 **Recommended Action**: Implement in priority order (Cascades 2, 1, 3, 4, 5) over 2-3 weeks.
 
