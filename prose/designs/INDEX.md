@@ -92,7 +92,6 @@ prose/designs/
 ## Related Resources
 
 - **Implementation Plans**: `prose/plans/` (current and completed)
-- **Frontend Index**: [frontend/INDEX.md](frontend/INDEX.md) (detailed frontend docs)
 - **Architect Agent**: `.github/agents/Architect.md`
 - **Programmer Agent**: `.github/agents/Programmer.md`
 
