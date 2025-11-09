@@ -483,6 +483,14 @@ pre code {
 	z-index: var(--z-dropdown);
 }
 
+.z-scoped-backdrop {
+	z-index: var(--z-scoped-backdrop);
+}
+
+.z-scoped-content {
+	z-index: var(--z-scoped-content);
+}
+
 .z-popover {
 	z-index: var(--z-popover);
 }
