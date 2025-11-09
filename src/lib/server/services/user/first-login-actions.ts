@@ -30,7 +30,7 @@ const FIRST_LOGIN_ACTIONS: FirstLoginAction[] = [
 			const templateContent = await loadTemplate('usaf_template.md');
 			await documentService.createDocument({
 				user_id: userId,
-				name: 'Welcome to Tonguetoquill',
+				name: 'My First Memo',
 				content: templateContent
 			});
 		}
