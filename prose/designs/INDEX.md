@@ -52,8 +52,10 @@
 
 ### UX Patterns
 
-- [OPTIMISTIC_PAGE_LOADING.md](frontend/OPTIMISTIC_PAGE_LOADING.md) - Optimistic rendering, document switching, no loading screens
+- [POPOVER_SIDEBAR_ALIGNMENT.md](frontend/POPOVER_SIDEBAR_ALIGNMENT.md) - Sidebar popover alignment strategy
+- [ZINDEX_STRATEGY.md](frontend/ZINDEX_STRATEGY.md) - Z-index layering and stacking contexts
 - See DESIGN_SYSTEM.md § Auto-Save Behavior for save triggers and debounce timing
+- See STATE_MANAGEMENT.md § Auto-Save Pattern for implementation details
 
 ### QuillMark
 
@@ -71,7 +73,7 @@
 - [AUTHENTICATION.md](patterns/AUTHENTICATION.md) - End-to-end OAuth flow (LOGIN_SERVICE → Adapter → API → UI)
 - [ERROR_HANDLING.md](patterns/ERROR_HANDLING.md) - Error flow across all layers (WASM → Service → Frontend → UI)
 
-**Document Lifecycle**: See DOCUMENT_SERVICE.md (backend) → STATE_MANAGEMENT.md (stores) → OPTIMISTIC_PAGE_LOADING.md (loading UX)
+**Document Lifecycle**: See DOCUMENT_SERVICE.md (backend) → STATE_MANAGEMENT.md (stores) → STATE_MANAGEMENT.md § Auto-Save Pattern (persistence)
 
 ---
 
