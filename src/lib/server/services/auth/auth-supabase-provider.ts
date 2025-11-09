@@ -130,9 +130,6 @@ export class SupabaseAuthProvider implements AuthContract {
 	 * Ensure user exists in public.users table
 	 * Creates the user if they don't exist (idempotent)
 	 * This provides defense-in-depth against trigger failures or race conditions
-	 *
-	 * This is centralized in the auth provider so all services can rely on
-	 * users existing in the public.users table after authentication
 	 */
 	private async ensureUserExists(userId: UUID, email: string): Promise<void> {
 		try {
