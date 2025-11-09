@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { X } from 'lucide-svelte';
-	import { focusTrap } from '$lib/utils/focus-trap';
 	import Button from '$lib/components/ui/button.svelte';
 	import Portal from '$lib/components/ui/portal.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { overlayStore } from '$lib/stores/overlay.svelte';
+	import { useDismissible } from '$lib/utils/overlay/use-dismissible';
+	import { useFocusTrap } from '$lib/utils/overlay/use-focus-trap';
+	import { useZIndex } from '$lib/utils/overlay/use-zindex';
 
 	interface SheetProps {
 		open: boolean;
@@ -36,14 +37,27 @@
 		footer
 	}: SheetProps = $props();
 
-	// Generate unique ID for overlay coordination
-	const overlayId = `sheet-${Math.random().toString(36).substring(7)}`;
+	// Generate unique IDs for ARIA
+	const titleId = `sheet-title-${Math.random().toString(36).substring(7)}`;
+	const descId = description ? `sheet-desc-${Math.random().toString(36).substring(7)}` : undefined;
+
+	// Composable hooks
+	const dismissible = useDismissible({
+		onEscape: closeOnEscape ? () => onOpenChange(false) : undefined,
+		onBackdrop: closeOnOutsideClick ? () => onOpenChange(false) : undefined
+	});
+
+	const focusTrap = useFocusTrap({ enabled: true });
+
+	const zIndex = useZIndex({
+		layer: 'sheet',
+		onClose: () => onOpenChange(false)
+	});
 
 	// Register/unregister with overlay store for coordination
 	$effect(() => {
 		if (open) {
-			overlayStore.register(overlayId, 'sheet', () => onOpenChange(false));
-			return () => overlayStore.unregister(overlayId);
+			return zIndex.registerEffect();
 		}
 	});
 
@@ -61,19 +75,6 @@
 			return () => window.removeEventListener('resize', checkMobile);
 		}
 	});
-
-	function handleEscapeKey(event: KeyboardEvent) {
-		if (event.key === 'Escape' && closeOnEscape) {
-			event.preventDefault();
-			onOpenChange(false);
-		}
-	}
-
-	function handleBackdropClick(event: MouseEvent) {
-		if (event.target === event.currentTarget && closeOnOutsideClick) {
-			onOpenChange(false);
-		}
-	}
 
 	function handleClose() {
 		onOpenChange(false);
@@ -93,10 +94,6 @@
 		bottom: open ? 'translate-y-0' : 'translate-y-full',
 		left: open ? 'translate-x-0' : '-translate-x-full'
 	};
-
-	// Generate unique IDs for ARIA
-	const titleId = `sheet-title-${Math.random().toString(36).substring(7)}`;
-	const descId = description ? `sheet-desc-${Math.random().toString(36).substring(7)}` : undefined;
 </script>
 
 {#if open}
@@ -106,7 +103,7 @@
 			class="z-modal-backdrop fixed inset-0 bg-black/40 transition-opacity duration-300"
 			class:opacity-100={open}
 			class:opacity-0={!open}
-			onclick={handleBackdropClick}
+			onclick={dismissible.handleBackdropClick}
 			role="presentation"
 		></div>
 
@@ -125,8 +122,8 @@
 			aria-describedby={descId}
 			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={handleEscapeKey}
-			use:focusTrap
+			onkeydown={dismissible.handleKeyDown}
+			use:focusTrap.focusTrapAction
 		>
 			<!-- Header -->
 			<div class="flex-shrink-0 border-b border-border p-6">

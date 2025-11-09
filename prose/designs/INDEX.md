@@ -47,12 +47,10 @@
 
 ### UI System
 
-- [WIDGET_ABSTRACTION.md](frontend/WIDGET_ABSTRACTION.md) - Custom widget system (BaseDialog, BasePopover, Toast, etc.)
-- [WIDGET_THEME_UNIFICATION.md](frontend/WIDGET_THEME_UNIFICATION.md) - Widget theming standards
+- [OVERLAY_SYSTEM.md](frontend/OVERLAY_SYSTEM.md) - Unified overlay system with composable behavior hooks (Dialog, Popover, Sheet, Toast, Select)
 
 ### UX Patterns
 
-- [POPOVER_SIDEBAR_ALIGNMENT.md](frontend/POPOVER_SIDEBAR_ALIGNMENT.md) - Sidebar popover alignment strategy
 - [ZINDEX_STRATEGY.md](frontend/ZINDEX_STRATEGY.md) - Z-index layering and stacking contexts
 - See DESIGN_SYSTEM.md § Auto-Save Behavior for save triggers and debounce timing
 - See STATE_MANAGEMENT.md § Auto-Save Pattern for implementation details

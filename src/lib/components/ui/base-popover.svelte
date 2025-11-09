@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { X } from 'lucide-svelte';
-	import { clickOutside } from '$lib/utils/use-click-outside';
 	import Button from '$lib/components/ui/button.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { onMount } from 'svelte';
-	import { overlayStore } from '$lib/stores/overlay.svelte';
+	import { useDismissible } from '$lib/utils/overlay/use-dismissible';
+	import { useZIndex } from '$lib/utils/overlay/use-zindex';
+	import { usePositioning } from '$lib/utils/overlay/use-positioning';
 
 	interface PopoverProps {
 		open?: boolean;
@@ -74,137 +74,62 @@
 	let popoverElement: HTMLElement | undefined = $state();
 	let position = $state({ top: 0, left: 0 });
 
-	// Generate unique ID for overlay coordination
-	const overlayId = `popover-${Math.random().toString(36).substring(7)}`;
+	// Generate unique ID for ARIA
+	const titleId = title ? `popover-title-${Math.random().toString(36).substring(7)}` : undefined;
 
-	// Register/unregister with overlay store for coordination
-	$effect(() => {
-		if (open) {
-			overlayStore.register(overlayId, 'popover', () => {
-				open = false;
-				onOpenChange?.(false);
-			});
-			return () => overlayStore.unregister(overlayId);
-		}
-	});
-
-	function handleEscapeKey(event: KeyboardEvent) {
-		if (event.key === 'Escape' && closeOnEscape) {
-			event.preventDefault();
-			open = false;
-			onOpenChange?.(false);
-		}
-	}
-
-	function handleClickOutside() {
-		if (closeOnOutsideClick) {
-			open = false;
-			onOpenChange?.(false);
-		}
-	}
-
+	// Close handler
 	function handleClose() {
 		open = false;
 		onOpenChange?.(false);
 	}
 
-	function calculatePosition() {
-		if (!triggerElement || !popoverElement) return;
+	// Composable hooks
+	const dismissible = useDismissible({
+		onEscape: closeOnEscape
+			? () => {
+					open = false;
+					onOpenChange?.(false);
+				}
+			: undefined,
+		onOutside: closeOnOutsideClick
+			? () => {
+					open = false;
+					onOpenChange?.(false);
+				}
+			: undefined
+	});
 
-		const triggerRect = triggerElement.getBoundingClientRect();
-		const popoverRect = popoverElement.getBoundingClientRect();
-		const viewportWidth = window.innerWidth;
-		const viewportHeight = window.innerHeight;
-
-		let top = 0;
-		let left = 0;
-
-		// Calculate position based on side
-		switch (side) {
-			case 'top':
-				top = triggerRect.top - popoverRect.height - sideOffset;
-				break;
-			case 'bottom':
-				top = triggerRect.bottom + sideOffset;
-				break;
-			case 'left':
-				left = triggerRect.left - popoverRect.width - sideOffset;
-				top = triggerRect.top;
-				break;
-			case 'right':
-				left = triggerRect.right + sideOffset;
-				top = triggerRect.top;
-				break;
-		}
-
-		// Calculate alignment
-		if (side === 'top' || side === 'bottom') {
-			switch (align) {
-				case 'start':
-					left = triggerRect.left;
-					break;
-				case 'center':
-					left = triggerRect.left + triggerRect.width / 2 - popoverRect.width / 2;
-					break;
-				case 'end':
-					left = triggerRect.right - popoverRect.width;
-					break;
-			}
-		} else {
-			// For left/right sides
-			switch (align) {
-				case 'start':
-					top = triggerRect.top;
-					break;
-				case 'center':
-					top = triggerRect.top + triggerRect.height / 2 - popoverRect.height / 2;
-					break;
-				case 'end':
-					top = triggerRect.bottom - popoverRect.height;
-					break;
-			}
-		}
-
-		// Check viewport bounds and adjust if needed
-		if (left + popoverRect.width > viewportWidth) {
-			left = viewportWidth - popoverRect.width - 8;
-		}
-		if (left < 8) {
-			left = 8;
-		}
-		if (top + popoverRect.height > viewportHeight) {
-			top = viewportHeight - popoverRect.height - 8;
-		}
-		if (top < 8) {
-			top = 8;
-		}
-
-		position = { top, left };
-	}
-
-	// Recalculate position when popover opens or window resizes
-	$effect(() => {
-		if (open) {
-			// Use requestAnimationFrame to ensure elements are rendered
-			requestAnimationFrame(() => {
-				calculatePosition();
-			});
-
-			const handleResize = () => calculatePosition();
-			const handleScroll = () => calculatePosition();
-
-			window.addEventListener('resize', handleResize);
-			window.addEventListener('scroll', handleScroll, true);
-
-			return () => {
-				window.removeEventListener('resize', handleResize);
-				window.removeEventListener('scroll', handleScroll, true);
-			};
+	const zIndex = useZIndex({
+		layer: 'popover',
+		onClose: () => {
+			open = false;
+			onOpenChange?.(false);
 		}
 	});
 
-	// Generate unique ID for ARIA
-	const titleId = title ? `popover-title-${Math.random().toString(36).substring(7)}` : undefined;
+	// Register/unregister with overlay store for coordination
+	$effect(() => {
+		if (open) {
+			return zIndex.registerEffect();
+		}
+	});
+
+	// Position tracking when open
+	$effect(() => {
+		if (open && popoverElement && triggerElement) {
+			const positioning = usePositioning({
+				strategy: 'relative',
+				anchor: triggerElement,
+				side,
+				align,
+				offset: sideOffset
+			});
+
+			return positioning.setupPositionTracking(popoverElement, (newPosition) => {
+				position = newPosition;
+			});
+		}
+	});
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -232,8 +157,8 @@
 		role="dialog"
 		aria-labelledby={titleId}
 		tabindex="-1"
-		onkeydown={handleEscapeKey}
-		use:clickOutside={handleClickOutside}
+		onkeydown={dismissible.handleKeyDown}
+		use:dismissible.outsideClickAction
 	>
 		<!-- Header (optional) -->
 		{#if title || showCloseButton || header}

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { X } from 'lucide-svelte';
-	import { focusTrap } from '$lib/utils/focus-trap';
 	import Button from '$lib/components/ui/button.svelte';
 	import Portal from '$lib/components/ui/portal.svelte';
 	import { cn } from '$lib/utils/cn';
-	import { overlayStore } from '$lib/stores/overlay.svelte';
+	import { useDismissible } from '$lib/utils/overlay/use-dismissible';
+	import { useFocusTrap } from '$lib/utils/overlay/use-focus-trap';
+	import { useZIndex } from '$lib/utils/overlay/use-zindex';
 
 	interface DialogProps {
 		open: boolean;
@@ -47,31 +48,29 @@
 		fullscreen: 'w-full h-full max-w-none'
 	};
 
-	// Generate unique IDs for overlay coordination and ARIA attributes
-	const overlayId = `dialog-${Math.random().toString(36).substring(7)}`;
+	// Generate unique IDs for ARIA attributes
 	const titleId = `dialog-title-${Math.random().toString(36).substring(7)}`;
 	const descId = description ? `dialog-desc-${Math.random().toString(36).substring(7)}` : undefined;
+
+	// Composable hooks
+	const dismissible = useDismissible({
+		onEscape: closeOnEscape ? () => onOpenChange(false) : undefined,
+		onBackdrop: closeOnOutsideClick ? () => onOpenChange(false) : undefined
+	});
+
+	const focusTrap = useFocusTrap({ enabled: true });
+
+	const zIndex = useZIndex({
+		layer: 'dialog',
+		onClose: () => onOpenChange(false)
+	});
 
 	// Register/unregister with overlay store for coordination
 	$effect(() => {
 		if (open) {
-			overlayStore.register(overlayId, 'dialog', () => onOpenChange(false));
-			return () => overlayStore.unregister(overlayId);
+			return zIndex.registerEffect();
 		}
 	});
-
-	function handleEscapeKey(event: KeyboardEvent) {
-		if (event.key === 'Escape' && closeOnEscape) {
-			event.preventDefault();
-			onOpenChange(false);
-		}
-	}
-
-	function handleBackdropClick(event: MouseEvent) {
-		if (event.target === event.currentTarget && closeOnOutsideClick) {
-			onOpenChange(false);
-		}
-	}
 
 	function handleClose() {
 		onOpenChange(false);
@@ -87,7 +86,7 @@
 				'inset-0 bg-black/40',
 				scoped ? 'absolute' : 'fixed'
 			)}
-			onclick={handleBackdropClick}
+			onclick={dismissible.handleBackdropClick}
 			role="presentation"
 		></div>
 
@@ -113,8 +112,8 @@
 			aria-describedby={descId}
 			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={handleEscapeKey}
-			use:focusTrap
+			onkeydown={dismissible.handleKeyDown}
+			use:focusTrap.focusTrapAction
 		>
 			<!-- Header -->
 			<div
