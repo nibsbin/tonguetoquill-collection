@@ -103,16 +103,17 @@ export function clearAuthCookies(event: RequestEvent) {
  * Handles local development, Vercel preview, and production deployments
  */
 export function getSiteURL(event?: RequestEvent): string {
-	const url_prod = config.urls.production;
-	const url_stag = config.urls.staging;
+	const url_production = config.urls.production;
+	const url_staging = config.urls.staging;
 
-	const isProduction = env.VERCEL_ENV === 'production';
+	// production | preview | development
+	const deployment = env.VERCEL_ENV;
 
 	let url;
-	if (isProduction && url_prod) {
-		url = url_prod;
-	} else if (url_stag) {
-		url = url_stag;
+	if (deployment === 'production' && url_production) {
+		url = url_production;
+	} else if (deployment === 'preview' && url_staging) {
+		url = url_staging;
 	} else {
 		// Fallback to request origin or Vercel URL or localhost
 		url = (event ? event.url.origin : null) ?? env.VERCEL_URL ?? 'http://localhost:5173';
