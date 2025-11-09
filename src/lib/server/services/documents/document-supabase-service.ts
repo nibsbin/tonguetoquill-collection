@@ -3,8 +3,8 @@
  * Implements DocumentServiceContract using Supabase PostgreSQL database
  */
 
-import { loadSupabaseConfig } from '$lib/server/utils/supabase';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { getAdminClient } from '$lib/server/utils/supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
 	CreateDocumentParams,
 	DocumentReferenceParams,
@@ -31,12 +31,9 @@ export class SupabaseDocumentService implements DocumentServiceContract {
 	private readonly PGRST_NO_ROWS_ERROR = 'PGRST116'; // PostgREST error code for no rows
 
 	constructor() {
-		// Load Supabase configuration
-		const config = loadSupabaseConfig();
-
-		// Use service role key for server-side operations (bypasses RLS)
-		// Production deployments should always set SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY
-		this.supabase = createClient(config.POSTGRES_URL, config.SECRET_KEY);
+		// Use shared admin client for all database operations
+		// This client uses service role key to bypass RLS
+		this.supabase = getAdminClient();
 	}
 
 	/**

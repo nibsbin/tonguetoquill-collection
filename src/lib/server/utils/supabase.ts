@@ -4,6 +4,7 @@
  */
 
 import { env } from '$env/dynamic/private';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Supabase configuration contract
@@ -51,4 +52,30 @@ export function loadSupabaseConfig(): SupabaseConfig {
 		ENABLE_GITHUB,
 		SECRET_KEY
 	};
+}
+
+/**
+ * Singleton admin client for database operations
+ * Uses service role key to bypass RLS (Row Level Security)
+ * Shared across all server-side services for database operations
+ */
+let adminClient: SupabaseClient | null = null;
+
+/**
+ * Get or create the shared admin Supabase client
+ * This client should be used for all server-side database operations
+ * that require service role privileges (bypassing RLS)
+ */
+export function getAdminClient(): SupabaseClient {
+	if (!adminClient) {
+		const config = loadSupabaseConfig();
+		adminClient = createClient(config.POSTGRES_URL, config.SECRET_KEY, {
+			auth: {
+				autoRefreshToken: false,
+				persistSession: false,
+				detectSessionInUrl: false
+			}
+		});
+	}
+	return adminClient;
 }

@@ -15,7 +15,7 @@ import type {
 	UUID
 } from '$lib/services/auth/types';
 import { AuthError } from '$lib/services/auth/types';
-import { loadSupabaseConfig } from '$lib/server/utils/supabase';
+import { loadSupabaseConfig, getAdminClient } from '$lib/server/utils/supabase';
 import {
 	createClient,
 	type SupabaseClient,
@@ -30,7 +30,8 @@ import {
  * Supports both email and GitHub authentication methods simultaneously
  */
 export class SupabaseAuthProvider implements AuthContract {
-	private supabase: SupabaseClient;
+	private authClient: SupabaseClient; // For auth operations
+	private adminClient: SupabaseClient; // For database operations (shared)
 	private enableEmail: boolean;
 	private enableGithub: boolean;
 
@@ -49,8 +50,8 @@ export class SupabaseAuthProvider implements AuthContract {
 			);
 		}
 
-		// Create Supabase client with publishable key (client-facing operations)
-		this.supabase = createClient(config.POSTGRES_URL, config.SECRET_KEY, {
+		// Create auth-specific client for authentication operations
+		this.authClient = createClient(config.POSTGRES_URL, config.SECRET_KEY, {
 			auth: {
 				autoRefreshToken: false, // We handle refresh manually
 				persistSession: false, // Server-side, no persistence needed
@@ -58,6 +59,9 @@ export class SupabaseAuthProvider implements AuthContract {
 				flowType: 'pkce' // Use PKCE flow for server-side OAuth
 			}
 		});
+
+		// Use shared admin client for database operations
+		this.adminClient = getAdminClient();
 	}
 
 	/**
@@ -100,7 +104,7 @@ export class SupabaseAuthProvider implements AuthContract {
 
 		if (targetProvider === 'github') {
 			// Use GitHub OAuth
-			const { data, error } = await this.supabase.auth.signInWithOAuth({
+			const { data, error } = await this.authClient.auth.signInWithOAuth({
 				provider: 'github',
 				options: {
 					redirectTo: redirectUri,
@@ -135,7 +139,7 @@ export class SupabaseAuthProvider implements AuthContract {
 		try {
 			// Upsert user into public.users table
 			// This is idempotent - if user exists, nothing happens
-			const { error } = await this.supabase.from('users').upsert(
+			const { error } = await this.adminClient.from('users').upsert(
 				{
 					id: userId,
 					email: email,
@@ -199,7 +203,7 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async exchangeCodeForTokens(code: string): Promise<AuthResult> {
 		try {
-			const { data, error } = await this.supabase.auth.exchangeCodeForSession(code);
+			const { data, error } = await this.authClient.auth.exchangeCodeForSession(code);
 
 			if (error) {
 				throw this.mapSupabaseError(error);
@@ -236,7 +240,7 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }> {
 		try {
-			const { error } = await this.supabase.auth.signInWithOtp({
+			const { error } = await this.authClient.auth.signInWithOtp({
 				email,
 				options: {
 					emailRedirectTo: redirectUri,
@@ -264,7 +268,7 @@ export class SupabaseAuthProvider implements AuthContract {
 	async validateToken(token: string): Promise<TokenPayload> {
 		try {
 			// Supabase automatically validates JWT signature using JWKS
-			const { data, error } = await this.supabase.auth.getUser(token);
+			const { data, error } = await this.authClient.auth.getUser(token);
 
 			if (error) {
 				throw this.mapSupabaseError(error);
@@ -304,7 +308,7 @@ export class SupabaseAuthProvider implements AuthContract {
 		try {
 			// Note: signOut doesn't require token parameter in client mode
 			// For server-side, we can call the API directly or just let cookies clear
-			const { error } = await this.supabase.auth.signOut();
+			const { error } = await this.authClient.auth.signOut();
 
 			if (error && error.message !== 'not_authenticated') {
 				// Don't throw on not_authenticated - already logged out
@@ -322,7 +326,7 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async refreshSession(refreshToken: string): Promise<Session> {
 		try {
-			const { data, error } = await this.supabase.auth.refreshSession({
+			const { data, error } = await this.authClient.auth.refreshSession({
 				refresh_token: refreshToken
 			});
 
@@ -352,7 +356,7 @@ export class SupabaseAuthProvider implements AuthContract {
 	 */
 	async getCurrentUser(accessToken: string): Promise<User | null> {
 		try {
-			const { data, error } = await this.supabase.auth.getUser(accessToken);
+			const { data, error } = await this.authClient.auth.getUser(accessToken);
 
 			if (error || !data.user) {
 				return null;
@@ -445,7 +449,7 @@ export class SupabaseAuthProvider implements AuthContract {
 	async markFirstLoginCompleted(userId: UUID): Promise<void> {
 		try {
 			// Update user metadata with first_login_at timestamp
-			const { error } = await this.supabase.auth.admin.updateUserById(userId, {
+			const { error } = await this.authClient.auth.admin.updateUserById(userId, {
 				user_metadata: {
 					first_login_at: new Date().toISOString()
 				}
