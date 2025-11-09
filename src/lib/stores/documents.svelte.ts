@@ -5,6 +5,7 @@
 
 import type { DocumentMetadata } from '$lib/services/documents/types';
 import { createDocumentClient } from '$lib/services/documents/document-client';
+import { getErrorMessage } from '$lib/errors';
 
 interface DocumentsState {
 	documents: DocumentMetadata[];
@@ -158,7 +159,7 @@ class DocumentStore {
 			this.state.documents = this.state.documents.map((doc) =>
 				doc.id === id ? previousDocument : doc
 			);
-			this.setError(err instanceof Error ? err.message : 'Failed to update document');
+			this.setError(getErrorMessage(err, 'Failed to update document'));
 			throw err;
 		}
 	}
@@ -191,7 +192,7 @@ class DocumentStore {
 				this.setActiveDocumentId(this.state.documents[0].id);
 			}
 		} catch (err) {
-			this.setError(err instanceof Error ? err.message : 'Failed to fetch documents');
+			this.setError(getErrorMessage(err, 'Failed to fetch documents'));
 			throw err;
 		} finally {
 			this.setLoading(false);
@@ -202,7 +203,7 @@ class DocumentStore {
 		try {
 			return await this.documentClient.getDocument(id);
 		} catch (err) {
-			this.setError(err instanceof Error ? err.message : 'Failed to fetch document');
+			this.setError(getErrorMessage(err, 'Failed to fetch document'));
 			throw err;
 		}
 	}
@@ -235,7 +236,7 @@ class DocumentStore {
 			// Rollback on error
 			this.removeDocument(tempId);
 			this.setActiveDocumentId(previousActiveId);
-			this.setError(err instanceof Error ? err.message : 'Failed to create document');
+			this.setError(getErrorMessage(err, 'Failed to create document'));
 			throw err;
 		}
 	}
@@ -255,7 +256,7 @@ class DocumentStore {
 		} catch (err) {
 			// Rollback on error
 			this.addDocument(documentToDelete);
-			this.setError(err instanceof Error ? err.message : 'Failed to delete document');
+			this.setError(getErrorMessage(err, 'Failed to delete document'));
 			throw err;
 		}
 	}

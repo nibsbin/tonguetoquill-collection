@@ -6,6 +6,7 @@
 	import Input from '$lib/components/ui/input.svelte';
 	import Label from '$lib/components/ui/label.svelte';
 	import TemplateSelector from '$lib/components/NewDocumentDialog/TemplateSelector.svelte';
+	import { getErrorMessage } from '$lib/errors';
 
 	interface NewDocumentDialogProps {
 		/** Whether dialog is open */
@@ -181,8 +182,7 @@
 			onOpenChange(false);
 		} catch (error) {
 			// Error - show message and keep dialog open
-			creationError =
-				error instanceof Error ? error.message : 'Failed to create document. Please try again.';
+			creationError = getErrorMessage(error, 'Failed to create document. Please try again.');
 			console.error('Failed to create document:', error);
 		} finally {
 			isCreating = false;

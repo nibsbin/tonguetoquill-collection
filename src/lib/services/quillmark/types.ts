@@ -5,6 +5,7 @@
  */
 
 import type { RenderResult as QuillmarkRenderResult } from '@quillmark-test/web';
+import { AppError } from '$lib/errors';
 
 /**
  * Quill metadata extracted from Quill.toml
@@ -78,7 +79,7 @@ export interface QuillmarkDiagnostic {
 /**
  * Custom error class for Quillmark service errors
  */
-export class QuillmarkError extends Error {
+export class QuillmarkError extends AppError {
 	/** Error code identifying the type of error */
 	code: QuillmarkErrorCode;
 
@@ -86,7 +87,7 @@ export class QuillmarkError extends Error {
 	diagnostic?: QuillmarkDiagnostic;
 
 	constructor(code: QuillmarkErrorCode, message: string, diagnostic?: QuillmarkDiagnostic) {
-		super(message);
+		super(code, message, 400);
 		this.name = 'QuillmarkError';
 		this.code = code;
 		this.diagnostic = diagnostic;

@@ -7,6 +7,7 @@
 import { ClientService } from '../base';
 import type { TemplateService, TemplateManifest, TemplateMetadata, Template } from './types';
 import { TemplateError } from './types';
+import { getErrorMessage } from '$lib/errors';
 
 /**
  * Singleton implementation of TemplateService
@@ -86,7 +87,7 @@ class TemplateServiceImpl extends ClientService<TemplateServiceImpl> implements 
 				content
 			};
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
+			const message = getErrorMessage(error, 'Unknown error');
 			throw new TemplateError('load_error', `Failed to load template "${filename}": ${message}`);
 		}
 	}

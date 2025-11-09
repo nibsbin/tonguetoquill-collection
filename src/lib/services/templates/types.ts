@@ -4,6 +4,8 @@
  * Type definitions for the Template service and related functionality.
  */
 
+import { AppError } from '$lib/errors';
+
 /**
  * Template metadata from manifest
  */
@@ -48,12 +50,12 @@ export type TemplateErrorCode = 'not_initialized' | 'not_found' | 'load_error' |
 /**
  * Custom error class for Template service errors
  */
-export class TemplateError extends Error {
+export class TemplateError extends AppError {
 	/** Error code identifying the type of error */
 	code: TemplateErrorCode;
 
 	constructor(code: TemplateErrorCode, message: string) {
-		super(message);
+		super(code, message, 400);
 		this.name = 'TemplateError';
 		this.code = code;
 	}

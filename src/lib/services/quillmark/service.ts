@@ -15,6 +15,7 @@ import type {
 	RenderResult
 } from './types';
 import { QuillmarkError } from './types';
+import { getErrorMessage } from '$lib/errors';
 
 /**p
  * Lazy-loaded modules from @quillmark-test/web
@@ -106,7 +107,7 @@ class QuillmarkServiceImpl extends ClientService<QuillmarkServiceImpl> implement
 				);
 			} else {
 				// Fallback to generic error
-				const message = error instanceof Error ? error.message : 'Unknown error';
+				const message = getErrorMessage(error, 'Unknown error');
 				throw new QuillmarkError('render_error', `Failed to render preview: ${message}`);
 			}
 		}
@@ -137,7 +138,7 @@ class QuillmarkServiceImpl extends ClientService<QuillmarkServiceImpl> implement
 			if (diagnostic) {
 				throw new QuillmarkError('render_error', diagnostic.message, diagnostic);
 			} else {
-				const message = error instanceof Error ? error.message : 'Unknown error';
+				const message = getErrorMessage(error, 'Unknown error');
 				throw new QuillmarkError('render_error', `Failed to download document: ${message}`);
 			}
 		}

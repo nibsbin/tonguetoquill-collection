@@ -5,6 +5,7 @@
 	import { loginClient } from '$lib/services/auth';
 	import type { AuthProviderConfig } from '$lib/services/auth/types';
 	import { browser } from '$app/environment';
+	import { getErrorMessage } from '$lib/errors';
 
 	type LoginPopoverProps = {
 		onClose?: () => void;
@@ -42,7 +43,7 @@
 			// Initiate OAuth login by redirecting
 			await loginClient.initiateLogin(provider.id);
 		} catch (err: any) {
-			error = err.message || 'Failed to initiate login';
+			error = getErrorMessage(err, 'Failed to initiate login');
 		}
 	}
 
@@ -61,7 +62,7 @@
 			message = result.message;
 			emailSent = true;
 		} catch (err: any) {
-			error = err.message || 'Failed to send magic link';
+			error = getErrorMessage(err, 'Failed to send magic link');
 		} finally {
 			loading = false;
 		}

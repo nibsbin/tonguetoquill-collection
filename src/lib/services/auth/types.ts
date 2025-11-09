@@ -3,6 +3,8 @@
  * Defines interfaces for authentication providers (mock and real)
  */
 
+import { AppError } from '$lib/errors';
+
 // UUID type alias for type safety
 export type UUID = string;
 
@@ -64,15 +66,13 @@ export type AuthErrorCode =
 /**
  * Authentication error class
  */
-export class AuthError extends Error {
+export class AuthError extends AppError {
 	code: AuthErrorCode;
-	statusCode: number;
 
 	constructor(code: AuthErrorCode, message: string, statusCode: number = 400) {
-		super(message);
+		super(code, message, statusCode);
 		this.name = 'AuthError';
 		this.code = code;
-		this.statusCode = statusCode;
 	}
 }
 

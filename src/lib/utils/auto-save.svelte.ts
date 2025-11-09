@@ -6,6 +6,7 @@
 import { documentStore } from '$lib/stores/documents.svelte';
 import type { DocumentClient } from '$lib/services/documents/document-client';
 import type { DocumentMetadata } from '$lib/services/documents/types';
+import { getErrorMessage } from '$lib/errors';
 
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
@@ -104,7 +105,7 @@ export class AutoSave {
 			}, 3000);
 		} catch (err) {
 			this.state.status = 'error';
-			this.state.errorMessage = err instanceof Error ? err.message : 'Failed to save document';
+			this.state.errorMessage = getErrorMessage(err, 'Failed to save document');
 			throw err;
 		}
 	}

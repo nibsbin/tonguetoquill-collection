@@ -602,14 +602,14 @@ Display error information in this priority order:
 
 ### Error Categorization Table
 
-| Type       | Display             | Persistence     | Action                        | Utility                |
-| ---------- | ------------------- | --------------- | ----------------------------- | ---------------------- |
-| Validation | Inline (form field) | Until fixed     | User corrects input           | getErrorMessage        |
-| QuillMark  | Inline (preview)    | Until fixed     | User fixes document           | QuillmarkDiagnostic UI |
-| Network    | Toast               | 5 seconds       | Use withRetry if appropriate  | withRetry, displayError|
-| Auth       | Toast               | 5 seconds       | Refresh token automatically   | handleServiceError     |
-| API        | Toast               | 5 seconds       | displayError with retry button| displayError           |
-| Fatal      | Modal               | Until dismissed | Reload page                   | displayError           |
+| Type       | Display             | Persistence     | Action                         | Utility                 |
+| ---------- | ------------------- | --------------- | ------------------------------ | ----------------------- |
+| Validation | Inline (form field) | Until fixed     | User corrects input            | getErrorMessage         |
+| QuillMark  | Inline (preview)    | Until fixed     | User fixes document            | QuillmarkDiagnostic UI  |
+| Network    | Toast               | 5 seconds       | Use withRetry if appropriate   | withRetry, displayError |
+| Auth       | Toast               | 5 seconds       | Refresh token automatically    | handleServiceError      |
+| API        | Toast               | 5 seconds       | displayError with retry button | displayError            |
+| Fatal      | Modal               | Until dismissed | Reload page                    | displayError            |
 
 ---
 

@@ -8,7 +8,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { documentService } from '$lib/server/services/documents';
 import { requireAuth } from '$lib/server/utils/auth';
-import { handleDocumentError } from '$lib/server/utils/api';
+import { handleServiceError } from '$lib/server/utils/api';
 
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -22,7 +22,7 @@ export const GET: RequestHandler = async (event) => {
 
 		return json(document);
 	} catch (error) {
-		return handleDocumentError(error);
+		return handleServiceError(error);
 	}
 };
 
@@ -58,7 +58,7 @@ export const PUT: RequestHandler = async (event) => {
 			{ status: 400 }
 		);
 	} catch (error) {
-		return handleDocumentError(error);
+		return handleServiceError(error);
 	}
 };
 
@@ -71,6 +71,6 @@ export const DELETE: RequestHandler = async (event) => {
 
 		return json({ success: true }, { status: 200 });
 	} catch (error) {
-		return handleDocumentError(error);
+		return handleServiceError(error);
 	}
 };

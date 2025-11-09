@@ -6,7 +6,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { authService } from '$lib/server/services/auth';
-import { handleAuthError } from '$lib/server/utils/api';
+import { handleServiceError } from '$lib/server/utils/api';
 
 export const GET: RequestHandler = async (event) => {
 	try {
@@ -21,6 +21,6 @@ export const GET: RequestHandler = async (event) => {
 
 		return json({ providers });
 	} catch (error) {
-		return handleAuthError(error);
+		return handleServiceError(error);
 	}
 };

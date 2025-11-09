@@ -4,8 +4,7 @@
  */
 
 import { json, type RequestEvent } from '@sveltejs/kit';
-import { AuthError } from '$lib/services/auth';
-import { DocumentError } from '$lib/services/documents';
+import { AppError } from '$lib/errors';
 import { env } from '$env/dynamic/private';
 import { config } from '$lib/config';
 /**
@@ -24,25 +23,12 @@ export function errorResponse(code: string, message: string, status: number = 40
 }
 
 /**
- * Handle authentication errors
+ * Handle service errors (generic handler for all AppError subclasses)
  */
-export function handleAuthError(error: unknown) {
-	console.error('Auth error:', error);
+export function handleServiceError(error: unknown) {
+	console.error('Service error:', error);
 
-	if (error instanceof AuthError) {
-		return errorResponse(error.code, error.message, error.statusCode);
-	}
-
-	return errorResponse('unknown_error', 'An unexpected error occurred', 500);
-}
-
-/**
- * Handle document errors
- */
-export function handleDocumentError(error: unknown) {
-	console.error('Document error:', error);
-
-	if (error instanceof DocumentError) {
+	if (error instanceof AppError) {
 		return errorResponse(error.code, error.message, error.statusCode);
 	}
 

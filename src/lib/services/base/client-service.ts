@@ -7,6 +7,8 @@
  * @see prose/designs/patterns/CLIENT_SERVICE_FRAMEWORK.md for design documentation
  */
 
+import { getErrorMessage } from '$lib/errors';
+
 /**
  * Error thrown when client service initialization fails
  */
@@ -105,7 +107,7 @@ export abstract class ClientService<TService> {
 			this.initialized = true;
 		} catch (error) {
 			const serviceName = this.constructor.name;
-			const message = error instanceof Error ? error.message : 'Unknown error';
+			const message = getErrorMessage(error, 'Unknown error');
 			throw new ClientServiceError(
 				serviceName,
 				`Failed to initialize ${serviceName}: ${message}`,

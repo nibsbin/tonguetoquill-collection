@@ -45,25 +45,25 @@ Actions are defined as simple objects in `first-login-actions.ts`:
 
 ```typescript
 interface FirstLoginAction {
-  id: string;
-  description: string;
-  execute: (userId: UUID) => Promise<void>;
+	id: string;
+	description: string;
+	execute: (userId: UUID) => Promise<void>;
 }
 
 const FIRST_LOGIN_ACTIONS: FirstLoginAction[] = [
-  {
-    id: 'create_welcome_document',
-    description: 'Create a USAF Memo document for new users',
-    async execute(userId: UUID) {
-      const templateContent = await loadTemplate('usaf_template.md');
-      await documentService.createDocument({
-        user_id: userId,
-        name: 'Welcome to Tonguetoquill',
-        content: templateContent
-      });
-    }
-  }
-  // Add more actions here
+	{
+		id: 'create_welcome_document',
+		description: 'Create a USAF Memo document for new users',
+		async execute(userId: UUID) {
+			const templateContent = await loadTemplate('usaf_template.md');
+			await documentService.createDocument({
+				user_id: userId,
+				name: 'Welcome to Tonguetoquill',
+				content: templateContent
+			});
+		}
+	}
+	// Add more actions here
 ];
 ```
 
@@ -80,6 +80,7 @@ export async function runFirstLoginActions(userId: UUID, accessToken: string): P
 ```
 
 **Why this simple approach?**
+
 - All actions run together as a group
 - If one fails, just retry all of them next time
 - Actions are idempotent anyway
@@ -115,8 +116,8 @@ Actions are executed after successful authentication:
 import { runFirstLoginActions } from '$lib/server/services/user';
 
 // After setting auth cookies...
-runFirstLoginActions(result.user.id, result.session.access_token).catch(error => {
-  console.error('Failed to run first login actions:', error);
+runFirstLoginActions(result.user.id, result.session.access_token).catch((error) => {
+	console.error('Failed to run first login actions:', error);
 });
 ```
 
@@ -178,6 +179,7 @@ ADD COLUMN IF NOT EXISTS first_login_at TIMESTAMP WITH TIME ZONE;
 ## Future Enhancements
 
 As the service grows, it can include:
+
 - User profile management
 - User preferences
 - User settings

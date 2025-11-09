@@ -7,6 +7,7 @@ This design addresses the alignment of popovers (Settings, Login, Profile) with 
 ## Problem Statement
 
 **Current Behavior**:
+
 - Sidebar has a right border (`border-r border-border`) at its right edge
 - Popovers use `BasePopover` with `side="right"` and default `sideOffset={8}`
 - This creates an 8px gap between the sidebar border and the popover's left edge
@@ -14,6 +15,7 @@ This design addresses the alignment of popovers (Settings, Login, Profile) with 
 - Affected popovers: Settings, Login, Profile, and New Document dialog
 
 **Desired Behavior**:
+
 - Popovers should align flush with the sidebar's right border
 - No gap between sidebar border and popover
 - Visual continuity between sidebar and popover
@@ -21,18 +23,21 @@ This design addresses the alignment of popovers (Settings, Login, Profile) with 
 ## Current Implementation
 
 ### Sidebar Border
+
 - **Component**: `Sidebar.svelte:161`
 - **Styling**: `border-r border-border`
 - **Border width**: 1px (standard Tailwind border)
 - **Position**: Right edge of sidebar element
 
 ### Popover Positioning
+
 - **Component**: `base-popover.svelte:109-181`
 - **Side**: `"right"` - positions popover to the right of trigger
 - **Alignment**: `"start"` or `"end"` - vertical alignment
 - **Side offset**: `8px` (default) - horizontal gap from trigger
 
 **Positioning Logic** (base-popover.svelte:132-136):
+
 ```javascript
 case 'right':
     left = triggerRect.right + sideOffset;
@@ -41,6 +46,7 @@ case 'right':
 ```
 
 ### Trigger Elements
+
 - **Component**: `SidebarButtonSlot.svelte`
 - **Width**: `100%` of sidebar width
 - **Sidebar widths**:
@@ -52,6 +58,7 @@ case 'right':
 ### Positioning Calculation
 
 **Coordinates**:
+
 1. Sidebar right edge: position `X`
 2. Sidebar border: occupies `X` to `X + 1px` (1px border-right)
 3. Trigger element right edge: position `X` (inside border, full width of sidebar)
@@ -62,10 +69,12 @@ case 'right':
 ### Alignment Goal
 
 To align popover with sidebar border:
+
 - Popover left edge should be at position `X` (flush with border exterior)
 - This requires `sideOffset = 0`
 
 Alternative (account for border):
+
 - Popover left edge at `X + 1px` (just outside 1px border)
 - This requires `sideOffset = 1`
 
@@ -76,38 +85,46 @@ Alternative (account for border):
 ### Approach 1: Override sideOffset on Sidebar Popovers (Recommended)
 
 **Strategy**:
+
 - Set `sideOffset={0}` on all `BasePopover` instances in `Sidebar.svelte` and `NewDocumentDialog.svelte`
 - Maintains flexibility of `BasePopover` component
 - Scoped change to sidebar-specific popovers
 
 **Implementation**:
+
 ```svelte
 <!-- Settings Popover -->
 <BasePopover bind:open={popoverOpen} side="right" align="end" sideOffset={0} title="Settings">
-  ...
+	...
 </BasePopover>
 
 <!-- Login Popover -->
 <BasePopover bind:open={loginPopoverOpen} side="right" align="start" sideOffset={0} title="Sign in">
-  ...
+	...
 </BasePopover>
 
 <!-- Profile Popover -->
-<BasePopover bind:open={profilePopoverOpen} side="right" align="start" sideOffset={0} title="Account Information">
-  ...
+<BasePopover
+	bind:open={profilePopoverOpen}
+	side="right"
+	align="start"
+	sideOffset={0}
+	title="Account Information"
+>
+	...
 </BasePopover>
 
 <!-- New Document Dialog -->
-<BasePopover open={open} title="New Document" side="right" align="end" sideOffset={0}>
-  ...
-</BasePopover>
+<BasePopover {open} title="New Document" side="right" align="end" sideOffset={0}>...</BasePopover>
 ```
 
 **Affected Files**:
+
 - `src/lib/components/Sidebar/Sidebar.svelte`
 - `src/lib/components/NewDocumentDialog/NewDocumentDialog.svelte`
 
 **Changes**:
+
 - Sidebar.svelte Line 247: Add `sideOffset={0}` to login popover
 - Sidebar.svelte Line 264-268: Add `sideOffset={0}` to profile popover
 - Sidebar.svelte Line 306: Add `sideOffset={0}` to settings popover
@@ -116,10 +133,12 @@ Alternative (account for border):
 ### Approach 2: Change BasePopover Default
 
 **Strategy**:
+
 - Change default `sideOffset` from `8` to `0` in `base-popover.svelte`
 - Affects all popovers globally
 
 **Not Recommended**:
+
 - May affect other popovers in the application
 - Less flexibility for non-sidebar popovers
 - Requires testing all popover usages
@@ -127,10 +146,12 @@ Alternative (account for border):
 ### Approach 3: Create Sidebar-Specific Popover Component
 
 **Strategy**:
+
 - Create `SidebarPopover.svelte` wrapper around `BasePopover`
 - Sets sidebar-specific defaults (`side="right"`, `sideOffset={0}`)
 
 **Not Recommended**:
+
 - Adds complexity without significant benefit
 - Current popovers already use `BasePopover` successfully
 - Simpler to just override `sideOffset` parameter
@@ -142,11 +163,13 @@ Alternative (account for border):
 **File**: `src/lib/components/Sidebar/Sidebar.svelte`
 
 1. **Settings Popover** (line 306):
+
    ```svelte
    <BasePopover bind:open={popoverOpen} side="right" align="end" sideOffset={0} title="Settings">
    ```
 
 2. **Login Popover** (line 247):
+
    ```svelte
    <BasePopover bind:open={loginPopoverOpen} side="right" align="start" sideOffset={0} title="Sign in">
    ```
@@ -166,6 +189,7 @@ Alternative (account for border):
 ### Visual Result
 
 **Before**:
+
 ```
 ┌─────────┐       ┌─────────────┐
 │ Sidebar │ 8px   │   Popover   │
@@ -175,6 +199,7 @@ Alternative (account for border):
 ```
 
 **After**:
+
 ```
 ┌─────────┬─────────────┐
 │ Sidebar ││   Popover   │
@@ -186,6 +211,7 @@ Alternative (account for border):
 ## Testing Considerations
 
 ### Visual Verification
+
 - [ ] Settings popover aligns flush with sidebar border
 - [ ] Login popover aligns flush with sidebar border
 - [ ] Profile popover aligns flush with sidebar border
@@ -195,12 +221,14 @@ Alternative (account for border):
 - [ ] No visual gaps between sidebar and popovers
 
 ### Functional Verification
+
 - [ ] Popovers open/close correctly
 - [ ] Popover positioning adapts to viewport bounds
 - [ ] Vertical alignment ("start" vs "end") works correctly
 - [ ] Popovers don't overlap sidebar content
 
 ### Edge Cases
+
 - [ ] Very narrow viewports (mobile)
 - [ ] Popover content wider than viewport
 - [ ] Rapid sidebar expand/collapse during popover display

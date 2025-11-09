@@ -40,11 +40,13 @@ Compact popover with in-line field labels for space efficiency:
 ### Fields
 
 **Template** (required, first field):
+
 - Dropdown of available templates
 - Defaults to "USAF Memo"
 - Auto-populates document name when changed
 
 **Document Name** (required, second field):
+
 - Text input, auto-populated from template
 - User can edit to customize
 - Manual edits prevent further auto-population
@@ -68,6 +70,7 @@ Compact popover with in-line field labels for space efficiency:
 ### Auto-Naming
 
 When template changes (and user hasn't manually edited name):
+
 1. Set document name to template name
 2. Check for collisions with existing documents
 3. Append " (n)" if duplicate found
@@ -75,26 +78,31 @@ When template changes (and user hasn't manually edited name):
 ## Validation
 
 **Document Name**:
+
 - Required, cannot be empty or whitespace-only
 - Inline error display below field
 - Create button disabled when invalid
 
 **Template**:
+
 - Required, must select a template
 - Defaults to first production template
 
 ## Error Handling
 
 **Validation Errors**:
+
 - Display inline below respective field
 - Disable Create button until resolved
 - Keep popover open for correction
 
 **Service Errors**:
+
 - Template load failure: Show error, fallback to blank document
 - Document creation failure: Display error, keep popover open for retry
 
 **Network Errors**:
+
 - Template fetch failure: Disable dropdown, log error
 - Creation failure: Show error message, allow retry
 
@@ -123,16 +131,19 @@ When template changes (and user hasn't manually edited name):
 ## Integration Points
 
 **Template Service** ([TEMPLATE_SERVICE.md](../backend/TEMPLATE_SERVICE.md)):
+
 - Load template list via `listTemplates(true)` for production templates
 - Load template content via `getTemplate(filename)`
 - Initialize at app startup, not on popover open
 
 **Document Store** ([STATE_MANAGEMENT.md](./STATE_MANAGEMENT.md)):
+
 - Create document via `createDocument(name, content)`
 - Optimistic UI updates handled by store
 - Error handling delegated to store
 
 **Sidebar** ([SIDEBAR.md](./SIDEBAR.md)):
+
 - Popover triggered by "New Document" button
 - Provides list of existing document names for collision detection
 - Handles document creation callback
@@ -142,22 +153,26 @@ When template changes (and user hasn't manually edited name):
 Follows design system standards:
 
 **Popover**:
+
 - Background: `bg-surface-elevated`
 - Border: `border-border`
 - Shadow: `shadow-md`
 - Padding: `p-4`
 
 **Form Fields**:
+
 - Labels: Fixed width (`w-20`), right-aligned, `text-sm`
 - Inputs: Flexible width (`flex-1`), standard input styling
 - Height: Compact `h-9` for popover efficiency
 - Gap: `gap-3` between label and input
 
 **Buttons**:
+
 - Cancel: `variant="ghost" size="sm"`
 - Create: `variant="default" size="sm"` (primary)
 
 **Error Display**:
+
 - Text: `text-destructive text-xs`
 - Border: `border-destructive` on invalid input
 

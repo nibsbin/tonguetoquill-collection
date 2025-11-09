@@ -4,6 +4,7 @@
  */
 
 import type { UUID } from '../auth/types';
+import { AppError } from '$lib/errors';
 
 // Re-export UUID for convenience
 export type { UUID };
@@ -57,15 +58,13 @@ export type DocumentErrorCode =
 /**
  * Document error class
  */
-export class DocumentError extends Error {
+export class DocumentError extends AppError {
 	code: DocumentErrorCode;
-	statusCode: number;
 
 	constructor(code: DocumentErrorCode, message: string, statusCode: number = 400) {
-		super(message);
+		super(code, message, statusCode);
 		this.name = 'DocumentError';
 		this.code = code;
-		this.statusCode = statusCode;
 	}
 }
 
