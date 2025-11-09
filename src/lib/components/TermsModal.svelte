@@ -119,7 +119,7 @@
 				<section>
 					<h2 class="mb-4 text-2xl">9. Contact Information</h2>
 					<p>If you have any questions about these Terms of Use, please contact us at:</p>
-					<p class="font-semibold">legal@tonguetoquill.com</p>
+					<p class="font-semibold">support@tonguetoquill.com</p>
 				</section>
 
 				<section>

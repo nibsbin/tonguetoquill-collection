@@ -122,7 +122,7 @@
 						<li><strong>Export:</strong> Export your documents and data</li>
 						<li><strong>Opt-out:</strong> Unsubscribe from marketing communications</li>
 					</ul>
-					<p>To exercise these rights, please contact us at privacy@tonguetoquill.com</p>
+					<p>To exercise these rights, please contact us at support@tonguetoquill.com</p>
 				</section>
 
 				<section>
@@ -175,7 +175,7 @@
 				<section>
 					<h2 class="mb-4 text-2xl">12. Contact Us</h2>
 					<p>If you have any questions about this Privacy Policy, please contact us at:</p>
-					<p class="font-semibold">privacy@tonguetoquill.com</p>
+					<p class="font-semibold">support@tonguetoquill.com</p>
 				</section>
 			{/snippet}
 		</DialogContent>
