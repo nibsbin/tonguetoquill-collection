@@ -3,6 +3,7 @@
 This document defines the Template Service for exposing markdown templates from `tonguetoquill-collection/templates/` with metadata from the JSON manifest.
 
 > **Related**: [SERVICES.md](./SERVICES.md) for overall service architecture patterns
+> **Implementation**: Uses [CLIENT_SERVICE_FRAMEWORK.md](../patterns/CLIENT_SERVICE_FRAMEWORK.md) for singleton pattern and lifecycle
 
 ## Overview
 
@@ -183,28 +184,14 @@ src/lib/services/templates/
 
 ### Singleton Pattern
 
-Following the pattern established by QuillmarkService:
+Extends `ClientService` base class from [CLIENT_SERVICE_FRAMEWORK.md](../patterns/CLIENT_SERVICE_FRAMEWORK.md):
 
 ```typescript
-class TemplateServiceImpl implements TemplateService {
-	private static instance: TemplateServiceImpl | null = null;
+class TemplateServiceImpl extends ClientService<TemplateServiceImpl> implements TemplateService {
 	private manifest: TemplateManifest | null = null;
-	private initialized = false;
 
-	private constructor() {}
-
-	static getInstance(): TemplateServiceImpl {
-		if (!TemplateServiceImpl.instance) {
-			TemplateServiceImpl.instance = new TemplateServiceImpl();
-		}
-		return TemplateServiceImpl.instance;
-	}
-
-	async initialize(): Promise<void> {
-		if (this.initialized) return;
-
+	protected async doInitialize(): Promise<void> {
 		this.manifest = await this.loadManifest();
-		this.initialized = true;
 	}
 
 	// ... other methods
@@ -213,6 +200,13 @@ class TemplateServiceImpl implements TemplateService {
 // Export singleton instance
 export const templateService = TemplateServiceImpl.getInstance();
 ```
+
+**Benefits of ClientService base class:**
+
+- Eliminates ~80 lines of boilerplate (singleton pattern, initialization, validation)
+- Provides idempotent initialization
+- Standard error handling
+- Consistent API across all client services
 
 ### Initialization Flow
 

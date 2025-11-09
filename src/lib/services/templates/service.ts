@@ -4,55 +4,29 @@
  * Provides singleton service for template manifest loading and template content access.
  */
 
+import { ClientService } from '../base';
 import type { TemplateService, TemplateManifest, TemplateMetadata, Template } from './types';
 import { TemplateError } from './types';
 
 /**
  * Singleton implementation of TemplateService
  */
-class TemplateServiceImpl implements TemplateService {
-	private static instance: TemplateServiceImpl | null = null;
+class TemplateServiceImpl extends ClientService<TemplateServiceImpl> implements TemplateService {
 	private manifest: TemplateManifest | null = null;
-	private initialized = false;
-
-	/**
-	 * Private constructor enforces singleton pattern
-	 */
-	private constructor() {}
-
-	/**
-	 * Get singleton instance
-	 */
-	static getInstance(): TemplateServiceImpl {
-		if (!TemplateServiceImpl.instance) {
-			TemplateServiceImpl.instance = new TemplateServiceImpl();
-		}
-		return TemplateServiceImpl.instance;
-	}
 
 	/**
 	 * Initialize the Template service
 	 */
-	async initialize(): Promise<void> {
-		if (this.initialized) {
-			return;
-		}
-
-		try {
-			// Load manifest
-			this.manifest = await this.loadManifest();
-			this.initialized = true;
-		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new TemplateError('load_error', `Failed to initialize Template service: ${message}`);
-		}
+	protected async doInitialize(): Promise<void> {
+		// Load manifest
+		this.manifest = await this.loadManifest();
 	}
 
 	/**
 	 * Check if service is ready
 	 */
 	isReady(): boolean {
-		return this.initialized && this.manifest !== null;
+		return super.isReady() && this.manifest !== null;
 	}
 
 	/**
@@ -151,8 +125,9 @@ class TemplateServiceImpl implements TemplateService {
 	/**
 	 * Validate service is initialized
 	 */
-	private validateInitialized(): void {
-		if (!this.initialized || !this.manifest) {
+	protected validateInitialized(): void {
+		super.validateInitialized();
+		if (!this.manifest) {
 			throw new TemplateError(
 				'not_initialized',
 				'Template service is not initialized. Call initialize() first.'

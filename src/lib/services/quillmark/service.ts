@@ -5,6 +5,7 @@
  * Uses lazy loading for @quillmark-test/web to reduce cold start time and fix WASM loading.
  */
 
+import { ClientService } from '../base';
 import type { Artifact } from '@quillmark-test/web';
 import type {
 	QuillmarkService,
@@ -38,60 +39,32 @@ async function loadQuillmarkModule() {
 /**
  * Singleton implementation of QuillmarkService
  */
-class QuillmarkServiceImpl implements QuillmarkService {
-	private static instance: QuillmarkServiceImpl | null = null;
+class QuillmarkServiceImpl extends ClientService<QuillmarkServiceImpl> implements QuillmarkService {
 	private engine: InstanceType<typeof import('@quillmark-test/web').Quillmark> | null = null;
 	private manifest: QuillManifest | null = null;
-	private initialized = false;
-
-	/**
-	 * Private constructor enforces singleton pattern
-	 */
-	private constructor() {}
-
-	/**
-	 * Get singleton instance
-	 */
-	static getInstance(): QuillmarkServiceImpl {
-		if (!QuillmarkServiceImpl.instance) {
-			QuillmarkServiceImpl.instance = new QuillmarkServiceImpl();
-		}
-		return QuillmarkServiceImpl.instance;
-	}
 
 	/**
 	 * Initialize the Quillmark service
 	 */
-	async initialize(): Promise<void> {
-		if (this.initialized) {
-			return;
-		}
+	protected async doInitialize(): Promise<void> {
+		// Lazy load the @quillmark-test/web module
+		await loadQuillmarkModule();
 
-		try {
-			// Lazy load the @quillmark-test/web module
-			await loadQuillmarkModule();
+		// Load manifest
+		this.manifest = await this.loadManifest();
 
-			// Load manifest
-			this.manifest = await this.loadManifest();
+		// Create Quillmark engine
+		this.engine = new Quillmark!();
 
-			// Create Quillmark engine
-			this.engine = new Quillmark!();
-
-			// Preload all Quills
-			await this.preloadQuills();
-
-			this.initialized = true;
-		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			throw new QuillmarkError('load_error', `Failed to initialize Quillmark: ${message}`);
-		}
+		// Preload all Quills
+		await this.preloadQuills();
 	}
 
 	/**
 	 * Check if service is ready
 	 */
 	isReady(): boolean {
-		return this.initialized && this.engine !== null;
+		return super.isReady() && this.engine !== null;
 	}
 
 	/**
@@ -227,8 +200,9 @@ class QuillmarkServiceImpl implements QuillmarkService {
 	/**
 	 * Validate service is initialized
 	 */
-	private validateInitialized(): void {
-		if (!this.initialized || !this.engine) {
+	protected validateInitialized(): void {
+		super.validateInitialized();
+		if (!this.engine) {
 			throw new QuillmarkError(
 				'not_initialized',
 				'Quillmark service is not initialized. Call initialize() first.'

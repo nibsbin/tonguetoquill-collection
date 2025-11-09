@@ -70,6 +70,7 @@
 
 ## Cross-Cutting Patterns
 
+- [CLIENT_SERVICE_FRAMEWORK.md](patterns/CLIENT_SERVICE_FRAMEWORK.md) - Client service base class with singleton pattern and async initialization
 - [AUTHENTICATION.md](patterns/AUTHENTICATION.md) - End-to-end OAuth flow (LOGIN_SERVICE → Adapter → API → UI)
 - [ERROR_HANDLING.md](patterns/ERROR_HANDLING.md) - Error flow across all layers (WASM → Service → Frontend → UI)
 
@@ -84,6 +85,7 @@ prose/designs/
 ├── INDEX.md (this file)
 ├── backend/        # Server-side services and adapters
 ├── frontend/       # UI architecture, components, and patterns
+├── patterns/       # Cross-cutting architectural patterns
 └── quillmark/      # QuillMark WASM integration and rendering
 ```
 

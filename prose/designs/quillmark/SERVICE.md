@@ -3,6 +3,7 @@
 This document defines the QuillmarkService implementation for managing Quillmark WASM engine and Quill templates.
 
 > **Related**: [INTEGRATION.md](./INTEGRATION.md) for overall integration architecture
+> **Implementation**: Uses [CLIENT_SERVICE_FRAMEWORK.md](../patterns/CLIENT_SERVICE_FRAMEWORK.md) for singleton pattern and lifecycle
 
 ## Service Contract
 
@@ -103,6 +104,13 @@ Service implementation located in `src/lib/services/quillmark/` with separation 
 ### Singleton Pattern
 
 Single engine instance per application lifecycle to avoid re-initialization overhead and maintain consistent state.
+
+Extends `ClientService` base class from [CLIENT_SERVICE_FRAMEWORK.md](../patterns/CLIENT_SERVICE_FRAMEWORK.md):
+
+- Eliminates ~100 lines of boilerplate (singleton pattern, initialization, validation)
+- Provides idempotent initialization
+- Standard error handling
+- Consistent API across all client services
 
 ### Initialization Flow
 
