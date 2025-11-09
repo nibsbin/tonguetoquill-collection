@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { toasts, dismissToast, type Toast } from '$lib/stores/toast.svelte';
+	import { toastStore, dismissToast, type Toast } from '$lib/stores/toast.svelte';
 	import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import { cn } from '$lib/utils/cn';
@@ -19,7 +19,7 @@
 	let { position = 'bottom-right', maxToasts = 3 }: ToastProps = $props();
 
 	// Limit toasts to maxToasts
-	let visibleToasts = $derived($toasts.slice(-maxToasts));
+	let visibleToasts = $derived(toastStore.toasts.slice(-maxToasts));
 
 	const positionClasses = {
 		'top-left': 'top-4 left-4',

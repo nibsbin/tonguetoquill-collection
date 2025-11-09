@@ -9,7 +9,11 @@
  * - Automatic cleanup: Higher-priority overlays auto-close lower-priority ones
  * - Type-safe: Use discriminated unions for overlay types
  * - Simple API: Components just register/unregister, store handles the rest
+ *
+ * Uses RegistryStore factory for Map-based storage, with custom priority logic.
  */
+
+import { createRegistryStore } from './factories.svelte';
 
 export type OverlayType = 'popover' | 'dialog' | 'modal' | 'sheet' | 'toast';
 
@@ -29,7 +33,7 @@ const OVERLAY_PRIORITIES: Record<OverlayType, number> = {
 };
 
 class OverlayStore {
-	private overlays = $state<Map<string, OverlayRegistration>>(new Map());
+	private registry = createRegistryStore<OverlayRegistration>();
 
 	/**
 	 * Register a new overlay. Automatically closes lower-priority overlays.
@@ -42,22 +46,22 @@ class OverlayStore {
 			this.closeOverlaysWithPriorityBelow(priority);
 		}
 
-		// Register this overlay
-		this.overlays.set(id, { id, type, priority, onClose });
+		// Register this overlay using factory
+		this.registry.register(id, { id, type, priority, onClose });
 	}
 
 	/**
 	 * Unregister an overlay when it closes
 	 */
 	unregister(id: string): void {
-		this.overlays.delete(id);
+		this.registry.unregister(id);
 	}
 
 	/**
 	 * Close all overlays with priority below the given threshold
 	 */
 	private closeOverlaysWithPriorityBelow(priority: number): void {
-		for (const overlay of this.overlays.values()) {
+		for (const overlay of this.registry.values()) {
 			if (overlay.priority < priority && overlay.type !== 'toast') {
 				overlay.onClose();
 			}
@@ -70,7 +74,7 @@ class OverlayStore {
 	closeTopMost(): void {
 		let topOverlay: OverlayRegistration | null = null;
 
-		for (const overlay of this.overlays.values()) {
+		for (const overlay of this.registry.values()) {
 			if (overlay.type === 'toast') continue; // Skip toasts
 
 			if (!topOverlay || overlay.priority > topOverlay.priority) {
@@ -87,7 +91,7 @@ class OverlayStore {
 	 * Check if any overlay of a specific type is open
 	 */
 	hasOpenOverlay(type: OverlayType): boolean {
-		for (const overlay of this.overlays.values()) {
+		for (const overlay of this.registry.values()) {
 			if (overlay.type === type) return true;
 		}
 		return false;
@@ -98,7 +102,7 @@ class OverlayStore {
 	 */
 	get count(): number {
 		let count = 0;
-		for (const overlay of this.overlays.values()) {
+		for (const overlay of this.registry.values()) {
 			if (overlay.type !== 'toast') count++;
 		}
 		return count;
@@ -108,7 +112,7 @@ class OverlayStore {
 	 * Get all open overlays (for debugging)
 	 */
 	getAll(): OverlayRegistration[] {
-		return Array.from(this.overlays.values());
+		return this.registry.getAll();
 	}
 }
 

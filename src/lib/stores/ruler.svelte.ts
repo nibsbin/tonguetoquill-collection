@@ -1,20 +1,20 @@
 /**
  * Store for managing ruler overlay state
  */
-class RulerStore {
-	private _isActive = $state(false);
+import { createSimpleState } from './factories.svelte';
 
+const state = createSimpleState({
+	initialValue: false
+});
+
+export const rulerStore = {
 	get isActive() {
-		return this._isActive;
-	}
-
+		return state.value;
+	},
 	setActive(active: boolean) {
-		this._isActive = active;
-	}
-
+		state.set(active);
+	},
 	toggle() {
-		this._isActive = !this._isActive;
+		state.toggle();
 	}
-}
-
-export const rulerStore = new RulerStore();
+};

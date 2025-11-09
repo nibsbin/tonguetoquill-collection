@@ -4,6 +4,9 @@
  * Provides a reactive store for tracking viewport size and device type.
  * Used across components (Sidebar, DocumentEditor, etc.) to coordinate
  * responsive behavior.
+ *
+ * Note: This store uses custom lifecycle management (initialize/destroy) that
+ * doesn't benefit from factory abstraction. Kept as-is for clarity.
  */
 
 // Breakpoint definition (matches Tailwind's md breakpoint)

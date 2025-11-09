@@ -4,7 +4,10 @@
 
 Tonguetoquill uses a hybrid state management approach with reactive local state, global stores for application-wide state, and server-side state management for data persistence. The implementation leverages SvelteKit 5's reactive system with `$state` runes.
 
-**Status**: Current as of October 2025. Auto-save and document persistence implemented in Phase 6.6.
+**Related Documentation**:
+
+- For store factory patterns and implementation details, see [STATE_PATTERNS.md](../patterns/STATE_PATTERNS.md)
+- This document describes high-level state management principles and usage patterns
 
 ## Reactive State Patterns
 

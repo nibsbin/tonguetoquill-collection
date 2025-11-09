@@ -1,25 +1,21 @@
 /**
  * Document store for managing document list and active document
  * Uses DocumentClient for all I/O operations
+ * Uses CollectionStore factory for base state management
  */
 
 import type { DocumentMetadata } from '$lib/services/documents/types';
 import { createDocumentClient } from '$lib/services/documents/document-client';
 import { getErrorMessage } from '$lib/errors';
-
-interface DocumentsState {
-	documents: DocumentMetadata[];
-	activeDocumentId: string | null;
-	isLoading: boolean;
-	error: string | null;
-}
+import { createCollectionStore } from './factories.svelte';
 
 class DocumentStore {
-	private state = $state<DocumentsState>({
-		documents: [],
-		activeDocumentId: null,
-		isLoading: false,
-		error: null
+	// Use collection store factory for basic state management
+	private collection = createCollectionStore<DocumentMetadata>({
+		idKey: 'id',
+		withLoading: true,
+		withError: true,
+		withActiveSelection: true
 	});
 
 	// Authentication state - separate from document state
@@ -30,25 +26,25 @@ class DocumentStore {
 	// Create document client - recreated when auth state changes
 	private documentClient = createDocumentClient(this._isGuest, this._userId);
 
-	// Getters
+	// Delegate getters to collection store
 	get documents() {
-		return this.state.documents;
+		return this.collection.items;
 	}
 
 	get activeDocumentId() {
-		return this.state.activeDocumentId;
+		return this.collection.activeId;
 	}
 
 	get isLoading() {
-		return this.state.isLoading;
+		return this.collection.isLoading;
 	}
 
 	get error() {
-		return this.state.error;
+		return this.collection.error;
 	}
 
 	get activeDocument() {
-		return this.state.documents.find((doc) => doc.id === this.state.activeDocumentId) || null;
+		return this.collection.activeItem;
 	}
 
 	get isGuest() {
@@ -60,21 +56,21 @@ class DocumentStore {
 		return this.documentClient;
 	}
 
-	// Actions
+	// Delegate basic actions to collection store
 	setDocuments(documents: DocumentMetadata[]) {
-		this.state.documents = documents;
+		this.collection.setItems(documents);
 	}
 
 	setActiveDocumentId(id: string | null) {
-		this.state.activeDocumentId = id;
+		this.collection.setActiveId(id);
 	}
 
 	setLoading(isLoading: boolean) {
-		this.state.isLoading = isLoading;
+		this.collection.setLoading(isLoading);
 	}
 
 	setError(error: string | null) {
-		this.state.error = error;
+		this.collection.setError(error);
 	}
 
 	/**
@@ -96,12 +92,12 @@ class DocumentStore {
 	}
 
 	addDocument(document: DocumentMetadata) {
-		this.state.documents = [document, ...this.state.documents];
+		this.collection.add(document);
 	}
 
 	async updateDocument(id: string, updates: Partial<DocumentMetadata>) {
 		// Find the document to update
-		const documentToUpdate = this.state.documents.find((doc) => doc.id === id);
+		const documentToUpdate = this.documents.find((doc) => doc.id === id);
 		if (!documentToUpdate) {
 			throw new Error('Document not found');
 		}
@@ -112,9 +108,7 @@ class DocumentStore {
 		if (!requiresPersistence) {
 			// For metadata-only updates (e.g., content_size_bytes, updated_at from auto-save),
 			// just update local state without calling DocumentClient
-			this.state.documents = this.state.documents.map((doc) =>
-				doc.id === id ? { ...doc, ...updates } : doc
-			);
+			this.collection.update(id, updates);
 			return;
 		}
 
@@ -141,39 +135,37 @@ class DocumentStore {
 		// DocumentClient handles routing to localStorage (guest) or API (authenticated)
 		const previousDocument = { ...documentToUpdate };
 
-		// Optimistically update local state
-		this.state.documents = this.state.documents.map((doc) =>
-			doc.id === id ? { ...doc, ...updates } : doc
-		);
+		// Optimistically update local state using collection store
+		this.collection.update(id, updates);
 
 		try {
 			// Call DocumentClient to persist
 			const result = await this.documentClient.updateDocument(id, clientUpdates);
 
-			// Update local state with server response metadata
-			this.state.documents = this.state.documents.map((doc) =>
-				doc.id === id ? mergeWithServerResponse(doc, result) : doc
-			);
+			// Merge server response with current state
+			const currentDoc = this.documents.find((doc) => doc.id === id);
+			if (currentDoc) {
+				const merged = mergeWithServerResponse(currentDoc, result);
+				// Update with merged result
+				this.collection.update(id, {
+					content_size_bytes: merged.content_size_bytes,
+					updated_at: merged.updated_at
+				});
+			}
 		} catch (err) {
 			// Rollback on error
-			this.state.documents = this.state.documents.map((doc) =>
-				doc.id === id ? previousDocument : doc
-			);
+			this.collection.update(id, previousDocument);
 			this.setError(getErrorMessage(err, 'Failed to update document'));
 			throw err;
 		}
 	}
 
 	removeDocument(id: string) {
-		this.state.documents = this.state.documents.filter((doc) => doc.id !== id);
-		if (this.state.activeDocumentId === id) {
-			// If there are remaining documents, select the topmost recent so the
-			// editor remains populated. Otherwise clear the active document.
-			if (this.state.documents.length > 0) {
-				this.state.activeDocumentId = this.state.documents[0].id;
-			} else {
-				this.state.activeDocumentId = null;
-			}
+		this.collection.remove(id);
+
+		// Custom logic: auto-select next document after removal
+		if (this.activeDocumentId === null && this.documents.length > 0) {
+			this.setActiveDocumentId(this.documents[0].id);
 		}
 	}
 
@@ -188,8 +180,8 @@ class DocumentStore {
 
 			// If there's no active document selected yet, auto-select the first recent
 			// document so the editor loads with content on page load.
-			if (!this.state.activeDocumentId && this.state.documents.length > 0) {
-				this.setActiveDocumentId(this.state.documents[0].id);
+			if (!this.activeDocumentId && this.documents.length > 0) {
+				this.setActiveDocumentId(this.documents[0].id);
 			}
 		} catch (err) {
 			this.setError(getErrorMessage(err, 'Failed to fetch documents'));
@@ -222,7 +214,7 @@ class DocumentStore {
 		};
 
 		this.addDocument(tempDoc);
-		const previousActiveId = this.state.activeDocumentId;
+		const previousActiveId = this.activeDocumentId;
 		this.setActiveDocumentId(tempId);
 
 		try {
@@ -244,7 +236,7 @@ class DocumentStore {
 	async deleteDocument(id: string) {
 		// Use optimistic update for immediate UI responsiveness
 		// DocumentClient handles routing to localStorage (guest) or API (authenticated)
-		const documentToDelete = this.state.documents.find((doc) => doc.id === id);
+		const documentToDelete = this.documents.find((doc) => doc.id === id);
 		if (!documentToDelete) {
 			throw new Error('Document not found');
 		}

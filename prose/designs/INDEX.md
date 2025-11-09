@@ -71,6 +71,7 @@
 ## Cross-Cutting Patterns
 
 - [CLIENT_SERVICE_FRAMEWORK.md](patterns/CLIENT_SERVICE_FRAMEWORK.md) - Client service base class with singleton pattern and async initialization
+- [STATE_PATTERNS.md](patterns/STATE_PATTERNS.md) - Store factory functions for collection, registry, and simple state patterns
 - [AUTHENTICATION.md](patterns/AUTHENTICATION.md) - End-to-end OAuth flow (LOGIN_SERVICE → Adapter → API → UI)
 - [ERROR_HANDLING.md](patterns/ERROR_HANDLING.md) - Error flow across all layers (WASM → Service → Frontend → UI)
 

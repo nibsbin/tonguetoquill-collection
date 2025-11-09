@@ -10,7 +10,7 @@
 	let { open, onOpenChange }: Props = $props();
 </script>
 
-<Dialog {open} {onOpenChange} title="Share Document" scoped closeOnOutsideClick={false}>
+<Dialog {open} {onOpenChange} title="Share Document" scoped>
 	{#snippet content()}
 		<p class="text-sm text-muted-foreground">
 			Document sharing functionality is coming soon. You'll be able to share your documents with
