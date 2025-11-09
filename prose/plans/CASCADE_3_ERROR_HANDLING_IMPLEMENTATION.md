@@ -2,7 +2,7 @@
 
 **Date**: 2025-11-09
 **Status**: 🔄 Ready for Implementation
-**Related Design**: [ERROR_HANDLING.md](../designs/patterns/ERROR_HANDLING.md)
+**Related Design**: [ERROR_SYSTEM.md](../designs/patterns/ERROR_SYSTEM.md)
 **Parent Analysis**: [SIMPLIFICATION_CASCADES_ANALYSIS.md](./SIMPLIFICATION_CASCADES_ANALYSIS.md)
 
 ## Objective
@@ -465,7 +465,7 @@ grep -r "handleAuthError\|handleDocumentError" src/routes/api
 
 **Update**:
 
-- prose/designs/patterns/ERROR_HANDLING.md (already updated)
+- prose/designs/patterns/ERROR_SYSTEM.md (already updated)
 - Add JSDoc comments to all error classes
 - Add usage examples in code comments
 - Update any inline documentation in error files
@@ -641,7 +641,7 @@ If issues discovered post-migration:
 
 ## Next Steps
 
-1. ✅ Design approved (ERROR_HANDLING.md updated)
+1. ✅ Design approved (ERROR_SYSTEM.md updated)
 2. ⏳ Implement AppError base class
 3. ⏳ Migrate service error classes
 4. ⏳ Create generic error handler
