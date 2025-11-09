@@ -28,6 +28,13 @@
 	// Use centralized responsive store
 	const isMobile = $derived(responsiveStore.isMobile);
 
+	// Clear document name when no active document
+	$effect(() => {
+		if (documentStore.activeDocumentId === null) {
+			documentName = '';
+		}
+	});
+
 	onMount(() => {
 		// Initialize responsive store
 		responsiveStore.initialize();
