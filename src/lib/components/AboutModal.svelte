@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Dialog from '$lib/components/ui/base-dialog.svelte';
 	import DialogContent from '$lib/components/ui/dialog-content.svelte';
+	import { Linkedin } from 'lucide-svelte';
 
 	interface AboutModalProps {
 		open: boolean;
@@ -50,7 +51,9 @@
 								alt="John photo"
 								class="h-40 w-40 rounded-md object-cover"
 							/>
-							<h3 class="text-xl font-semibold">John Pan: The Fearless Leader</h3>
+							<div class="flex items-center gap-2">
+								<h3 class="text-xl font-semibold">John Pan: The Fearless Leader</h3>
+							</div>
 							<p class="text-muted-foreground">
 								John was raised in Texas but cooks fish on the stove. We still don’t know why he
 								doesn’t grill. When he’s not serving the country through his cybersecurity work at
@@ -58,6 +61,15 @@
 								post-AI world, and vibe coding. He was frustrated with writing a 5-minute memo, and
 								devoted the majority of the past few months building TTQ so that he could reduce
 								that to 3.78 minutes.
+								<a
+									href="https://www.linkedin.com/in/nibsbin/"
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="John Pan on LinkedIn"
+									class="text-blue-600 hover:text-blue-700"
+								>
+									<img src="/in-logo/LI-In-Bug.png" alt="LinkedIn" class="h-5 w-5" />
+								</a>
 							</p>
 						</article>
 
@@ -67,12 +79,23 @@
 								alt="Nick photo"
 								class="h-40 w-40 rounded-md object-cover"
 							/>
-							<h3 class="text-xl font-semibold">Nick Hamby: The Data Nut</h3>
+							<div class="flex items-center gap-2">
+								<h3 class="text-xl font-semibold">Nick Hamby: The Data Nut</h3>
+							</div>
 							<p class="text-muted-foreground">
 								Nick is an expert in data, who enjoys all things that fly. He’s a graduate of the US
 								Air Force Academy, currently serves in the US Space Force, and is passionate about
 								using data to streamline operations. When AFK, he enjoys spending time with his
 								fiancee and cooking excellent pasta using recipes from his hometown chef.
+								<a
+									href="https://www.linkedin.com/in/nicholas-hamby/"
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Nick Hamby on LinkedIn"
+									class="text-blue-600 hover:text-blue-700"
+								>
+									<img src="/in-logo/LI-In-Bug.png" alt="LinkedIn" class="h-5 w-5" />
+								</a>
 							</p>
 						</article>
 
@@ -82,13 +105,24 @@
 								alt="Dylan photo"
 								class="h-40 w-40 rounded-md object-cover"
 							/>
-							<h3 class="text-xl font-semibold">Dylan Shah: The User Advocate</h3>
+							<div class="flex items-center gap-2">
+								<h3 class="text-xl font-semibold">Dylan Shah: The User Advocate</h3>
+							</div>
 							<p class="text-muted-foreground">
 								Dylan is a researcher with interest in the full modern tech stack, from
 								semiconductor fabrication up to vibe coding web apps. He has an academic background
 								in robotics and materials science, and enjoys thinking laterally to find new
 								solutions and opportunities. Outside the lab, he enjoys bouldering and reading about
 								new fields or ideas.
+								<a
+									href="https://www.linkedin.com/in/dr-dylan-shah/"
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Dylan Shah on LinkedIn"
+									class="text-blue-600 hover:text-blue-700"
+								>
+									<img src="/in-logo/LI-In-Bug.png" alt="LinkedIn" class="h-5 w-5" />
+								</a>
 							</p>
 						</article>
 
@@ -98,13 +132,24 @@
 								alt="William photo"
 								class="h-40 w-40 rounded-md object-cover"
 							/>
-							<h3 class="text-xl font-semibold">William Bechard: The Designer</h3>
+							<div class="flex items-center gap-2">
+								<h3 class="text-xl font-semibold">William Bechard: The Designer</h3>
+							</div>
 							<p class="text-muted-foreground">
 								Will is a developer at Booze Allen Hamilton, where he uses his experience in react
 								and angular to build beautiful front-ends for enterprise applications. In his free
 								time, Will enjoys game programming, micro-electronics, and woodworking. As a fan of
 								Japanese language and AI agentic coding, one day he hopes to be able to vibe code
 								using ChatGPT in Japanese
+								<a
+									href="https://www.linkedin.com/in/william-j-bechard/"
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="William Bechard on LinkedIn"
+									class="text-blue-600 hover:text-blue-700"
+								>
+									<img src="/in-logo/LI-In-Bug.png" alt="LinkedIn" class="h-5 w-5" />
+								</a>
 							</p>
 						</article>
 					</div>
