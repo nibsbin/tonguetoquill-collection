@@ -74,6 +74,16 @@ export function setAuthCookies(event: RequestEvent, accessToken: string, refresh
 		sameSite: 'strict',
 		maxAge: 7 * 24 * 60 * 60 // 7 days
 	});
+
+	// Set a non-HTTP-only indicator cookie so client can check auth status
+	// This prevents unnecessary 401 errors in guest mode
+	event.cookies.set('is_authenticated', 'true', {
+		path: '/',
+		httpOnly: false,
+		secure: true,
+		sameSite: 'strict',
+		maxAge: 60 * 60 // 1 hour (matches access_token)
+	});
 }
 
 /**
@@ -82,6 +92,7 @@ export function setAuthCookies(event: RequestEvent, accessToken: string, refresh
 export function clearAuthCookies(event: RequestEvent) {
 	event.cookies.delete('access_token', { path: '/' });
 	event.cookies.delete('refresh_token', { path: '/' });
+	event.cookies.delete('is_authenticated', { path: '/' });
 }
 
 /**

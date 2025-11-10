@@ -92,15 +92,33 @@ export class LoginClient {
 	}
 
 	/**
+	 * Check if the is_authenticated cookie is present
+	 * This is a lightweight check that avoids making API calls in guest mode
+	 * @private
+	 */
+	private hasAuthCookie(): boolean {
+		if (!browser) return false;
+		return document.cookie.includes('is_authenticated=true');
+	}
+
+	/**
 	 * Get the current authenticated user
+	 * This method checks the is_authenticated cookie first to avoid
+	 * unnecessary 401 errors when in guest mode
 	 */
 	async getCurrentUser(): Promise<User | null> {
+		// Fast-path: if no auth cookie, user is definitely not authenticated
+		if (!this.hasAuthCookie()) {
+			return null;
+		}
+
+		// Auth cookie present, verify with server
 		const response = await fetch('/api/auth/me', {
 			method: 'GET'
 		});
 
 		if (response.status === 401) {
-			// Not authenticated
+			// Not authenticated (token expired or invalid)
 			return null;
 		}
 

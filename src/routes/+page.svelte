@@ -10,6 +10,7 @@
 	import { DocumentEditor } from '$lib/components/Editor';
 	import { quillmarkService, resultToBlob, resultToSVGPages } from '$lib/services/quillmark';
 	import { runGuestFirstVisitActions } from '$lib/services/guest';
+	import { loginClient } from '$lib/services/auth';
 
 	let user = $state<{ email: string; id: string } | null>(null);
 	let autoSave = new AutoSave();
@@ -46,16 +47,18 @@
 		// Run auth check and document fetch in background (non-blocking)
 		(async () => {
 			try {
-				const response = await fetch('/api/auth/me');
-				if (response.ok) {
-					const data = await response.json();
-					user = data.user;
+				// Check authentication status using centralized auth service
+				// This automatically checks the is_authenticated cookie first to prevent
+				// unnecessary 401 errors in guest mode
+				const currentUser = await loginClient.getCurrentUser();
+
+				if (currentUser) {
+					// User is authenticated
+					user = currentUser;
 					documentStore.setGuestMode(false);
 				} else {
 					// Guest mode - no authentication
 					documentStore.setGuestMode(true);
-
-					// Run guest first visit actions (mirrors runFirstLoginActions for authenticated users)
 					await runGuestFirstVisitActions().catch((error) => {
 						console.error('Failed to run guest first visit actions:', error);
 					});
