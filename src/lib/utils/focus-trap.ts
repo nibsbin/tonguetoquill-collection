@@ -6,11 +6,11 @@
 const FOCUSABLE_SELECTOR =
 	'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function getFocusableElements(container: HTMLElement): HTMLElement[] {
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
 	return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
 }
 
-export function createFocusTrap(container: HTMLElement) {
+function createFocusTrap(container: HTMLElement) {
 	let previouslyFocusedElement: HTMLElement | null = null;
 
 	function handleKeyDown(event: KeyboardEvent) {

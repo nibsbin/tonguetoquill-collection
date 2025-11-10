@@ -68,17 +68,13 @@
 									aria-label="John Pan on LinkedIn"
 									class="text-blue-600 hover:text-blue-700"
 								>
-									<img src="/in-logo/LI-In-Bug.png" alt="LinkedIn" class="h-5 w-5" />
+									<img src="/in-logo/LI-In-Bug.png" alt="" class="h-5 w-5" />
 								</a>
 							</p>
 						</article>
 
 						<article class="flex flex-col items-start gap-3">
-							<img
-								src="/team/nick_profile.jpeg"
-								alt="Nick photo"
-								class="h-40 w-40 rounded-md object-cover"
-							/>
+							<img src="/team/nick_profile.jpeg" alt="" class="h-40 w-40 rounded-md object-cover" />
 							<div class="flex items-center gap-2">
 								<h3 class="text-xl font-semibold">Nick Hamby: The Data Nut</h3>
 							</div>
@@ -94,7 +90,7 @@
 									aria-label="Nick Hamby on LinkedIn"
 									class="text-blue-600 hover:text-blue-700"
 								>
-									<img src="/in-logo/LI-In-Bug.png" alt="LinkedIn" class="h-5 w-5" />
+									<img src="/in-logo/LI-In-Bug.png" alt="" class="h-5 w-5" />
 								</a>
 							</p>
 						</article>
@@ -102,7 +98,7 @@
 						<article class="flex flex-col items-start gap-3">
 							<img
 								src="/team/dylan_profile.jpeg"
-								alt="Dylan photo"
+								alt=""
 								class="h-40 w-40 rounded-md object-cover"
 							/>
 							<div class="flex items-center gap-2">
@@ -121,7 +117,7 @@
 									aria-label="Dylan Shah on LinkedIn"
 									class="text-blue-600 hover:text-blue-700"
 								>
-									<img src="/in-logo/LI-In-Bug.png" alt="LinkedIn" class="h-5 w-5" />
+									<img src="/in-logo/LI-In-Bug.png" alt="" class="h-5 w-5" />
 								</a>
 							</p>
 						</article>
@@ -129,7 +125,7 @@
 						<article class="flex flex-col items-start gap-3">
 							<img
 								src="/team/william_profile.jpeg"
-								alt="William photo"
+								alt=""
 								class="h-40 w-40 rounded-md object-cover"
 							/>
 							<div class="flex items-center gap-2">
@@ -148,7 +144,7 @@
 									aria-label="William Bechard on LinkedIn"
 									class="text-blue-600 hover:text-blue-700"
 								>
-									<img src="/in-logo/LI-In-Bug.png" alt="LinkedIn" class="h-5 w-5" />
+									<img src="/in-logo/LI-In-Bug.png" alt="" class="h-5 w-5" />
 								</a>
 							</p>
 						</article>
