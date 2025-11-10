@@ -178,10 +178,13 @@ class DocumentStore {
 			const documents = await this.documentClient.listDocuments();
 			this.setDocuments(documents);
 
-			// If there's no active document selected yet, auto-select the first recent
-			// document so the editor loads with content on page load.
+			// If there's no active document selected yet, auto-select the first
 			if (!this.activeDocumentId && this.documents.length > 0) {
-				this.setActiveDocumentId(this.documents[0].id);
+				// Use setTimeout to ensure the activeId change happens AFTER
+				// all components are fully mounted and rendered.
+				setTimeout(() => {
+					this.setActiveDocumentId(this.documents[0].id);
+				}, 0);
 			}
 		} catch (err) {
 			this.setError(getErrorMessage(err, 'Failed to fetch documents'));

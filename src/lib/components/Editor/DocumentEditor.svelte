@@ -102,23 +102,24 @@
 			return;
 		}
 
-		if (previousDocumentId !== null && previousDocumentId !== documentId && isDirty) {
-			// Document is switching with unsaved changes
-			// Check if previous document still exists (it might have been deleted)
-			const previousDocumentExists = documentStore.documents.some(
-				(doc) => doc.id === previousDocumentId
-			);
-
-			// Only auto-save if the document still exists
-			if (autoSaveEnabled && previousDocumentExists) {
-				autoSave.saveNow(previousDocumentId, content).catch(() => {
-					// Ignore errors during auto-save on switch
-				});
-			}
-		}
-
-		// Update previous document ID
+		// Document ID has changed - need to load new document
 		if (documentId !== previousDocumentId) {
+			// Handle unsaved changes if switching from another document
+			if (previousDocumentId !== null && isDirty) {
+				// Check if previous document still exists (it might have been deleted)
+				const previousDocumentExists = documentStore.documents.some(
+					(doc) => doc.id === previousDocumentId
+				);
+
+				// Only auto-save if the document still exists
+				if (autoSaveEnabled && previousDocumentExists) {
+					autoSave.saveNow(previousDocumentId, content).catch(() => {
+						// Ignore errors during auto-save on switch
+					});
+				}
+			}
+
+			// Update previous document ID and load the new document
 			previousDocumentId = documentId;
 			loadDocument();
 		}
@@ -277,11 +278,6 @@
 			}
 		};
 		window.addEventListener('storage', handleStorageChange);
-
-		// Load the initial document content
-		// This ensures the first document loads properly on mount
-		previousDocumentId = documentId;
-		loadDocument();
 
 		return () => {
 			window.removeEventListener('storage', handleStorageChange);

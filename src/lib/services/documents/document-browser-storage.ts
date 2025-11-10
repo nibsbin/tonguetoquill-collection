@@ -183,6 +183,9 @@ class DocumentBrowserStorage implements DocumentServiceContract {
 
 		const documents = this.getDocuments();
 
+		// Sort by created_at descending (newest first) to match API behavior
+		documents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
 		// Apply pagination
 		const total = documents.length;
 		const paginatedDocuments = documents.slice(offset, offset + limit);
