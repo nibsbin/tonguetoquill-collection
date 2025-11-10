@@ -101,8 +101,13 @@
 
 		if (previousDocumentId !== null && previousDocumentId !== documentId && isDirty) {
 			// Document is switching with unsaved changes
-			// Auto-save the current document before switching
-			if (autoSaveEnabled) {
+			// Check if previous document still exists (it might have been deleted)
+			const previousDocumentExists = documentStore.documents.some(
+				(doc) => doc.id === previousDocumentId
+			);
+
+			// Only auto-save if the document still exists
+			if (autoSaveEnabled && previousDocumentExists) {
 				autoSave.saveNow(previousDocumentId, content).catch(() => {
 					// Ignore errors during auto-save on switch
 				});
