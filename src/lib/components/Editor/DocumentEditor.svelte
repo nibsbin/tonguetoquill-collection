@@ -300,9 +300,9 @@
 >
 	<!-- Mobile Tab Switcher (< 768px) - outside dimmed container -->
 	{#if isMobile}
-		<div class="flex border-b border-border bg-surface-elevated">
+		<div class="mobile-toggle-container">
 			<button
-				class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'editor'
+				class="mobile-toggle-button {mobileView === 'editor'
 					? 'bg-accent text-foreground'
 					: 'text-muted-foreground hover:text-foreground/80'}"
 				onclick={() => onMobileViewChange?.('editor')}
@@ -310,7 +310,7 @@
 				Editor
 			</button>
 			<button
-				class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'preview'
+				class="mobile-toggle-button {mobileView === 'preview'
 					? 'bg-accent text-foreground'
 					: 'text-muted-foreground hover:text-foreground/80'}"
 				onclick={() => onMobileViewChange?.('preview')}
@@ -418,3 +418,37 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	/* Mobile toggle container - matches SidebarButtonSlot height (48px) */
+	.mobile-toggle-container {
+		display: flex;
+		height: var(--mobile-toggle-height);
+		min-height: var(--mobile-toggle-height);
+		max-height: var(--mobile-toggle-height);
+		border-bottom: 1px solid var(--color-border);
+		background-color: var(--color-surface-elevated);
+		flex-shrink: 0;
+		overflow: hidden; /* Prevent content from expanding container */
+	}
+
+	/* Mobile toggle button - fills container height */
+	.mobile-toggle-button {
+		flex: 1;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0 1rem; /* 16px horizontal padding */
+		margin: 0;
+		border: none;
+		background: transparent;
+		font-family: inherit;
+		font-size: 0.875rem; /* text-sm */
+		font-weight: 500; /* font-medium */
+		line-height: 1; /* Prevent text from adding extra height */
+		box-sizing: border-box; /* Ensure padding doesn't add to height */
+		transition: color 0.2s;
+		cursor: pointer;
+	}
+</style>

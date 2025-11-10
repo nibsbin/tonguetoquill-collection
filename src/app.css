@@ -26,6 +26,9 @@
 	/* Top menu spacing tokens */
 	--top-menu-height: var(--sidebar-collapsed-width); /* Aligned with sidebar */
 
+	/* Mobile toggle spacing tokens */
+	--mobile-toggle-height: var(--sidebar-collapsed-width); /* Aligned with sidebar (48px) */
+
 	/* Z-Index Layer System - Simplified into 3 groups */
 	/* Group 1: Canvas - UI and overlays within canvas/preview area */
 	--z-canvas-ui: 10; /* UI elements within the canvas (e.g., sidebar) */

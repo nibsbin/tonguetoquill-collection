@@ -197,24 +197,24 @@
 	<!-- Menu Items -->
 	<div class="flex-1 overflow-hidden">
 		<div>
-			<NewDocumentDialog
-				open={newDocDialogOpen}
-				onOpenChange={(open) => (newDocDialogOpen = open)}
-				onCreate={handleCreateDocument}
-				{existingDocumentNames}
-			>
-				{#snippet triggerContent()}
-					<SidebarButtonSlot
-						icon={Plus}
-						label="New Document"
-						{isExpanded}
-						ariaLabel="Create new document"
-					/>
-				{/snippet}
-			</NewDocumentDialog>
-
-			<!-- Soft divider under New Document button -->
-			<div class="sidebar-soft-divider"></div>
+			<!-- New Document button with integrated bottom border -->
+			<div class="new-document-section">
+				<NewDocumentDialog
+					open={newDocDialogOpen}
+					onOpenChange={(open) => (newDocDialogOpen = open)}
+					onCreate={handleCreateDocument}
+					{existingDocumentNames}
+				>
+					{#snippet triggerContent()}
+						<SidebarButtonSlot
+							icon={Plus}
+							label="New Document"
+							{isExpanded}
+							ariaLabel="Create new document"
+						/>
+					{/snippet}
+				</NewDocumentDialog>
+			</div>
 
 			{#if documentStore.documents.length > 0 && isExpanded}
 				<!-- Scrollable Recent Items -->
@@ -381,6 +381,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 4px;
+		box-sizing: border-box; /* Ensure padding is included in 48px height to match button slots */
 	}
 
 	.sidebar-logo {
@@ -389,6 +390,21 @@
 		flex-shrink: 0;
 		transition: transform 300ms cubic-bezier(0.165, 0.85, 0.45, 1);
 		transform: translateY(-4px);
+	}
+
+	/* New Document section - bottom border without affecting button position */
+	.new-document-section {
+		position: relative;
+	}
+
+	.new-document-section::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0.25rem; /* 4px inset - matches sidebar button slot padding */
+		right: 0.25rem; /* 4px inset - matches sidebar button slot padding */
+		height: 1px;
+		background-color: var(--color-border);
 	}
 
 	/* Legacy styles - kept for document list items */
