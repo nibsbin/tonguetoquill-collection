@@ -71,6 +71,46 @@ export function createQuillmarkTheme(): Extension {
 			'.cm-quillmark-yaml-comment': {
 				color: getCssVar('--color-syntax-comment'),
 				fontStyle: 'italic'
+			},
+
+			// Markdown bold delimiters (** or __)
+			'.cm-markdown-bold-delimiter': {
+				color: getCssVar('--color-muted-foreground'),
+				opacity: '0.6'
+			},
+
+			// Markdown bold content
+			'.cm-markdown-bold-content': {
+				fontWeight: '600'
+			},
+
+			// Markdown italic delimiters (* or _)
+			'.cm-markdown-italic-delimiter': {
+				color: getCssVar('--color-muted-foreground'),
+				opacity: '0.6'
+			},
+
+			// Markdown italic content
+			'.cm-markdown-italic-content': {
+				fontStyle: 'italic'
+			},
+
+			// Markdown link text
+			'.cm-markdown-link-text': {
+				color: getCssVar('--color-primary'),
+				textDecoration: 'underline'
+			},
+
+			// Markdown link URL/reference
+			'.cm-markdown-link-url': {
+				color: getCssVar('--color-muted-foreground'),
+				opacity: '0.7'
+			},
+
+			// Markdown link brackets and parentheses
+			'.cm-markdown-link-bracket': {
+				color: getCssVar('--color-muted-foreground'),
+				opacity: '0.5'
 			}
 		},
 		{ dark: isDark }

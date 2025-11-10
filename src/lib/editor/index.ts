@@ -6,7 +6,13 @@
 export { quillmarkDecorator } from './quillmark-decorator';
 export { createQuillmarkTheme } from './quillmark-theme';
 export { quillmarkFoldService, findClosingDelimiter } from './quillmark-folding';
-export { isMetadataDelimiter, findMetadataBlocks } from './quillmark-patterns';
+export {
+	isMetadataDelimiter,
+	findMetadataBlocks,
+	findMarkdownBold,
+	findMarkdownItalic,
+	findMarkdownLinks
+} from './quillmark-patterns';
 export {
 	foldMetadataBlockAtPosition,
 	foldAllMetadataBlocks,

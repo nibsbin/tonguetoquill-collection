@@ -12,6 +12,9 @@ import {
 	findScopeQuillKeywords,
 	findYamlPairs,
 	findYamlComments,
+	findMarkdownBold,
+	findMarkdownItalic,
+	findMarkdownLinks,
 	type MetadataBlock
 } from './quillmark-patterns';
 import { foldMetadataBlockAtPosition } from './quillmark-fold-utils';
@@ -62,6 +65,17 @@ const yamlStringMark = Decoration.mark({ class: 'cm-quillmark-yaml-string' });
 const yamlNumberMark = Decoration.mark({ class: 'cm-quillmark-yaml-number' });
 const yamlBooleanMark = Decoration.mark({ class: 'cm-quillmark-yaml-bool' });
 const yamlCommentMark = Decoration.mark({ class: 'cm-quillmark-yaml-comment' });
+
+/**
+ * Decoration marks for Markdown syntax elements
+ */
+const markdownBoldDelimiterMark = Decoration.mark({ class: 'cm-markdown-bold-delimiter' });
+const markdownBoldContentMark = Decoration.mark({ class: 'cm-markdown-bold-content' });
+const markdownItalicDelimiterMark = Decoration.mark({ class: 'cm-markdown-italic-delimiter' });
+const markdownItalicContentMark = Decoration.mark({ class: 'cm-markdown-italic-content' });
+const markdownLinkTextMark = Decoration.mark({ class: 'cm-markdown-link-text' });
+const markdownLinkUrlMark = Decoration.mark({ class: 'cm-markdown-link-url' });
+const markdownLinkBracketMark = Decoration.mark({ class: 'cm-markdown-link-bracket' });
 
 /**
  * QuillMark decorator plugin
@@ -118,6 +132,10 @@ class QuillMarkDecorator {
 
 				this.collectBlockDecorations(allDecorations, block, doc, view);
 			}
+
+			// Collect markdown decorations for visible ranges
+			// These are applied to content outside metadata blocks
+			this.collectMarkdownDecorations(allDecorations, from, to, doc);
 		}
 
 		// Sort all decorations by position before adding to builder
@@ -267,6 +285,153 @@ class QuillMarkDecorator {
 				decoration: yamlCommentMark,
 				isLine: false
 			});
+		}
+	}
+
+	collectMarkdownDecorations(
+		decorations: Array<{
+			from: number;
+			to: number;
+			decoration: Decoration;
+			isLine: boolean;
+		}>,
+		from: number,
+		to: number,
+		doc: import('@codemirror/state').Text
+	) {
+		// Find and decorate bold patterns
+		const boldPatterns = findMarkdownBold(from, to, doc);
+		for (const bold of boldPatterns) {
+			// Opening delimiter
+			decorations.push({
+				from: bold.openDelimiterFrom,
+				to: bold.openDelimiterTo,
+				decoration: markdownBoldDelimiterMark,
+				isLine: false
+			});
+
+			// Content
+			decorations.push({
+				from: bold.contentFrom,
+				to: bold.contentTo,
+				decoration: markdownBoldContentMark,
+				isLine: false
+			});
+
+			// Closing delimiter
+			decorations.push({
+				from: bold.closeDelimiterFrom,
+				to: bold.closeDelimiterTo,
+				decoration: markdownBoldDelimiterMark,
+				isLine: false
+			});
+		}
+
+		// Find and decorate italic patterns
+		const italicPatterns = findMarkdownItalic(from, to, doc);
+		for (const italic of italicPatterns) {
+			// Opening delimiter
+			decorations.push({
+				from: italic.openDelimiterFrom,
+				to: italic.openDelimiterTo,
+				decoration: markdownItalicDelimiterMark,
+				isLine: false
+			});
+
+			// Content
+			decorations.push({
+				from: italic.contentFrom,
+				to: italic.contentTo,
+				decoration: markdownItalicContentMark,
+				isLine: false
+			});
+
+			// Closing delimiter
+			decorations.push({
+				from: italic.closeDelimiterFrom,
+				to: italic.closeDelimiterTo,
+				decoration: markdownItalicDelimiterMark,
+				isLine: false
+			});
+		}
+
+		// Find and decorate link patterns
+		const linkPatterns = findMarkdownLinks(from, to, doc);
+		for (const link of linkPatterns) {
+			// Opening bracket
+			decorations.push({
+				from: link.from,
+				to: link.from + 1,
+				decoration: markdownLinkBracketMark,
+				isLine: false
+			});
+
+			// Link text
+			decorations.push({
+				from: link.textFrom,
+				to: link.textTo,
+				decoration: markdownLinkTextMark,
+				isLine: false
+			});
+
+			// Closing bracket
+			decorations.push({
+				from: link.textTo,
+				to: link.textTo + 1,
+				decoration: markdownLinkBracketMark,
+				isLine: false
+			});
+
+			if (link.linkType === 'inline') {
+				// Opening parenthesis
+				decorations.push({
+					from: link.textTo + 1,
+					to: link.textTo + 2,
+					decoration: markdownLinkBracketMark,
+					isLine: false
+				});
+
+				// URL
+				decorations.push({
+					from: link.urlFrom,
+					to: link.urlTo,
+					decoration: markdownLinkUrlMark,
+					isLine: false
+				});
+
+				// Closing parenthesis
+				decorations.push({
+					from: link.to - 1,
+					to: link.to,
+					decoration: markdownLinkBracketMark,
+					isLine: false
+				});
+			} else {
+				// Reference link: [text][ref]
+				// Opening bracket for reference
+				decorations.push({
+					from: link.textTo + 1,
+					to: link.textTo + 2,
+					decoration: markdownLinkBracketMark,
+					isLine: false
+				});
+
+				// Reference
+				decorations.push({
+					from: link.urlFrom,
+					to: link.urlTo,
+					decoration: markdownLinkUrlMark,
+					isLine: false
+				});
+
+				// Closing bracket for reference
+				decorations.push({
+					from: link.to - 1,
+					to: link.to,
+					decoration: markdownLinkBracketMark,
+					isLine: false
+				});
+			}
 		}
 	}
 }

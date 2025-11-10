@@ -52,6 +52,49 @@ export interface YamlComment {
 }
 
 /**
+ * Represents a markdown bold element
+ */
+export interface MarkdownBold {
+	from: number; // Start of opening delimiter
+	to: number; // End of closing delimiter
+	delimiterType: '**' | '__';
+	openDelimiterFrom: number;
+	openDelimiterTo: number;
+	contentFrom: number;
+	contentTo: number;
+	closeDelimiterFrom: number;
+	closeDelimiterTo: number;
+}
+
+/**
+ * Represents a markdown italic element
+ */
+export interface MarkdownItalic {
+	from: number; // Start of opening delimiter
+	to: number; // End of closing delimiter
+	delimiterType: '*' | '_';
+	openDelimiterFrom: number;
+	openDelimiterTo: number;
+	contentFrom: number;
+	contentTo: number;
+	closeDelimiterFrom: number;
+	closeDelimiterTo: number;
+}
+
+/**
+ * Represents a markdown link element
+ */
+export interface MarkdownLink {
+	from: number; // Start of opening bracket
+	to: number; // End of closing parenthesis or reference bracket
+	textFrom: number;
+	textTo: number;
+	urlFrom: number;
+	urlTo: number;
+	linkType: 'inline' | 'reference';
+}
+
+/**
  * Check if a line containing `---` is a metadata delimiter or a horizontal rule.
  * A horizontal rule has blank lines both above AND below it.
  * A metadata delimiter does NOT have blank lines both above and below.
@@ -272,4 +315,205 @@ export function findYamlComments(from: number, to: number, doc: Text): YamlComme
 	}
 
 	return comments;
+}
+
+/**
+ * Find markdown bold patterns within a range, excluding metadata blocks
+ * Matches both **text** and __text__ patterns
+ */
+export function findMarkdownBold(from: number, to: number, doc: Text): MarkdownBold[] {
+	const text = doc.sliceString(from, to);
+	const bold: MarkdownBold[] = [];
+
+	// Get metadata blocks to exclude them
+	const metadataBlocks = findMetadataBlocks(doc);
+
+	// Helper to check if a position is inside a metadata block
+	const isInMetadataBlock = (pos: number): boolean => {
+		return metadataBlocks.some((block) => pos >= block.from && pos < block.to);
+	};
+
+	// Match **text** pattern (must have content, not just **)
+	const doubleAsterisk = /\*\*([^*\n]+?)\*\*/g;
+	let match;
+	while ((match = doubleAsterisk.exec(text)) !== null) {
+		const matchStart = from + match.index;
+		const matchEnd = matchStart + match[0].length;
+
+		// Skip if inside metadata block
+		if (isInMetadataBlock(matchStart)) continue;
+
+		bold.push({
+			from: matchStart,
+			to: matchEnd,
+			delimiterType: '**',
+			openDelimiterFrom: matchStart,
+			openDelimiterTo: matchStart + 2,
+			contentFrom: matchStart + 2,
+			contentTo: matchEnd - 2,
+			closeDelimiterFrom: matchEnd - 2,
+			closeDelimiterTo: matchEnd
+		});
+	}
+
+	// Match __text__ pattern (must have content, not just __)
+	const doubleUnderscore = /__([^_\n]+?)__/g;
+	while ((match = doubleUnderscore.exec(text)) !== null) {
+		const matchStart = from + match.index;
+		const matchEnd = matchStart + match[0].length;
+
+		// Skip if inside metadata block
+		if (isInMetadataBlock(matchStart)) continue;
+
+		bold.push({
+			from: matchStart,
+			to: matchEnd,
+			delimiterType: '__',
+			openDelimiterFrom: matchStart,
+			openDelimiterTo: matchStart + 2,
+			contentFrom: matchStart + 2,
+			contentTo: matchEnd - 2,
+			closeDelimiterFrom: matchEnd - 2,
+			closeDelimiterTo: matchEnd
+		});
+	}
+
+	return bold;
+}
+
+/**
+ * Find markdown italic patterns within a range, excluding metadata blocks
+ * Matches both *text* and _text_ patterns
+ * Note: Must distinguish from bold patterns (**text** and __text__)
+ */
+export function findMarkdownItalic(from: number, to: number, doc: Text): MarkdownItalic[] {
+	const text = doc.sliceString(from, to);
+	const italic: MarkdownItalic[] = [];
+
+	// Get metadata blocks to exclude them
+	const metadataBlocks = findMetadataBlocks(doc);
+
+	// Helper to check if a position is inside a metadata block
+	const isInMetadataBlock = (pos: number): boolean => {
+		return metadataBlocks.some((block) => pos >= block.from && pos < block.to);
+	};
+
+	// Match *text* pattern (single asterisk, not double)
+	// Use negative lookbehind/lookahead to avoid matching ** patterns
+	const singleAsterisk = /(?<!\*)\*(?!\*)([^*\n]+?)(?<!\*)\*(?!\*)/g;
+	let match;
+	while ((match = singleAsterisk.exec(text)) !== null) {
+		const matchStart = from + match.index;
+		const matchEnd = matchStart + match[0].length;
+
+		// Skip if inside metadata block
+		if (isInMetadataBlock(matchStart)) continue;
+
+		italic.push({
+			from: matchStart,
+			to: matchEnd,
+			delimiterType: '*',
+			openDelimiterFrom: matchStart,
+			openDelimiterTo: matchStart + 1,
+			contentFrom: matchStart + 1,
+			contentTo: matchEnd - 1,
+			closeDelimiterFrom: matchEnd - 1,
+			closeDelimiterTo: matchEnd
+		});
+	}
+
+	// Match _text_ pattern (single underscore, not double)
+	// Use negative lookbehind/lookahead to avoid matching __ patterns
+	const singleUnderscore = /(?<!_)_(?!_)([^_\n]+?)(?<!_)_(?!_)/g;
+	while ((match = singleUnderscore.exec(text)) !== null) {
+		const matchStart = from + match.index;
+		const matchEnd = matchStart + match[0].length;
+
+		// Skip if inside metadata block
+		if (isInMetadataBlock(matchStart)) continue;
+
+		italic.push({
+			from: matchStart,
+			to: matchEnd,
+			delimiterType: '_',
+			openDelimiterFrom: matchStart,
+			openDelimiterTo: matchStart + 1,
+			contentFrom: matchStart + 1,
+			contentTo: matchEnd - 1,
+			closeDelimiterFrom: matchEnd - 1,
+			closeDelimiterTo: matchEnd
+		});
+	}
+
+	return italic;
+}
+
+/**
+ * Find markdown link patterns within a range, excluding metadata blocks
+ * Matches both [text](url) and [text][ref] patterns
+ */
+export function findMarkdownLinks(from: number, to: number, doc: Text): MarkdownLink[] {
+	const text = doc.sliceString(from, to);
+	const links: MarkdownLink[] = [];
+
+	// Get metadata blocks to exclude them
+	const metadataBlocks = findMetadataBlocks(doc);
+
+	// Helper to check if a position is inside a metadata block
+	const isInMetadataBlock = (pos: number): boolean => {
+		return metadataBlocks.some((block) => pos >= block.from && pos < block.to);
+	};
+
+	// Match [text](url) pattern (inline links)
+	const inlineLink = /\[([^\]]+)\]\(([^)]+)\)/g;
+	let match;
+	while ((match = inlineLink.exec(text)) !== null) {
+		const matchStart = from + match.index;
+		const matchEnd = matchStart + match[0].length;
+
+		// Skip if inside metadata block
+		if (isInMetadataBlock(matchStart)) continue;
+
+		const textStart = matchStart + 1; // After [
+		const textEnd = textStart + match[1].length;
+		const urlStart = textEnd + 2; // After ](
+		const urlEnd = urlStart + match[2].length;
+
+		links.push({
+			from: matchStart,
+			to: matchEnd,
+			textFrom: textStart,
+			textTo: textEnd,
+			urlFrom: urlStart,
+			urlTo: urlEnd,
+			linkType: 'inline'
+		});
+	}
+
+	// Match [text][ref] pattern (reference links)
+	const referenceLink = /\[([^\]]+)\]\[([^\]]+)\]/g;
+	while ((match = referenceLink.exec(text)) !== null) {
+		const matchStart = from + match.index;
+		const matchEnd = matchStart + match[0].length;
+
+		// Skip if inside metadata block
+		if (isInMetadataBlock(matchStart)) continue;
+
+		const textStart = matchStart + 1; // After [
+		const textEnd = textStart + match[1].length;
+		const refStart = textEnd + 2; // After ][
+		const refEnd = refStart + match[2].length;
+
+		links.push({
+			from: matchStart,
+			to: matchEnd,
+			textFrom: textStart,
+			textTo: textEnd,
+			urlFrom: refStart,
+			urlTo: refEnd,
+			linkType: 'reference'
+		});
+	}
+
+	return links;
 }
