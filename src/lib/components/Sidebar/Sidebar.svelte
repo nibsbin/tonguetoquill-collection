@@ -19,12 +19,14 @@
 		newDocDialogOpen?: boolean;
 		onNewDocDialogOpenChange?: (open: boolean) => void;
 		isExpanded?: boolean;
+		onCollapseSidebar?: () => void;
 	};
 
 	let {
 		user,
 		newDocDialogOpen = $bindable(false),
-		isExpanded = $bindable(false)
+		isExpanded = $bindable(false),
+		onCollapseSidebar
 	}: SidebarProps = $props();
 	let autoSave = $state(true);
 	let lineNumbers = $state(true);
@@ -48,11 +50,18 @@
 		// Apply dark mode class to document
 		updateDarkMode(isDarkMode);
 
+		// Check mobile state directly (responsiveStore might not be initialized yet)
+		const isCurrentlyMobile = window.innerWidth < 768;
+
 		// Check if sidebar should be expanded from localStorage
-		const savedExpanded = localStorage.getItem('sidebar-expanded');
-		if (savedExpanded !== null) {
-			isExpanded = savedExpanded === 'true';
+		// Mobile override: Always start collapsed on mobile, ignore localStorage
+		if (!isCurrentlyMobile) {
+			const savedExpanded = localStorage.getItem('sidebar-expanded');
+			if (savedExpanded !== null) {
+				isExpanded = savedExpanded === 'true';
+			}
 		}
+		// On mobile, keep isExpanded = false (default)
 
 		// Load settings from localStorage
 		const savedAutoSave = localStorage.getItem('auto-save');
@@ -71,6 +80,16 @@
 		localStorage.setItem('sidebar-expanded', isExpanded.toString());
 	}
 
+	/**
+	 * Collapse sidebar on mobile after explicit document actions
+	 * Centralized helper to keep collapse logic DRY
+	 */
+	function collapseSidebarOnMobile() {
+		if (isMobile && isExpanded) {
+			onCollapseSidebar?.();
+		}
+	}
+
 	async function handleCreateDocument(name: string, templateFilename: string) {
 		let content = '';
 
@@ -86,10 +105,16 @@
 
 		// Create document with name and content
 		await documentStore.createDocument(name, content);
+
+		// Collapse sidebar after successful creation
+		collapseSidebarOnMobile();
 	}
 
 	function handleFileSelect(fileId: string) {
 		documentStore.setActiveDocumentId(fileId);
+
+		// Collapse sidebar after document selection
+		collapseSidebarOnMobile();
 	}
 
 	function handleDeleteFile(fileId: string) {

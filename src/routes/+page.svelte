@@ -227,7 +227,12 @@
 
 <div class="flex h-dvh bg-background">
 	<!-- Sidebar -->
-	<Sidebar {user} bind:newDocDialogOpen bind:isExpanded={sidebarExpanded} />
+	<Sidebar
+		{user}
+		bind:newDocDialogOpen
+		bind:isExpanded={sidebarExpanded}
+		onCollapseSidebar={handleCollapseSidebar}
+	/>
 
 	<!-- Backdrop overlay (only on mobile when sidebar is expanded) -->
 	<SidebarBackdrop visible={isMobile && sidebarExpanded} onClick={handleCollapseSidebar} />
