@@ -5,6 +5,7 @@
 	import { responsiveStore } from '$lib/stores/responsive.svelte';
 	import { rulerStore } from '$lib/stores/ruler.svelte';
 	import { AutoSave } from '$lib/utils/auto-save.svelte';
+	import { useModalCoordinator } from '$lib/utils/modal/use-modal-coordinator';
 	import { Sidebar, SidebarBackdrop } from '$lib/components/Sidebar';
 	import { TopMenu } from '$lib/components/TopMenu';
 	import { DocumentEditor } from '$lib/components/Editor';
@@ -25,9 +26,23 @@
 	let hasSuccessfulPreview = $state(false);
 	let newDocDialogOpen = $state(false);
 	let sidebarExpanded = $state(false);
+	let mobileView = $state<'editor' | 'preview'>('editor');
 
 	// Use centralized responsive store
 	const isMobile = $derived(responsiveStore.isMobile);
+
+	// Modal coordinator for managing modal state and coordination
+	const modalCoordinator = useModalCoordinator({
+		modals: {
+			documentInfo: (open) => (showDocumentInfo = open),
+			import: (open) => (showImportDialog = open),
+			share: (open) => (showShareModal = open),
+			about: (open) => (showAboutModal = open),
+			terms: (open) => (showTermsModal = open),
+			privacy: (open) => (showPrivacyModal = open)
+		},
+		onViewChange: (view) => (mobileView = view)
+	});
 
 	// Clear document name when no active document
 	$effect(() => {
@@ -143,52 +158,33 @@
 	}
 
 	function handleDocumentInfo() {
-		showImportDialog = false; // Dismiss any existing preview modal
-		rulerStore.setActive(false); // Dismiss ruler overlay
-		showDocumentInfo = true;
+		modalCoordinator.openModal('documentInfo');
 	}
 
 	function handleImport() {
-		showDocumentInfo = false; // Dismiss any existing preview modal
-		rulerStore.setActive(false); // Dismiss ruler overlay
-		showImportDialog = true;
+		modalCoordinator.openModal('import');
 	}
 
 	function handleRulerToggle() {
-		showDocumentInfo = false; // Dismiss any existing preview modal
-		showImportDialog = false; // Dismiss any existing preview modal
+		// Ruler toggle doesn't switch to preview, so we close modals directly
+		modalCoordinator.closeAll();
 		rulerStore.toggle();
 	}
 
 	function handleShare() {
-		showDocumentInfo = false; // Dismiss any existing preview modal
-		showImportDialog = false; // Dismiss any existing preview modal
-		rulerStore.setActive(false); // Dismiss ruler overlay
-		showShareModal = true;
+		modalCoordinator.openModal('share');
 	}
 
 	function handleAbout() {
-		showDocumentInfo = false; // Dismiss any existing preview modal
-		showImportDialog = false; // Dismiss any existing preview modal
-		showShareModal = false; // Dismiss any existing preview modal
-		rulerStore.setActive(false); // Dismiss ruler overlay
-		showAboutModal = true;
+		modalCoordinator.openModal('about');
 	}
 
 	function handleTerms() {
-		showDocumentInfo = false; // Dismiss any existing preview modal
-		showImportDialog = false; // Dismiss any existing preview modal
-		showShareModal = false; // Dismiss any existing preview modal
-		rulerStore.setActive(false); // Dismiss ruler overlay
-		showTermsModal = true;
+		modalCoordinator.openModal('terms');
 	}
 
 	function handlePrivacy() {
-		showDocumentInfo = false; // Dismiss any existing preview modal
-		showImportDialog = false; // Dismiss any existing preview modal
-		showShareModal = false; // Dismiss any existing preview modal
-		rulerStore.setActive(false); // Dismiss ruler overlay
-		showPrivacyModal = true;
+		modalCoordinator.openModal('privacy');
 	}
 
 	function handlePreviewStatusChange(status: boolean) {
@@ -201,6 +197,10 @@
 
 	function handleCollapseSidebar() {
 		sidebarExpanded = false;
+	}
+
+	function handleMobileViewChange(view: 'editor' | 'preview') {
+		mobileView = view;
 	}
 
 	function handleGlobalKeyDown(event: KeyboardEvent) {
@@ -273,6 +273,8 @@
 				onPrivacyModalChange={(open) => (showPrivacyModal = open)}
 				onPreviewStatusChange={handlePreviewStatusChange}
 				onCreateNewDocument={handleCreateNewDocument}
+				{mobileView}
+				onMobileViewChange={handleMobileViewChange}
 			/>
 		</div>
 	</main>

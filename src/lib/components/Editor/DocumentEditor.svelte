@@ -33,6 +33,8 @@
 		onPrivacyModalChange?: (open: boolean) => void;
 		onPreviewStatusChange?: (hasSuccessfulPreview: boolean) => void;
 		onCreateNewDocument?: () => void;
+		mobileView?: 'editor' | 'preview';
+		onMobileViewChange?: (view: 'editor' | 'preview') => void;
 	}
 
 	let {
@@ -54,7 +56,9 @@
 		showPrivacyModal = false,
 		onPrivacyModalChange,
 		onPreviewStatusChange,
-		onCreateNewDocument
+		onCreateNewDocument,
+		mobileView = 'editor',
+		onMobileViewChange
 	}: Props = $props();
 
 	let content = $state('');
@@ -66,7 +70,6 @@
 	let autoSaveEnabled = $state(true);
 	let showLineNumbers = $state(true);
 	let previousDocumentId = $state<string | null>(null);
-	let mobileView = $state<'editor' | 'preview'>('editor');
 	let hasSuccessfulPreview = $state(false);
 
 	// Use centralized responsive store
@@ -299,130 +302,123 @@
 	aria-busy={loading}
 	aria-disabled={!hasActiveDocument}
 >
-	<!-- Editor content (dimmed when loading or no document) -->
-	<div
-		class="flex h-full flex-1 flex-col transition-opacity duration-300 ease-in-out {loading ||
-		!hasActiveDocument
-			? 'pointer-events-none opacity-50'
-			: ''}"
-	>
-		<!-- Mobile Tab Switcher (< 768px) -->
-		{#if isMobile}
-			<div class="flex border-b border-border bg-surface-elevated">
-				<button
-					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'editor'
-						? 'bg-accent text-foreground'
-						: 'text-muted-foreground hover:text-foreground/80'}"
-					onclick={() => (mobileView = 'editor')}
-				>
-					Editor
-				</button>
-				<button
-					class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'preview'
-						? 'bg-accent text-foreground'
-						: 'text-muted-foreground hover:text-foreground/80'}"
-					onclick={() => (mobileView = 'preview')}
-				>
-					Preview
-				</button>
-			</div>
-		{/if}
-
-		<!-- Content Area -->
-		<div class="flex flex-1 overflow-hidden">
-			<!-- Editor Section -->
-			<div
-				class="relative flex flex-1 flex-col border-r border-border {isMobile &&
-				mobileView !== 'editor'
-					? 'hidden'
-					: ''}"
+	<!-- Mobile Tab Switcher (< 768px) - outside dimmed container -->
+	{#if isMobile}
+		<div class="flex border-b border-border bg-surface-elevated">
+			<button
+				class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'editor'
+					? 'bg-accent text-foreground'
+					: 'text-muted-foreground hover:text-foreground/80'}"
+				onclick={() => onMobileViewChange?.('editor')}
 			>
-				<EditorToolbar onFormat={handleFormat} {isDirty} onManualSave={handleManualSave} />
-				<MarkdownEditor
-					bind:this={editorRef}
-					value={content}
-					onChange={updateDebouncedContent}
-					onSave={handleManualSave}
-					{showLineNumbers}
-				/>
+				Editor
+			</button>
+			<button
+				class="flex-1 px-4 py-2 text-sm font-medium transition-colors {mobileView === 'preview'
+					? 'bg-accent text-foreground'
+					: 'text-muted-foreground hover:text-foreground/80'}"
+				onclick={() => onMobileViewChange?.('preview')}
+			>
+				Preview
+			</button>
+		</div>
+	{/if}
 
-				<!-- Empty State Overlay (shown when no document) -->
-				{#if !hasActiveDocument}
-					<div
-						class="pointer-events-auto absolute inset-0 flex items-center justify-center bg-background/30 backdrop-blur-[1px] transition-opacity duration-300 ease-in-out"
-						role="status"
-						aria-live="polite"
-					>
-						<div class="px-4 text-center">
-							<p class="mt-2 text-sm text-muted-foreground">
-								Select a document from the sidebar or
-								{#if onCreateNewDocument}
-									<button
-										type="button"
-										class="text-primary underline hover:text-primary/80 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
-										onclick={onCreateNewDocument}
-										aria-label="Create a new document"
-									>
-										create a new one
-									</button>
-								{:else}
+	<!-- Content Area -->
+	<div class="flex flex-1 overflow-hidden">
+		<!-- Editor Section (dimmed when loading or no document) -->
+		<div
+			class="relative flex flex-1 flex-col border-r border-border transition-opacity duration-300 ease-in-out {loading ||
+			!hasActiveDocument
+				? 'pointer-events-none opacity-50'
+				: ''} {isMobile && mobileView !== 'editor' ? 'hidden' : ''}"
+		>
+			<EditorToolbar onFormat={handleFormat} {isDirty} onManualSave={handleManualSave} />
+			<MarkdownEditor
+				bind:this={editorRef}
+				value={content}
+				onChange={updateDebouncedContent}
+				onSave={handleManualSave}
+				{showLineNumbers}
+			/>
+
+			<!-- Empty State Overlay (shown when no document) -->
+			{#if !hasActiveDocument}
+				<div
+					class="pointer-events-auto absolute inset-0 flex items-center justify-center bg-background/30 backdrop-blur-[1px] transition-opacity duration-300 ease-in-out"
+					role="status"
+					aria-live="polite"
+				>
+					<div class="px-4 text-center">
+						<p class="mt-2 text-sm text-muted-foreground">
+							Select a document from the sidebar or
+							{#if onCreateNewDocument}
+								<button
+									type="button"
+									class="text-primary underline hover:text-primary/80 focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:outline-none"
+									onclick={onCreateNewDocument}
+									aria-label="Create a new document"
+								>
 									create a new one
-								{/if}
-							</p>
-						</div>
+								</button>
+							{:else}
+								create a new one
+							{/if}
+						</p>
 					</div>
-				{/if}
-			</div>
+				</div>
+			{/if}
+		</div>
 
-			<!-- Preview Section (Desktop: always visible, Mobile: toggled) -->
-			<div
-				class="relative flex-1 overflow-auto {isMobile
-					? mobileView === 'preview'
-						? ''
-						: 'hidden'
-					: ''}"
-			>
-				<Preview markdown={debouncedContent} onPreviewStatusChange={handlePreviewStatusChange} />
+		<!-- Preview Section (Desktop: always visible, Mobile: toggled) - not dimmed -->
+		<div
+			class="relative flex-1 overflow-auto {isMobile
+				? mobileView === 'preview'
+					? ''
+					: 'hidden'
+				: ''}"
+		>
+			<Preview markdown={debouncedContent} onPreviewStatusChange={handlePreviewStatusChange} />
 
-				<!-- Document Info Dialog (scoped to preview pane) -->
-				{#if showDocumentInfo !== undefined && onDocumentInfoChange}
-					<DocumentInfoDialog
-						open={showDocumentInfo}
-						document={documentStore.activeDocument}
-						{content}
-						onOpenChange={onDocumentInfoChange}
-					/>
-				{/if}
+			<!-- Modals (scoped to preview pane, not affected by editor dimming) -->
+			<!-- Document Info Dialog -->
+			{#if showDocumentInfo !== undefined && onDocumentInfoChange}
+				<DocumentInfoDialog
+					open={showDocumentInfo}
+					document={documentStore.activeDocument}
+					{content}
+					onOpenChange={onDocumentInfoChange}
+				/>
+			{/if}
 
-				<!-- Import File Dialog (scoped to preview pane) -->
-				{#if showImportDialog !== undefined && onImportDialogChange}
-					<ImportFileDialog
-						open={showImportDialog}
-						onOpenChange={onImportDialogChange}
-						onImport={handleImport}
-					/>
-				{/if}
+			<!-- Import File Dialog -->
+			{#if showImportDialog !== undefined && onImportDialogChange}
+				<ImportFileDialog
+					open={showImportDialog}
+					onOpenChange={onImportDialogChange}
+					onImport={handleImport}
+				/>
+			{/if}
 
-				<!-- Share Modal (scoped to preview pane) -->
-				{#if showShareModal !== undefined && onShareModalChange}
-					<ShareModal open={showShareModal} onOpenChange={onShareModalChange} />
-				{/if}
+			<!-- Share Modal -->
+			{#if showShareModal !== undefined && onShareModalChange}
+				<ShareModal open={showShareModal} onOpenChange={onShareModalChange} />
+			{/if}
 
-				<!-- About Modal (scoped to preview pane) -->
-				{#if showAboutModal !== undefined && onAboutModalChange}
-					<AboutModal open={showAboutModal} onOpenChange={onAboutModalChange} />
-				{/if}
+			<!-- About Modal -->
+			{#if showAboutModal !== undefined && onAboutModalChange}
+				<AboutModal open={showAboutModal} onOpenChange={onAboutModalChange} />
+			{/if}
 
-				<!-- Terms Modal (scoped to preview pane) -->
-				{#if showTermsModal !== undefined && onTermsModalChange}
-					<TermsModal open={showTermsModal} onOpenChange={onTermsModalChange} />
-				{/if}
+			<!-- Terms Modal -->
+			{#if showTermsModal !== undefined && onTermsModalChange}
+				<TermsModal open={showTermsModal} onOpenChange={onTermsModalChange} />
+			{/if}
 
-				<!-- Privacy Modal (scoped to preview pane) -->
-				{#if showPrivacyModal !== undefined && onPrivacyModalChange}
-					<PrivacyModal open={showPrivacyModal} onOpenChange={onPrivacyModalChange} />
-				{/if}
-			</div>
+			<!-- Privacy Modal -->
+			{#if showPrivacyModal !== undefined && onPrivacyModalChange}
+				<PrivacyModal open={showPrivacyModal} onOpenChange={onPrivacyModalChange} />
+			{/if}
 		</div>
 	</div>
 </div>
