@@ -4,7 +4,6 @@
 	import BasePopover from '$lib/components/ui/base-popover.svelte';
 	import Button from '$lib/components/ui/button.svelte';
 	import Input from '$lib/components/ui/input.svelte';
-	import Label from '$lib/components/ui/label.svelte';
 	import TemplateSelector from '$lib/components/NewDocumentDialog/TemplateSelector.svelte';
 	import { getErrorMessage } from '$lib/errors';
 
@@ -50,6 +49,20 @@
 		if (open && templateService.isReady()) {
 			templates = templateService.listTemplates(true); // production only
 			templatesReady = true;
+		}
+	});
+
+	// Auto-focus and select input when dialog opens
+	$effect(() => {
+		if (open) {
+			// Use setTimeout to ensure DOM is rendered
+			setTimeout(() => {
+				const input = document.getElementById('doc-name') as HTMLInputElement;
+				if (input) {
+					input.focus();
+					input.select();
+				}
+			}, 0);
 		}
 	});
 
@@ -217,7 +230,7 @@
 
 	{#snippet content()}
 		<div class="px-4">
-			<form onsubmit={handleSubmit} class="space-y-3">
+			<form onsubmit={handleSubmit} class="space-y-2">
 				<!-- Document Name Field -->
 				<div>
 					<Input
