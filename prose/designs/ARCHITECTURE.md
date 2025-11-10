@@ -76,18 +76,151 @@ See [../backend/LOGIN_SERVICE.md](../backend/LOGIN_SERVICE.md) for complete OAut
 
 ## Component Architecture
 
-### Component Organization
+### Component Organization Strategy
 
-Components are organized by feature in `src/lib/components/`:
+**Feature-Based Structure**: Components organized by functional domain rather than file type. This improves maintainability, testability, and developer experience by co-locating related files.
+
+**Feature Folders**:
 
 - **DocumentList/**: Document list and item components
 - **Editor/**: Markdown editor components (DocumentEditor, MarkdownEditor, EditorToolbar)
 - **Preview/**: Document preview components
 - **Sidebar/**: Sidebar navigation and drawer components
 - **TopMenu/**: Top menu bar component
-- **ui/**: Reusable UI primitives from shadcn-svelte (Button, Dialog, Dropdown, etc.)
+- **ui/**: Reusable UI primitives (Button, Dialog, Dropdown, etc.)
 
-See [COMPONENT_ORGANIZATION.md](./COMPONENT_ORGANIZATION.md) for detailed structure, testing patterns, and file naming conventions.
+### File Structure Per Component
+
+Each feature folder contains:
+
+```
+ComponentName/
+├── ComponentName.svelte            # Component implementation
+├── style.css                       # Component-specific styles (optional)
+├── ComponentName.svelte.test.ts    # Component tests
+└── index.ts                        # Exports
+```
+
+**Guidelines**:
+
+- `style.css` optional - only for animations/complex selectors beyond Tailwind
+- Tests co-located with `.svelte.test.ts` extension
+- `index.ts` exports components for convenient imports
+
+### Directory Structure
+
+```
+src/lib/components/
+├── DocumentInfoDialog.svelte
+├── Sidebar/
+│   ├── Sidebar.svelte
+│   ├── Sidebar.svelte.test.ts
+│   ├── SidebarButtonSlot.svelte
+│   ├── SidebarButtonSlot.svelte.test.ts
+│   └── index.ts
+├── TopMenu/
+│   ├── TopMenu.svelte
+│   └── TopMenu.svelte.test.ts
+├── Editor/
+│   ├── EditorToolbar.svelte
+│   ├── MarkdownEditor.svelte
+│   ├── DocumentEditor.svelte
+│   └── *.svelte.test.ts
+├── Preview/
+│   ├── Preview.svelte
+│   ├── Preview.svelte.test.ts
+│   └── index.ts
+├── DocumentList/
+│   ├── DocumentList.svelte
+│   ├── DocumentListItem.svelte
+│   └── index.ts
+└── ui/
+    ├── base-dialog.svelte
+    ├── base-popover.svelte
+    ├── base-sheet.svelte
+    ├── button.svelte
+    ├── input.svelte
+    ├── label.svelte
+    ├── portal.svelte
+    ├── switch.svelte
+    └── toast.svelte
+```
+
+### UI Library Architecture
+
+**Custom Svelte Components**: Full control over behavior, accessibility, and theming without external dependencies.
+
+**Widget Components** (`src/lib/components/ui/`):
+
+- **base-dialog.svelte**: Modal with focus trapping, ESC key, backdrop click
+- **base-popover.svelte**: Dynamic positioning, click outside, ESC dismissal
+- **base-sheet.svelte**: Slide-in drawer (mobile-friendly)
+- **toast.svelte**: Toast notification container
+- **switch.svelte**: Toggle switch with keyboard accessibility
+- All built from scratch using Svelte 5 primitives
+
+**Supporting Utilities**:
+
+- **portal.svelte**: Teleport component for rendering outside parent DOM
+- **focus-trap.ts**: Focus management for modals
+- **use-click-outside.ts**: Click outside detection action
+- **toast.svelte.ts**: Toast state management store
+
+**Third-Party Integration**:
+
+- **lucide-svelte**: Icon library
+- **Tailwind CSS**: Styling framework
+- No other UI dependencies
+
+**Import Rules**:
+
+- ✓ Feature components → `$lib/components/ui/*`
+- ✓ UI utilities → `$lib/utils/*`
+- ✗ Direct DOM manipulation (use Svelte actions/stores instead)
+
+### Component Creation Guidelines
+
+**When to Create New Feature Folder**:
+
+- Component represents distinct UI feature
+- Component has multiple sub-components
+- Component has significant business logic
+- Component will have multiple test files
+
+**Keep in `ui/` When**:
+
+- Component is pure UI primitive (button, input, label)
+- Component is reusable widget (dialog, popover, sheet, toast)
+- Component provides utility functionality (portal, focus-trap)
+
+### Testing Strategy
+
+**Test Location**: Co-located with components using `.svelte.test.ts` extension
+
+**Framework**:
+
+- **vitest**: Test runner and assertions
+- **vitest-browser-svelte**: Svelte component testing utilities
+- **@vitest/browser**: Browser-based testing context
+
+**Test Coverage** (each component):
+
+- Rendering (structure and accessibility)
+- Props (different combinations)
+- User interactions (clicks, inputs, keyboard)
+- States (loading, error, success)
+- Accessibility (ARIA, keyboard, screen reader)
+
+### Import Patterns
+
+```typescript
+// Feature folder exports (via index.ts)
+import { Sidebar, SidebarButtonSlot } from '$lib/components/Sidebar';
+import { DocumentList, DocumentListItem } from '$lib/components/DocumentList';
+
+// Direct import
+import Sidebar from '$lib/components/Sidebar/Sidebar.svelte';
+```
 
 ### Component Hierarchy
 

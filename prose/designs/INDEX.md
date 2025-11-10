@@ -1,92 +1,306 @@
 # Architecture & Design Documentation
 
-**Purpose**: Design documents describing Tonguetoquill's desired state and architectural patterns.
+**Purpose**: Design documents describing Tonguetoquill's architectural patterns and desired state.
 
-**How to use**:
-
-- One topic per page
-- Each doc is the canonical source for its topic
-- Docs cross-reference each other (follow the links)
-- For implementation plans, see `prose/plans/`
+**Principle**: Design docs describe patterns, not implementations. Component/service specifications live in code READMEs.
 
 ---
 
 ## Quick Navigation
 
-### Backend
+### Core Patterns (8 Documents)
 
-- [SERVICES.md](backend/SERVICES.md) - Service architecture pattern (server vs client-side)
-- [SCHEMAS.md](backend/SCHEMAS.md) - Database schema (Users, Documents)
-- [DOCUMENT_SERVICE.md](backend/DOCUMENT_SERVICE.md) - Document CRUD with dual-mode (guest/auth)
-- [LOGIN_SERVICE.md](backend/LOGIN_SERVICE.md) - OAuth authentication with provider abstraction
-- [TEMPLATE_SERVICE.md](backend/TEMPLATE_SERVICE.md) - Read-only template service
-- [SUPABASE_AUTH_ADAPTER.md](backend/SUPABASE_AUTH_ADAPTER.md) - Supabase auth adapter implementation
-- [SUPABASE_DATABASE_ADAPTER.md](backend/SUPABASE_DATABASE_ADAPTER.md) - Supabase database adapter implementation
-- [USER_SERVICE.md](backend/USER_SERVICE.md) - User service with first login actions
+All pattern documents live in `prose/designs/` (flat structure):
 
-### Frontend Core
-
-- [ARCHITECTURE.md](frontend/ARCHITECTURE.md) - SvelteKit 5 app structure, routing, and component hierarchy
-- [DESIGN_SYSTEM.md](frontend/DESIGN_SYSTEM.md) - Colors, typography, spacing, auto-save behavior, tokens
-- [STATE_MANAGEMENT.md](frontend/STATE_MANAGEMENT.md) - Svelte 5 runes, stores, and reactive patterns
-- [API_INTEGRATION.md](frontend/API_INTEGRATION.md) - Backend integration, auth flows, error handling
-- [COMPONENT_ORGANIZATION.md](frontend/COMPONENT_ORGANIZATION.md) - Feature-based file structure and testing
-- [ACCESSIBILITY.md](frontend/ACCESSIBILITY.md) - WCAG 2.1 Level AA compliance
-
-### UI Components
-
-- [SIDEBAR.md](frontend/SIDEBAR.md) - Collapsible sidebar with button slot architecture
-- [NEW_DOCUMENT.md](frontend/NEW_DOCUMENT.md) - New document creation with template selection
-- [TEMPLATE_SELECTOR.md](frontend/TEMPLATE_SELECTOR.md) - Custom template selector with info tooltips
-- [LOGIN_PROFILE_UI.md](frontend/LOGIN_PROFILE_UI.md) - Auth UI in sidebar (guest/logged-in states)
-- [LOGO_SIDEBAR.md](frontend/LOGO_SIDEBAR.md) - Logo positioning and animation
-- [MARKDOWN_EDITOR.md](frontend/MARKDOWN_EDITOR.md) - CodeMirror 6 integration with QuillMark
-- [EMPTY_STATE_EDITOR.md](frontend/EMPTY_STATE_EDITOR.md) - Empty state handling when no document selected
-- [ERROR_DISPLAY.md](frontend/ERROR_DISPLAY.md) - Error display patterns and diagnostics
-- [SHARE_MODAL.md](frontend/SHARE_MODAL.md) - Share modal dialog (placeholder)
-
-### UI System
-
-- [OVERLAY_SYSTEM.md](frontend/OVERLAY_SYSTEM.md) - Unified overlay system with composable behavior hooks (Dialog, Popover, Sheet, Toast, Select)
-
-### UX Patterns
-
-- [ZINDEX_STRATEGY.md](frontend/ZINDEX_STRATEGY.md) - Z-index layering and stacking contexts
-- See DESIGN_SYSTEM.md § Auto-Save Behavior for save triggers and debounce timing
-- See STATE_MANAGEMENT.md § Auto-Save Pattern for implementation details
-
-### QuillMark
-
-- [SERVICE.md](quillmark/SERVICE.md) - QuillmarkService singleton with WASM integration
-- [INTEGRATION.md](quillmark/INTEGRATION.md) - WASM build process and Quill management
-- [PREVIEW.md](quillmark/PREVIEW.md) - Live preview rendering (SVG/PDF auto-detection)
-- [DIAGNOSTICS.md](quillmark/DIAGNOSTICS.md) - Error handling with structured diagnostics
-- [PARSE.md](quillmark/PARSE.md) - Extended YAML metadata (SCOPE/QUILL keywords)
-- [QUILLMARK_SYNTAX_HIGHLIGHTING.md](quillmark/QUILLMARK_SYNTAX_HIGHLIGHTING.md) - Syntax highlighting for metadata blocks
+1. **[ARCHITECTURE.md](ARCHITECTURE.md)** - Overall app structure, SvelteKit routing, component organization
+2. **[SERVICE_FRAMEWORK.md](SERVICE_FRAMEWORK.md)** - Client & server service patterns, API integration
+3. **[OVERLAY_SYSTEM.md](OVERLAY_SYSTEM.md)** - Unified overlay system (Dialog, Popover, Sheet, Toast, Select)
+4. **[ERROR_SYSTEM.md](ERROR_SYSTEM.md)** - Error handling across all layers (WASM → Service → UI)
+5. **[STATE_PATTERNS.md](STATE_PATTERNS.md)** - Store factory patterns, auto-save, guest mode
+6. **[AUTHENTICATION.md](AUTHENTICATION.md)** - OAuth flow and authentication patterns
+7. **[DESIGN_TOKENS.md](DESIGN_TOKENS.md)** - Design tokens (colors, spacing, typography, z-index)
+8. **[ACCESSIBILITY.md](ACCESSIBILITY.md)** - WCAG 2.1 Level AA compliance standards
 
 ---
 
-## Cross-Cutting Patterns
+## Pattern Summaries
 
-- [CLIENT_SERVICE_FRAMEWORK.md](patterns/CLIENT_SERVICE_FRAMEWORK.md) - Client service base class with singleton pattern and async initialization
-- [STATE_PATTERNS.md](patterns/STATE_PATTERNS.md) - Store factory functions for collection, registry, and simple state patterns
-- [AUTHENTICATION.md](patterns/AUTHENTICATION.md) - End-to-end OAuth flow (LOGIN_SERVICE → Adapter → API → UI)
-- [ERROR_HANDLING.md](patterns/ERROR_HANDLING.md) - Error flow across all layers (WASM → Service → Frontend → UI)
+### Application Architecture
 
-**Document Lifecycle**: See DOCUMENT_SERVICE.md (backend) → STATE_MANAGEMENT.md (stores) → STATE_MANAGEMENT.md § Auto-Save Pattern (persistence)
+**[ARCHITECTURE.md](ARCHITECTURE.md)**:
+
+- SvelteKit 5 with TypeScript
+- Feature-based component organization
+- SSR with progressive enhancement
+- Guest mode + authenticated mode
+- Mobile-responsive patterns
+
+### Service Framework
+
+**[SERVICE_FRAMEWORK.md](SERVICE_FRAMEWORK.md)**:
+
+- Client services: Singleton pattern with async initialization (QuillMark, Templates)
+- Server services: Factory pattern for environment selection (Documents, Auth, Users)
+- API integration patterns
+- Error handling and retry strategies
+
+### Overlay System
+
+**[OVERLAY_SYSTEM.md](OVERLAY_SYSTEM.md)**:
+
+- Unified widget abstraction (Dialog, Popover, Sheet, Toast, Select)
+- Composable behavior hooks
+- Accessibility-first implementation
+- Responsive mobile patterns
+
+### Error System
+
+**[ERROR_SYSTEM.md](ERROR_SYSTEM.md)**:
+
+- AppError base class for all services
+- Type-safe error codes per domain
+- Structured diagnostics from QuillMark
+- Consistent UI display patterns
+- Accessibility-compliant error presentation
+
+### State Management
+
+**[STATE_PATTERNS.md](STATE_PATTERNS.md)**:
+
+- Store factory patterns (collection, registry, simple state)
+- Auto-save pattern with debouncing
+- Dual storage strategy (localStorage vs API)
+- Guest mode handling
+- Svelte 5 runes ($state, $derived, $effect)
+
+### Authentication
+
+**[AUTHENTICATION.md](AUTHENTICATION.md)**:
+
+- OAuth flow (login → callback → token → session)
+- Guest mode fallback
+- JWT token management
+- Session refresh
+- Provider abstraction
+
+### Design Tokens
+
+**[DESIGN_TOKENS.md](DESIGN_TOKENS.md)**:
+
+- CSS custom properties for all design values
+- Tailwind CSS integration via `@theme inline`
+- Light/dark theme variants
+- Z-index layering strategy
+- Typography, spacing, color scales
+
+### Accessibility
+
+**[ACCESSIBILITY.md](ACCESSIBILITY.md)**:
+
+- WCAG 2.1 Level AA compliance
+- Keyboard navigation
+- Screen reader support
+- Focus management
+- High contrast support
 
 ---
 
-## Directory Structure
+## Component & Service Documentation
+
+**Component READMEs** (in code, next to implementation):
 
 ```
-prose/designs/
-├── INDEX.md (this file)
-├── backend/        # Server-side services and adapters
-├── frontend/       # UI architecture, components, and patterns
-├── patterns/       # Cross-cutting architectural patterns
-└── quillmark/      # QuillMark WASM integration and rendering
+src/lib/components/
+├── Sidebar/README.md
+├── TopMenu/README.md
+├── MarkdownEditor/README.md
+├── QuillmarkPreview/README.md
+├── NewDocumentDialog/README.md
+└── ... (see components for specific docs)
 ```
+
+**Service READMEs** (in code, next to implementation):
+
+```
+src/lib/services/
+├── documents/README.md
+├── login/README.md
+├── quillmark/README.md
+├── templates/README.md
+└── user/README.md
+```
+
+**Adapter READMEs** (in code, next to implementation):
+
+```
+src/lib/adapters/supabase/
+├── auth/README.md
+└── database/README.md
+```
+
+**Standard Templates**:
+
+- See [DESIGNS_CASCADE.md](../plans/completed/DESIGNS_CASCADE.md) for README templates
+
+---
+
+## Documentation Decision Tree
+
+**Where does new documentation go?**
+
+### Is this about a pattern used across multiple features?
+
+**YES** → Pattern doc in `prose/designs/` (e.g., SERVICE_FRAMEWORK.md)
+
+**NO** → Continue...
+
+### Is this about a specific component/service implementation?
+
+**YES** → README.md in the code directory (e.g., `src/lib/components/Sidebar/README.md`)
+
+**NO** → Continue...
+
+### Is this a how-to guide for developers?
+
+**YES** → Guide in `prose/guides/` (e.g., CONTRIBUTING.md)
+
+**NO** → It's probably a code comment, not a document
+
+### Examples
+
+- "How do all services handle initialization?" → `prose/designs/SERVICE_FRAMEWORK.md`
+- "How do I use the template service?" → `src/lib/services/templates/README.md`
+- "How do I set up my dev environment?" → `prose/guides/SETUP.md`
+- "Why did we choose this algorithm?" → Code comment in the implementation
+
+---
+
+## Design Standards
+
+### Pattern Document Guidelines
+
+**Target Size**: 200-400 lines
+**Maximum**: 600 lines
+**If Exceeded**: Split into multiple patterns or extract examples to code READMEs
+
+**Structure**:
+
+1. Overview (purpose, TL;DR)
+2. Design principles
+3. Pattern specification
+4. Usage examples (brief)
+5. Cross-references
+
+### Component README Guidelines
+
+**Target Size**: 100-250 lines
+**Maximum**: 400 lines
+**If Exceeded**: Component may be too complex, consider splitting
+
+**Standard Template**:
+
+```markdown
+# [Component Name]
+
+Brief description (1-2 sentences)
+
+> **Pattern**: This component follows the [Pattern Name](../../../prose/designs/PATTERN.md)
+
+## Features
+
+- Bullet list of key capabilities
+
+## Props/API
+
+TypeScript interface or API reference
+
+## Usage
+
+Code example showing basic usage
+
+## Behavior
+
+Key behaviors and interaction patterns
+
+## Accessibility
+
+ARIA roles, keyboard support, screen reader notes
+
+## Styling
+
+Design tokens, variants, responsive behavior
+
+## Dependencies
+
+What this component requires
+
+## See Also
+
+- [Pattern Doc](link to prose/designs/ if applicable)
+```
+
+### Service README Guidelines
+
+**Target Size**: 150-300 lines
+**Maximum**: 400 lines
+
+**Standard Template**:
+
+```markdown
+# [Service Name]
+
+Brief description and purpose
+
+> **Pattern**: This service follows the [Pattern Name](../../../prose/designs/PATTERN.md)
+
+## Usage
+
+Quick start code examples
+
+## API Reference
+
+Methods, types, parameters
+
+## Error Handling
+
+Error types and how to handle them
+
+## Implementation Details
+
+Singleton? Async? Important internals?
+
+## Testing
+
+How to test code using this service
+
+## See Also
+
+- [Pattern Doc](link to prose/designs/ if applicable)
+```
+
+---
+
+## Maintenance
+
+### One Canonical Source Per Topic
+
+- If docs overlap, consolidate or cross-reference
+- Delete obsolete docs after consolidation
+- Fix broken links when renaming/moving
+
+### Keep Skimmable
+
+- Examples over prose
+- Bullets over paragraphs
+- Code samples brief and focused
+
+### Warning Signs Documentation is Wrong
+
+1. **> 600 lines** - Should be ~300 line pattern + component READMEs
+2. **Cross-references everywhere** - Information duplicated
+3. **"See also" list > 5 items** - Too many related docs = redundancy
+4. **Last updated > 6 months ago** - Drifted from code, move to code
+5. **Implementation code examples** - Examples belong in tests, not docs
 
 ---
 
@@ -95,12 +309,36 @@ prose/designs/
 - **Implementation Plans**: `prose/plans/` (current and completed)
 - **Architect Agent**: `.github/agents/Architect.md`
 - **Programmer Agent**: `.github/agents/Programmer.md`
+- **Design Cascade**: `prose/plans/completed/DESIGNS_CASCADE.md`
 
 ---
 
-## Maintenance
+## Migration Status
 
-- **One canonical per topic**: If docs overlap, consolidate or cross-reference
-- **Delete completed refactor docs**: Move to plans/completed/ instead
-- **Fix broken links**: Update references when renaming/moving docs
-- **Keep skimmable**: Use examples over prose, bullets over paragraphs
+**Consolidated** (from 35 docs → 8 patterns):
+
+- ✅ Backend services → SERVICE_FRAMEWORK.md
+- ✅ Frontend components → ARCHITECTURE.md + component READMEs
+- ✅ QuillMark integration → SERVICE_FRAMEWORK.md + ERROR_SYSTEM.md
+- ✅ State management → STATE_PATTERNS.md
+- ✅ Design system → DESIGN_TOKENS.md
+- ✅ Z-index strategy → DESIGN_TOKENS.md
+- ✅ Error handling → ERROR_SYSTEM.md
+
+**Preserved** (already good patterns):
+
+- ✅ OVERLAY_SYSTEM.md
+- ✅ AUTHENTICATION.md
+- ✅ ACCESSIBILITY.md
+
+**Obsolete Directories Removed**:
+
+- `prose/designs/backend/` - Content consolidated into patterns
+- `prose/designs/frontend/` - Content consolidated into patterns
+- `prose/designs/quillmark/` - Content consolidated into patterns
+- `prose/designs/patterns/` - Moved to root of prose/designs/
+
+---
+
+_Last Updated: 2025-11-09_
+_Status: Consolidated (Cascade: Design Document Proliferation)_

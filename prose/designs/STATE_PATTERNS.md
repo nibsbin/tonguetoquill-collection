@@ -340,13 +340,231 @@ Three factory functions that encapsulate common patterns:
 
 ---
 
+## Implementation Patterns
+
+### Auto-Save Pattern
+
+**Implementation**: `src/lib/utils/auto-save.svelte.ts`
+
+**Pattern**:
+
+```typescript
+class AutoSave {
+  // Configurable debounce timer (4 seconds default)
+  // Save status tracking (idle, saving, saved, error)
+  // Support for guest (localStorage) and authenticated (API) modes
+  // Proper cleanup of timers
+  // Manual save support (Ctrl/Cmd+S bypasses debounce)
+}
+```
+
+**Integration**: Used in DocumentEditor component
+
+**Features**:
+
+- Tracks dirty state (unsaved changes)
+- Triggers auto-save on content changes (4 second debounce)
+- Respects user's auto-save preference
+- Updates initialContent after successful save
+- Save status indicator shows current state
+
+**See Also**: See SERVICE_FRAMEWORK.md for API integration patterns
+
+### Dual Storage Strategy (Guest Mode)
+
+**Document Store Pattern**: Routes between localStorage (guest) and API (authenticated)
+
+**Guest Mode** (localStorage):
+
+- Key: `tonguetoquill_guest_documents`
+- Format: JSON array with metadata + content
+- Limit: 5MB (configurable)
+- Quota checking before each save
+- Error handling for quota exceeded
+
+**Authenticated Mode** (API):
+
+- Full CRUD through REST endpoints
+- Server persistence
+- No localStorage usage (except offline cache)
+
+**Migration on Login**:
+
+- Offer to import localStorage documents on first login
+- User chooses which documents to import
+- Clear localStorage after successful migration
+- Handle conflicts if document names exist
+
+**Implementation**: `src/lib/services/documents/document-browser-storage.ts`
+
+```typescript
+interface LocalStorageDocumentService {
+  createDocument(name, content): Promise<DocumentMetadata>;
+  getDocumentContent(id): Promise<{ id; content; name }>;
+  updateDocumentContent(id, content): Promise<void>;
+  deleteDocument(id): Promise<void>;
+  listUserDocuments(): Promise<DocumentMetadata[]>;
+
+  // Helper methods
+  getAllDocumentsWithContent(): StoredDocument[];
+  clear(): void;
+  getStorageInfo(): { used; max; percentUsed };
+}
+```
+
+### Authentication State Pattern
+
+**Authentication Store Structure**:
+
+```typescript
+{
+  user: User | null,           // null = guest mode
+  isAuthenticated: boolean,     // false for guests
+  isGuest: boolean,             // computed from user === null
+  loading: boolean,
+  login: (credentials) => Promise<void>,
+  logout: () => Promise<void>,
+  checkAuth: () => Promise<void>
+}
+```
+
+**Guest Mode Handling**:
+
+- `isGuest` computed from `user === null`
+- Guest mode is default on app load
+- Auth check runs in background without blocking
+- Components conditionally render based on `isGuest`
+
+### Document Store Pattern
+
+**Store Structure**:
+
+```typescript
+{
+  documents: DocumentMetadata[],
+  activeDocumentId: string | null,
+  loading: boolean,
+  error: string | null,
+
+  // Operations
+  createDocument: (name, content) => Promise<Document>,
+  getDocument: (id) => Promise<Document>,
+  updateDocument: (id, updates) => Promise<Document>,
+  deleteDocument: (id) => Promise<void>,
+  listDocuments: () => Promise<DocumentMetadata[]>,
+
+  // Guest mode specific
+  isLocalStorageMode: boolean,
+  migrateLocalDocuments: () => Promise<void>
+}
+```
+
+**Usage**: Collection factory pattern with custom CRUD implementation
+
+### Preferences Store Pattern
+
+**Preferences Persisted to localStorage**:
+
+- Auto-save setting (enabled/disabled)
+- Font size (optional)
+- Editor settings
+- UI state (sidebar expanded/collapsed)
+
+**Strategy**:
+
+- Load on mount
+- Save on change
+- Handle storage events for cross-tab sync
+
+### State Selection Guidelines
+
+**Component-Local State** (use `$state` rune):
+
+- UI state (expanded, selected, focused)
+- Form inputs
+- Temporary calculations
+- Data that doesn't need sharing
+
+**Global Stores** (use factory patterns):
+
+- Application-wide state (auth, preferences, documents)
+- Cross-component communication
+- Persistent state
+- Shared derived state
+
+**Form Actions** (server-side):
+
+- Server-validated data
+- Database operations
+- File uploads
+- Authentication flows
+
+**Context API** (Svelte contexts):
+
+- Dependency injection
+- Feature-specific state
+- Avoiding prop drilling
+- Component tree configuration
+
+**Page Data** (SSR):
+
+- Initial page data loaded on server
+- Route-specific data
+- URL-based state
+- SEO-critical data
+
+### State Best Practices
+
+**Keep State Close**: Component-local when possible, elevate only when needed
+
+**Avoid Over-Storing**: Don't duplicate data across stores
+
+**Normalize Data**: Use IDs and lookups for related data
+
+**Derive Don't Duplicate**: Compute values from source data
+
+**Clean Up**: Always clean up effects, subscriptions, listeners
+
+**Minimize Reactivity**: Only make reactive what needs reactivity
+
+**Batch Updates**: Group related state changes
+
+**Debounce Expensive Operations**: Delay updates for rapid changes (auto-save)
+
+**Type Safety**: TypeScript interfaces for all state, validate runtime data
+
+### Testing Strategies
+
+**Component State Testing**:
+
+- Test initial state
+- Test state updates
+- Test derived values
+- Test effect cleanup
+
+**Store Testing**:
+
+- Test store mutations
+- Test derived stores
+- Test subscriptions
+- Test persistence
+
+**Form Testing**:
+
+- Test submission without JS
+- Test enhanced submission
+- Test validation
+- Test error handling
+
+---
+
 ## Related Patterns
 
-**Service Layer**: See `patterns/CLIENT_SERVICE_FRAMEWORK.md` for singleton service pattern
+**Service Layer**: See `SERVICE_FRAMEWORK.md` for singleton service pattern and API integration
 
-**Error Handling**: See `patterns/ERROR_HANDLING.md` for error state management in stores
+**Error Handling**: See `ERROR_SYSTEM.md` for error state management in stores
 
-**Auto-Save**: See `frontend/STATE_MANAGEMENT.md` § Auto-Save Pattern for document persistence
+**Architecture**: See `ARCHITECTURE.md` for component-local state patterns
 
 ---
 
