@@ -303,7 +303,7 @@
 		<div class="mobile-toggle-container">
 			<button
 				class="mobile-toggle-button {mobileView === 'editor'
-					? 'bg-accent text-foreground'
+					? 'bg-accent text-accent-foreground'
 					: 'text-muted-foreground hover:text-foreground/80'}"
 				onclick={() => onMobileViewChange?.('editor')}
 			>
@@ -311,7 +311,7 @@
 			</button>
 			<button
 				class="mobile-toggle-button {mobileView === 'preview'
-					? 'bg-accent text-foreground'
+					? 'bg-accent text-accent-foreground'
 					: 'text-muted-foreground hover:text-foreground/80'}"
 				onclick={() => onMobileViewChange?.('preview')}
 			>
@@ -442,13 +442,14 @@
 		padding: 0 1rem; /* 16px horizontal padding */
 		margin: 0;
 		border: none;
-		background: transparent;
 		font-family: inherit;
 		font-size: 0.875rem; /* text-sm */
 		font-weight: 500; /* font-medium */
 		line-height: 1; /* Prevent text from adding extra height */
 		box-sizing: border-box; /* Ensure padding doesn't add to height */
-		transition: color 0.2s;
+		transition:
+			background-color 0.2s,
+			color 0.2s;
 		cursor: pointer;
 	}
 </style>
