@@ -234,6 +234,18 @@ class QuillmarkServiceImpl extends ClientService<QuillmarkServiceImpl> implement
 		if (error && typeof error === 'object') {
 			// Handle Map objects from WASM
 			if (error instanceof Map) {
+				// Check if the Map has a diagnostics array
+				const diagnostics = error.get('diagnostics');
+				if (Array.isArray(diagnostics) && diagnostics.length > 0) {
+					const firstDiagnostic = this.normalizeDiagnostic(diagnostics[0]);
+					// If there are multiple diagnostics, append a note to the message
+					if (diagnostics.length > 1) {
+						const additionalCount = diagnostics.length - 1;
+						firstDiagnostic.message = `${firstDiagnostic.message} (${additionalCount} additional diagnostic${additionalCount > 1 ? 's' : ''} encountered)`;
+					}
+					return firstDiagnostic;
+				}
+
 				// Check if the Map has diagnostic structure (type: 'diagnostic')
 				if (error.get('type') === 'diagnostic') {
 					// Convert Map to plain object
@@ -246,6 +258,18 @@ class QuillmarkServiceImpl extends ClientService<QuillmarkServiceImpl> implement
 			}
 
 			const err = error as Record<string, unknown>;
+
+			// Check for diagnostics array
+			if (Array.isArray(err.diagnostics) && err.diagnostics.length > 0) {
+				const diagnostics = err.diagnostics as unknown[];
+				const firstDiagnostic = this.normalizeDiagnostic(diagnostics[0]);
+				// If there are multiple diagnostics, append a note to the message
+				if (diagnostics.length > 1) {
+					const additionalCount = diagnostics.length - 1;
+					firstDiagnostic.message = `${firstDiagnostic.message} (${additionalCount} additional diagnostic${additionalCount > 1 ? 's' : ''} encountered)`;
+				}
+				return firstDiagnostic;
+			}
 
 			// Check for diagnostic property
 			if (err.diagnostic) {
