@@ -215,15 +215,15 @@ Design tokens are the atomic design values that define the visual language of To
 
 ```css
 :root {
-  --color-background: #ffffff;
-  --color-foreground: #09090b;
-  /* ... light theme tokens ... */
+	--color-background: #ffffff;
+	--color-foreground: #09090b;
+	/* ... light theme tokens ... */
 }
 
 .dark {
-  --color-background: #18181b;
-  --color-foreground: #f4f4f5;
-  /* ... dark theme overrides ... */
+	--color-background: #18181b;
+	--color-foreground: #f4f4f5;
+	/* ... dark theme overrides ... */
 }
 ```
 
@@ -242,9 +242,9 @@ Design tokens are the atomic design values that define the visual language of To
 
 ```css
 @theme inline {
-  --color-background: var(--color-background);
-  --color-foreground: var(--color-foreground);
-  /* Maps CSS custom properties to Tailwind utilities */
+	--color-background: var(--color-background);
+	--color-foreground: var(--color-foreground);
+	/* Maps CSS custom properties to Tailwind utilities */
 }
 ```
 

@@ -195,9 +195,9 @@ src/lib/
    - Add "Component Documentation" section pointing to code READMEs
 
 5. **Delete obsolete design docs** (27 files):
-   - All backend/*.md except keep for reference during migration
-   - All frontend/*.md except ARCHITECTURE, ACCESSIBILITY
-   - All quillmark/*.md
+   - All backend/\*.md except keep for reference during migration
+   - All frontend/\*.md except ARCHITECTURE, ACCESSIBILITY
+   - All quillmark/\*.md
    - patterns/CLIENT_SERVICE_FRAMEWORK.md (renamed)
    - Delete entire backend/, frontend/, quillmark/, patterns/ directories
 

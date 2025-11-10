@@ -350,11 +350,11 @@ Three factory functions that encapsulate common patterns:
 
 ```typescript
 class AutoSave {
-  // Configurable debounce timer (4 seconds default)
-  // Save status tracking (idle, saving, saved, error)
-  // Support for guest (localStorage) and authenticated (API) modes
-  // Proper cleanup of timers
-  // Manual save support (Ctrl/Cmd+S bypasses debounce)
+	// Configurable debounce timer (4 seconds default)
+	// Save status tracking (idle, saving, saved, error)
+	// Support for guest (localStorage) and authenticated (API) modes
+	// Proper cleanup of timers
+	// Manual save support (Ctrl/Cmd+S bypasses debounce)
 }
 ```
 
@@ -399,16 +399,16 @@ class AutoSave {
 
 ```typescript
 interface LocalStorageDocumentService {
-  createDocument(name, content): Promise<DocumentMetadata>;
-  getDocumentContent(id): Promise<{ id; content; name }>;
-  updateDocumentContent(id, content): Promise<void>;
-  deleteDocument(id): Promise<void>;
-  listUserDocuments(): Promise<DocumentMetadata[]>;
+	createDocument(name, content): Promise<DocumentMetadata>;
+	getDocumentContent(id): Promise<{ id; content; name }>;
+	updateDocumentContent(id, content): Promise<void>;
+	deleteDocument(id): Promise<void>;
+	listUserDocuments(): Promise<DocumentMetadata[]>;
 
-  // Helper methods
-  getAllDocumentsWithContent(): StoredDocument[];
-  clear(): void;
-  getStorageInfo(): { used; max; percentUsed };
+	// Helper methods
+	getAllDocumentsWithContent(): StoredDocument[];
+	clear(): void;
+	getStorageInfo(): { used; max; percentUsed };
 }
 ```
 

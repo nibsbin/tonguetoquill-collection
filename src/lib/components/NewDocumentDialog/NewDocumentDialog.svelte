@@ -207,7 +207,6 @@
 	closeOnEscape={true}
 	closeOnOutsideClick={true}
 	showCloseButton={false}
-	title="New Document"
 	style="width: var(--sidebar-expanded-width);"
 >
 	{#snippet trigger()}

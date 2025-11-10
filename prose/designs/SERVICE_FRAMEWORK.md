@@ -200,14 +200,14 @@ Client calls service method
 ```typescript
 // Factory selects provider based on environment
 export function getDocumentProvider() {
-  return USE_MOCK ? mockDocumentProvider : supabaseDocumentProvider;
+	return USE_MOCK ? mockDocumentProvider : supabaseDocumentProvider;
 }
 
 // Provider implements interface
 interface DocumentProvider {
-  listDocuments(userId: string): Promise<Document[]>;
-  getDocument(id: string, userId: string): Promise<Document>;
-  // ...
+	listDocuments(userId: string): Promise<Document[]>;
+	getDocument(id: string, userId: string): Promise<Document>;
+	// ...
 }
 ```
 

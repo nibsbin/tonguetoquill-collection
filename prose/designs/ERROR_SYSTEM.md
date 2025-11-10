@@ -66,11 +66,11 @@ All errors in Tonguetoquill follow a consistent structure from WASM → Service 
 
 ```typescript
 class AppError extends Error {
-  code: string;                           // Unique identifier
-  message: string;                        // Human-readable description
-  statusCode: number;                     // HTTP status code
-  hint?: string;                          // Optional fix guidance
-  context?: Record<string, unknown>;      // Optional debug data
+	code: string; // Unique identifier
+	message: string; // Human-readable description
+	statusCode: number; // HTTP status code
+	hint?: string; // Optional fix guidance
+	context?: Record<string, unknown>; // Optional debug data
 }
 ```
 
@@ -80,15 +80,15 @@ class AppError extends Error {
 
 ```typescript
 type DocumentErrorCode =
-  | 'not_found'
-  | 'unauthorized'
-  | 'invalid_name'
-  | 'content_too_large'
-  | 'validation_error'
-  | 'unknown_error';
+	| 'not_found'
+	| 'unauthorized'
+	| 'invalid_name'
+	| 'content_too_large'
+	| 'validation_error'
+	| 'unknown_error';
 
 class DocumentError extends AppError {
-  code: DocumentErrorCode;
+	code: DocumentErrorCode;
 }
 ```
 
@@ -96,15 +96,15 @@ class DocumentError extends AppError {
 
 ```typescript
 type AuthErrorCode =
-  | 'invalid_token'
-  | 'token_expired'
-  | 'unauthorized'
-  | 'session_expired'
-  | 'network_error'
-  | 'unknown_error';
+	| 'invalid_token'
+	| 'token_expired'
+	| 'unauthorized'
+	| 'session_expired'
+	| 'network_error'
+	| 'unknown_error';
 
 class AuthError extends AppError {
-  code: AuthErrorCode;
+	code: AuthErrorCode;
 }
 ```
 
@@ -112,13 +112,13 @@ class AuthError extends AppError {
 
 ```typescript
 type TemplateErrorCode =
-  | 'manifest_load_failed'
-  | 'template_not_found'
-  | 'parse_error'
-  | 'network_error';
+	| 'manifest_load_failed'
+	| 'template_not_found'
+	| 'parse_error'
+	| 'network_error';
 
 class TemplateError extends AppError {
-  code: TemplateErrorCode;
+	code: TemplateErrorCode;
 }
 ```
 
@@ -126,28 +126,29 @@ class TemplateError extends AppError {
 
 ```typescript
 type QuillmarkErrorCode =
-  | 'not_initialized'
-  | 'wasm_load_failed'
-  | 'parse_error'
-  | 'render_error'
-  | 'unknown_error';
+	| 'not_initialized'
+	| 'wasm_load_failed'
+	| 'parse_error'
+	| 'render_error'
+	| 'unknown_error';
 
 class QuillmarkError extends AppError {
-  code: QuillmarkErrorCode;
-  diagnostic?: QuillmarkDiagnostic;  // Structured diagnostic info
+	code: QuillmarkErrorCode;
+	diagnostic?: QuillmarkDiagnostic; // Structured diagnostic info
 }
 
 interface QuillmarkDiagnostic {
-  severity: 'error' | 'warning' | 'info';
-  code?: string;                  // e.g., 'QM001'
-  message: string;
-  hint?: string;
-  location?: {                    // Source location
-    line: number;
-    column: number;
-    length: number;
-  };
-  sourceChain: string[];          // Error trace
+	severity: 'error' | 'warning' | 'info';
+	code?: string; // e.g., 'QM001'
+	message: string;
+	hint?: string;
+	location?: {
+		// Source location
+		line: number;
+		column: number;
+		length: number;
+	};
+	sourceChain: string[]; // Error trace
 }
 ```
 
@@ -196,14 +197,14 @@ async getDocument(id: string): Promise<Document> {
 
 ```typescript
 try {
-  await documentStore.getDocument(id);
+	await documentStore.getDocument(id);
 } catch (error) {
-  if (error instanceof DocumentError) {
-    if (error.code === 'not_found') {
-      // Handle not found
-    }
-  }
-  showErrorToast(getErrorMessage(error));
+	if (error instanceof DocumentError) {
+		if (error.code === 'not_found') {
+			// Handle not found
+		}
+	}
+	showErrorToast(getErrorMessage(error));
 }
 ```
 
@@ -228,16 +229,16 @@ try {
 
 ```typescript
 export function getErrorMessage(error: unknown): string {
-  if (error instanceof AppError) {
-    return error.message;
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === 'string') {
-    return error;
-  }
-  return 'An unexpected error occurred';
+	if (error instanceof AppError) {
+		return error.message;
+	}
+	if (error instanceof Error) {
+		return error.message;
+	}
+	if (typeof error === 'string') {
+		return error;
+	}
+	return 'An unexpected error occurred';
 }
 ```
 
@@ -265,22 +266,19 @@ function showErrorToast(error: unknown) {
 
 ```typescript
 export function handleApiError(error: unknown): Response {
-  if (error instanceof AppError) {
-    return json(
-      {
-        error: error.code,
-        message: error.message,
-        hint: error.hint
-      },
-      { status: error.statusCode }
-    );
-  }
+	if (error instanceof AppError) {
+		return json(
+			{
+				error: error.code,
+				message: error.message,
+				hint: error.hint
+			},
+			{ status: error.statusCode }
+		);
+	}
 
-  // Fallback for unexpected errors
-  return json(
-    { error: 'unknown_error', message: 'An unexpected error occurred' },
-    { status: 500 }
-  );
+	// Fallback for unexpected errors
+	return json({ error: 'unknown_error', message: 'An unexpected error occurred' }, { status: 500 });
 }
 ```
 
@@ -429,27 +427,24 @@ Error message with details
 **Pattern**:
 
 ```typescript
-async function withRetry<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3
-): Promise<T> {
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await fn();
-    } catch (error) {
-      if (i === maxRetries - 1 || !isRetryable(error)) {
-        throw error;
-      }
-      await delay(Math.pow(2, i) * 1000);  // Exponential backoff
-    }
-  }
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+	for (let i = 0; i < maxRetries; i++) {
+		try {
+			return await fn();
+		} catch (error) {
+			if (i === maxRetries - 1 || !isRetryable(error)) {
+				throw error;
+			}
+			await delay(Math.pow(2, i) * 1000); // Exponential backoff
+		}
+	}
 }
 
 function isRetryable(error: unknown): boolean {
-  if (error instanceof AppError) {
-    return error.statusCode >= 500 || error.code === 'network_error';
-  }
-  return false;
+	if (error instanceof AppError) {
+		return error.statusCode >= 500 || error.code === 'network_error';
+	}
+	return false;
 }
 ```
 
@@ -461,13 +456,13 @@ function isRetryable(error: unknown): boolean {
 
 ```typescript
 try {
-  return await apiClient.getDocuments();
+	return await apiClient.getDocuments();
 } catch (error) {
-  if (error instanceof AuthError && error.code === 'unauthorized') {
-    // Fall back to guest mode
-    return localStorageClient.getDocuments();
-  }
-  throw error;
+	if (error instanceof AuthError && error.code === 'unauthorized') {
+		// Fall back to guest mode
+		return localStorageClient.getDocuments();
+	}
+	throw error;
 }
 ```
 
@@ -477,13 +472,13 @@ try {
 
 ```typescript
 const originalDoc = { ...currentDoc };
-currentDoc.content = newContent;  // Optimistic update
+currentDoc.content = newContent; // Optimistic update
 
 try {
-  await documentStore.updateDocument(id, { content: newContent });
+	await documentStore.updateDocument(id, { content: newContent });
 } catch (error) {
-  currentDoc.content = originalDoc.content;  // Rollback
-  showErrorToast(error);
+	currentDoc.content = originalDoc.content; // Rollback
+	showErrorToast(error);
 }
 ```
 
