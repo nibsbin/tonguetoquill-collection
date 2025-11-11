@@ -12,7 +12,7 @@ subject: Letter of Counseling
 signature_block:
   - (Issuer's) FIRST M. Last, Rank, USAF
   - Duty Title
-tag_line: Less Formatting. More Lethality.
+tag_line: Get Rekt
 # Based on LOCAR template from https://www.shaw.af.mil/Portals/98/Docs/Legal/Revamp/2022%20LOCAR%20TEMPLATE%20(Enlisted).docx
 ---
 
@@ -42,15 +42,27 @@ SCOPE: indorsements
 from: (2nd Ind's) Rank First M. Last
 for: (Issuer's) ORG/SYM
 signature_block: (2nd Ind's) FIRST M. LAST, Rank, USAF
-#date: "Date: _____________"
+date: "Date: _____________"
 ---
 
 I have reviewed the allegations contained in this Letter of Counseling. __I am submitting the attached documents in response__ / __I hereby waive my right to respond__.
 
 ---
 SCOPE: indorsements
-from: (3rd Ind's) Rank First M. Last
+from: (3rd ind's) Rank First M. Last
 for: (Issuer's) ORG/SYM
-signature_block: (2nd Ind's) FIRST M. LAST, Rank, USAF
-#date: "Date: _____________"
+signature_block: (3rd ind's) FIRST M. LAST, Rank, USAF
+date: "Date: _____________"
 ---
+
+I have decided to __withdraw__ / __sustain__ the Letter of Counseling.
+
+---
+SCOPE: indorsements
+from: (4th ind's) Rank First M. Last
+for: (Issuer's) ORG/SYM
+signature_block: (4th ind's) FIRST M. LAST, Rank, USAF
+date: "Date: _____________"
+---
+
+I acknowledge receipt of the final decision regarding disposition of this Letter of Counseling on ____________ at __________ hours.
