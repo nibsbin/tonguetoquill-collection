@@ -36,11 +36,14 @@
 			<ListCollapse class="h-4 w-4" />
 		</Button>
 
+		<!-- Divider -->
+		<div class="mx-1 h-5 w-px bg-border"></div>
+
 		<!-- Bold -->
 		<Button
 			variant="ghost"
 			size="sm"
-			class="ml-1 h-7 w-7 rounded-l-none border-l border-border p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('bold')}
 			title="Bold"
 		>
@@ -91,11 +94,14 @@
 			<Link class="h-4 w-4" />
 		</Button>
 
+		<!-- Divider -->
+		<div class="mx-1 h-5 w-px bg-border"></div>
+
 		<!-- Numbered List -->
 		<Button
 			variant="ghost"
 			size="sm"
-			class="ml-1 h-7 w-7 rounded-l-none border-l border-border p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
+			class="h-7 w-7 p-0 text-muted-foreground hover:bg-accent hover:text-foreground"
 			onclick={() => onFormat('numberedList')}
 			title="Numbered List"
 		>
