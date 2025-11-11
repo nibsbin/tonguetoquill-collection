@@ -409,9 +409,7 @@
 		max-width: 100%;
 		height: auto;
 		border-color: var(--color-foreground);
-		box-shadow:
-			0 1px 3px 1px var(--color-foreground-shadow),
-			4px 0px 6px -1px var(--color-foreground-shadow);
+		box-shadow: 0 0 8px 2px var(--color-foreground-shadow);
 	}
 	.preview-loading-spinner {
 		display: inline-block;
