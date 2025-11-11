@@ -65,14 +65,9 @@
       {% if ind.cc is defined %}
       cc: {{ ind.cc | Lines }},
       {% endif %}
-      {% if ind.leading_pagebreak is defined %}
-      leading-pagebreak: {{ ind.leading_pagebreak | Bool }},
-      {% endif %}
-      {% if ind.separate_page is defined %}
-      separate-page: {{ ind.separate_page | Bool }},
-      {% endif %}
-      {% if ind.indorsement_date is defined %}
-      indorsement-date: {{ ind.indorsement_date | Date }},
+      separate-page: {{ ind.new_page | default(false) }},
+      {% if ind.date is defined %}
+      indorsement-date: {{ ind.date | Date }},
       {% endif %}
     )[ #{{ ind.body | Content }} ],
     {% endfor %}
