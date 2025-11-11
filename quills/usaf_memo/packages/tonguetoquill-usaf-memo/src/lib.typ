@@ -393,23 +393,22 @@
 /// Key features:
 /// - Automatic indorsement numbering (1st Ind, 2nd Ind, etc.)
 /// - Proper date and subject line formatting referencing the original memorandum
-/// - Support for both same-page and separate-page indorsement formats
+/// - Support for both same-page and new-page indorsement formats
 /// - Individual signature blocks and backmatter sections
 /// - Page break control for document flow management
 /// 
-/// - office-symbol (str): Sending organization symbol for the indorsement
-/// - memo-for (str): Recipient organization symbol
+/// - ind-from (str): Sending organization symbol for the indorsement
+/// - ind-for (str): Recipient organization symbol
 /// - signature-block (array): Array of signature lines for the indorsing official
 /// - attachments (array): Array of attachment descriptions (optional)
 /// - cc (array): Array of courtesy copy recipients (optional)
-/// - leading-pagebreak (bool): Whether to force page break before this indorsement
-/// - separate-page (bool): Whether to use separate-page indorsement format
+/// - new-page (bool): Whether to use new-page indorsement format
 /// - date (str|datetime): Date of the indorsement (defaults to today)
 /// - body (content): Indorsement body content
 /// -> dictionary
 #let indorsement(
-  office-symbol: "ORG/SYMBOL",
-  memo-for: "ORG/SYMBOL",
+  ind-from: "ORG/SYMBOL",
+  ind-for: "ORG/SYMBOL",
   signature-block: (
     "FIRST M. LAST, Rank, USAF",
     "Duty Title",
@@ -417,19 +416,17 @@
   ),
   attachments: none,
   cc: none,
-  leading-pagebreak: false,
-  separate-page: false,
+  new-page: false,
   date: datetime.today(),
   body,
 ) = {
   let ind = (
-    office-symbol: office-symbol,
-    memo-for: memo-for,
+    ind-from: ind-from,
+    ind-for: ind-for,
     signature-block: signature-block,
     attachments: attachments,
     cc: cc,
-    leading-pagebreak: leading-pagebreak,
-    separate-page: separate-page,
+    new-page: new-page,
     date: date,
     body: body,
   )
@@ -456,37 +453,36 @@
       let indorsement-number = counters.indorsement.get().first()
       let indorsement-label = format-indorsement-number(indorsement-number)
 
-      if ind.leading-pagebreak or separate-page {
+      if new-page {
         pagebreak()
       }
 
-      if ind.separate-page {
-        // Separate-page indorsement format per AFH 33-337
+      if ind.new-page {
+        // New-page indorsement format per AFH 33-337
         [#indorsement-label to #original-office, #display-date(original-date), #original-subject]
 
         blank-line()
         grid(
           columns: (auto, 1fr),
-          ind.office-symbol, align(right)[#display-date(ind.date)],
+          ind.ind-from, align(right)[#display-date(ind.date)],
         )
 
         blank-line()
         grid(
           columns: (auto, auto, 1fr),
-          "MEMORANDUM FOR", "  ", ind.memo-for,
+          "MEMORANDUM FOR", "  ", ind.ind-for,
         )
       } else {
-        // Standard indorsement format
-        // Add spacing only if we didn't just do a pagebreak
-        if not ind.leading-pagebreak {
-          blank-line()
-        }
-        [#indorsement-label, #ind.office-symbol]
+        blank-line()
+        grid(
+          columns: (auto, 1fr),
+          [#indorsement-label, #ind.ind-from], align(right)[#display-date(ind.date)],
+        )
 
         blank-line()
         grid(
           columns: (auto, auto, 1fr),
-          "MEMORANDUM FOR", "  ", ind.memo-for,
+          "MEMORANDUM FOR", "  ", ind.ind-for,
         )
       }
       // Render body content
