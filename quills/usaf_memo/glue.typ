@@ -43,13 +43,42 @@
   footer-tag-line: {{ tag_line | String }},
   {% endif %}
 
-    // Optional classification level
+  // Optional classification level
   {% if classification is defined %}
   classification-level: {{ classification | String }},
   {% endif %}
 
   // Signature block
   signature-block: {{ signature_block | Lines(default=["signature_block"]) }},
+
+  // Indorsements
+  {% if indorsements is defined %}
+  indorsements: (
+    {% for ind in indorsements %}
+    indorsement(
+      office-symbol: {{ ind.office_symbol | String }},
+      memo-for: {{ ind.memo_for | String }},
+      signature-block: {{ ind.signature_block | Lines }},
+      {% if ind.attachments is defined %}
+      attachments: {{ ind.attachments | Lines }},
+      {% endif %}
+      {% if ind.cc is defined %}
+      cc: {{ ind.cc | Lines }},
+      {% endif %}
+      {% if ind.leading_pagebreak is defined %}
+      leading-pagebreak: {{ ind.leading_pagebreak | Bool }},
+      {% endif %}
+      {% if ind.separate_page is defined %}
+      separate-page: {{ ind.separate_page | Bool }},
+      {% endif %}
+      {% if ind.indorsement_date is defined %}
+      indorsement-date: {{ ind.indorsement_date | Date }},
+      {% endif %}
+    )[ #{{ ind.body | Content }} ],
+    {% endfor %}
+  ),
+  {% endif %}
+
 
   // List recipients in vertical list
   memo-for-cols: 1,
