@@ -60,7 +60,7 @@
 		"@codemirror/state": "^6.5.2",
 		"@codemirror/theme-one-dark": "^6.1.3",
 		"@codemirror/view": "^6.38.6",
-		"@quillmark-test/web": "^0.5.1",
+		"@quillmark-test/web": "^0.5.2",
 		"@supabase/supabase-js": "^2.78.0",
 		"clsx": "^2.1.1",
 		"lucide-svelte": "^0.548.0",
