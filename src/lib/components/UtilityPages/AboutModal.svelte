@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Dialog from '$lib/components/ui/base-dialog.svelte';
 	import DialogContent from '$lib/components/ui/dialog-content.svelte';
-	import { Linkedin } from 'lucide-svelte';
+	import LinkedinIcon from '~icons/simple-icons/linkedin';
 
 	interface AboutModalProps {
 		open: boolean;
@@ -66,9 +66,9 @@
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="John Pan on LinkedIn"
-									class="text-blue-600 hover:text-blue-700"
+									class="inline-block hover:opacity-80"
 								>
-									<img src="/in-logo/LI-In-Bug.png" alt="" class="h-5 w-5" />
+									<LinkedinIcon class="h-5 w-5 text-[#0A66C2]" />
 								</a>
 							</p>
 						</article>
@@ -88,9 +88,9 @@
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Nick Hamby on LinkedIn"
-									class="text-blue-600 hover:text-blue-700"
+									class="inline-block hover:opacity-80"
 								>
-									<img src="/in-logo/LI-In-Bug.png" alt="" class="h-5 w-5" />
+									<LinkedinIcon class="h-5 w-5 text-[#0A66C2]" />
 								</a>
 							</p>
 						</article>
@@ -115,9 +115,9 @@
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="Dylan Shah on LinkedIn"
-									class="text-blue-600 hover:text-blue-700"
+									class="inline-block hover:opacity-80"
 								>
-									<img src="/in-logo/LI-In-Bug.png" alt="" class="h-5 w-5" />
+									<LinkedinIcon class="h-5 w-5 text-[#0A66C2]" />
 								</a>
 							</p>
 						</article>
@@ -142,9 +142,9 @@
 									target="_blank"
 									rel="noopener noreferrer"
 									aria-label="William Bechard on LinkedIn"
-									class="text-blue-600 hover:text-blue-700"
+									class="inline-block hover:opacity-80"
 								>
-									<img src="/in-logo/LI-In-Bug.png" alt="" class="h-5 w-5" />
+									<LinkedinIcon class="h-5 w-5 text-[#0A66C2]" />
 								</a>
 							</p>
 						</article>

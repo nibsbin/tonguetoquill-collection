@@ -2,9 +2,17 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 import wasm from 'vite-plugin-wasm';
+import Icons from 'unplugin-icons/vite';
 
 export default defineConfig({
-	plugins: [wasm(), tailwindcss(), sveltekit()],
+	plugins: [
+		wasm(),
+		tailwindcss(),
+		Icons({
+			compiler: 'svelte'
+		}),
+		sveltekit()
+	],
 
 	// Add WASM support
 	optimizeDeps: {
