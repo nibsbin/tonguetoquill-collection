@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { EditorView, keymap, lineNumbers } from '@codemirror/view';
-	import { EditorState, type StateEffect } from '@codemirror/state';
+	import { EditorState, StateEffect } from '@codemirror/state';
 	import { markdown } from '@codemirror/lang-markdown';
 	import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 	import {
@@ -33,8 +33,8 @@
 	let editorView: EditorView | null = null;
 	let isDarkTheme = $state(false);
 
-	// Extract editor creation logic to follow DRY principles
-	function createEditor(content: string) {
+	// Build the extension list based on current settings
+	function buildExtensions() {
 		const extensions = [
 			markdown(),
 			history(),
@@ -108,9 +108,14 @@
 			extensions.push(lineNumbers());
 		}
 
+		return extensions;
+	}
+
+	// Extract editor creation logic to follow DRY principles
+	function createEditor(content: string) {
 		const startState = EditorState.create({
 			doc: content,
-			extensions
+			extensions: buildExtensions()
 		});
 
 		return new EditorView({
@@ -158,10 +163,6 @@
 		editorView.dispatch(transaction);
 		editorView.focus();
 	}
-
-	// insertAtCursor removed: previously unused utility for inserting text at the
-	// editor cursor. Kept formatting helpers above; if insertion is needed later
-	// we can reintroduce a focused implementation then.
 
 	function handleBold() {
 		applyFormatting('**');
@@ -365,22 +366,23 @@
 		}
 	});
 
-	// Recreate editor when showLineNumbers or theme changes
+	// Reconfigure editor when showLineNumbers or theme changes
 	$effect(() => {
 		// Track both showLineNumbers and isDarkTheme for reactivity
 		// use `void` to satisfy linters that disallow unused expressions
 		void showLineNumbers;
 		void isDarkTheme;
 
-		// Only recreate if editor already exists (not initial mount)
-		if (editorView && editorElement) {
-			const currentValue = editorView.state.doc.toString();
-			editorView.destroy();
-
+		// Only reconfigure if editor already exists (not initial mount)
+		if (editorView) {
 			// Use requestAnimationFrame to ensure CSS custom properties have updated
-			// before creating the new editor with theme extensions
+			// before reconfiguring the editor with new theme extensions
 			requestAnimationFrame(() => {
-				editorView = createEditor(currentValue);
+				if (editorView) {
+					editorView.dispatch({
+						effects: StateEffect.reconfigure.of(buildExtensions())
+					});
+				}
 			});
 		}
 	});
