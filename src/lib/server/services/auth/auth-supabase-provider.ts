@@ -27,28 +27,15 @@ import {
 /**
  * Supabase Authentication Provider
  * Delegates authentication to Supabase-hosted pages and APIs
- * Supports both email and GitHub authentication methods simultaneously
+ * Supports both Google and GitHub authentication methods
  */
 export class SupabaseAuthProvider implements AuthContract {
 	private authClient: SupabaseClient; // For auth operations
 	private adminClient: SupabaseClient; // For database operations (shared)
-	private enableEmail: boolean;
-	private enableGithub: boolean;
 
 	constructor() {
 		// Load Supabase configuration
 		const config = loadSupabaseConfig();
-
-		// Store enabled auth methods
-		this.enableEmail = config.ENABLE_EMAIL;
-		this.enableGithub = config.ENABLE_GITHUB;
-
-		// Validate that at least one auth method is enabled
-		if (!this.enableEmail && !this.enableGithub) {
-			throw new Error(
-				'No auth method enabled. Set SUPABASE_ENABLE_EMAIL or SUPABASE_ENABLE_GITHUB to true.'
-			);
-		}
 
 		// Create auth-specific client for authentication operations
 		this.authClient = createClient(config.POSTGRES_URL, config.SECRET_KEY, {
@@ -70,23 +57,18 @@ export class SupabaseAuthProvider implements AuthContract {
 	async getAvailableProviders(): Promise<AuthProviderConfig[]> {
 		return [
 			{
+				id: 'google',
+				type: 'oauth',
+				name: 'Continue with Google',
+				icon: 'google',
+				requiresInput: false
+			},
+			{
 				id: 'github',
 				type: 'oauth',
 				name: 'Continue with GitHub',
 				icon: 'github',
 				requiresInput: false
-			},
-			{
-				id: 'email',
-				type: 'magic_link',
-				name: 'Continue with Email',
-				icon: 'mail',
-				requiresInput: true,
-				inputConfig: {
-					type: 'email',
-					placeholder: 'your@email.com',
-					label: 'Email'
-				}
 			}
 		];
 	}
@@ -94,15 +76,16 @@ export class SupabaseAuthProvider implements AuthContract {
 	/**
 	 * Get the OAuth login URL for Supabase provider
 	 * Returns the Supabase hosted UI URL for authentication
-	 * Supports both email magic link and GitHub OAuth
+	 * Supports both Google and GitHub OAuth
 	 * @param redirectUri - The callback URL to return to after authentication
-	 * @param provider - Optional provider to use. If not specified and multiple providers are enabled, an error is thrown
+	 * @param provider - The provider to use ('google' | 'github')
 	 */
 	async getLoginUrl(redirectUri: string, provider?: AuthProvider): Promise<string> {
-		// Determine which provider to use
-		const targetProvider = this.determineProvider(provider);
+		if (!provider || provider === 'mock') {
+			throw new AuthError('unknown_error', 'Provider must be specified', 400);
+		}
 
-		if (targetProvider === 'github') {
+		if (provider === 'github') {
 			// Use GitHub OAuth
 			const { data, error } = await this.authClient.auth.signInWithOAuth({
 				provider: 'github',
@@ -117,15 +100,26 @@ export class SupabaseAuthProvider implements AuthContract {
 			}
 
 			return data.url;
+		} else if (provider === 'google') {
+			// Use Google OAuth
+			const { data, error } = await this.authClient.auth.signInWithOAuth({
+				provider: 'google',
+				options: {
+					redirectTo: redirectUri,
+					skipBrowserRedirect: true // We want the URL, not to redirect immediately
+				}
+			});
+
+			if (error || !data.url) {
+				throw new AuthError('network_error', 'Failed to generate Google login URL', 500);
+			}
+
+			return data.url;
 		} else {
-			// For email-based auth, we need to redirect to a login page
-			// that collects the email and sends a magic link
-			// Since we're using server-side flow, we'll use Supabase's built-in email OTP
-			// The client will need to handle this differently
 			throw new AuthError(
 				'unknown_error',
-				'Email-based auth requires client-side implementation with OTP',
-				500
+				`Unsupported authentication provider: ${provider}`,
+				400
 			);
 		}
 	}
@@ -170,34 +164,6 @@ export class SupabaseAuthProvider implements AuthContract {
 	}
 
 	/**
-	 * Determine which provider to use based on what's enabled and what was requested
-	 */
-	private determineProvider(requestedProvider?: AuthProvider): AuthProvider {
-		// If a specific provider was requested, validate it's enabled
-		if (requestedProvider) {
-			if (requestedProvider === 'email' && !this.enableEmail) {
-				throw new AuthError('unknown_error', 'Email authentication is not enabled', 400);
-			}
-			if (requestedProvider === 'github' && !this.enableGithub) {
-				throw new AuthError('unknown_error', 'GitHub authentication is not enabled', 400);
-			}
-			return requestedProvider;
-		}
-
-		// If both are enabled and no provider specified, require explicit choice
-		if (this.enableEmail && this.enableGithub) {
-			throw new AuthError(
-				'unknown_error',
-				'Multiple authentication providers are enabled. Please specify which provider to use.',
-				400
-			);
-		}
-
-		// Return the single enabled provider
-		return this.enableGithub ? 'github' : 'email';
-	}
-
-	/**
 	 * Exchange OAuth authorization code for tokens
 	 * Calls Supabase API to exchange the code for access and refresh tokens
 	 */
@@ -234,31 +200,17 @@ export class SupabaseAuthProvider implements AuthContract {
 
 	/**
 	 * Send authentication email with magic link
+	 * Note: Email authentication is not supported. This method throws an error.
 	 * @param email - User's email address
 	 * @param redirectUri - URL to redirect to after clicking link
 	 * @returns Success message to show user
 	 */
 	async sendAuthEmail(email: string, redirectUri: string): Promise<{ message: string }> {
-		try {
-			const { error } = await this.authClient.auth.signInWithOtp({
-				email,
-				options: {
-					emailRedirectTo: redirectUri,
-					shouldCreateUser: true
-				}
-			});
-
-			if (error) {
-				throw this.mapSupabaseError(error);
-			}
-
-			return { message: 'Check your email for a sign-in link' };
-		} catch (error) {
-			if (error instanceof AuthError) {
-				throw error;
-			}
-			throw new AuthError('network_error', 'Failed to send authentication email', 500);
-		}
+		throw new AuthError(
+			'unknown_error',
+			'Email authentication is not supported. Please use OAuth (Google or GitHub).',
+			400
+		);
 	}
 
 	/**

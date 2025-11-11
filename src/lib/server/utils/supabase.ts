@@ -12,8 +12,6 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 export interface SupabaseConfig {
 	POSTGRES_URL: string;
 	PUBLISHABLE_KEY: string;
-	ENABLE_EMAIL: boolean;
-	ENABLE_GITHUB: boolean;
 	SECRET_KEY: string;
 }
 
@@ -25,8 +23,6 @@ export function loadSupabaseConfig(): SupabaseConfig {
 	const POSTGRES_URL = env.SUPABASE_URL || env.PUBLIC_SUPABASE_URL;
 	const PUBLISHABLE_KEY =
 		env.PUBLIC_SUPABASE_PUBLISHABLE_KEY || env.SUPABASE_PUBLISHABLE_KEY || env.SUPABASE_ANON_KEY;
-	const ENABLE_EMAIL = env.SUPABASE_ENABLE_EMAIL === 'true';
-	const ENABLE_GITHUB = env.SUPABASE_ENABLE_GITHUB === 'true';
 	const SECRET_KEY = env.SUPABASE_SECRET_KEY || env.SUPABASE_SERVICE_ROLE_KEY;
 
 	if (!POSTGRES_URL) {
@@ -48,8 +44,6 @@ export function loadSupabaseConfig(): SupabaseConfig {
 	return {
 		POSTGRES_URL,
 		PUBLISHABLE_KEY,
-		ENABLE_EMAIL,
-		ENABLE_GITHUB,
 		SECRET_KEY
 	};
 }

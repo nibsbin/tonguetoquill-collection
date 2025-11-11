@@ -67,7 +67,7 @@ export class LoginClient {
 	 * The OAuth callback is handled server-side via GET /api/auth/callback
 	 * which exchanges the code for tokens and sets HTTP-only cookies
 	 *
-	 * @param provider - Auth provider to use ('email' | 'github')
+	 * @param provider - Auth provider to use ('google' | 'github')
 	 */
 	async initiateLogin(provider: AuthProvider): Promise<void> {
 		// Build the login URL with provider parameter
@@ -139,25 +139,6 @@ export class LoginClient {
 		return user !== null;
 	}
 
-	/**
-	 * Send authentication email with OTP code
-	 * @param email - User's email address
-	 * @returns Success message to display
-	 */
-	async sendEmailAuth(email: string): Promise<{ message: string }> {
-		const response = await fetch('/api/auth/email/send', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ email })
-		});
-
-		if (!response.ok) {
-			const error: ErrorResponse = await response.json();
-			throw new Error(error.message || 'Failed to send authentication email');
-		}
-
-		return response.json();
-	}
 	/**
 	 * Get current session (if authenticated)
 	 */

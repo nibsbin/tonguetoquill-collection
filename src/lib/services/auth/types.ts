@@ -79,7 +79,7 @@ export class AuthError extends AppError {
 /**
  * Supported authentication providers
  */
-export type AuthProvider = 'mock' | 'email' | 'github';
+export type AuthProvider = 'mock' | 'google' | 'github';
 
 /**
  * Authentication provider type (for UI configuration)
