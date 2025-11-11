@@ -29,7 +29,7 @@
 		onCollapseSidebar
 	}: SidebarProps = $props();
 	let autoSave = $state(true);
-	let lineNumbers = $state(true);
+	let lineNumbers = $state(false);
 	let popoverOpen = $state(false);
 	let loginPopoverOpen = $state(false);
 	let isDarkMode = $state(false);

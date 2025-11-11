@@ -27,7 +27,7 @@
 		showLineNumbers?: boolean;
 	}
 
-	let { value, onChange, onSave, showLineNumbers = true }: Props = $props();
+	let { value, onChange, onSave, showLineNumbers = false }: Props = $props();
 
 	let editorElement: HTMLDivElement;
 	let editorView: EditorView | null = null;

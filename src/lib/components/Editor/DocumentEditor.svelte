@@ -68,7 +68,7 @@
 	let debounceTimer: number | undefined;
 	let editorRef = $state<MarkdownEditor | null>(null);
 	let autoSaveEnabled = $state(true);
-	let showLineNumbers = $state(true);
+	let showLineNumbers = $state(false);
 	let previousDocumentId = $state<string | null>(null);
 	let hasSuccessfulPreview = $state(false);
 	let lastSaveStatus = $state<'idle' | 'saving' | 'saved' | 'error'>('idle');
