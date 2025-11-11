@@ -17,14 +17,6 @@ extra_search_path = ["public", "extensions"]
 # for accidental or malicious requests.
 max_rows = 1000
 
-# Redirect urls allowed during OAuth sign-in flows.
-additional_redirect_urls = [
-  "https://tonguetoquill.app/api/auth/callback",
-  "https://**tonguetoquill.vercel.app/api/auth/callback",
-  "http://localhost:**/api/auth/callback"
-]
-
-
 # [db.vault]
 # secret_key = "env(SECRET_VALUE)"
 
