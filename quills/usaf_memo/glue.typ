@@ -67,7 +67,7 @@
       {% endif %}
       separate-page: {{ ind.new_page | default(false) }},
       {% if ind.date is defined %}
-      indorsement-date: {{ ind.date | Date }},
+      date: {{ ind.date | Date }},
       {% endif %}
     )[ #{{ ind.body | Content }} ],
     {% endfor %}
