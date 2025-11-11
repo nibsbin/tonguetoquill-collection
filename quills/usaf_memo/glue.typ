@@ -67,7 +67,7 @@
       {% endif %}
       separate-page: {{ ind.new_page | default(false) }},
       {% if ind.date is defined %}
-      date: {{ ind.date | Date }},
+      date: {{ ind.date | String }},
       {% endif %}
     )[ #{{ ind.body | Content }} ],
     {% endfor %}

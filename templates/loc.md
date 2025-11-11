@@ -42,7 +42,7 @@ SCOPE: indorsements
 from: (2nd Ind's) Rank First M. Last
 for: (Issuer's) ORG/SYM
 signature_block: (2nd Ind's) FIRST M. LAST, Rank, USAF
-date: "Date: _____________"
+#date: "Date: _____________"
 ---
 
 I have reviewed the allegations contained in this Letter of Counseling. __I am submitting the attached documents in response__ / __I hereby waive my right to respond__.
@@ -52,5 +52,5 @@ SCOPE: indorsements
 from: (3rd Ind's) Rank First M. Last
 for: (Issuer's) ORG/SYM
 signature_block: (2nd Ind's) FIRST M. LAST, Rank, USAF
-date: "Date: _____________"
+#date: "Date: _____________"
 ---
