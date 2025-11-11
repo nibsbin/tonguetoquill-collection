@@ -9,9 +9,9 @@
 	import DocumentInfoDialog from '$lib/components/DocumentInfoDialog.svelte';
 	import ImportFileDialog from '$lib/components/ImportFileDialog.svelte';
 	import ShareModal from '$lib/components/ShareModal.svelte';
-	import AboutModal from '$lib/components/AboutModal.svelte';
-	import TermsModal from '$lib/components/TermsModal.svelte';
-	import PrivacyModal from '$lib/components/PrivacyModal.svelte';
+	import AboutModal from '$lib/components/UtilityPages/AboutModal.svelte';
+	import TermsModal from '$lib/components/UtilityPages/TermsModal.svelte';
+	import PrivacyModal from '$lib/components/UtilityPages/PrivacyModal.svelte';
 
 	interface Props {
 		documentId: string | null;
