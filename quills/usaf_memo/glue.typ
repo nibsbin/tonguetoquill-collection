@@ -56,8 +56,8 @@
   indorsements: (
     {% for ind in indorsements %}
     indorsement(
-      office-symbol: {{ ind.office_symbol | String }},
-      memo-for: {{ ind.memo_for | String }},
+      office-symbol: {{ ind.from | String }},
+      memo-for: {{ ind.for | String }},
       signature-block: {{ ind.signature_block | Lines }},
       {% if ind.attachments is defined %}
       attachments: {{ ind.attachments | Lines }},

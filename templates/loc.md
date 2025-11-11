@@ -11,7 +11,7 @@ memo_from:
 subject: Letter of Counseling
 signature_block:
   - (Issuer's) FIRST M. Last, Rank, USAF
-  - Position
+  - Duty Title
 tag_line: Less Formatting. More Lethality.
 # Based on LOCAR template from https://www.shaw.af.mil/Portals/98/Docs/Legal/Revamp/2022%20LOCAR%20TEMPLATE%20(Enlisted).docx
 ---
@@ -28,11 +28,29 @@ You will acknowledge receipt of this letter immediately by signing the first ind
 
 ---
 SCOPE: indorsements
-office_symbol: (Issuer's) ORG/SYM
-memo_for: (Recipient's) asdf
+for: (Issuer's) ORG/SYM
+from: (Recipient's) Rank FIRST M. Last
 signature_block: (Recipient's) FIRST M. LAST, Rank, USAF
 new_page: true #omit to keep on same page
-date: 2024-01-24 #date will default to today if not specified
+date: 2024-01-24 #omit to use original letter's date
 ---
 
 I acknowledge receipt and understanding of this letter on ________________ at ___________ hours. I understand that I have 3 duty days from the date I received this letter to provide a response and that I must include in my response any comments or documents I wish to be considered concerning this Letter of Counseling.
+
+---
+SCOPE: indorsements
+from: (2nd Ind's) Rank First M. Last
+for: (Issuer's) ORG/SYM
+signature_block: (2nd Ind's) FIRST M. LAST, Rank, USAF
+date: "Date: _____________"
+---
+
+I have reviewed the allegations contained in this Letter of Counseling. __I am submitting the attached documents in response__ / __I hereby waive my right to respond__.
+
+---
+SCOPE: indorsements
+from: (3rd Ind's) Rank First M. Last
+for: (Issuer's) ORG/SYM
+signature_block: (2nd Ind's) FIRST M. LAST, Rank, USAF
+date: "Date: _____________"
+---
