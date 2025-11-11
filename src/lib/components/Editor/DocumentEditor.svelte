@@ -71,6 +71,7 @@
 	let showLineNumbers = $state(true);
 	let previousDocumentId = $state<string | null>(null);
 	let hasSuccessfulPreview = $state(false);
+	let lastSaveStatus = $state<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
 	// Use centralized responsive store
 	const isMobile = $derived(responsiveStore.isMobile);
@@ -150,10 +151,15 @@
 
 	// Watch for successful auto-save to update initialContent
 	$effect(() => {
-		if (autoSave.saveState.status === 'saved' && isDirty) {
-			// Update initialContent to mark as saved
+		const currentStatus = autoSave.saveState.status;
+
+		// Only update initialContent when transitioning TO 'saved' status
+		// This prevents the effect from running continuously while status is 'saved'
+		if (currentStatus === 'saved' && lastSaveStatus !== 'saved' && isDirty) {
 			initialContent = content;
 		}
+
+		lastSaveStatus = currentStatus;
 	});
 
 	function handleFormat(type: string) {
