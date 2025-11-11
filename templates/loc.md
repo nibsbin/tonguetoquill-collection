@@ -13,7 +13,11 @@ signature_block:
   - (Issuer's) FIRST M. Last, Rank, USAF
   - Duty Title
 tag_line: Get Rekt
-font-size: 10.5
+
+# tune to fit all indorsements on second page
+font_size: 11
+compress_indorsements: true
+
 # Based on LOCAR template from https://www.shaw.af.mil/Portals/98/Docs/Legal/Revamp/2022%20LOCAR%20TEMPLATE%20(Enlisted).docx
 ---
 

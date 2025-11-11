@@ -51,6 +51,14 @@
   // Signature block
   signature-block: {{ signature_block | Lines(default=["signature_block"]) }},
 
+  // Compress indorsements
+  compress-indorsements: {{ compress_indorsements | default(false) }},
+
+  // Font size
+  {% if font_size is defined %}
+  font-size: {{ font_size }}pt,
+  {% endif %}
+
   // Indorsements
   {% if indorsements is defined %}
   indorsements: (
