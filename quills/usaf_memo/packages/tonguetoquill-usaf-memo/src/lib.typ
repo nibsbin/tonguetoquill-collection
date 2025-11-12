@@ -191,19 +191,20 @@
 }
 
 /// Renders a signature block with proper AFH 33-337 formatting and orphan prevention.
-/// 
+///
 /// Positions the signature block at the bottom right of the memorandum with:
-/// - 5 blank lines above for handwritten signature space
+/// - Configurable blank lines above for handwritten signature space (default: 4)
 /// - 4.5" left margin positioning (right-aligned)
 /// - Hanging indent of 1em for multi-line entries
 /// - Breakable: false to prevent orphaned signature blocks
-/// 
+///
 /// Per AFH 33-337: "The signature block is never on a page by itself."
-/// 
+///
 /// - signature-lines (array): Array of signature lines (name/rank, title, organization)
+/// - signature-blank-lines (int): Number of blank lines above signature (default: 4)
 /// -> content
-#let render-signature-block(signature-lines) = {
-  blank-lines(5, weak: false)
+#let render-signature-block(signature-lines, signature-blank-lines: 4) = {
+  blank-lines(signature-blank-lines, weak: false)
   block(breakable: false)[
     #align(left)[
       #pad(left: 4.5in - spacing.margin)[
@@ -393,23 +394,22 @@
 /// Key features:
 /// - Automatic indorsement numbering (1st Ind, 2nd Ind, etc.)
 /// - Proper date and subject line formatting referencing the original memorandum
-/// - Support for both same-page and separate-page indorsement formats
+/// - Support for both same-page and new-page indorsement formats
 /// - Individual signature blocks and backmatter sections
 /// - Page break control for document flow management
 /// 
-/// - office-symbol (str): Sending organization symbol for the indorsement
-/// - memo-for (str): Recipient organization symbol
+/// - ind-from (str): Sending organization symbol for the indorsement
+/// - ind-for (str): Recipient organization symbol
 /// - signature-block (array): Array of signature lines for the indorsing official
 /// - attachments (array): Array of attachment descriptions (optional)
 /// - cc (array): Array of courtesy copy recipients (optional)
-/// - leading-pagebreak (bool): Whether to force page break before this indorsement
-/// - separate-page (bool): Whether to use separate-page indorsement format
-/// - indorsement-date (str|datetime): Date of the indorsement (defaults to today)
+/// - new-page (bool): Whether to use new-page indorsement format
+/// - date (str|datetime): Date of the indorsement (defaults to today)
 /// - body (content): Indorsement body content
 /// -> dictionary
 #let indorsement(
-  office-symbol: "ORG/SYMBOL",
-  memo-for: "ORG/SYMBOL",
+  ind-from: "ORG/SYMBOL",
+  ind-for: "ORG/SYMBOL",
   signature-block: (
     "FIRST M. LAST, Rank, USAF",
     "Duty Title",
@@ -417,26 +417,26 @@
   ),
   attachments: none,
   cc: none,
-  leading-pagebreak: false,
-  separate-page: false,
-  indorsement-date: datetime.today(),
+  new-page: false,
+  date: datetime.today(),
   body,
 ) = {
   let ind = (
-    office-symbol: office-symbol,
-    memo-for: memo-for,
+    ind-from: ind-from,
+    ind-for: ind-for,
     signature-block: signature-block,
     attachments: attachments,
     cc: cc,
-    leading-pagebreak: leading-pagebreak,
-    separate-page: separate-page,
+    new-page: new-page,
+    date: date,
     body: body,
   )
 
   /// Renders the indorsement with proper formatting.
   /// - body-font (str): Font to use for body text.
+  /// - font-size (length): Font size for body text (default: 12pt).
   /// -> content
-  ind.render = (body-font: DEFAULT_BODY_FONTS ) => configure(body-font, {
+  ind.render = (body-font: DEFAULT_BODY_FONTS, font-size: 12pt) => configure(body-font, font-size: font-size, {
     counters.indorsement.step()
 
     context {
@@ -455,44 +455,46 @@
       let indorsement-number = counters.indorsement.get().first()
       let indorsement-label = format-indorsement-number(indorsement-number)
 
-      if ind.leading-pagebreak or separate-page {
+      // Calculate signature blank lines from compress-indorsements flag
+      let signature-blank-lines = if main-memo.compress-indorsements { 3 } else { 4 }
+
+      if new-page {
         pagebreak()
       }
 
-      if ind.separate-page {
-        // Separate-page indorsement format per AFH 33-337
+      if ind.new-page {
+        // New-page indorsement format per AFH 33-337
         [#indorsement-label to #original-office, #display-date(original-date), #original-subject]
 
         blank-line()
         grid(
           columns: (auto, 1fr),
-          ind.office-symbol, align(right)[#display-date(indorsement-date)],
+          ind.ind-from, align(right)[#display-date(ind.date)],
         )
 
         blank-line()
         grid(
           columns: (auto, auto, 1fr),
-          "MEMORANDUM FOR", "  ", ind.memo-for,
+          "MEMORANDUM FOR", "  ", ind.ind-for,
         )
       } else {
-        // Standard indorsement format
-        // Add spacing only if we didn't just do a pagebreak
-        if not ind.leading-pagebreak {
-          blank-line()
-        }
-        [#indorsement-label, #ind.office-symbol]
+        blank-line()
+        grid(
+          columns: (auto, 1fr),
+          [#indorsement-label, #ind.ind-from], align(right)[#display-date(ind.date)],
+        )
 
         blank-line()
         grid(
           columns: (auto, auto, 1fr),
-          "MEMORANDUM FOR", "  ", ind.memo-for,
+          "MEMORANDUM FOR", "  ", ind.ind-for,
         )
       }
       // Render body content
       render-body(ind.body)
 
       // Signature block positioning per AFH 33-337
-      render-signature-block(ind.signature-block)
+      render-signature-block(ind.signature-block, signature-blank-lines: signature-blank-lines)
 
 
       // Attachments section
@@ -560,6 +562,8 @@
 /// - indorsements (array): Array of indorsement objects for document routing (optional)
 /// - letterhead-font (str | array): Font(s) for letterhead text (defaults to Copperplate CC)
 /// - body-font (str | array): Font(s) for body text (defaults to Times New Roman/TeX Gyre Termes)
+/// - font-size (length): Font size for body text (default: 12pt per AFH 33-337)
+/// - compress-indorsements (bool): Use 3 blank lines instead of 4 for indorsement signatures (default: false)
 /// - memo-for-cols (int): Number of columns for recipient grid layout (default: 3)
 /// - paragraph-block-indent (bool): Enable paragraph block indentation (default: false)
 /// - leading-backmatter-pagebreak (bool): Force page break before backmatter sections (default: false)
@@ -595,11 +599,13 @@
   // Optional styling parameters
   letterhead-font: DEFAULT_LETTERHEAD_FONTS,
   body-font: DEFAULT_BODY_FONTS,
+  font-size: 12pt,
+  compress-indorsements: false,
   memo-for-cols: 3,
   paragraph-block-indent: false,
   leading-backmatter-pagebreak: false,
   body,
-) = configure(body-font, {
+) = configure(body-font, font-size: font-size, {
   // Initialize document counters and settings
 
   let self = (
@@ -620,6 +626,8 @@
     classification-level: classification-level,
     letterhead-font: letterhead-font,
     body-font: body-font,
+    font-size: font-size,
+    compress-indorsements: compress-indorsements,
     memo-for-cols: memo-for-cols,
     paragraph-block-indent: paragraph-block-indent,
     leading-backmatter-pagebreak: leading-backmatter-pagebreak,
@@ -711,6 +719,6 @@
     leading-backmatter-pagebreak: self.leading-backmatter-pagebreak,
   )
   // Indorsements
-  process-indorsements(self.indorsements, body-font: self.body-font)
+  process-indorsements(self.indorsements, body-font: self.body-font, font-size: self.font-size)
 })
 
