@@ -6,6 +6,6 @@ bun.lock
 bun.lockb
 
 # Miscellaneous
-/static/
+static/
 prose/legacymock_project
 tonguetoquill-collection/
