@@ -33,21 +33,22 @@
 )
 
 /// Configures document-wide typography and spacing settings.
-/// 
+///
 /// Applies consistent formatting across the entire memorandum:
 /// - Sets paragraph leading and spacing for proper line height
 /// - Configures block spacing to eliminate unwanted gaps
-/// - Sets font and size to 12pt (AFH 33-337 standard)
+/// - Sets font and configurable size (AFH 33-337 standard is 12pt)
 /// - Enables text justification for professional appearance
-/// 
+///
 /// - body-font (str | array): Font(s) to use for body text
+/// - font-size (length): Font size for body text (default: 12pt)
 /// - ctx (content): Content to apply configuration to
 /// -> content
-#let configure(body-font,ctx) = {
+#let configure(body-font, font-size: 12pt, ctx) = {
   context{
     set par(leading: spacing.line, spacing:spacing.line, justify: true)
     set block(above:spacing.line, below:0em,spacing: 0em)
-    set text(font: body-font, size: 12pt, fallback: false)
+    set text(font: body-font, size: font-size, fallback: false)
     ctx
   }
 }
@@ -61,9 +62,13 @@
 /// - weak (bool): Whether spacing can be compressed at page breaks
 /// -> content
 #let blank-lines(count,weak:true) = {
-  let lead = spacing.line
-  let height = spacing.line-height
-  v(lead + (height + lead) * count,weak:weak)
+  if count == 0 {
+    v(0em, weak:weak)
+  } else {
+    let lead = spacing.line
+    let height = spacing.line-height
+    v(lead + (height + lead) * count,weak:weak)
+  }
 }
 
 /// Creates vertical spacing equivalent to one blank line.
@@ -140,16 +145,54 @@
   ]
 }
 
-/// Formats a date in standard military format.
-/// 
-/// Converts a datetime object to the standard format used in military correspondence:
-/// "1 January 2024" (day without padding, full month name, four-digit year).
-/// 
-/// - date (str|datetime): Date to format for display or as-is string
+/// Checks if a string is in ISO date format (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS).
+///
+/// Performs a simple pattern check for ISO 8601 date strings by verifying:
+/// - String is at least 10 characters long
+/// - Characters at positions 4 and 7 are dashes
+///
+/// - date-str (str): String to check for ISO date pattern
+/// -> bool
+#let is-iso-date-string(date-str) = {
+  if date-str.len() >= 10 {
+    let char4 = date-str.at(4)
+    let char7 = date-str.at(7)
+    return char4 == "-" and char7 == "-"
+  }
+  return false
+}
+
+/// Extracts the date portion (YYYY-MM-DD) from an ISO date string.
+///
+/// Returns the first 10 characters which contain the date portion of an
+/// ISO 8601 date string, removing any time component if present.
+///
+/// - date-str (str): ISO date string to extract from
+/// -> str
+#let extract-iso-date(date-str) = {
+  date-str.slice(0, 10)
+}
+
+/// Formats a date in standard military format or ISO format depending on input type.
+///
+/// Intelligently handles different date input formats:
+/// - ISO string (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS): Parsed via TOML and displayed in military format
+/// - Non-ISO string: Displayed as-is
+/// - datetime object: Displayed in military format ("1 January 2024")
+///
+/// - date (str|datetime): Date to format for display
 /// -> str
 #let display-date(date) = {
   if type(date) == str {
-    date
+    if is-iso-date-string(date) {
+      // Parse ISO date string using TOML to get datetime object
+      let iso-date = extract-iso-date(date)
+      let toml-str = "date = " + iso-date
+      let parsed = toml(bytes(toml-str))
+      parsed.date.display("[day padding:none] [month repr:long] [year]")
+    } else {
+      date
+    }
   }
   else {
     date.display("[day padding:none] [month repr:long] [year]")
@@ -491,18 +534,19 @@
 }
 
 /// Processes and renders an array of indorsements.
-/// 
+///
 /// Iterates through an array of indorsement objects and renders each one
 /// with proper formatting and font settings. Used by the main memorandum
 /// template to process the indorsements parameter.
-/// 
+///
 /// - indorsements (array): Array of indorsement objects created with indorsement()
 /// - body-font (str | array): Font(s) to use for indorsement text
+/// - font-size (length): Font size for indorsement text (default: 12pt)
 /// -> content
-#let process-indorsements(indorsements, body-font: none) = {
+#let process-indorsements(indorsements, body-font: none, font-size: 12pt) = {
   if not falsey(indorsements) {
     for indorsement in indorsements {
-      (indorsement.render)(body-font: body-font)
+      (indorsement.render)(body-font: body-font, font-size: font-size)
     }
   }
 }
