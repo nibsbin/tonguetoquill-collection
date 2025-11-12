@@ -15,7 +15,7 @@ tag_line: Aim High # Optional tagline
 ---
 
 <!-- INTRODUCTION -->
-This statement concerns the letter of counseling I received on __date of LOC in YYYY Month DD format__ for being late to formation. I respectfully request that you consider the following information.
+This statement concerns the letter of counseling I received on _date of LOC in YYYY Month DD format_ for being late to formation. I respectfully request that you consider the following information.
 
 <!--
 ALLEGATIONS

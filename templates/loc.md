@@ -22,11 +22,11 @@ compress_indorsements: true
 ---
 
 <!-- Describe the incident: what the member did or failed to do, citing specific incidents and dates, and if possible, with UCMJ articles. -->
-Investigation has disclosed the __incident description__.
+Investigation has disclosed the _incident description_.
 
 <!-- Counseling paragraph: Discuss the impact of the member's actions and what improvement is expected. -->
 You are hereby counseled.
-__impact and expected improvement__.
+_impact and expected improvement_.
 Your conduct is unacceptable and any future misconduct may result in more severe action.
 
 The following information required by the Privacy Act is provided for your information. **AUTHORITY**: 10 U.S.C. § 8013. **PURPOSE**: To obtain any comments or documents you desire to submit (on a voluntary basis) for consideration concerning this action. **ROUTINE USES**: Provides you an opportunity to submit comments or documents for consideration. If provided, the comments and documents you submit become a part of the action. **DISCLOSURE**: Your written acknowledgement of receipt and signature are mandatory. Any other comments or documents you provide are voluntary.
@@ -53,7 +53,7 @@ date: "Date: _____________"
 ---
 
 <!-- Second Indorsement: Subject's response - choose one option -->
-I have reviewed the allegations contained in this Letter of Counseling. __I am submitting the attached documents in response__ / __I hereby waive my right to respond__.
+I have reviewed the allegations contained in this Letter of Counseling. _I am submitting the attached documents in response_ / _I hereby waive my right to respond_.
 
 ---
 SCOPE: indorsements
@@ -64,7 +64,7 @@ date: "Date: _____________"
 ---
 
 <!-- Third Indorsement: Issuer's final decision - choose appropriate options -->
-__I have considered the response you submitted__ / __You waived your right to submit a response to this action__. I have decided to __withdraw__ / __sustain__ the Letter of Counseling.
+_I have considered the response you submitted_ / _You waived your right to submit a response to this action_. I have decided to _withdraw_ / _sustain_ the Letter of Counseling.
 
 ---
 SCOPE: indorsements
