@@ -12,7 +12,7 @@ subject: Letter of Counseling
 signature_block:
   - (Issuer's) FIRST M. Last, Rank, USAF
   - Duty Title
-tag_line: Get Rekt
+tag_line: Get Rekt #optional tagline
 
 # tune to fit all indorsements on second page
 font_size: 11
