@@ -7,24 +7,26 @@ letterhead_caption:
 memo_for:
   - (Subject's) Rank FIRST M. LAST
 memo_from:
-  - (Issuer's) ORG/SYM
+  - (Issuer's) ORG/SYMBOL
 subject: Letter of Counseling
 signature_block:
-  - (Issuer's) FIRST M. Last, Rank, USAF
+  - (Issuer's) FIRST M. LAST, Rank, USAF
   - Duty Title
-tag_line: Get Rekt #optional tagline
+tag_line: Get Rekt # Optional tagline
 
-# tune to fit all indorsements on second page
+# Tune to fit all indorsements on second page
 font_size: 11
 compress_indorsements: true
 
 # Based on LOCAR template from https://www.shaw.af.mil/Portals/98/Docs/Legal/Revamp/2022%20LOCAR%20TEMPLATE%20(Enlisted).docx
 ---
 
-Investigation has disclosed the __describe what the member did or failed to do, citing specific incidents and dates, and, if possible, with UCMJ articles__.
+<!-- Describe the incident: what the member did or failed to do, citing specific incidents and dates, and if possible, with UCMJ articles. -->
+Investigation has disclosed the __incident description__.
 
+<!-- Counseling paragraph: Discuss the impact of the member's actions and what improvement is expected. -->
 You are hereby counseled.
-__Tailor the language in this paragraph to discuss the impact of what the member did or failed to do and what improvement is expected__.
+__impact and expected improvement__.
 Your conduct is unacceptable and any future misconduct may result in more severe action.
 
 The following information required by the Privacy Act is provided for your information. **AUTHORITY**: 10 U.S.C. § 8013. **PURPOSE**: To obtain any comments or documents you desire to submit (on a voluntary basis) for consideration concerning this action. **ROUTINE USES**: Provides you an opportunity to submit comments or documents for consideration. If provided, the comments and documents you submit become a part of the action. **DISCLOSURE**: Your written acknowledgement of receipt and signature are mandatory. Any other comments or documents you provide are voluntary.
@@ -33,40 +35,44 @@ You will acknowledge receipt of this letter immediately by signing the first ind
 
 ---
 SCOPE: indorsements
-for: (Issuer's) ORG/SYM
+for: (Issuer's) ORG/SYMBOL
 from: (Subject's) Rank FIRST M. LAST
 signature_block: (Subject's) FIRST M. LAST, Rank, USAF
-new_page: true #omit to keep on same page
+new_page: true # Omit to keep on same page
 ---
 
+<!-- First Indorsement: Subject acknowledges receipt of the LOC -->
 I acknowledge receipt and understanding of this letter on ________________ at ___________ hours. I understand that I have 3 duty days from the date I received this letter to provide a response and that I must include in my response any comments or documents I wish to be considered concerning this Letter of Counseling.
 
 ---
 SCOPE: indorsements
-from: (Subject's) Rank First M. Last
-for: (Issuer's) ORG/SYM
+from: (Subject's) Rank FIRST M. LAST
+for: (Issuer's) ORG/SYMBOL
 signature_block: (Subject's) FIRST M. LAST, Rank, USAF
 date: "Date: _____________"
 ---
 
+<!-- Second Indorsement: Subject's response - choose one option -->
 I have reviewed the allegations contained in this Letter of Counseling. __I am submitting the attached documents in response__ / __I hereby waive my right to respond__.
 
 ---
 SCOPE: indorsements
-from: (Issuer's) Rank First M. Last
+from: (Issuer's) Rank FIRST M. LAST
 for: (Subject's) Rank FIRST M. LAST
 signature_block: (Issuer's) FIRST M. LAST, Rank, USAF
 date: "Date: _____________"
 ---
 
+<!-- Third Indorsement: Issuer's final decision - choose appropriate options -->
 __I have considered the response you submitted__ / __You waived your right to submit a response to this action__. I have decided to __withdraw__ / __sustain__ the Letter of Counseling.
 
 ---
 SCOPE: indorsements
-from: (Subject's) Rank First M. Last
-for: (Issuer's) ORG/SYM
+from: (Subject's) Rank FIRST M. LAST
+for: (Issuer's) ORG/SYMBOL
 signature_block: (Subject's) FIRST M. LAST, Rank, USAF
 date: "Date: _____________"
 ---
 
+<!-- Fourth Indorsement: Subject acknowledges final decision -->
 I acknowledge receipt of the final decision regarding disposition of this Letter of Counseling on ____________ at __________ hours.
