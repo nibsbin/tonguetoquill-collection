@@ -19,7 +19,8 @@
 		"lint": "prettier --check . && eslint .",
 		"test": "npm run test:unit -- --run && npm run test:e2e",
 		"test:unit": "vitest --project server",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"update-quills": "git subtree pull --prefix=tonguetoquill-collection https://github.com/nibsbin/tonguetoquill-collection main --squash"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
