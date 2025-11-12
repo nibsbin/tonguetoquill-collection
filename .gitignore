@@ -1,31 +1,17 @@
-test-results
-node_modules
-
-# Output
-.output
-.vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
-
-# OS
+# macOS
 .DS_Store
-Thumbs.db
 
-# Env
-.env.*.local
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*~
 
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+# Typst / build outputs
+*.zip
+release-artifacts/
 
-prompts
-.idea
-
-AGENTS.md
-
-# Supabase
-.branches
-.temp
-.env.local
+# Secrets and environment
+.env
+*.pem
+*.key
