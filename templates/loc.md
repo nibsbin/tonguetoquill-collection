@@ -5,7 +5,7 @@ letterhead_caption:
   - 20th Fighter Wing (ACC)
   - Shaw Air Force Base South Carolina
 memo_for:
-  - (Recipient's) Rank FIRST M. LAST
+  - (Subject's) Rank FIRST M. LAST
 memo_from:
   - (Issuer's) ORG/SYM
 subject: Letter of Counseling
@@ -34,19 +34,18 @@ You will acknowledge receipt of this letter immediately by signing the first ind
 ---
 SCOPE: indorsements
 for: (Issuer's) ORG/SYM
-from: (Recipient's) Rank FIRST M. Last
-signature_block: (Recipient's) FIRST M. LAST, Rank, USAF
+from: (Subject's) Rank FIRST M. LAST
+signature_block: (Subject's) FIRST M. LAST, Rank, USAF
 new_page: true #omit to keep on same page
-date: 2024-01-24 #omit to use original letter's date
 ---
 
 I acknowledge receipt and understanding of this letter on ________________ at ___________ hours. I understand that I have 3 duty days from the date I received this letter to provide a response and that I must include in my response any comments or documents I wish to be considered concerning this Letter of Counseling.
 
 ---
 SCOPE: indorsements
-from: (2nd Ind's) Rank First M. Last
+from: (Subject's) Rank First M. Last
 for: (Issuer's) ORG/SYM
-signature_block: (2nd Ind's) FIRST M. LAST, Rank, USAF
+signature_block: (Subject's) FIRST M. LAST, Rank, USAF
 date: "Date: _____________"
 ---
 
@@ -54,19 +53,19 @@ I have reviewed the allegations contained in this Letter of Counseling. __I am s
 
 ---
 SCOPE: indorsements
-from: (3rd ind's) Rank First M. Last
-for: (Issuer's) ORG/SYM
-signature_block: (3rd ind's) FIRST M. LAST, Rank, USAF
+from: (Issuer's) Rank First M. Last
+for: (Subject's) Rank FIRST M. LAST
+signature_block: (Issuer's) FIRST M. LAST, Rank, USAF
 date: "Date: _____________"
 ---
 
-I have decided to __withdraw__ / __sustain__ the Letter of Counseling.
+__I have considered the response you submitted__ / __You waived your right to submit a response to this action__. I have decided to __withdraw__ / __sustain__ the Letter of Counseling.
 
 ---
 SCOPE: indorsements
-from: (4th ind's) Rank First M. Last
+from: (Subject's) Rank First M. Last
 for: (Issuer's) ORG/SYM
-signature_block: (4th ind's) FIRST M. LAST, Rank, USAF
+signature_block: (Subject's) FIRST M. LAST, Rank, USAF
 date: "Date: _____________"
 ---
 
