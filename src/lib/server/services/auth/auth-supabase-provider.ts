@@ -116,11 +116,7 @@ export class SupabaseAuthProvider implements AuthContract {
 
 			return data.url;
 		} else {
-			throw new AuthError(
-				'unknown_error',
-				`Unsupported authentication provider: ${provider}`,
-				400
-			);
+			throw new AuthError('unknown_error', `Unsupported authentication provider: ${provider}`, 400);
 		}
 	}
 
