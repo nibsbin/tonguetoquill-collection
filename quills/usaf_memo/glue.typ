@@ -74,7 +74,7 @@
 {% for ind in indorsements %}
 #indorsement(
   from: {{ ind.from | String }},
-  to: {{ ind.to | String }},
+  to: {{ ind.for | String }},
   signature_block: {{ ind.signature_block | Lines }},
   {% if ind.attachments is defined %}
   attachments: {{ ind.attachments | Lines }},
