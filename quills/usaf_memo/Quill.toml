@@ -5,40 +5,67 @@ glue_file = "glue.typ"
 example_file = "usaf_memo.md"
 description = "Typesetted USAF Official Memorandum"
 
+# Stationary Fields
+#===================
+
 [fields.letterhead_title]
 description = "Title in letterhead"
 type = "string"
 default = "DEPARTMENT OF THE AIR FORCE"
+ui.group = "Stationary"
 
 [fields.letterhead_caption]
 description = "Letterhead caption line(s)"
 type = "array"
 default = ["123 Raynor's Raiders"]
+ui.group = "Stationary"
+
+[fields.tag_line]
+description = "Tag line at bottom of memo"
+type = "string"
+default = "Aim High"
+ui.group = "Stationary"
+
+# Memo Header Fields
+#===================
 
 [fields.date]
 description = "Date of memo (YYYY-MM-DD); defaults to today"
 type = "string"
 default = ""
+ui.group = "Memo Header"
 
 [fields.memo_for]
-description = "List of recipient organization symbols"
+description = "List of recipient organization(s)"
 type = "array"
 example = ["ORG1/SYMBOL", "ORG2/SYMBOL"]
+ui.group = "Memo Header"
 
 [fields.memo_from]
 description = "Sender information as array: [ORG/SYMBOL, 'Organization Name', 'Street Address', 'City State ZIP']"
 type = "array"
 example = ["ORG/SYMBOL", "Organization Name", "123 Street Ave", "City ST 12345-6789"]
+ui.group = "Memo Header"
 
 [fields.subject]
 description = "Subject of the memo"
 type = "string"
+example = "Subject of the Memorandum"
+ui.group = "Memo Header"
 
+[fields.signature_block]
+description = "Signature block lines"
+type = "array"
+example = ["FIRST M. LAST, Rank, USSF", "Duty Title"]
+
+# Additional Information
+#======================
 [fields.references]
 description = "References for the memo"
 type = "array"
 default = []
 example = ["AFM 33-326, 31 July 2019, Preparing Official Communications"]
+ui.group = "Additional Information"
 
 [fields.cc]
 description = "Carbon copy recipients"
@@ -57,16 +84,6 @@ description = "List of attachments"
 type = "array"
 default = []
 example = ["Attachment description, YYYY MMM DD", "Another attachment, date"]
-
-[fields.signature_block]
-description = "Signature block lines"
-type = "array"
-example = ["FIRST M. LAST, Rank, USSF", "Duty Title"]
-
-[fields.tag_line]
-description = "Tag line at bottom of memo"
-type = "string"
-default = "Aim High"
 
 [fields.classification]
 description = "Classification level of the memo that displays in the banner"
