@@ -6,38 +6,55 @@ memo_for:
   - (Issuer's) Rank FIRST M. LAST
 memo_from:
   - (Subject's) ORG/SYMBOL
-subject: Response to Letter of Reprimand
+subject: Response to Letter of Counseling, (date of LOC)
 signature_block:
   - (Subject's) FIRST M. LAST, Rank, USAF
-tag_line: Aim High # Optional tagline
+tag_line: Aim High # Optional
+attachments:
+  - Attachment 1, (Description)
+  - Attachment 2, (Description)
 
-# Based on https://www.scott.af.mil/Portals/28/documents/adc/AFD-151027-033.pdf?ver=2016-05-19-134503-133
+# Based on http://tonguetoquill.com/blogs/2025-11-25-paperwork-is-power
 ---
 
-<!-- INTRODUCTION -->
-This statement concerns the letter of counseling I received on _date of LOC in YYYY Month DD format_ for being late to formation. I respectfully request that you consider the following information.
+<!-- 1. INTRODUCTION -->
+I received the Letter of Counseling dated _DD Month YYYY_ regarding being late to formation. I respectfully submit this response for your consideration.
 
-<!--
-ALLEGATIONS
-  If you didn't commit the offense: explain discrepancies, clarify incorrect statements, state what happened in your own words, explain if actions were misinterpreted or authorized.
-  If you committed the offense: admit it, apologize, briefly explain circumstances without making excuses, accept responsibility, stress no intention to repeat.
--->
-
-I take full responsibility for being late and sincerely apologize. I experienced a vehicle issue that morning, but I recognize I should have planned for such contingencies. I have since adjusted my departure time and established a vehicle maintenance schedule to ensure this does not happen again.
-
-<!--
-BACKGROUND
+<!--------------
+2. SERVICE HISTORY
   Show you're an asset to the Air Force.
+  - Time in service, AFSC, role
+  - EPR ratings (quote strong language)
+  - Awards with dates
+  - Deployments, certifications, key achievements
 -->
 
-I respectfully request that you consider my overall record of service. I am a Cyber Transport technician with four years of service. I completed technical training with honors and have consistently supported mission-critical operations. During my time in this unit, I have earned the following recognition:
-- Airman of the Quarter, September 2024
-- Air Force Achievement Medal, December 2024
+I respectfully request you consider my overall service record. I am a Cyber Transport technician with four years of service. I completed technical training with honors and have consistently supported mission-critical operations. My most recent EPR rated me a Firewall 5. During my time in this unit, I have earned Airman of the Quarter (September 2024) and the Air Force Achievement Medal (December 2024).
 
-<!-- CONCLUSION
-  Apologize in your own words.
-  Request LOR not be filed based on evidence/character/performance. 
-  Reassure commitment to positive change and thank them.
+<!--
+3. RESPONSE TO ALLEGATIONS
+  Address each claim with facts and evidence.
+  - If you didn't do it: state what actually happened (dates, times, actions), point out inaccuracies, reference evidence
+  - If you did do it: acknowledge it professionally, explain circumstances without excuses, show it's isolated
+  - Procedural errors: cite specific AFI and provide timeline
 -->
 
-I sincerely apologize for this incident. Based on my record of performance and the character references submitted, I respectfully request that you do not file this letter of counseling in my personnel information file. Regardless of your decision, I am committed to maintaining the standards of conduct expected of me and will continue to serve with professionalism and dedication. Thank you for taking the time to review this response.
+I take full responsibility for being late and sincerely apologize. I experienced a vehicle issue that morning, but I recognize I should have planned for such contingencies.
+
+<!--
+4. MITIGATION AND REHABILITATION
+  Show corrective actions taken since the incident.
+  - Specific actions with dates and measurable results
+  - Training completed, procedures changed, improved metrics
+-->
+
+Since this incident, I have adjusted my departure time to arrive 30 minutes early and established a vehicle maintenance schedule. I have had zero late arrivals in the 45 days since the incident.
+
+<!--
+5. CLOSING
+  Request withdrawal or no PIF filing.
+  - Explain impact if filed (promotion, clearance, reenlistment)
+  - Reaffirm commitment to standards
+-->
+
+Based on my record of performance and corrective actions taken, I respectfully request that you do not file this letter in my personnel information file. I remain committed to maintaining the standards of conduct expected of me and will continue to serve with professionalism. Thank you for your consideration.
