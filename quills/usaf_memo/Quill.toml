@@ -57,6 +57,7 @@ ui.group = "Memo Header"
 description = "Signature block lines"
 type = "array"
 example = ["FIRST M. LAST, Rank, USSF", "Duty Title"]
+ui.group = "Memo Header"
 
 # Additional Information
 #======================
@@ -72,21 +73,25 @@ description = "Carbon copy recipients"
 type = "array"
 default = []
 example = ["Rank and Name, ORG/SYMBOL"]
+ui.group = "Additional Information"
 
 [fields.distribution]
 description = "Distribution list. Used when \"SEE DISTRIBUTION\" is specified in `memo_for`."
 type = "array"
 default = []
 example = ["ORG1/SYMBOL", "ORG2/SYMBOL"]
+ui.group = "Additional Information"
 
 [fields.attachments]
 description = "List of attachments"
 type = "array"
 default = []
 example = ["Attachment description, YYYY MMM DD", "Another attachment, date"]
+ui.group = "Additional Information"
 
 [fields.classification]
 description = "Classification level of the memo that displays in the banner"
 type = "string"
 default = ""
 example = "<UNCLASSIFIED|CONFIDENTIAL|SECRET|TOP SECRET>//TAGS"
+ui.group = "Additional Information"
