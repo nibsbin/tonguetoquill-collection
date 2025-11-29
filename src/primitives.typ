@@ -22,7 +22,10 @@
   // CMU Wordmark
   // Guidelines 4.1: Width approx 2.25" to 2.5"
   if wordmark != none {
-    box(width: 2.25in)[#wordmark]
+    box(width: 2.25in)[
+      #set image(width: 100%)
+      #wordmark
+    ]
   }
 
   // Vertical Offset
@@ -121,10 +124,13 @@
   blank-lines(signature-lines, weak: false)
 
   // Sender name and title
-  if sender-name != none {
-    align(left)[#sender-name]
-  }
-  if sender-title != none {
-    align(left)[#sender-title]
-  }
+  block[
+    #if sender-name != none {
+      sender-name
+      linebreak()
+    }
+    #if sender-title != none {
+      sender-title
+    }
+  ]
 }

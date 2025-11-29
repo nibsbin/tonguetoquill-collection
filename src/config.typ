@@ -43,8 +43,13 @@
 // SPACING CONSTANTS
 // =============================================================================
 
+// =============================================================================
+// SPACING CONSTANTS
+// =============================================================================
+
 #let spacing = (
-  line: 0.5em,          // Internal line spacing
-  line-height: 0.7em,   // Base line height
+  line: 0.2em,          // Internal line spacing (leading) for approx 1.2 line height
+  line-height: 1em,     // Base line height (font size)
   paragraph: 1em,       // Space between paragraphs
 )
+

@@ -41,7 +41,7 @@
     set par(
       first-line-indent: 0pt,
       justify: false,
-      leading: 1.15em,  // Guidelines: 1.15 to 1.2 line spacing
+      // leading is handled by configure() via config.typ to ensure 1.15-1.2 line spacing
     )
 
     // Render the header
