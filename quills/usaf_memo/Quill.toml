@@ -8,13 +8,6 @@ description = "Typesetted USAF Official Memorandum"
 # Memo Header Fields
 #===================
 
-[fields.date]
-description = "Date of memo (YYYY-MM-DD); defaults to today"
-type = "string"
-default = ""
-ui.group = "Memo Header"
-ui.tooltip = "The memo date. Leave blank to automatically use today's date. Dates are formatted as '15 March 2024'."
-
 [fields.memo_for]
 description = "List of recipient organization(s)"
 type = "array"
@@ -69,6 +62,14 @@ ui.tooltip = "The organizational motto displayed at the bottom of the page. 'Aim
 
 # Additional Information
 #======================
+
+[fields.date]
+description = "Date of memo (YYYY-MM-DD); defaults to today"
+type = "string"
+default = ""
+ui.group = "Additional Information"
+ui.tooltip = "The memo date. Leave blank to automatically use today's date. Dates are formatted as '15 March 2024'."
+
 [fields.references]
 description = "References for the memo"
 type = "array"
