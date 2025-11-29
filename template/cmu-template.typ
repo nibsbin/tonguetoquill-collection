@@ -19,12 +19,32 @@
 
 #show: mainmatter
 
-To maintain the visual integrity of Carnegie Mellon University’s brand, all official correspondence must adhere to the strict layout specifications detailed below. This document defines the "pedantic" standards required to reproduce the official letterhead across any software platform (LaTeX, Microsoft Word, Typst, etc.).
+Dear [Donor’s Salutation], 
+ 
+This is just greek copy to show suggested formatting. Please use Open Sans typeface if available.  
+ 
+Tiisque volecab il modit facersperrum arum nonse dolum qui omnis as sequibus molluptaquam 
+aliquae. Aque moluptaquam facessimperi dolut etur, que a consequo et harias consenecti que disi ut 
+inctore, odit qui quia cuptas earchillamus modi ut veror sendandae perit aut apitincipici de nobis qui 
+commodi quatem. Volorruntios dist ent ut fuga.  
+ 
+Enclosed, please find the: 
+ 
+• Aditent ut lique consentota ium, same dolorepre por sim num et magnam, te volorrum ent reius, 
+in culparum facerib repelique ercid qui optat officabo. Cum doleste modigenim ipsanim ditem 
+eniatus estior molesequo tecti alit, aut ellacea nisitasi blabo.  
+ 
+• Olore odia aut omniste nectur, et latatus, sequi od expe ea que praest aut assi ditisci isciantem 
+sum doluptas minihit atemporibus essint aliquidellor architatur? 
+ 
+Qui quia cuptas earchillamus modi ut veror sendandae perit aut apitincipici de nobis qui commodi 
+quatem. Volorruntios dist. 
+ 
+Regards, 
 
-Note: Visual approximation is insufficient. Adherence to typographic hierarchy and spatial relationships is required.
 
-#backmatter(
-  closing: "Sincerely,",
-  sender_name: "[Sender Name]",
-  sender_title: "[Sender Title]",
-)
+
+#show: signature
+
+First Q. Lastname 
+Title Here
