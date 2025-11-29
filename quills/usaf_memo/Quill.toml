@@ -5,30 +5,6 @@ glue_file = "glue.typ"
 example_file = "usaf_memo.md"
 description = "Typesetted USAF Official Memorandum"
 
-# Stationary Fields
-#===================
-
-[fields.letterhead_title]
-description = "Title in letterhead"
-type = "string"
-default = "DEPARTMENT OF THE AIR FORCE"
-ui.group = "Stationary"
-ui.tooltip = "The standard letterhead title. Only change this if you work at a Joint Command or DoD Agency."
-
-[fields.letterhead_caption]
-description = "Letterhead caption line(s)"
-type = "array"
-default = ["HEADQUARTERS [UNIT NAME]"]
-ui.group = "Stationary"
-ui.tooltip = "The full name of your organization. Spell out all words (e.g., 'HEADQUARTERS' not 'HQ'). Do not use abbreviations or office symbols."
-
-[fields.tag_line]
-description = "Tag line at bottom of memo"
-type = "string"
-default = "Aim High"
-ui.group = "Stationary"
-ui.tooltip = "The organizational motto displayed at the bottom of the page. 'Aim High' is the standard Air Force motto. Leave blank to omit."
-
 # Memo Header Fields
 #===================
 
@@ -66,6 +42,30 @@ type = "array"
 example = ["FIRST M. LAST, Rank, USSF", "Duty Title"]
 ui.group = "Memo Header"
 ui.tooltip = "The signer's information. Line 1: NAME (ALL CAPS), Rank, Service. Line 2: Official duty title. Verify the duty title matches official records."
+
+# Letterhead Fields
+#===================
+
+[fields.letterhead_title]
+description = "Title in letterhead"
+type = "string"
+default = "DEPARTMENT OF THE AIR FORCE"
+ui.group = "Letterhead"
+ui.tooltip = "The standard letterhead title. Only change this if you work at a Joint Command or DoD Agency."
+
+[fields.letterhead_caption]
+description = "Letterhead caption line(s)"
+type = "array"
+default = ["HEADQUARTERS [UNIT NAME]"]
+ui.group = "Letterhead"
+ui.tooltip = "The full name of your organization. Spell out all words (e.g., 'HEADQUARTERS' not 'HQ'). Do not use abbreviations or office symbols."
+
+[fields.tag_line]
+description = "Tag line at bottom of memo"
+type = "string"
+default = "Aim High"
+ui.group = "Letterhead"
+ui.tooltip = "The organizational motto displayed at the bottom of the page. 'Aim High' is the standard Air Force motto. Leave blank to omit."
 
 # Additional Information
 #======================
