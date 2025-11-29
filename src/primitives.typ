@@ -52,6 +52,7 @@
       } else if type(address) == "array" {
         address.join(linebreak())
       }
+      linebreak()
     }
 
     // Web Address: Regular
