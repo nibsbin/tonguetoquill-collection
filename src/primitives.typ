@@ -43,16 +43,18 @@
 
     // University Name: Regular
     Carnegie Mellon University
-    linebreak()
+    #linebreak()
 
     // Address Lines: Regular
     #if address != none {
       if type(address) == "string" {
         address
       } else if type(address) == "array" {
-        address.join(linebreak())
+        for line in address {
+          line
+          linebreak()
+        }
       }
-      linebreak()
     }
 
     // Web Address: Regular
