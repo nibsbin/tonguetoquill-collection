@@ -7,9 +7,6 @@ memo_for:
   # - 2nd ORG/SYM
 memo_from:
   - ORG/SYMBOL
-  - ORGANIZATION
-  - Street Address
-  - City St 12345-6789
 subject: Comply without pain — markdown to official memo
 signature_block:
   - FIRST M. LAST, Rank, USAF
