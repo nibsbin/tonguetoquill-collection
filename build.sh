@@ -1,23 +1,14 @@
 #!/bin/bash
 
-compile_template() {
-  local template=$1
-  local input="template/${template}.typ"
-  local output="pdfs/${template}.pdf"
-
-  echo "Compiling ${template}..."
-  if typst compile --font-path . --root . "$input" "$output"; then
-    echo "  ✓ Generated: $(pwd)/$output"
-  else
-    echo "  ✗ Failed to compile $template"
-    return 1
-  fi
-}
-
-echo "Building templates..."
+echo "Building cmu-template..."
 echo
 
-compile_template "cmu-template"
+if typst compile --font-path . --root . template/cmu-template.typ pdfs/cmu-template.pdf; then
+  echo "  ✓ Generated: $(pwd)/pdfs/cmu-template.pdf"
+else
+  echo "  ✗ Failed to compile cmu-template"
+  exit 1
+fi
 
 echo
-echo "All compilations completed."
+echo "Compilation completed."

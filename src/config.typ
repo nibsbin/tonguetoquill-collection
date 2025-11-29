@@ -6,35 +6,34 @@
 // =============================================================================
 // COLOR PALETTE
 // =============================================================================
-// CMU Brand Colors per guidelines section 2.3
+// CMU Brand Colors per guidelines section 3.3
 
 #let CMU_RED = rgb("#C41230")      // Carnegie Red - restricted to wordmark/logo
-#let CMU_IRON_GRAY = rgb("#6D6E71") // Iron Gray - for footer/secondary text
+#let CMU_DARK_GREY = rgb("#333333") // Dark Grey - for body text option
 #let CMU_BLACK = rgb("#000000")     // Black - standard for body correspondence
 
 // =============================================================================
 // TYPOGRAPHY DEFAULTS
 // =============================================================================
-// Guidelines section 2.2: Primary typeface is Open Sans
-// Fallbacks: Helvetica or Arial if Open Sans unavailable
+// Guidelines section 3.1: Primary typeface is Open Sans
+// Fallbacks: Arial or Helvetica if Open Sans unavailable
+// Serif fonts are strictly prohibited.
 
-#let DEFAULT_BODY_FONTS = ("Open Sans", "Helvetica", "Arial")
-#let DEFAULT_SERIF_FONTS = ("Source Serif Pro", "Times New Roman")
+#let DEFAULT_BODY_FONTS = ("Open Sans", "Arial", "Helvetica")
+#let DEFAULT_SERIF_FONTS = () // Serif fonts prohibited
 
 // Font sizes per guidelines: 10pt or 11pt for body text
 #let DEFAULT_FONT_SIZE = 11pt
 
 // =============================================================================
-// PAGE GEOMETRY - "LEFTHEAD" LAYOUT
+// PAGE GEOMETRY
 // =============================================================================
-// Guidelines section 2.1: The "Lefthead" Layout
-// - Left margin: 2.25 inches (clears logo and address block)
-// - Right margin: 1.0 inch (standard business margin)
-// - Top margin: 1.0 inch
-// - Bottom margin: 1.0 inch
+// Guidelines section 2.1: Canvas Specifications
+// - Paper Size: US Letter
+// - Margins: 1.0 inch on all sides
 
 #let MARGINS = (
-  left: 2.25in,
+  left: 1in,
   right: 1in,
   top: 1in,
   bottom: 1in,
@@ -47,12 +46,5 @@
 #let spacing = (
   line: 0.5em,          // Internal line spacing
   line-height: 0.7em,   // Base line height
-  paragraph: 1em,       // Space between paragraphs (approx 10-12pt per guidelines)
+  paragraph: 1em,       // Space between paragraphs
 )
-
-// =============================================================================
-// HEADER COLUMN (LEFT MARGIN AREA)
-// =============================================================================
-// The "Active" left margin contains: logo, department name, address, URL
-
-#let HEADER_COLUMN_WIDTH = 2in  // Width of the header content in left margin

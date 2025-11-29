@@ -7,74 +7,81 @@
 #import "utils.typ": *
 
 // =============================================================================
-// HEADER COLUMN RENDERING (LEFT MARGIN)
+// HEADER RENDERING
 // =============================================================================
-// Guidelines section 3.2 - Header (Left Column):
-// - CMU Wordmark (Top Left)
-// - Department Name
-// - Physical Address
-// - Web URL (e.g., cmu.edu)
+// Guidelines section 4: Header Composition
+// - Wordmark (Top-Left)
+// - Sender's Address Block (Immediately below wordmark)
 
-#let render-header-column(
+#let render-header(
   wordmark,
   department: none,
   address: none,
   url: none,
 ) = {
-  // Position header content in the left margin, at absolute position from page top
-  place(
-    top + left,
-    dx: -MARGINS.left + 0.5in,
-    dy: 0pt,
-    float: true,
-    block(width: HEADER_COLUMN_WIDTH)[
-      // CMU Wordmark
-      #if wordmark != none {
-        box(width: 1.75in)[#wordmark]
-        v(0.75em)
-      }
+  // CMU Wordmark
+  // Guidelines 4.1: Width approx 2.25" to 2.5"
+  if wordmark != none {
+    box(width: 2.25in)[#wordmark]
+  }
 
-      // Department name - Iron Gray per guidelines
-      #if department != none {
-        text(size: 9pt, fill: CMU_IRON_GRAY, weight: "bold")[#department]
-        v(0.5em)
-      }
+  // Vertical Offset
+  // Guidelines 4.2: 0.15" to 0.2" whitespace
+  v(0.15in)
 
-      // Physical address - Iron Gray
-      #if address != none {
-        text(size: 8pt, fill: CMU_IRON_GRAY)[#ensure-string(address)]
-        v(0.5em)
-      }
+  // Sender's Address Block
+  // Guidelines 4.2: Flush Left
+  block[
+    // Department Name: Bold
+    #if department != none {
+      text(weight: "bold")[#department]
+      linebreak()
+    }
 
-      // Web URL - Iron Gray
-      #if url != none {
-        text(size: 8pt, fill: CMU_IRON_GRAY)[#url]
+    // University Name: Regular
+    Carnegie Mellon University
+    linebreak()
+
+    // Address Lines: Regular
+    #if address != none {
+      if type(address) == "string" {
+        address
+      } else if type(address) == "array" {
+        address.join(linebreak())
       }
-    ]
-  )
+    }
+
+    // Web Address: Regular
+    // Guidelines 4.2: Additional paragraph break (6-12pt) before URL
+    #if url != none {
+      v(8pt)
+      url
+    }
+  ]
 }
 
 // =============================================================================
 // DATE LINE RENDERING
 // =============================================================================
-// Guidelines section 3.2:
-// - Aligns with the body text margin (2.25" from left)
-// - Format: Month Day, Year (e.g., November 29, 2025)
+// Guidelines section 5.1:
+// - 3-4 blank lines below the Sender's Address Block
+// - Flush Left
 
 #let render-date(date) = {
+  blank-lines(3)
   align(left)[#display-date(date)]
 }
 
 // =============================================================================
 // RECIPIENT BLOCK RENDERING
 // =============================================================================
-// Guidelines section 3.2:
-// - Place 2-4 lines below the date
-// - Includes Name, Title, Company/Institution, and Mailing Address
+// Guidelines section 5.2:
+// - 1 blank line below the Date Line
+// - Flush Left
 
 #let render-recipient(recipient) = {
   if recipient != none {
-    blank-lines(2)
+    blank-lines(1)
     align(left)[#ensure-string(recipient)]
   }
 }
@@ -82,13 +89,13 @@
 // =============================================================================
 // SALUTATION RENDERING
 // =============================================================================
-// Guidelines section 3.2:
-// - Formal: Dear Dr. [Last Name], or Dear Professor [Last Name],
-// - Business: Dear Mr./Ms. [Last Name],
+// Guidelines section 5.3:
+// - 2 blank lines below the Recipient Block
+// - Flush Left
 
 #let render-salutation(salutation) = {
   if salutation != none {
-    blank-line()
+    blank-lines(2)
     align(left)[#salutation]
   }
 }

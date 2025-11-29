@@ -2,8 +2,8 @@
 //
 // This module implements the frontmatter (heading section) of a CMU letter
 // per the official letterhead guidelines. It handles:
-// - Page setup with proper "Lefthead" margins
-// - Header column rendering (logo, department, address, URL)
+// - Page setup with proper margins
+// - Header rendering (logo, department, address, URL)
 // - Date, recipient, and salutation placement
 
 #import "config.typ": *
@@ -11,7 +11,7 @@
 #import "utils.typ": *
 
 #let frontmatter(
-  // Header column content
+  // Header content
   wordmark: none,
   department: none,
   address: none,
@@ -33,19 +33,19 @@
   configure(body_font, font-size: font_size, {
     set page(
       paper: "us-letter",
-      // Guidelines section 2.1: "Lefthead" Layout margins
+      // Guidelines section 2.1: Margins
       margin: MARGINS,
     )
 
-    // Guidelines section 3.1: Block style, no indentation, flush left/ragged right
+    // Guidelines section 6.1: Block style, no indentation, flush left/ragged right
     set par(
       first-line-indent: 0pt,
       justify: false,
-      leading: 1.15em,  // Guidelines: 1.0 to 1.15 line spacing
+      leading: 1.15em,  // Guidelines: 1.15 to 1.2 line spacing
     )
 
-    // Render the header column in the left margin
-    render-header-column(
+    // Render the header
+    render-header(
       wordmark,
       department: department,
       address: address,
