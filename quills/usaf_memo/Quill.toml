@@ -51,7 +51,7 @@ description = "Sender information as array: [ORG/SYMBOL, 'Organization Name', 'S
 type = "array"
 example = ["ORG/SYMBOL", "Organization Name", "123 Street Ave", "City ST 12345-6789"]
 ui.group = "Memo Header"
-ui.tooltip = "Sender information in order: 1) Office symbol, 2) Organization name, 3) Street address (external recipients only), 4) City/State/ZIP (external recipients only). Use office information, not personal information."
+ui.tooltip = "Sender information in order: 1) Office symbol, 2) Organization name, 3) Street address, 4) City/State/ZIP. Only include the first line if the memo is internal to the installation."
 
 [fields.subject]
 description = "Subject of the memo"
