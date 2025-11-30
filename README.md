@@ -31,7 +31,7 @@ A Typst template for creating official Carnegie Mellon University letters that c
 
 2. Initialize template from Typst Universe:
 ```bash
-typst init @preview/tonguetoquill-cmu-letter:1.0.0 my-letter
+typst init @preview/tonguetoquill-cmu-letter:0.1.0 my-letter
 cd my-letter
 ```
 
@@ -55,7 +55,7 @@ cd tonguetoquill-cmu-letter
 Import the core functions for creating letters:
 
 ```typst
-#import "@preview/tonguetoquill-cmu-letter:1.0.0": frontmatter, mainmatter, backmatter
+#import "@preview/tonguetoquill-cmu-letter:0.1.0": frontmatter, mainmatter, backmatter
 ```
 
 **Minimal Example:**
