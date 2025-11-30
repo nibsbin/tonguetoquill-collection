@@ -24,7 +24,6 @@
   
   // Add spacing before body text
   linebreak()
-  linebreak()
 
   // Set paragraph styling for body text
   set par(
