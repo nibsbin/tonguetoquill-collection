@@ -53,7 +53,7 @@
     url: url,
   )
 
-  blank-lines(2)
+  blank-lines(3)
 
   // Date and recipient in same paragraph to avoid extra spacing
   [#display-date(actual_date)

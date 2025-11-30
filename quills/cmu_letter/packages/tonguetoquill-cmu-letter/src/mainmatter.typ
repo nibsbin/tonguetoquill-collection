@@ -20,7 +20,7 @@
 /// - content (content): The body content to render
 /// -> content
 #let mainmatter(it) = {
-  blank-lines(3)
+  blank-lines(2)
 
 
   // Set list styling with bigger bullet aligned to the left
