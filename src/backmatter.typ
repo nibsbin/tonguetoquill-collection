@@ -8,6 +8,7 @@
 
 #let backmatter(
   signature_block: none) = {
-    blank-lines(2)
-    block(breakable: false, ensure-string(signature_block))
+    blank-lines(3)
+    //Not sure why there is extra spacing here; setting block spacing to 0em fixes it
+    block(spacing: 0em, breakable: false, ensure-string(signature_block))
 }

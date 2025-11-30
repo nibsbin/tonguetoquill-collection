@@ -2,7 +2,7 @@
 //
 // This module provides core utility functions used by the main letterhead template.
 
-#import "config.typ": spacing
+#import "config.typ": *
 
 // =============================================================================
 // CONFIGURATION
@@ -16,9 +16,10 @@
 /// -> content
 #let configure(body-font, font-size: 11pt, ctx) = {
   set par(
-    spacing: 1.6em,
+    spacing: 1.5em,
     justify: false
   )
+  set block(spacing: .6em)
   //set block(above: spacing.line, below: 0em, spacing: 0em)
   //set text(font: body-font, size: font-size, fallback: true)
   ctx
