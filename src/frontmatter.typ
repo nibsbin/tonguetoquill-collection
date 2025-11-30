@@ -20,7 +20,6 @@
   // Letter metadata
   date: none,
   recipient: none,
-  salutation: none,
 
   // Typography options
   body_font: DEFAULT_BODY_FONTS,
@@ -57,9 +56,6 @@
 
     // Render recipient block
     render-recipient(recipient)
-
-    // Render salutation
-    render-salutation(salutation)
 
     // Store metadata for downstream sections
     metadata((

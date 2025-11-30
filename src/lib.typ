@@ -28,10 +28,11 @@
 //   url: "cs.cmu.edu",
 //   date: datetime.today(),
 //   recipient: ("Dr. Jane Smith", "Department of Engineering", "University of Example", "123 Main Street", "City, ST 12345"),
-//   salutation: "Dear Dr. Smith,",
 // )
 //
 // #show: mainmatter
+//
+// Dear Dr. Smith,
 //
 // Your letter body content here.
 //

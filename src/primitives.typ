@@ -95,20 +95,6 @@
 }
 
 // =============================================================================
-// SALUTATION RENDERING
-// =============================================================================
-// Guidelines section 5.3:
-// - 2 blank lines below the Recipient Block
-// - Flush Left
-
-#let render-salutation(salutation) = {
-  if salutation != none {
-    blank-lines(2)
-    align(left)[#salutation]
-  }
-}
-
-// =============================================================================
 // CLOSING RENDERING
 // =============================================================================
 // Guidelines section 3.2:

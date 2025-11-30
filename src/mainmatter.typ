@@ -30,5 +30,12 @@
     justify: false,              // Flush left / ragged right per guidelines
   )
 
+  // Set block spacing to match paragraph spacing
+  set block(spacing: spacing.paragraph)
+
+  // Set list styling
+  set list(indent: 1em, body-indent: 0.5em)
+  set enum(indent: 1em, body-indent: 0.5em)
+
   it
 }
