@@ -10,6 +10,5 @@ LIMITATIONS.md
 *.md
 .gitignore~*
 .orchestration.txt
-claude/
-github/
 references/
+.claude/
