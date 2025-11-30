@@ -22,7 +22,7 @@
   // CMU Wordmark
   // Guidelines 4.1: Width approx 2.25" to 2.5"
   if wordmark != none {
-    box(width: 2.25in)[
+    box(width: 2.5in)[
       #set image(width: 100%)
       #wordmark
     ]

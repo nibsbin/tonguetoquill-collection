@@ -34,10 +34,10 @@
 // - Margins: 1.0 inch on all sides
 
 #let MARGINS = (
-  left: 3.125in,
+  left: 1in,
   right: 1in,
-  top: 1in,
-  bottom: 1in,
+  top: 0.75in,
+  bottom: 0.751in,
 )
 
 // =============================================================================
