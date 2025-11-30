@@ -17,7 +17,6 @@ signature_block:
 tag_line: asdf
 font_size: 11
 ---
-
 <!--------------
 In the data above, edit;
   - Memorandum From
