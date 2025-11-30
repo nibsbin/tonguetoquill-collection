@@ -16,10 +16,10 @@
 /// -> content
 #let configure(body-font, font-size: 11pt, ctx) = {
   set par(
-    spacing: 1.5em,
+    spacing: 1.2em,
     justify: false
   )
-  set block(spacing: .6em)
+  //set block(spacing: .6em)
   //set block(above: spacing.line, below: 0em, spacing: 0em)
   //set text(font: body-font, size: font-size, fallback: true)
   ctx
