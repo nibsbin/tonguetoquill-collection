@@ -1,4 +1,4 @@
-#import "@preview/tonguetoquill-cmu-letter:1.0.0": frontmatter, mainmatter, backmatter
+#import "@preview/tonguetoquill-cmu-letter:0.1.0": frontmatter, mainmatter, backmatter
 
 #show: frontmatter.with(
   wordmark: image("assets/cmu-wordmark.svg"),
@@ -7,7 +7,6 @@
   url: {{ url | String(default="www.cmu.edu") }},
   date: {{ date | Date }},
   recipient: {{ recipient | Lines(default=["Recipient Name", "Address"]) }},
-  salutation: {{ salutation | String(default="Dear Recipient:") }},
 )
 
 #show: mainmatter

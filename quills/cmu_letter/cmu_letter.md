@@ -10,11 +10,12 @@ recipient:
   - "[Donor's Name]"
   - "[Address 1]"
   - "[City, State] [Zip Code]"
-salutation: "Dear [Donor's Salutation],"
 signature_block:
   - First M. Last
   - Title
 ---
+
+Dear [Donor's Salutation],
 
 This is just greek copy to show suggested formatting. Please use Open Sans typeface if available.
 

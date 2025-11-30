@@ -40,12 +40,6 @@ type = "array"
 example = ["Mr. John Doe", "123 Main St", "Anytown, USA"]
 ui.group = "Details"
 
-[fields.salutation]
-description = "Salutation line"
-type = "string"
-example = "Dear Mr. Doe:"
-ui.group = "Details"
-
 [fields.signature_block]
 description = "Signature block lines"
 type = "array"
