@@ -1,6 +1,6 @@
 ---
 QUILL: cmu_letter
-department: Your Department Here
+department: Department Here
 address:
   - 5000 Forbes Avenue
   - Pittsburgh, PA 15213-3890
