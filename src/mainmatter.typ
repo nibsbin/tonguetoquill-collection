@@ -35,7 +35,7 @@
     #set par(
       first-line-indent: 0pt,
       justify: false,
-      spacing: 1.8em
+      spacing: 2em
     )
     #it
   ]
