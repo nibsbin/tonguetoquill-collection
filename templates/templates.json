@@ -33,7 +33,7 @@
 		"name": "Fry's Aircrew Qualification Report",
 		"description": "Fry's Aircrew Qualification Report",
 		"file": "af8_fry.md",
-		"production": true
+		"production": false
 	},
 	{
 		"name": "CMU Letter",
