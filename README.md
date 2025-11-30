@@ -107,7 +107,7 @@ Configures the letter header and establishes document-wide settings. Applied as 
   salutation: "Dear Dr. Smith,",               // Greeting
 
   // Typography options
-  body_font: ("Open Sans", "Helvetica", "Arial"),  // Body fonts
+  body_font: ("Open Sans"),  // Body fonts
   font_size: 11pt,                             // Font size (10-11pt per guidelines)
 )
 ```

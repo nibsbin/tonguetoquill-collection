@@ -17,10 +17,9 @@
 // TYPOGRAPHY DEFAULTS
 // =============================================================================
 // Guidelines section 3.1: Primary typeface is Open Sans
-// Fallbacks: Arial or Helvetica if Open Sans unavailable
 // Serif fonts are strictly prohibited.
 
-#let DEFAULT_BODY_FONTS = ("Open Sans", "Arial", "Helvetica")
+#let DEFAULT_BODY_FONTS = ("Open Sans")
 #let DEFAULT_SERIF_FONTS = () // Serif fonts prohibited
 
 // Font sizes per guidelines: 10pt or 11pt for body text

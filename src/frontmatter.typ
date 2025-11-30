@@ -36,6 +36,10 @@
       margin: MARGINS,
     )
 
+    set text(
+      font: DEFAULT_BODY_FONTS
+    )
+
     // Render the header (in normal document flow)
     block({
       render-header(
