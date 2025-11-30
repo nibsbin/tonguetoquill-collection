@@ -29,44 +29,44 @@
 ) = {
   let actual_date = if date == none { datetime.today() } else { date }
 
-  configure(body_font, font-size: font_size, {
-    set page(
-      paper: "us-letter",
-      // Standard 1" margins for vertical flow layout
-      margin: MARGINS,
-    )
+  set page(
+    paper: "us-letter",
+    // Standard 1" margins for vertical flow layout
+    margin: MARGINS,
+  )
 
-    set text(
-      font: DEFAULT_BODY_FONTS
-    )
+  set text(
+    font: DEFAULT_BODY_FONTS,
+    size: font_size,
+  )
 
-    // Render the header (in normal document flow)
-    block({
-      render-header(
-        wordmark,
-        department: department,
-        address: address,
-        url: url,
-      )
-    })
+  set par(
+    spacing: .7em,
+    justify: false
+  )
 
-    blank-lines(3)
+  // Render the header (in normal document flow)
+  render-header(
+    wordmark,
+    department: department,
+    address: address,
+    url: url,
+  )
 
-    // Date and recipient in same paragraph to avoid extra spacing
-    block({
-      [#display-date(actual_date)
-        #linebreak()
-        #ensure-string(recipient)
-      ]
-    })
+  blank-lines(3)
 
-    // Store metadata for downstream sections
-    // metadata((
-    //   date: actual_date,
-    //   body_font: body_font,
-    //   font_size: font_size,
-    // ))
+  // Date and recipient in same paragraph to avoid extra spacing
+  [#display-date(actual_date)
+    #linebreak()
+    #ensure-string(recipient)
+  ]
 
-    it
-  })
+  // Store metadata for downstream sections
+  metadata((
+    date: actual_date,
+    body_font: body_font,
+    font_size: font_size,
+  ))
+
+  it
 }

@@ -5,27 +5,6 @@
 #import "config.typ": *
 
 // =============================================================================
-// CONFIGURATION
-// =============================================================================
-
-/// Configures document-wide typography and spacing settings.
-///
-/// - body-font (str | array): Font(s) to use for body text
-/// - font-size (length): Font size for body text
-/// - ctx (content): Content to apply configuration to
-/// -> content
-#let configure(body-font, font-size: 11pt, ctx) = {
-  set par(
-    spacing: 1.5em,
-    justify: false
-  )
-  set block(spacing: .6em)
-  //set block(above: spacing.line, below: 0em, spacing: 0em)
-  //set text(font: body-font, size: font-size, fallback: true)
-  ctx
-}
-
-// =============================================================================
 // SPACING UTILITIES
 // =============================================================================
 
@@ -36,7 +15,7 @@
 /// -> content
 #let blank-lines(count, weak: true) = {
   for i in range(0, count) {
-    v(1.5em)
+    v(1.4em)
   }
 }
 
