@@ -106,6 +106,14 @@ ui.tooltip = "Documents attached to the memo. List each attachment without numbe
 description = "Classification level of the memo that displays in the banner"
 type = "string"
 default = ""
-example = "<UNCLASSIFIED|CONFIDENTIAL|SECRET|TOP SECRET>//TAGS"
+example = "CONFIDENTIAL"
 ui.group = "Additional Information"
 ui.tooltip = "Classification marking for the document header and footer. Leave blank for unclassified memos. Only mark documents classified if you have proper training and derivative classification authority."
+
+[fields.font_size]
+description = "Font size for the memo text (int pt)"
+type = "number"
+default = 11
+example = 11
+ui.group = "Additional Information"
+ui.tooltip = "Font size for the memo text. Specify the size in points (pt)."
