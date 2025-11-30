@@ -34,36 +34,38 @@
 
   // Sender's Address Block
   // Guidelines 4.2: Flush Left
-  block[
-    // Department Name: Bold
-    #if department != none {
-      text(weight: "bold")[#department]
+
+  // Department Name: Bold and darker
+  if department != none {
+    text(weight: "bold", fill: black)[#department]
+    linebreak()
+  }
+
+  set text(fill: CMU_IRON_GRAY)
+
+  // University Name: Regular
+  [Carnegie Mellon University]
+  linebreak()
+
+  // Address Lines: Regular
+  if address != none {
+    let address_lines = if type(address) == "string" {
+      (address,)
+    } else {
+      address
+    }
+
+    for line in address_lines {
+      [#line]
       linebreak()
     }
+  }
 
-    // University Name: Regular
-    Carnegie Mellon University
-    #linebreak()
-
-    // Address Lines: Regular
-    #if address != none {
-      if type(address) == "string" {
-        address
-      } else if type(address) == "array" {
-        for line in address {
-          line
-          linebreak()
-        }
-      }
-    }
-
-    // Web Address: Regular
-    // Guidelines 4.2: Additional paragraph break (6-12pt) before URL
-    #if url != none {
-      v(8pt)
-      url
-    }
-  ]
+  // Web Address: Regular
+  if url != none {
+    v(8pt)
+    [#url]
+  }
 }
 
 // =============================================================================

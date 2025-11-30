@@ -9,18 +9,15 @@
   ),
   url: "cmu.edu",
   recipient: (
-    "[Recipient Name]",
-    "[Address Line 1]",
-    "[Address Line 2]",
-    "[City, State Zip]"
+    "[Donor's Name]",
+    "[Address 1]",
+    "[City, State] [Zip Code]"
   ),
-  salutation: "Dear [Name],",
+  salutation: "Dear [Donor's Salutation],",
 )
 
 #show: mainmatter
 
-Dear [Donor’s Salutation], 
- 
 This is just greek copy to show suggested formatting. Please use Open Sans typeface if available.  
  
 Tiisque volecab il modit facersperrum arum nonse dolum qui omnis as sequibus molluptaquam 
@@ -44,7 +41,9 @@ Regards,
 
 
 
-#show: signature
-
-First Q. Lastname 
-Title Here
+#backmatter(
+  signature_block: (
+    "First M. Last",
+    "Title"
+  )
+)

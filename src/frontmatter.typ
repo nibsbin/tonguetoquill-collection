@@ -33,8 +33,8 @@
   configure(body_font, font-size: font_size, {
     set page(
       paper: "us-letter",
-      // Guidelines section 2.1: Margins
-      margin: MARGINS,
+      // Standard 1" margins for vertical flow layout
+      margin: (left: 1in, right: 1in, top: 1in, bottom: 1in),
     )
 
     // Guidelines section 6.1: Block style, no indentation, flush left/ragged right
@@ -44,7 +44,7 @@
       // leading is handled by configure() via config.typ to ensure 1.15-1.2 line spacing
     )
 
-    // Render the header
+    // Render the header (in normal document flow)
     render-header(
       wordmark,
       department: department,

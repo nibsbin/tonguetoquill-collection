@@ -10,6 +10,7 @@
 
 #let CMU_RED = rgb("#C41230")      // Carnegie Red - restricted to wordmark/logo
 #let CMU_DARK_GREY = rgb("#333333") // Dark Grey - for body text option
+#let CMU_IRON_GRAY = rgb("#6D6E71") // Iron Gray - for secondary text
 #let CMU_BLACK = rgb("#000000")     // Black - standard for body correspondence
 
 // =============================================================================
@@ -33,7 +34,7 @@
 // - Margins: 1.0 inch on all sides
 
 #let MARGINS = (
-  left: 1in,
+  left: 3.125in,
   right: 1in,
   top: 1in,
   bottom: 1in,
@@ -48,8 +49,8 @@
 // =============================================================================
 
 #let spacing = (
-  line: 0.2em,          // Internal line spacing (leading) for approx 1.2 line height
+  line: 0.5em,          // Internal line spacing (leading) for single spacing
   line-height: 1em,     // Base line height (font size)
-  paragraph: 1em,       // Space between paragraphs
+  paragraph: 0.65em,    // Space between paragraphs
 )
 
