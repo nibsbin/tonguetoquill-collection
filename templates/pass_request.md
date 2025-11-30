@@ -51,5 +51,3 @@ informal: true
 # Use new_page if there's no room on current page.
 # new_page: true
 ---
-
-Approved.
