@@ -8,6 +8,6 @@
 
 #let backmatter(
   signature_block: none) = {
-  blank-lines(2)
-  block(breakable: false, ensure-string(signature_block))
+    blank-lines(2)
+    block(breakable: false, ensure-string(signature_block))
 }

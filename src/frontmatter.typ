@@ -44,12 +44,10 @@
       url: url,
     )
 
-    // Render date line
     blank-lines(2)
 
-    render-date(actual_date)
-
-    // Render recipient block
+    // Date and recipient in same paragraph to avoid extra spacing
+    [#display-date(actual_date)]
     render-recipient(recipient)
 
     // Store metadata for downstream sections

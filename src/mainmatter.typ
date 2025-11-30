@@ -23,7 +23,8 @@
 
   
   // Add spacing before body text
-  blank-line()
+  linebreak()
+  linebreak()
 
   // Set paragraph styling for body text
   set par(
@@ -31,9 +32,13 @@
     justify: false,              // Flush left / ragged right per guidelines
   )
 
-  // Set list styling
-  set list(indent: 1em, body-indent: 0.5em)
-  set enum(indent: 1em, body-indent: 0.5em)
+  // Set list styling with bigger bullet aligned to the left
+  set list(
+    indent: 0em,
+    body-indent: 1em,
+    marker: text(size: 1.2em)[•]
+  )
+  set enum(indent: 0em, body-indent: 1em)
 
   it
 }

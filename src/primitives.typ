@@ -22,10 +22,17 @@
   // CMU Wordmark
   // Guidelines 4.1: Width approx 2.25" to 2.5"
   if wordmark != none {
-    box(width: 2.5in)[
+    let wordmark_content = box(width: 2.5in)[
       #set image(width: 100%)
       #wordmark
     ]
+
+    // Hyperlink wordmark to URL if provided
+    if url != none {
+      link("https://" + url)[#wordmark_content]
+    } else {
+      wordmark_content
+    }
     linebreak()
   }
 
@@ -59,22 +66,7 @@
     }
   }
 
-  // Web Address: Regular
-  if url != none {
-    linebreak()
-    [#url]
-  }
-}
-
-// =============================================================================
-// DATE LINE RENDERING
-// =============================================================================
-// Guidelines section 5.1:
-// - 3-4 blank lines below the Sender's Address Block
-// - Flush Left
-
-#let render-date(date) = {
-  align(left)[#display-date(date)]
+  // URL is now hyperlinked to wordmark, not displayed as text
 }
 
 // =============================================================================
@@ -86,38 +78,7 @@
 
 #let render-recipient(recipient) = {
   if recipient != none {
-    align(left)[#ensure-string(recipient)]
+    linebreak()
+    ensure-string(recipient)
   }
-}
-
-// =============================================================================
-// CLOSING RENDERING
-// =============================================================================
-// Guidelines section 3.2:
-// - Sincerely, (Standard) or Regards, (Internal/Familiar)
-// - Followed by 4 blank lines for signature
-// - Sender's Printed Name and Title
-
-#let render-closing(
-  closing: "Sincerely,",
-  signature-lines: 4,
-  sender-name: none,
-  sender-title: none,
-) = {
-  blank-line()
-  align(left)[#closing]
-
-  // Space for signature
-  blank-lines(signature-lines, weak: false)
-
-  // Sender name and title
-  block[
-    #if sender-name != none {
-      sender-name
-      linebreak()
-    }
-    #if sender-title != none {
-      sender-title
-    }
-  ]
 }
