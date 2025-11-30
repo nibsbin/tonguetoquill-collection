@@ -42,8 +42,6 @@ If you have any questions, please contact me at `airman.snuffy@us.af.mil or 123-
 
 ---
 SCOPE: indorsements
-for: 2d Lt First M. Last
-from: AFROTC DET 730/CC
 signature_block:
   - ROBERT T. CHANCE, Lt Col, USAF
   - Commander
