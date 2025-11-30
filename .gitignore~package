@@ -9,4 +9,5 @@ build.sh
 .orchestration.txt
 claude/
 github/
+references/
 # Keep README.md and LIMITATIONS.md for package distribution
