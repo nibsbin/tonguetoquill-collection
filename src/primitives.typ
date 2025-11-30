@@ -68,17 +68,3 @@
 
   // URL is now hyperlinked to wordmark, not displayed as text
 }
-
-// =============================================================================
-// RECIPIENT BLOCK RENDERING
-// =============================================================================
-// Guidelines section 5.2:
-// - 1 blank line below the Date Line
-// - Flush Left
-
-#let render-recipient(recipient) = {
-  if recipient != none {
-    linebreak()
-    ensure-string(recipient)
-  }
-}
