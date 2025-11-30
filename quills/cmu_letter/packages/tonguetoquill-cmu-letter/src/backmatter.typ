@@ -10,5 +10,5 @@
   signature_block: none) = {
     blank-lines(3)
     //Not sure why there is extra spacing here; setting block spacing to 0em fixes it
-    block(spacing: .6em,breakable: false, ensure-string(signature_block))
+    block(spacing: .7em,breakable: false, ensure-string(signature_block))
 }
