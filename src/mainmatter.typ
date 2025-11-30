@@ -3,7 +3,7 @@
 // This module implements the body text section of a CMU letter per guidelines:
 // - Block style paragraphs (no indentation)
 // - Single line spacing (1.0 to 1.15)
-// - One blank line between paragraphs
+// - Default paragraph spacing
 // - Flush left / ragged right alignment
 
 #import "config.typ": *
@@ -15,20 +15,29 @@
 /// - Format: Block Style
 /// - Indentation: None
 /// - Spacing: Single line spacing (1.0 to 1.15)
-/// - Separation: One full blank line between paragraphs
+/// - Separation: Default paragraph spacing
 ///
 /// - content (content): The body content to render
 /// -> content
 #let mainmatter(it) = {
+
+  
   // Add spacing before body text
-  blank-line()
+  linebreak()
 
   // Set paragraph styling for body text
   set par(
     first-line-indent: 0pt,
-    spacing: spacing.paragraph,  // One blank line between paragraphs
     justify: false,              // Flush left / ragged right per guidelines
   )
+
+  // Set list styling with bigger bullet aligned to the left
+  set list(
+    indent: 0em,
+    body-indent: 1em,
+    marker: text(size: 1.2em)[•]
+  )
+  set enum(indent: 0em, body-indent: 1em)
 
   it
 }
