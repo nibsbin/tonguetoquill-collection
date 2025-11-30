@@ -38,7 +38,7 @@ In Narrative section below, edit:
 
 **REFERENCED REGULATION:** “5.3. Special Pass. Unit commanders may award 3- or 4-day special passes for special occasions or circumstances, such as reenlistment or for some type of special recognition or compensatory time off. They may delegate approval to a level no lower than squadron section commander, deputies, or equivalents. (T-1) Special passes start after normal working hours on a given day. They stop at the beginning of normal working hours on either the 4th day for a 3 -day special pass or the 5th day for a 4-day special pass. A 3-day special pass can be Friday through Sunday, Saturday through Monday, or Tuesday through Thursday. A 4-day special pass can be Thursday through Sunday or Saturday through Tuesday or Friday through Monday. This applies to a normal Monday through Friday workweek. See paragraph 2.1.2 for safe travel guidelines.”
 
-If you have any questions, please contact me at `airman.snuffy@us.af.mil or 123-456-7990.`
+If you have any questions, please contact me at `airman.snuffy@us.af.mil or 123-456-7890.`
 
 ---
 SCOPE: indorsements
