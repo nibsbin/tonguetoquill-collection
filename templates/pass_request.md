@@ -47,7 +47,7 @@ from: AFROTC DET 730/CC
 signature_block:
   - ROBERT T. CHANCE, Lt Col, USAF
   - Commander
-
+informal: true
 # Use new_page if there's no room on current page.
 # new_page: true
 ---
