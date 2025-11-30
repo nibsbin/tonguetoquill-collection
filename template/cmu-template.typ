@@ -28,10 +28,8 @@ commodi quatem. Volorruntios dist ent ut fuga.
  
 Enclosed, please find the: 
  
-- Aditent ut lique consentota ium, same dolorepre por sim num et magnam, te volorrum ent reius, in culparum facerib repelique ercid qui optat officabo. Cum doleste modigenim ipsanim ditem 
-eniatus estior molesequo tecti alit, aut ellacea nisitasi blabo.  
-- Olore odia aut omniste nectur, et latatus, sequi od expe ea que praest aut assi ditisci isciantem 
-sum doluptas minihit atemporibus essint aliquidellor architatur? 
+- Aditent ut lique consentota ium, same dolorepre por sim num et magnam, te volorrum ent reius, in culparum facerib repelique ercid qui optat officabo. Cum doleste modigenim ipsanim ditem eniatus estior molesequo tecti alit, aut ellacea nisitasi blabo.  
+- Olore odia aut omniste nectur, et latatus, sequi od expe ea que praest aut assi ditisci isciantem sum doluptas minihit atemporibus essint aliquidellor architatur? 
  
 Qui quia cuptas earchillamus modi ut veror sendandae perit aut apitincipici de nobis qui commodi 
 quatem. Volorruntios dist. 
