@@ -15,9 +15,12 @@
 /// - ctx (content): Content to apply configuration to
 /// -> content
 #let configure(body-font, font-size: 11pt, ctx) = {
-  set par(leading: spacing.line, spacing: spacing.line, justify: false)
-  set block(above: spacing.line, below: 0em, spacing: 0em)
-  set text(font: body-font, size: font-size, fallback: true)
+  set par(
+    spacing: 1.6em,
+    justify: false
+  )
+  //set block(above: spacing.line, below: 0em, spacing: 0em)
+  //set text(font: body-font, size: font-size, fallback: true)
   ctx
 }
 
@@ -31,12 +34,8 @@
 /// - weak (bool): Whether spacing can be compressed at page breaks
 /// -> content
 #let blank-lines(count, weak: true) = {
-  if count == 0 {
-    v(0em, weak: weak)
-  } else {
-    let lead = spacing.line
-    let height = spacing.line-height
-    v(lead + (height + lead) * count, weak: weak)
+  for i in range(0, count) {
+    linebreak()
   }
 }
 

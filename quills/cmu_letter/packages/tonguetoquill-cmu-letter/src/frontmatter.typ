@@ -20,7 +20,6 @@
   // Letter metadata
   date: none,
   recipient: none,
-  salutation: none,
 
   // Typography options
   body_font: DEFAULT_BODY_FONTS,
@@ -37,13 +36,6 @@
       margin: MARGINS,
     )
 
-    // Guidelines section 6.1: Block style, no indentation, flush left/ragged right
-    set par(
-      first-line-indent: 0pt,
-      justify: false,
-      // leading is handled by configure() via config.typ to ensure 1.15-1.2 line spacing
-    )
-
     // Render the header (in normal document flow)
     render-header(
       wordmark,
@@ -52,14 +44,11 @@
       url: url,
     )
 
-    // Render date line
-    render-date(actual_date)
+    blank-lines(2)
 
-    // Render recipient block
+    // Date and recipient in same paragraph to avoid extra spacing
+    [#display-date(actual_date)]
     render-recipient(recipient)
-
-    // Render salutation
-    render-salutation(salutation)
 
     // Store metadata for downstream sections
     metadata((
