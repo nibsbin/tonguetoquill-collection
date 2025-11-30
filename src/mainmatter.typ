@@ -20,12 +20,8 @@
 /// - content (content): The body content to render
 /// -> content
 #let mainmatter(it) = {
+  blank-lines(3)
 
-  // Set paragraph styling for body text
-  set par(
-    first-line-indent: 0pt,
-    justify: false,              // Flush left / ragged right per guidelines
-  )
 
   // Set list styling with bigger bullet aligned to the left
   set list(
@@ -35,6 +31,12 @@
   )
   set enum(indent: 0em, body-indent: 1em)
   
-  blank-lines(3)
-  block(it)
+  block()[
+    #set par(
+      first-line-indent: 0pt,
+      justify: false,
+      spacing: 1.8em
+    )
+    #it
+  ]
 }
