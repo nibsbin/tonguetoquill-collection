@@ -1,17 +1,14 @@
-
-# Dependencies and caches
-.typst/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Editor files
-*.swp
-*.swo
-*~
-.vscode/
-.idea/
-
-# Temporary files
-/tmp/
+dev_assets/
+.github/
+pdfs/
+**.pdf
+tests/
+build.sh
+template/
+README.md
+LIMITATIONS.md
+*.md
+.gitignore~*
+.orchestration.txt
+references/
+.claude/
