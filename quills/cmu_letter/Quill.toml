@@ -1,0 +1,47 @@
+[Quill]
+name = "cmu_letter"
+backend = "typst"
+glue_file = "glue.typ"
+example_file = "cmu_letter.md"
+description = "Typeset letters that comply with Carnegie Mellon University letterhead standards."
+
+# Letter Header Fields
+#=====================
+
+[fields.department]
+description = "Name of the department or unit"
+type = "string"
+example = "Department of Electrical and Computer Engineering"
+ui.group = "Header"
+
+[fields.address]
+description = "Sender's address lines"
+type = "array"
+example = ["5000 Forbes Avenue", "Pittsburgh, PA 15213-3890"]
+ui.group = "Header"
+
+[fields.url]
+description = "Department or university URL"
+type = "string"
+example = "www.ece.cmu.edu"
+ui.group = "Header"
+
+# Letter Details
+#===============
+
+[fields.date]
+description = "Date of the letter"
+type = "date"
+ui.group = "Details"
+
+[fields.recipient]
+description = "Recipient's name and address"
+type = "array"
+example = ["Mr. John Doe", "123 Main St", "Anytown, USA"]
+ui.group = "Details"
+
+[fields.signature_block]
+description = "Signature block lines"
+type = "array"
+example = ["First M. Last", "Title"]
+ui.group = "Details"

@@ -34,5 +34,11 @@
 		"description": "Fry's Aircrew Qualification Report",
 		"file": "af8_fry.md",
 		"production": true
+	},
+	{
+		"name": "CMU Letter",
+		"description": "Carnegie Mellon University academic letter template",
+		"file": "cmu_letter_template.md",
+		"production": true
 	}
 ]
