@@ -4,6 +4,11 @@
 // Indorsements are used to forward memorandums with additional commentary.
 // They follow the format: "1st Ind", "2d Ind", "3d Ind", etc.
 // Each indorsement includes its own body text and signature block.
+//
+// Note: When using #show: indorsement.with(...), the indorsement wraps the
+// entire remainder of the document. This works for a single indorsement at
+// the end of a file. For multiple indorsements, use the function call syntax:
+// #indorsement(...)[Body text...]
 
 #import "primitives.typ": *
 
@@ -11,22 +16,26 @@
   from: none,
   to: none,
   signature_block: none,
-  signature_blank_lines: 3,
+  signature_blank_lines: 4,
   attachments: none,
   cc: none,
   new_page: false,
   date: none,
+  informal: false,
   content
 ) = {
-  assert(from != none, message: "from is required")
-  assert(to != none, message: "to is required")
+  if not informal {
+    assert(from != none, message: "from is required")
+    assert(to != none, message: "to is required")
+  }
   assert(signature_block != none, message: "signature_block is required")
 
   let actual_date = if date == none { datetime.today() } else { date }
   let ind_from = first-or-value(from)
   let ind_for = to
 
-  context {
+  if not informal {
+    context {
     let config = query(metadata).last().value
     let original_subject = config.subject
     let original_date = config.original_date
@@ -65,13 +74,14 @@
         "MEMORANDUM FOR", "  ", ind_for,
       )
     }
+    }
+    blank-line()
   }
-
-  blank-line()
 
   // Enable paragraph numbering for indorsement body (same as mainmatter)
   IN_BACKMATTER_STATE.update(false)
   render-paragraph-body(content)
+  
 
   // Disable paragraph numbering for indorsement backmatter sections
   IN_BACKMATTER_STATE.update(true)
