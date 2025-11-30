@@ -36,13 +36,6 @@
       margin: MARGINS,
     )
 
-    // Guidelines section 6.1: Block style, no indentation, flush left/ragged right
-    set par(
-      first-line-indent: 0pt,
-      justify: false,
-      // leading is handled by configure() via config.typ to ensure 1.15-1.2 line spacing
-    )
-
     // Render the header (in normal document flow)
     render-header(
       wordmark,
@@ -52,6 +45,8 @@
     )
 
     // Render date line
+    blank-lines(2)
+
     render-date(actual_date)
 
     // Render recipient block

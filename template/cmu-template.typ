@@ -36,8 +36,6 @@ quatem. Volorruntios dist.
  
 Regards, 
 
-
-
 #backmatter(
   signature_block: (
     "First M. Last",

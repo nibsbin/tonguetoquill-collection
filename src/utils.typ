@@ -15,9 +15,12 @@
 /// - ctx (content): Content to apply configuration to
 /// -> content
 #let configure(body-font, font-size: 11pt, ctx) = {
-  set par(leading: spacing.line, spacing: spacing.line, justify: false)
-  set block(above: spacing.line, below: 0em, spacing: 0em)
-  set text(font: body-font, size: font-size, fallback: true)
+  set par(
+    spacing: 2em,
+    justify: false
+  )
+  //set block(above: spacing.line, below: 0em, spacing: 0em)
+  //set text(font: body-font, size: font-size, fallback: true)
   ctx
 }
 

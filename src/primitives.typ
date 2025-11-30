@@ -26,11 +26,9 @@
       #set image(width: 100%)
       #wordmark
     ]
+    linebreak()
   }
 
-  // Vertical Offset
-  // Guidelines 4.2: 0.15" to 0.2" whitespace
-  v(0.15in)
 
   // Sender's Address Block
   // Guidelines 4.2: Flush Left
@@ -63,7 +61,7 @@
 
   // Web Address: Regular
   if url != none {
-    v(8pt)
+    linebreak()
     [#url]
   }
 }
@@ -76,7 +74,6 @@
 // - Flush Left
 
 #let render-date(date) = {
-  blank-lines(3)
   align(left)[#display-date(date)]
 }
 
@@ -89,7 +86,6 @@
 
 #let render-recipient(recipient) = {
   if recipient != none {
-    blank-lines(1)
     align(left)[#ensure-string(recipient)]
   }
 }
