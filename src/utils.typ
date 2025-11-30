@@ -36,7 +36,7 @@
 /// -> content
 #let blank-lines(count, weak: true) = {
   for i in range(0, count) {
-    linebreak()
+    v(1.5em)
   }
 }
 
