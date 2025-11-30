@@ -35,6 +35,7 @@
       // Standard 1" margins for vertical flow layout
       margin: MARGINS,
     )
+    set par(justify: false)
 
     // Render the header (in normal document flow)
     block({
