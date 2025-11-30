@@ -39,18 +39,3 @@
   top: 0.75in,
   bottom: 0.751in,
 )
-
-// =============================================================================
-// SPACING CONSTANTS
-// =============================================================================
-
-// =============================================================================
-// SPACING CONSTANTS
-// =============================================================================
-
-#let spacing = (
-  line: 1em,            // Internal line spacing (leading) for double spacing
-  line-height: 1em,     // Base line height (font size)
-  paragraph: 0.65em,    // Space between paragraphs
-)
-

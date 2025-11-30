@@ -37,25 +37,31 @@
     )
 
     // Render the header (in normal document flow)
-    render-header(
-      wordmark,
-      department: department,
-      address: address,
-      url: url,
-    )
+    block({
+      render-header(
+        wordmark,
+        department: department,
+        address: address,
+        url: url,
+      )
+    })
 
-    blank-lines(2)
+    blank-lines(3)
 
     // Date and recipient in same paragraph to avoid extra spacing
-    [#display-date(actual_date)]
-    render-recipient(recipient)
+    block({
+      [#display-date(actual_date)
+        #linebreak()
+        #ensure-string(recipient)
+      ]
+    })
 
     // Store metadata for downstream sections
-    metadata((
-      date: actual_date,
-      body_font: body_font,
-      font_size: font_size,
-    ))
+    // metadata((
+    //   date: actual_date,
+    //   body_font: body_font,
+    //   font_size: font_size,
+    // ))
 
     it
   })

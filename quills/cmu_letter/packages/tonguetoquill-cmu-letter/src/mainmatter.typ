@@ -21,10 +21,6 @@
 /// -> content
 #let mainmatter(it) = {
 
-  
-  // Add spacing before body text
-  linebreak()
-
   // Set paragraph styling for body text
   set par(
     first-line-indent: 0pt,
@@ -38,6 +34,7 @@
     marker: text(size: 1.2em)[•]
   )
   set enum(indent: 0em, body-indent: 1em)
-
-  it
+  
+  blank-lines(3)
+  block(it)
 }
