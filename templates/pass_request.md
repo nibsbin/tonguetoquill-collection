@@ -27,7 +27,7 @@ In the data above, edit;
 **PURPOSE:** The purpose of the memorandum is to request a 4-day pass, in accordance with DAFI 363003, for traveling to `Area 51 for personal research`.
 
 <!-------------
-NARRATIVE
+In Narrative section below, edit:
 - Flight details
 - Transit to/from airport
 - AF4392
