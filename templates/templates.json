@@ -40,5 +40,11 @@
 		"description": "Carnegie Mellon University academic letter template",
 		"file": "cmu_letter_template.md",
 		"production": true
+	},
+	{
+		"name": "Pass Request",
+		"description": "USAF special pass request memorandum template",
+		"file": "pass_request.md",
+		"production": true
 	}
 ]
