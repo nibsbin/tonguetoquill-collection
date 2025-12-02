@@ -60,7 +60,7 @@ ui.tooltip = "The full organization name (e.g., 'HEADQUARTERS AIR FORCE PERSONNE
 [fields.tag_line]
 description = "Tag line at bottom of memo"
 type = "string"
-default = "Aim High"
+default = ""
 ui.group = "Letterhead"
 ui.tooltip = "Organizational motto at the bottom of the page."
 
