@@ -4,6 +4,7 @@ letterhead_title: DEPARTMENT OF THE AIR FORCE
 letterhead_caption: YOUR SQUADRON HERE
 memo_for:
   - ORG/SYM
+  - "ATTENTION:  MAJ JONES"
   # - 2nd ORG/SYM
 memo_from:
   - ORG/SYMBOL
@@ -13,7 +14,9 @@ signature_block:
 tag_line: Aim High
 ---
 
-Write your paragraphs here. Separate them with two new lines
+Click "Wizard" to edit header, signature block, and more.
+
+Write your paragraphs here. Separate them with two new lines.
 
 - Use bullets to nest paragraphs.
   - Indent to go deeper.
