@@ -5,28 +5,31 @@ address:
   - 5000 Forbes Avenue
   - Pittsburgh, PA 15213-3890
 url: cmu.edu
-date: 2025-11-29
+
+date: 2025-11-30
 recipient:
-  - "[Donor's Name]"
-  - "[Address 1]"
-  - "[City, State] [Zip Code]"
+  - <<Dr. Heinz Doofenshmirtz>>
+  - <<9297 Polly Parkway>>
+  - <<City, Virginia 46231>>
 signature_block:
-  - First M. Last
-  - Title
+  - <<Phineas Flynn>>
+  - <<Masters Student>>
 ---
 
-Dear [Donor's Salutation],
+Dear <<Dr. Heinz Doofenshmirtz>>,
 
-This is just greek copy to show suggested formatting. Please use Open Sans typeface if available.
+Write your letter content here. This template uses the CMU letter format for professional academic correspondence.
 
-Tiisque volecab il modit facersperrum arum nonse dolum qui omnis as sequibus molluptaquam aliquae. Aque moluptaquam facessimperi dolut etur, que a consequo et harias consenecti que disi ut inctore, odit qui quia cuptas earchillamus modi ut veror sendandae perit aut apitincipici de nobis qui commodi quatem. Volorruntios dist ent ut fuga.
+You can organize your thoughts with bullet points:
 
-Enclosed, please find the:
+- First point with supporting details and context.
 
-- Aditent ut lique consentota ium, same dolorepre por sim num et magnam, te volorrum ent reius, in culparum facerib repelique ercid qui optat officabo. Cum doleste modigenim ipsanim ditem eniatus estior molesequo tecti alit, aut ellacea nisitasi blabo.
+- Second point to address additional matters or provide supplementary information.
 
-- Olore odia aut omniste nectur, et latatus, sequi od expe ea que praest aut assi ditisci isciantem sum doluptas minihit atemporibus essint aliquidellor architatur?
+Use additional paragraphs to develop your ideas fully and maintain clear communication.
 
-Qui quia cuptas earchillamus modi ut veror sendandae perit aut apitincipici de nobis qui commodi quatem. Volorruntios dist.
+You can also **bold**, _italicize_, __underline__, `code`, and ~~strikethrough~~ your text as needed.
 
-Regards,
+Sincerely,
+
+<!--Edit signature block in frontmatter-->
