@@ -13,7 +13,7 @@ references:
   - DAFI 36-3003, 07 August 2024, Military Leave Program
 signature_block:
   - <<FIRST M. LAST, 2d Lt, USAF>>
-  - AFIT Student
+  - AFIT Masters Student
 font_size: 11
 ---
 <!--------------
@@ -23,7 +23,7 @@ In the data above, edit;
   - Subject
 ---------------->
 
-**PURPOSE:** The purpose of the memorandum is to request a 4-day pass, in accordance with DAFI 363003, for traveling to `Area 51 for personal research`.
+**PURPOSE:** The purpose of the memorandum is to request a 4-day pass, in accordance with DAFI 36-3003, for traveling to <<Area 51 for personal research>>.
 
 <!-------------
 In Narrative section below, edit:
