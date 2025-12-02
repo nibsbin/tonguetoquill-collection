@@ -15,28 +15,28 @@ description = "List of recipient organization(s)"
 type = "array"
 example = ["ORG1/SYMBOL", "ORG2/SYMBOL"]
 ui.group = "Essentials"
-ui.tooltip = "The recipient's office symbol. For multiple recipients, enter 'SEE DISTRIBUTION'."
+ui.tooltip = "Organization/office symbol in UPPERCASE. To address a specific person, add their rank and name in parentheses (e.g., 'ORG/SYMBOL (LT COL JANE DOE)'). For numerous recipients, use 'DISTRIBUTION'."
 
 [fields.memo_from]
 description = "Sender information as array: [ORG/SYMBOL, 'Organization Name', 'Street Address', 'City State ZIP']"
 type = "array"
 example = ["ORG/SYMBOL", "Organization Name", "123 Street Ave", "City ST 12345-6789"]
 ui.group = "Essentials"
-ui.tooltip = "Sender information. Only include the first line (Office Symbol) if the memo is internal to the installation."
+ui.tooltip = "If recipients are on the same installation, use only the office symbol. For recipients on other installations, include the full mailing address to enable return correspondence."
 
 [fields.subject]
 description = "Subject of the memo"
 type = "string"
 example = "Subject of the Memorandum"
 ui.group = "Essentials"
-ui.tooltip = "A clear, concise description. Capitalize The First Letter Of Each Major Word."
+ui.tooltip = "Be brief and clear. Capitalize the first letter of each word except articles, prepositions, and conjunctions. Include suspense dates in parentheses if applicable."
 
 [fields.signature_block]
 description = "Signature block lines"
 type = "array"
 example = ["FIRST M. LAST, Rank, USSF", "Duty Title"]
 ui.group = "Essentials"
-ui.tooltip = "The signer's information. Line 1: NAME (ALL CAPS), Rank, Service. Line 2: Duty title."
+ui.tooltip = "Line 1: Name in UPPERCASE as signed, grade, and service. Line 2: Duty title. Spell out 'Colonel' and general officer ranks."
 
 # ==========================================
 # Group 2: Letterhead
@@ -48,14 +48,14 @@ description = "Title in letterhead"
 type = "string"
 default = "DEPARTMENT OF THE AIR FORCE"
 ui.group = "Letterhead"
-ui.tooltip = "Standard title. Only change for Joint Commands or DoD Agencies."
+ui.tooltip = "Standard title. Only change for Joint Commands or DoW Agencies."
 
 [fields.letterhead_caption]
 description = "Letterhead caption line(s)"
 type = "array"
 default = ["HEADQUARTERS [UNIT NAME]"]
 ui.group = "Letterhead"
-ui.tooltip = "The full organization name (e.g., 'HEADQUARTERS AIR FORCE PERSONNEL CENTER')."
+ui.tooltip = "The full organization name of your unit."
 
 [fields.tag_line]
 description = "Tag line at bottom of memo"
@@ -74,7 +74,7 @@ description = "Date of memo (YYYY-MM-DD); defaults to today"
 type = "string"
 default = ""
 ui.group = "Advanced"
-ui.tooltip = "Leave blank to automatically use today's date."
+ui.tooltip = "YYYY-MM-DD. Leave blank to use today's date."
 
 [fields.references]
 description = "References for the memo"
@@ -82,7 +82,7 @@ type = "array"
 default = []
 example = ["AFM 33-326, 31 July 2019, Preparing Official Communications"]
 ui.group = "Advanced"
-ui.tooltip = "Publications or documents cited in the memo."
+ui.tooltip = "Cite by organization, type, date, and title."
 
 [fields.cc]
 description = "Carbon copy recipients"
@@ -90,7 +90,7 @@ type = "array"
 default = []
 example = ["Rank and Name, ORG/SYMBOL"]
 ui.group = "Advanced"
-ui.tooltip = "Recipients to be informed but not required to take action."
+ui.tooltip = "List office symbols of recipients to receive copies."
 
 [fields.distribution]
 description = "Distribution list. Used when \"SEE DISTRIBUTION\" is specified in `memo_for`."
@@ -106,7 +106,7 @@ type = "array"
 default = []
 example = ["Attachment description, YYYY MMM DD"]
 ui.group = "Advanced"
-ui.tooltip = "Documents attached to the memo. Numbering is applied automatically."
+ui.tooltip = "List attachments in the order they are mentioned in the memo. Briefly describe each; do not use 'as stated' or abbreviations."
 
 [fields.classification]
 description = "Classification level of the memo that displays in the banner"
@@ -114,7 +114,7 @@ type = "string"
 default = ""
 example = "CONFIDENTIAL"
 ui.group = "Advanced"
-ui.tooltip = "Classification marking (e.g., CUI, CONFIDENTIAL). Leave blank for unclassified."
+ui.tooltip = "Follow AFI 31-401 and applicable DoD guidance for classification markings. Leave blank for unclassified."
 
 [fields.font_size]
 description = "Font size for the memo text (int pt)"
