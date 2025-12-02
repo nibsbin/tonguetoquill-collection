@@ -15,6 +15,11 @@ signature_block:
   - <<Phineas Flynn>>
   - <<Masters Student>>
 ---
+<!--
+In the data above, edit:
+- Recipient
+- Signature block
+-->
 
 Dear <<Dr. Heinz Doofenshmirtz>>,
 
@@ -31,5 +36,3 @@ Use additional paragraphs to develop your ideas fully and maintain clear communi
 You can also **bold**, _italicize_, __underline__, `code`, and ~~strikethrough~~ your text as needed.
 
 Sincerely,
-
-<!--Edit signature block in frontmatter-->
