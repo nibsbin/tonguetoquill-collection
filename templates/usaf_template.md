@@ -4,7 +4,6 @@ letterhead_title: DEPARTMENT OF THE AIR FORCE
 letterhead_caption: YOUR SQUADRON HERE
 memo_for:
   - ORG/SYM
-  - "ATTENTION:  MAJ JONES"
   # - 2nd ORG/SYM
 memo_from:
   - ORG/SYMBOL
