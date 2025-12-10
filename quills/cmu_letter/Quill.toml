@@ -1,7 +1,7 @@
 [Quill]
 name = "cmu_letter"
 backend = "typst"
-glue_file = "glue.typ"
+plate_file = "plate.typ"
 example_file = "cmu_letter.md"
 description = "Typeset letters that comply with Carnegie Mellon University letterhead standards."
 
