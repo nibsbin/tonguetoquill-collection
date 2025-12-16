@@ -5,7 +5,7 @@
   // Letterhead configuration
   letterhead_title: {{ letterhead_title | String(default="letterhead-title") }},
   letterhead_caption: {{ letterhead_caption | Lines(default=["letterhead-caption"]) }},
-  letterhead_seal: image("assets/dow_seal.png"),
+  letterhead_seal: image("assets/dow_seal.jpg"),
 
   // Date
   date: {{ date | Date }},
