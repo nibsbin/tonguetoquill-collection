@@ -22,7 +22,6 @@ In the data above, edit;
   - Signature Block
   - Subject
 ---------------->
-
 **PURPOSE:** The purpose of the memorandum is to request a 4-day pass, in accordance with DAFI 36-3003, for traveling to <<Area 51 for personal research>>.
 
 <!-------------
