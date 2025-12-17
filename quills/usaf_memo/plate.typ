@@ -71,7 +71,7 @@
 
 // Indorsements - iterate through CARDS array and filter by CARD type
 {% for card in CARDS %}
-{% if card.CARD == "indorsements" %}
+{% if card.CARD == "indorsement" %}
 #indorsement(
   from: {{ card.from | String }},
   to: {{ card.for | String }},
