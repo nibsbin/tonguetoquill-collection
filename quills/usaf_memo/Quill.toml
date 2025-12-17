@@ -185,5 +185,5 @@ description = "Date of the endorsement. Leave blank to omit."
 title = "Indorsement format"
 type = "string"
 default = "standard"
-enum = ["standard", "informal", "separate-page"]
-description = "Format style: 'standard' (formal on same page), 'informal' (less formal routing), or 'separate-page' (starts on new page)."
+enum = ["standard", "informal", "separate_page"]
+description = "Format style: 'standard' (formal on same page), 'informal' (less formal routing), or 'separate_page' (starts on new page)."

@@ -40,7 +40,7 @@ CARD: indorsement
 for: <<issuer_org_symbol>>
 from: <<subject_rank>> <<subject_first_name>> <<subject_middle_initial>>. <<subject_last_name>>
 signature_block: <<subject_first_name>> <<subject_middle_initial>>. <<subject_last_name>>, <<subject_rank>>, USAF
-new_page: true # Omit to keep on same page
+format: separate_page # Omit to keep on same page
 ---
 
 <!-- EDIT: First Indorsement: Subject acknowledges receipt of the LOC -->

@@ -82,8 +82,7 @@
   {% if card.cc is defined %}
   cc: {{ card.cc | Lines }},
   {% endif %}
-  new_page: {{ card.new_page | default(false) }},
-  informal: {{ card.informal | default(false) }},
+  format: {{ card.format | String(default="standard") }},
   {% if card.date is defined %}
   date: {{ card.date | String }},
   {% endif %}

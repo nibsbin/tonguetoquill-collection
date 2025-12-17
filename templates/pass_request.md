@@ -40,5 +40,5 @@ CARD: indorsement
 signature_block:
   - ROBERT T. CHANCE, Lt Col, USAF
   - Commander
-informal: true
+format: informal
 ---
