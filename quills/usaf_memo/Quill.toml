@@ -145,14 +145,6 @@ title = "Routing indorsement"
 ui.group = "indorsement"
 description = "Chain of routing endorsements. Each endorsement block adds an official response or forwarding action to the original memo."
 
-[cards.indorsement.fields.format]
-title = "Indorsement format"
-type = "string"
-default = "standard"
-enum = ["standard", "informal", "separate_page"]
-ui.group = "Additional"
-description = "Format style: 'standard' (formal on same page), 'informal' (less formal routing), or 'separate_page' (starts on new page)."
-
 [cards.indorsement.fields.from]
 title = "From office/symbol"
 type = "string"
@@ -173,6 +165,14 @@ ui.group = "Addressing"
 description = "Line 1: Name in UPPERCASE as signed, grade, and service. Line 2: Duty title."
 required = true
 default = ["FIRST M. LAST, Rank, USAF", "Duty Title"]
+
+[cards.indorsement.fields.format]
+title = "Indorsement format"
+type = "string"
+default = "standard"
+enum = ["standard", "informal", "separate_page"]
+ui.group = "Additional"
+description = "Format style: 'standard' (formal on same page), 'informal' (less formal routing), or 'separate_page' (starts on new page)."
 
 [cards.indorsement.fields.attachments]
 title = "Attachments for this endorsement"
