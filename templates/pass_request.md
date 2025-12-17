@@ -36,7 +36,7 @@ In Narrative section below, edit:
 If you have any questions, please contact me at <<airman.snuffy@us.af.mil>> or <<(123) 456-7890>>.
 
 ---
-CARD: indorsements
+CARD: indorsement
 signature_block:
   - ROBERT T. CHANCE, Lt Col, USAF
   - Commander
