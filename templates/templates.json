@@ -15,7 +15,7 @@
 		"name": "Letter of Counseling",
 		"description": "Letter of Counseling template",
 		"file": "loc.md",
-		"production": false
+		"production": true
 	},
 	{
 		"name": "Rebuttal",
