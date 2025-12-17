@@ -153,6 +153,8 @@ title = "Signature block lines"
 type = "array"
 examples = [["FIRST M. LAST, Rank, USAF", "Duty Title"]]
 description = "Line 1: Name in UPPERCASE as signed, grade, and service. Line 2: Duty title."
+required = true
+default = ["FIRST M. LAST, Rank, USAF", "Duty Title"]
 
 [cards.indorsement.fields.attachments]
 title = "Attachments for this endorsement"
