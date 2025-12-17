@@ -22,7 +22,14 @@ description = "Organization/office symbol in UPPERCASE. To address a specific pe
 title = "Sender information as array: [ORG/SYMBOL, 'Organization Name', 'Street Address', 'City State ZIP']"
 type = "array"
 required = true
-examples = [["ORG/SYMBOL", "Organization Name", "123 Street Ave", "City ST 12345-6789"]]
+examples = [
+    [
+        "ORG/SYMBOL",
+        "Organization Name",
+        "123 Street Ave",
+        "City ST 12345-6789",
+    ],
+]
 ui.group = "Addressing"
 description = "If recipients are on the same installation, use only the office symbol. For recipients on other installations, include the full mailing address to enable return correspondence."
 
@@ -174,14 +181,9 @@ type = "string"
 default = ""
 description = "Date of the endorsement. Leave blank to omit."
 
-[cards.indorsement.fields.new_page]
-title = "Start on new page"
-type = "boolean"
-default = false
-description = "If true, this endorsement starts on a new page."
-
-[cards.indorsement.fields.informal]
-title = "Informal endorsement"
-type = "boolean"
-default = false
-description = "If true, uses informal endorsement format (less formal routing)."
+[cards.indorsement.fields.format]
+title = "Indorsement format"
+type = "string"
+default = "standard"
+enum = ["standard", "informal", "separate-page"]
+description = "Format style: 'standard' (formal on same page), 'informal' (less formal routing), or 'separate-page' (starts on new page)."
