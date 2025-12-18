@@ -147,7 +147,7 @@ description = "Chain of routing endorsements. Each endorsement block adds an off
 [cards.indorsement.fields.from]
 title = "From office/symbol"
 type = "string"
-default = ["ORG/SYMBOL"]
+default = "ORG/SYMBOL"
 ui.group = "Addressing"
 description = "Office symbol or Rank Name of the endorsing official (e.g., 'ORG/SYMBOL')."
 
