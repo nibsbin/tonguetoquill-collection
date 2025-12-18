@@ -154,7 +154,7 @@ description = "Office symbol or Rank Name of the endorsing official (e.g., 'ORG/
 [cards.indorsement.fields.for]
 title = "To office/symbol"
 type = "string"
-default = ["ORG/SYMBOL"]
+default = "ORG/SYMBOL"
 ui.group = "Addressing"
 description = "Office symbol or organization receiving the endorsed memo."
 
