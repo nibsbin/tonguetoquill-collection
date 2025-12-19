@@ -1,14 +1,14 @@
 ---
 QUILL: usaf_memo
 letterhead_title: DEPARTMENT OF THE AIR FORCE
-letterhead_caption: <<YOUR SQUADRON HERE>>
+letterhead_caption: YOUR SQUADRON HERE
 memo_for:
-  - <<Issuer's Rank FIRST M. LAST>>
+  - Issuer's Rank FIRST M. LAST
 memo_from:
-  - <<Subject's ORG/SYMBOL>>
-subject: Response to Letter of Counseling, <<LOC's DD Month YYYY>>
+  - Subject's ORG/SYMBOL
+subject: Response to Letter of Counseling, LOC's DD Month YYYY
 signature_block:
-  - <<Subject's FIRST M. LAST, Rank, USAF>>
+  - Subject's FIRST M. LAST, Rank, USAF
 tag_line: Aim High # Optional
 attachments:
   - Attachment 1, (Description)

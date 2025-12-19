@@ -7,12 +7,12 @@ letterhead_caption:
 memo_for:
   - AFROTC DET 730/CC
 memo_from:
-  - <<2d Lt First M. Last>>
-subject: <<DD Month YYYY>> – <<DD Month YYYY>>, Special Pass Request
+  - 2d Lt First M. Last
+subject: DD Month YYYY – DD Month YYYY, Special Pass Request
 references:
   - DAFI 36-3003, 07 August 2024, Military Leave Program
 signature_block:
-  - <<FIRST M. LAST, 2d Lt, USAF>>
+  - FIRST M. LAST, 2d Lt, USAF
   - AFIT Masters Student
 font_size: 11
 ---
