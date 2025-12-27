@@ -12,9 +12,6 @@ subject: !fill Response to Letter of Counseling, (Subject of LOC), dated DD Mont
 signature_block: !fill
   - Subject's FIRST M. LAST, Rank, USAF
   - Duty Title
-attachments: !fill
-  - Attachment 1, (Description)
-  - Attachment 2, (Description)
 ---
 <!-----------------------------------------------------
 1. INTRODUCTION
