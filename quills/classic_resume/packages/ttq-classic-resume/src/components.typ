@@ -59,7 +59,7 @@
   headingRight: "",
   subheadingLeft: none,
   subheadingRight: none,
-  bullets: none,
+  body: none,
 ) = {
   vgap(config.entry_spacing)
   block(breakable: false, {
@@ -80,15 +80,16 @@
       ..cells
     )
 
-    // Bullets (Optional)
-    if bullets != none {
-      // Intentionally tight spacing for refined "dense" look
-      list(
+    // Body content (Optional)
+    if body != none {
+      // Style native Typst lists to match previous bullet styling
+      show list: set list(
         marker: box(fill: black, width: 3.5pt, height: 3.5pt, radius: 0pt, baseline: .5em),
         body-indent: 0.8em,
         indent: 0em,
-        ..bullets,
       )
+
+      body
     }
   })
 }
@@ -129,7 +130,7 @@
 #let project_entry(
   name: "",
   url: none,
-  bullets: none,
+  body: none,
 ) = {
   vgap(config.entry_spacing)
   block(breakable: false, {
@@ -150,14 +151,16 @@
       }),
     )
 
-    // Bullets (Optional)
-    if bullets != none {
-      list(
+    // Body content (Optional)
+    if body != none {
+      // Style native Typst lists to match previous bullet styling
+      show list: set list(
         marker: box(fill: black, width: 3.5pt, height: 3.5pt, radius: 0pt, baseline: .5em),
         body-indent: 0.8em,
         indent: 0em,
-        ..bullets,
       )
+
+      body
     }
   })
 }
