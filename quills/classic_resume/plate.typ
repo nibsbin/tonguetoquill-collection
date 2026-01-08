@@ -16,7 +16,7 @@
       headingRight: {{ card.headingRight | String }},
       subheadingLeft: {{ card.subheadingLeft | String }},
       subheadingRight: {{ card.subheadingRight | String }},
-      bullets: {{ card.BODY | Lines }},
+      body: {{ card.BODY | Content }},
     )
   {% elif card.CARD == "skill_category" %}
     #key_value_grid(items: ((key: {{ card.name | String }}, value: {{ card.details | String }}),))
@@ -24,7 +24,7 @@
     #project_entry(
       name: {{ card.name | String }},
       url: {{ card.url | String }},
-      bullets: {{ card.BODY | Lines }},
+      body: {{ card.BODY | Content }},
     )
   {% elif card.CARD == "certification" %}
     #simple_grid(items: ({{ card.name | String }},))
