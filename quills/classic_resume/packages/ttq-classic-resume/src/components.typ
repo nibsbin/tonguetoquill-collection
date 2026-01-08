@@ -11,8 +11,8 @@
 
 // --- Component Exports ---
 
-// Header Block
-#let header_block(name: "", contacts: ()) = {
+// Resume Header
+#let resume_header(name: "", contacts: ()) = {
   set align(left)
 
   // Name
@@ -53,8 +53,8 @@
   hrule
 }
 
-// Entry Block
-#let entry_block(
+// Timeline Entry
+#let timeline_entry(
   headingLeft: "",
   headingRight: "",
   subheadingLeft: none,
@@ -94,8 +94,8 @@
   })
 }
 
-// Key-Value Grid (Skills)
-#let key_value_grid(items: (), columns: 2) = {
+// Category Grid (Skills, categorized information)
+#let category_grid(items: (), columns: 2) = {
   vgap(config.entry_spacing)
   // items is array of (key: "...", value: "...") dictionary
 
@@ -115,8 +115,8 @@
   )
 }
 
-// Simple Grid (Certifications)
-#let simple_grid(items: (), columns: 2) = {
+// Item Grid (Certifications, lists, etc.)
+#let item_grid(items: (), columns: 2) = {
   vgap(config.entry_spacing)
   grid(
     columns: (1fr,) * columns,
@@ -143,7 +143,7 @@
         if url != none {
           // Only hyperlink if it looks like a URL
           if url.starts-with("http") {
-            text(size: 8pt, font: "Courier New", link(url)[#url])
+            text(size: 8pt, font: "Courier New", emph(link(url)[#url]))
           } else {
             text(size: 8pt, font: "Courier New", url)
           }
