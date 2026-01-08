@@ -2,7 +2,7 @@
 
 #show: resume
 
-#header_block(
+#resume_header(
   name: {{ name | String }},
   contacts: {{ contacts | Lines }},
 )
@@ -11,7 +11,7 @@
   {% if card.CARD == "section" %}
     #section_header({{ card.title | String }})
   {% elif card.CARD == "entry" %}
-    #entry_block(
+    #timeline_entry(
       headingLeft: {{ card.headingLeft | String }},
       headingRight: {{ card.headingRight | String }},
       subheadingLeft: {{ card.subheadingLeft | String }},
@@ -19,7 +19,7 @@
       body: {{ card.BODY | Content }},
     )
   {% elif card.CARD == "skills" %}
-    #key_value_grid(items: (
+    #category_grid(items: (
       (key: {{ card.key1 | String }}, value: {{ card.val1 | String }}),
       (key: {{ card.key2 | String }}, value: {{ card.val2 | String }}),
       (key: {{ card.key3 | String }}, value: {{ card.val3 | String }}),
@@ -32,6 +32,6 @@
       body: {{ card.BODY | Content }},
     )
   {% elif card.CARD == "certifications" %}
-    #simple_grid(items: {{ card.items | Lines }})
+    #item_grid(items: {{ card.items | Lines }})
   {% endif %}
 {% endfor %}
