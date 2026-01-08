@@ -25,10 +25,6 @@ ui.group = "Personal Info"
 description = "List of contact details (email, phone, links, etc.)"
 
 # ==========================================
-# Group 2: Cards
-# ==========================================
-
-# ==========================================
 # Cards
 # ==========================================
 
@@ -63,17 +59,48 @@ type = "string"
 title = "Subheading Right (e.g., Date)"
 type = "string"
 
-[cards.skill_category]
-title = "Skill Category"
-description = "A category of skills (e.g., Languages: Python, Rust)."
+[cards.skills]
+title = "Skills Grid (4 categories)"
+description = "A grid of 4 skill categories with key-value pairs."
+ui.metadata_only = true
 
-[cards.skill_category.fields.name]
-title = "Category Name"
+[cards.skills.fields.key1]
+title = "Category 1 Name"
 type = "string"
 required = true
 
-[cards.skill_category.fields.details]
-title = "Skill Details"
+[cards.skills.fields.val1]
+title = "Category 1 Skills"
+type = "string"
+required = true
+
+[cards.skills.fields.key2]
+title = "Category 2 Name"
+type = "string"
+required = true
+
+[cards.skills.fields.val2]
+title = "Category 2 Skills"
+type = "string"
+required = true
+
+[cards.skills.fields.key3]
+title = "Category 3 Name"
+type = "string"
+required = true
+
+[cards.skills.fields.val3]
+title = "Category 3 Skills"
+type = "string"
+required = true
+
+[cards.skills.fields.key4]
+title = "Category 4 Name"
+type = "string"
+required = true
+
+[cards.skills.fields.val4]
+title = "Category 4 Skills"
 type = "string"
 required = true
 
@@ -90,11 +117,13 @@ required = true
 title = "Project URL"
 type = "string"
 
-[cards.certification]
-title = "Certification"
-description = "A single certification entry."
+[cards.certifications]
+title = "Certifications Grid"
+description = "A grid of certifications."
+ui.metadata_only = true
 
-[cards.certification.fields.name]
-title = "Certification Name"
-type = "string"
+[cards.certifications.fields.items]
+title = "Certification Names"
+type = "array"
 required = true
+examples = [["AWS Certified Solutions Architect", "CKA", "OSCP"]]

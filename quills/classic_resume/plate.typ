@@ -18,15 +18,20 @@
       subheadingRight: {{ card.subheadingRight | String }},
       body: {{ card.BODY | Content }},
     )
-  {% elif card.CARD == "skill_category" %}
-    #key_value_grid(items: ((key: {{ card.name | String }}, value: {{ card.details | String }}),))
+  {% elif card.CARD == "skills" %}
+    #key_value_grid(items: (
+      (key: {{ card.key1 | String }}, value: {{ card.val1 | String }}),
+      (key: {{ card.key2 | String }}, value: {{ card.val2 | String }}),
+      (key: {{ card.key3 | String }}, value: {{ card.val3 | String }}),
+      (key: {{ card.key4 | String }}, value: {{ card.val4 | String }}),
+    ))
   {% elif card.CARD == "project" %}
     #project_entry(
       name: {{ card.name | String }},
       url: {{ card.url | String }},
       body: {{ card.BODY | Content }},
     )
-  {% elif card.CARD == "certification" %}
-    #simple_grid(items: ({{ card.name | String }},))
+  {% elif card.CARD == "certifications" %}
+    #simple_grid(items: {{ card.items | Lines }})
   {% endif %}
 {% endfor %}

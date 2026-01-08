@@ -15,23 +15,12 @@ title: Active Certifications
 ---
 
 ---
-CARD: certification
-name: Offensive Security Certified Professional (OSCP)
----
-
----
-CARD: certification
-name: GIAC Cyber Threat Intelligence (GCTI)
----
-
----
-CARD: certification
-name: CompTIA CASP+, CySA+, Sec+, Net+, A+, Proj+
----
-
----
-CARD: certification
-name: GIAC Machine Learning Engineer (GMLE)
+CARD: certifications
+items:
+  - Offensive Security Certified Professional (OSCP)
+  - GIAC Cyber Threat Intelligence (GCTI)
+  - CompTIA CASP+, CySA+, Sec+, Net+, A+, Proj+
+  - GIAC Machine Learning Engineer (GMLE)
 ---
 
 ---
@@ -40,27 +29,15 @@ title: Skills
 ---
 
 ---
-CARD: skill_category
-name: Programming
-details: Python, R, JS, C#, Rust, PowerShell, CI/CD
----
-
----
-CARD: skill_category
-name: Data Science
-details: ML/statistics, TensorFlow, AI Engineering
----
-
----
-CARD: skill_category
-name: IT & Cybersecurity
-details: AD DS, Splunk, Metasploit, Wireshark, Nessus
----
-
----
-CARD: skill_category
-name: Cloud
-details: AWS EC2/S3, Helm, Docker, Serverless
+CARD: skills
+key1: Programming
+val1: Python, R, JS, C#, Rust, PowerShell, CI/CD
+key2: Data Science
+val2: ML/statistics, TensorFlow, AI Engineering
+key3: IT & Cybersecurity
+val3: AD DS, Splunk, Metasploit, Wireshark, Nessus
+key4: Cloud
+val4: AWS EC2/S3, Helm, Docker, Serverless
 ---
 
 ---
