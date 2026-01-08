@@ -1,0 +1,129 @@
+[Quill]
+name = "classic_resume"
+backend = "typst"
+plate_file = "plate.typ"
+example_file = "example.md"
+description = "A clean and modern classic resume template."
+
+# ==========================================
+# Group 1: Personal Information
+# ==========================================
+
+[fields.name]
+title = "Full Name"
+type = "string"
+required = true
+examples = ["John Doe"]
+ui.group = "Personal Info"
+
+[fields.contacts]
+title = "Contact Information"
+type = "array"
+required = true
+examples = [["john.doe@example.com", "123-456-7890", "linkedin.com/in/johndoe"]]
+ui.group = "Personal Info"
+description = "List of contact details (email, phone, links, etc.)"
+
+# ==========================================
+# Cards
+# ==========================================
+
+[cards.section]
+title = "Section Header"
+description = "A bold section header with a horizontal rule."
+
+[cards.section.fields.title]
+title = "Section Title"
+type = "string"
+required = true
+examples = ["Experience"]
+
+[cards.entry]
+title = "Experience/Education Entry"
+description = "An entry with a heading, subheading, and bullet points."
+
+[cards.entry.fields.headingLeft]
+title = "Heading Left (e.g., Company/School)"
+type = "string"
+required = true
+
+[cards.entry.fields.headingRight]
+title = "Heading Right (e.g., Location)"
+type = "string"
+
+[cards.entry.fields.subheadingLeft]
+title = "Subheading Left (e.g., Title/Degree)"
+type = "string"
+
+[cards.entry.fields.subheadingRight]
+title = "Subheading Right (e.g., Date)"
+type = "string"
+
+[cards.skills]
+title = "Skills Grid (4 categories)"
+description = "A grid of 4 skill categories with key-value pairs."
+ui.metadata_only = true
+
+[cards.skills.fields.key1]
+title = "Category 1 Name"
+type = "string"
+required = true
+
+[cards.skills.fields.val1]
+title = "Category 1 Skills"
+type = "string"
+required = true
+
+[cards.skills.fields.key2]
+title = "Category 2 Name"
+type = "string"
+required = true
+
+[cards.skills.fields.val2]
+title = "Category 2 Skills"
+type = "string"
+required = true
+
+[cards.skills.fields.key3]
+title = "Category 3 Name"
+type = "string"
+required = true
+
+[cards.skills.fields.val3]
+title = "Category 3 Skills"
+type = "string"
+required = true
+
+[cards.skills.fields.key4]
+title = "Category 4 Name"
+type = "string"
+required = true
+
+[cards.skills.fields.val4]
+title = "Category 4 Skills"
+type = "string"
+required = true
+
+[cards.project]
+title = "Project Entry"
+description = "A project entry with a name and optional URL."
+
+[cards.project.fields.name]
+title = "Project Name"
+type = "string"
+required = true
+
+[cards.project.fields.url]
+title = "Project URL"
+type = "string"
+
+[cards.certifications]
+title = "Certifications Grid"
+description = "A grid of certifications."
+ui.metadata_only = true
+
+[cards.certifications.fields.items]
+title = "Certification Names"
+type = "array"
+required = true
+examples = [["AWS Certified Solutions Architect", "CKA", "OSCP"]]
