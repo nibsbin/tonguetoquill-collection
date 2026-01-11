@@ -19,12 +19,15 @@
       body: {{ card.BODY | Content }},
     )
   {% elif card.CARD == "skills" %}
-    #category_grid(items: (
-      (key: {{ card.key1 | String }}, value: {{ card.val1 | String }}),
-      (key: {{ card.key2 | String }}, value: {{ card.val2 | String }}),
-      (key: {{ card.key3 | String }}, value: {{ card.val3 | String }}),
-      (key: {{ card.key4 | String }}, value: {{ card.val4 | String }}),
-    ))
+    #table(
+      columns: 2,
+      items: (
+        (category: {{ card.key1 | String }}, text: {{ card.val1 | String }}),
+        (category: {{ card.key2 | String }}, text: {{ card.val2 | String }}),
+        (category: {{ card.key3 | String }}, text: {{ card.val3 | String }}),
+        (category: {{ card.key4 | String }}, text: {{ card.val4 | String }}),
+      )
+    )
   {% elif card.CARD == "project" %}
     #project_entry(
       name: {{ card.name | String }},
@@ -32,6 +35,9 @@
       body: {{ card.BODY | Content }},
     )
   {% elif card.CARD == "certifications" %}
-    #item_grid(items: {{ card.items | Lines }})
+    #table(
+      columns: 2,
+      items: {{ card.items | Lines }}
+    )
   {% endif %}
 {% endfor %}
