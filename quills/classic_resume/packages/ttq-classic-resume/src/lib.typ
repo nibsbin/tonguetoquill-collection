@@ -2,4 +2,4 @@
 // Classic Resume Template Logic
 
 #import "layout.typ": config, resume
-#import "components.typ": timeline_entry, resume_header, category_grid, project_entry, section_header, item_grid
+#import "components.typ": project_entry, resume_header, section_header, table, timeline_entry
