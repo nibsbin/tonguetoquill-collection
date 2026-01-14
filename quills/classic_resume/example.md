@@ -10,13 +10,9 @@ contacts:
 ---
 
 ---
-CARD: section
+CARD: certifications_section
 title: Active Certifications
----
-
----
-CARD: certifications
-items:
+cells:
   - Offensive Security Certified Professional (OSCP)
   - GIAC Cyber Threat Intelligence (GCTI)
   - CompTIA CASP+, CySA+, Sec+, Net+, A+, Proj+
@@ -24,29 +20,22 @@ items:
 ---
 
 ---
-CARD: section
+CARD: skills_section
 title: Skills
+cells:
+  - category: Programming
+    skills: Python, R, JS, C#, Rust, PowerShell, CI/CD
+  - category: Data Science
+    skills: ML/statistics, TensorFlow, AI Engineering
+  - category: IT & Cybersecurity
+    skills: AD DS, Splunk, Metasploit, Wireshark, Nessus
+  - category: Cloud
+    skills: AWS EC2/S3, Helm, Docker, Serverless
 ---
 
 ---
-CARD: skills
-key1: Programming
-val1: Python, R, JS, C#, Rust, PowerShell, CI/CD
-key2: Data Science
-val2: ML/statistics, TensorFlow, AI Engineering
-key3: IT & Cybersecurity
-val3: AD DS, Splunk, Metasploit, Wireshark, Nessus
-key4: Cloud
-val4: AWS EC2/S3, Helm, Docker, Serverless
----
-
----
-CARD: section
+CARD: experience_section
 title: Work Experience
----
-
----
-CARD: entry
 headingLeft: Templar Archives Research Division
 headingRight: August 2024 – Present
 subheadingLeft: Psionic Research Analyst
@@ -57,7 +46,7 @@ subheadingRight: Aiur
 - Building automated threat detection pipelines using Khaydarin crystal arrays to monitor Void energy signatures across the sector.
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: Terran Dominion Ghost Academy
 headingRight: May 2025 – July 2025
 subheadingLeft: Covert Ops Trainee
@@ -69,7 +58,7 @@ subheadingRight: Tarsonis (Remote)
 - Discovered (and reported) a critical vulnerability in Adjutant defense networks exploitable by Zerg Infestors.
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: Abathur's Evolution Pit
 headingRight: June 2023 – July 2023
 subheadingLeft: Biomass Research Intern
@@ -80,7 +69,7 @@ subheadingRight: Char
 - Prototyped a creep tumor optimization tool featuring swarm pathfinding, resource node mapping, and hatchery placement recommendations.
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: Raynor's Raiders
 headingRight: January 2018 – June 2020
 subheadingLeft: Combat Engineer
@@ -93,12 +82,8 @@ subheadingRight: Mar Sara
 - Awarded the Raynor's Star and Mar Sara Defense Medal for meritorious service against the Swarm.
 
 ---
-CARD: section
+CARD: experience_section
 title: Education
----
-
----
-CARD: entry
 headingLeft: Carnegie Mellon University
 headingRight: December 2025
 subheadingLeft: Master of Information Technology Strategy
@@ -106,7 +91,7 @@ subheadingRight: Pittsburgh, PA
 ---
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: United States Air Force Academy
 headingRight: May 2024
 subheadingLeft: BS, Data Science
@@ -118,7 +103,7 @@ subheadingRight: Colorado Springs, CO
 - Professor Bradley A. Warner Data Science Catalyst and Top Cadet in Computer Networks.
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: Western Governors University
 headingRight: April 2022
 subheadingLeft: BS, Cybersecurity and Information Assurance
@@ -126,7 +111,7 @@ subheadingRight: Remote
 ---
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: Community College of the Air Force
 headingRight: February 2019
 subheadingLeft: AS, Information Systems Technology
@@ -134,12 +119,8 @@ subheadingRight: Remote
 ---
 
 ---
-CARD: section
+CARD: experience_section
 title: Cyber Competition
----
-
----
-CARD: entry
 headingLeft: 1st in SANS Academy Cup 2024
 ---
 
@@ -147,7 +128,7 @@ headingLeft: 1st in SANS Academy Cup 2024
 - Also placed first in SANS Core Netwars competition.
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: 1st in NCX 2023
 ---
 
@@ -155,7 +136,7 @@ headingLeft: 1st in NCX 2023
 - Analyzed logs with Bash and Python for the Data Analysis event.
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: 1st in SANS Academy Cup 2023
 ---
 
@@ -163,26 +144,22 @@ headingLeft: 1st in SANS Academy Cup 2023
 - Took first place against rival Army, Navy, and Coast Guard service academy teams.
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: 1st in RMCS 2023
 ---
 
 - Competed as the Delogrand Web Exploit SME, solving obfuscated JS, Wasm, XSS, and SQLi problems.
 
 ---
-CARD: entry
+CARD: experience_section
 headingLeft: 1st in NCX 2022
 ---
 
 - Trained and strategized teams for the Cyber Combat event.
 
 ---
-CARD: section
+CARD: projects_section
 title: Projects
----
-
----
-CARD: project
 name: TongueToQuill
 url: https://www.tonguetoquill.com
 ---
@@ -190,7 +167,7 @@ url: https://www.tonguetoquill.com
 - Rich markdown editor for perfectly formatted USAF and USSF documents with Claude MCP integration.
 
 ---
-CARD: project
+CARD: projects_section
 name: Quillmark
 url: https://github.com/nibsbin/quillmark
 ---
@@ -198,7 +175,7 @@ url: https://github.com/nibsbin/quillmark
 - Parameterization engine for generating arbitrarily typesetted documents from markdown content.
 
 ---
-CARD: project
+CARD: projects_section
 name: RoboRA
 url: https://github.com/nibsbin/RoboRA
 ---
@@ -206,7 +183,7 @@ url: https://github.com/nibsbin/RoboRA
 - AI research automation framework for Dr. Nadiya Kostyuk's research on global cyber policy.
 
 ---
-CARD: project
+CARD: projects_section
 name: Scraipe
 url: https://pypi.org/project/scraipe/
 ---
@@ -214,7 +191,7 @@ url: https://pypi.org/project/scraipe/
 - An asynchronous scraping and enrichment library to automate cybersecurity research.
 
 ---
-CARD: project
+CARD: projects_section
 name: Quandry
 url: https://quandry.streamlit.app/
 ---
@@ -223,7 +200,7 @@ url: https://quandry.streamlit.app/
 - Awarded 1st place out of 11 teams in CMU's Fall 2024 Information Security, Privacy, and Policy poster fair.
 
 ---
-CARD: project
+CARD: projects_section
 name: Streamlit Scroll Navigation
 url: https://pypi.org/project/streamlit-scroll-navigation/
 ---
@@ -231,7 +208,7 @@ url: https://pypi.org/project/streamlit-scroll-navigation/
 - Published a Streamlit-featured PyPI package to help data scientists create fluid single-page applications.
 
 ---
-CARD: project
+CARD: projects_section
 name: ADSBLookup
 url: <closed source>
 ---
@@ -239,7 +216,7 @@ url: <closed source>
 - Reversed the internal API of a popular ADSB web service to pull comprehensive live ADSB datasets; ported and exposed attributes in a user-friendly, Pandas-compatible Python library for data scientists.
 
 ---
-CARD: project
+CARD: projects_section
 name: OSCP LaTeX Report Template
 url: https://github.com/SnpM/oscp-latex-report-template
 ---
@@ -247,7 +224,7 @@ url: https://github.com/SnpM/oscp-latex-report-template
 - Published a report template that features custom commands for streamlined penetration test documentation.
 
 ---
-CARD: project
+CARD: projects_section
 name: Lockstep Framework
 url: https://github.com/SnpM/LockstepFramework
 ---
