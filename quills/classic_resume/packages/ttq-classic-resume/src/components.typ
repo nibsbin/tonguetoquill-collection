@@ -9,18 +9,23 @@
   v(-2pt)
 }
 
+// --- Constants ---
+#let bullet_marker_width = 3.5pt
+#let bullet_body_indent = 0.8em
+#let bullet_text_offset = bullet_marker_width + bullet_body_indent
+
 // --- Component Exports ---
 
 // Resume Header
-#let resume_header(name: "", contacts: ()) = {
+#let resume-header(name: "", contacts: ()) = {
   set align(left)
 
   // Name
   block(text(size: 18pt, weight: "bold", name))
 
-  set text(size: config.base_size, weight: "regular")
+  set text(size: config.base-size, weight: "regular")
 
-  vgap(config.entry_spacing)
+  vgap(config.entry-spacing)
 
   // Contacts
   // Separator: ' ❖ '
@@ -38,8 +43,8 @@
 
 
 // Section Header
-#let section_header(title, extra: none) = {
-  vgap(config.section_spacing)
+#let section-header(title, extra: none) = {
+  vgap(config.section-spacing)
   set align(left)
 
   // Title
@@ -54,24 +59,24 @@
 }
 
 // Timeline Entry
-#let timeline_entry(
-  headingLeft: "",
-  headingRight: "",
-  subheadingLeft: none,
-  subheadingRight: none,
+#let timeline-entry(
+  heading-left: "",
+  heading-right: "",
+  subheading-left: none,
+  subheading-right: none,
   body: none,
 ) = {
-  vgap(config.entry_spacing)
+  vgap(config.entry-spacing)
   block(breakable: false, {
     // Header Grid (combined for alignment and spacing)
     let cells = (
-      align(left, text(weight: "bold", headingLeft)),
-      align(right, text(weight: "bold", headingRight)),
+      align(left, text(weight: "bold", heading-left)),
+      align(right, text(weight: "bold", heading-right)),
     )
 
-    if subheadingLeft != none or subheadingRight != none {
-      cells.push(align(left, text(style: "italic", subheadingLeft)))
-      cells.push(align(right, text(style: "italic", subheadingRight)))
+    if subheading-left != none or subheading-right != none {
+      cells.push(align(left, text(style: "italic", subheading-left)))
+      cells.push(align(right, text(style: "italic", subheading-right)))
     }
 
     grid(
@@ -84,8 +89,8 @@
     if body != none {
       // Style native Typst lists to match previous bullet styling
       show list: set list(
-        marker: box(fill: black, width: 3.5pt, height: 3.5pt, radius: 0pt, baseline: .5em),
-        body-indent: 0.8em,
+        marker: box(fill: black, width: bullet_marker_width, height: bullet_marker_width, radius: 0pt, baseline: .5em),
+        body-indent: bullet_body_indent,
         indent: 0em,
       )
 
@@ -106,7 +111,7 @@
     type(items.at(0)) == dictionary and "category" in items.at(0)
   )
 
-  vgap(config.entry_spacing)
+  vgap(config.entry-spacing)
 
   let render_cell(item) = {
     if is_categorized {
@@ -120,15 +125,18 @@
     }
   }
 
-  grid(
-    columns: (1fr,) * columns,
-    row-gutter: if is_categorized {
-      config.leading + config.entry_spacing
-    } else {
-      config.leading
-    },
-    column-gutter: 1em,
-    ..items.map(render_cell),
+  pad(
+    left: bullet_text_offset,
+    grid(
+      columns: (1fr,) * columns,
+      row-gutter: if is_categorized {
+        config.leading + config.entry-spacing
+      } else {
+        config.leading
+      },
+      column-gutter: 1em,
+      ..items.map(render_cell),
+    ),
   )
 }
 
@@ -137,12 +145,12 @@
 
 
 // Project Entry (PROJECTS section)
-#let project_entry(
+#let project-entry(
   name: "",
   url: none,
   body: none,
 ) = {
-  vgap(config.entry_spacing)
+  vgap(config.entry-spacing)
   block(breakable: false, {
     // Header Grid
     grid(
@@ -165,8 +173,8 @@
     if body != none {
       // Style native Typst lists to match previous bullet styling
       show list: set list(
-        marker: box(fill: black, width: 3.5pt, height: 3.5pt, radius: 0pt, baseline: .5em),
-        body-indent: 0.8em,
+        marker: box(fill: black, width: bullet_marker_width, height: bullet_marker_width, radius: 0pt, baseline: .5em),
+        body-indent: bullet_body_indent,
         indent: 0em,
       )
 
