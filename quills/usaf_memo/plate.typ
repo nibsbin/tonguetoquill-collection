@@ -60,8 +60,8 @@
 #for card in data.CARDS {
   if card.CARD == "indorsement" {
     indorsement(
-      from: card.from,
-      to: card.for,
+      from: card.at("from", default: ""),
+      to: card.at("for", default: ""),
       signature_block: card.signature_block,
       ..if "attachments" in card { (attachments: card.attachments) },
       ..if "cc" in card { (cc: card.cc) },
