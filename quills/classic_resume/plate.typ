@@ -15,11 +15,11 @@
 
   if card.CARD == "experience_section" {
     timeline-entry(
-      headingLeft: card.headingLeft,
-      headingRight: card.headingRight,
-      subheadingLeft: card.subheadingLeft,
-      subheadingRight: card.subheadingRight,
-      body: eval-markup(card.BODY),
+      heading-left: card.at("headingLeft", default: ""),
+      heading-right: card.at("headingRight", default: ""),
+      subheading-left: card.at("subheadingLeft", default: none),
+      subheading-right: card.at("subheadingRight", default: none),
+      body: eval-markup(card.at("BODY", default: "")),
     )
   } else if card.CARD == "skills_section" {
     table(
@@ -32,8 +32,8 @@
   } else if card.CARD == "projects_section" {
     project-entry(
       name: card.name,
-      url: card.url,
-      body: eval-markup(card.BODY),
+      url: card.at("url", default: none),
+      body: eval-markup(card.at("BODY", default: "")),
     )
   } else if card.CARD == "certifications_section" {
     table(
