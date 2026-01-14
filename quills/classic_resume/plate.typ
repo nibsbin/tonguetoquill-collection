@@ -4,43 +4,41 @@
 #show: resume
 
 #resume_header(
-  name: data.at("name", default: ""),
-  contacts: data.at("contacts", default: ()),
+  name: data.name,
+  contacts: data.contacts,
 )
 
-#for card in data.at("CARDS", default: ()) {
+#for card in data.CARDS {
   if "title" in card and card.title != "" {
     section_header(card.title)
   }
 
   if card.CARD == "experience_section" {
     timeline_entry(
-      headingLeft: card.at("headingLeft", default: ""),
-      headingRight: card.at("headingRight", default: ""),
-      subheadingLeft: card.at("subheadingLeft", default: ""),
-      subheadingRight: card.at("subheadingRight", default: ""),
-      body: eval-markup(card.at("BODY", default: "")),
+      headingLeft: card.headingLeft,
+      headingRight: card.headingRight,
+      subheadingLeft: card.subheadingLeft,
+      subheadingRight: card.subheadingRight,
+      body: eval-markup(card.BODY),
     )
   } else if card.CARD == "skills_section" {
     table(
       columns: 2,
-      items: card
-        .at("cells", default: ())
-        .map(item => (
-          category: item.at("category", default: ""),
-          text: item.at("skills", default: ""),
-        ))
+      items: card.cells.map(item => (
+        category: item.category,
+        text: item.skills,
+      ))
     )
   } else if card.CARD == "projects_section" {
     project_entry(
-      name: card.at("name", default: ""),
-      url: card.at("url", default: ""),
-      body: eval-markup(card.at("BODY", default: "")),
+      name: card.name,
+      url: card.url,
+      body: eval-markup(card.BODY),
     )
   } else if card.CARD == "certifications_section" {
     table(
       columns: 2,
-      items: card.at("cells", default: ())
+      items: card.cells
     )
   }
 }

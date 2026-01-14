@@ -6,21 +6,21 @@
 #show regex("(?i)taro"): it => text(fill: purple)[#it]
 
 // Filters like `String` render to code mode automatically,
-#underline(data.at("title", default: ""))
+#underline(data.title)
 
 // When using filters in markup mode,
 // add `#` before the template expression to enter code mode.
-*Author: #data.at("author", default: "")*
+*Author: #data.author*
 
-*Favorite Ice Cream: #data.at("ice_cream", default: "")*__
+*Favorite Ice Cream: #data.ice_cream*__
 
 
-#eval-markup(data.at("BODY", default: ""))
+#eval-markup(data.BODY)
 
 // Present each sub-document programatically
-#for card in data.at("CARDS", default: ()) {
+#for card in data.CARDS {
   if card.CARD == "quotes" [
-    *#card.at("author", default: "")*: _#eval-markup(card.at("BODY", default: ""))_
+    *#card.author*: _#eval-markup(card.BODY)_
   ]
 }
 

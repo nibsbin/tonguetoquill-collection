@@ -3,17 +3,17 @@
 
 #show: frontmatter.with(
   wordmark: image("assets/cmu-wordmark.svg"),
-  department: data.at("department", default: "Department Name"),
-  address: data.at("address", default: ("Address Line 1", "Address Line 2")),
-  url: data.at("url", default: "www.cmu.edu"),
+  department: data.department,
+  address: data.address,
+  url: data.url,
   date: parse-date(data.date),
-  recipient: data.at("recipient", default: ("Recipient Name", "Address")),
+  recipient: data.recipient,
 )
 
 #show: mainmatter
 
-#eval-markup(data.at("BODY", default: ""))
+#eval-markup(data.BODY)
 
 #backmatter(
-  signature_block: data.at("signature_block", default: ("First M. Last", "Title")),
+  signature_block: data.signature_block,
 )

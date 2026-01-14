@@ -4,21 +4,21 @@
 // Frontmatter configuration
 #show: frontmatter.with(
   // Letterhead configuration
-  letterhead_title: data.at("letterhead_title", default: "letterhead-title"),
-  letterhead_caption: data.at("letterhead_caption", default: ("letterhead-caption",)),
+  letterhead_title: data.letterhead_title,
+  letterhead_caption: data.letterhead_caption,
   letterhead_seal: image("assets/dow_seal.jpg"),
 
   // Date
   date: parse-date(data.date),
 
   // Receiver information
-  memo_for: data.at("memo_for", default: ("memo_for",)),
+  memo_for: data.memo_for,
 
   // Sender information
-  memo_from: data.at("memo_from", default: ("memo_from",)),
+  memo_from: data.memo_from,
 
   // Subject line
-  subject: data.at("subject", default: "subject"),
+  subject: data.subject,
 
   // Optional references
   ..if "references" in data { (references: data.references) },
@@ -38,13 +38,13 @@
 
 // Mainmatter configuration
 #mainmatter[
-  #eval-markup(data.at("BODY", default: ""))
+  #eval-markup(data.BODY)
 ]
 
 // Backmatter
 #backmatter(
   // Signature block
-  signature_block: data.at("signature_block", default: ("signature_block",)),
+  signature_block: data.signature_block,
 
   // Optional cc
   ..if "cc" in data { (cc: data.cc) },
@@ -57,18 +57,18 @@
 )
 
 // Indorsements - iterate through CARDS array and filter by CARD type
-#for card in data.at("CARDS", default: ()) {
+#for card in data.CARDS {
   if card.CARD == "indorsement" {
     indorsement(
-      from: card.at("from", default: ""),
-      to: card.at("for", default: ""),
-      signature_block: card.at("signature_block", default: ()),
+      from: card.from,
+      to: card.for,
+      signature_block: card.signature_block,
       ..if "attachments" in card { (attachments: card.attachments) },
       ..if "cc" in card { (cc: card.cc) },
       format: card.at("format", default: "standard"),
       ..if "date" in card { (date: card.date) },
     )[
-      #eval-markup(card.at("BODY", default: ""))
+      #eval-markup(card.BODY)
     ]
   }
 }
