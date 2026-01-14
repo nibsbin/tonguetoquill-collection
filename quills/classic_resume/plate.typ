@@ -8,9 +8,11 @@
 )
 
 {% for card in CARDS %}
-  {% if card.CARD == "section" %}
+  {% if card.title %}
     #section_header({{ card.title | String }})
-  {% elif card.CARD == "entry" %}
+  {% endif %}
+
+  {% if card.CARD == "experience_section" %}
     #timeline_entry(
       headingLeft: {{ card.headingLeft | String }},
       headingRight: {{ card.headingRight | String }},
@@ -18,20 +20,25 @@
       subheadingRight: {{ card.subheadingRight | String }},
       body: {{ card.BODY | Content }},
     )
-  {% elif card.CARD == "skills" %}
-    #category_grid(items: (
-      (key: {{ card.key1 | String }}, value: {{ card.val1 | String }}),
-      (key: {{ card.key2 | String }}, value: {{ card.val2 | String }}),
-      (key: {{ card.key3 | String }}, value: {{ card.val3 | String }}),
-      (key: {{ card.key4 | String }}, value: {{ card.val4 | String }}),
-    ))
-  {% elif card.CARD == "project" %}
+  {% elif card.CARD == "skills_section" %}
+    #table(
+      columns: 2,
+      items: (
+        {% for item in card.cells %}
+          (category: {{ item.category | String }}, text: {{ item.skills | String }}),
+        {% endfor %}
+      )
+    )
+  {% elif card.CARD == "projects_section" %}
     #project_entry(
       name: {{ card.name | String }},
       url: {{ card.url | String }},
       body: {{ card.BODY | Content }},
     )
-  {% elif card.CARD == "certifications" %}
-    #item_grid(items: {{ card.items | Lines }})
+  {% elif card.CARD == "certifications_section" %}
+    #table(
+      columns: 2,
+      items: {{ card.cells | Lines }}
+    )
   {% endif %}
 {% endfor %}
