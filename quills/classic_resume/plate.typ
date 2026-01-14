@@ -3,18 +3,18 @@
 
 #show: resume
 
-#resume_header(
+#resume-header(
   name: data.name,
   contacts: data.contacts,
 )
 
 #for card in data.CARDS {
   if "title" in card and card.title != "" {
-    section_header(card.title)
+    section-header(card.title)
   }
 
   if card.CARD == "experience_section" {
-    timeline_entry(
+    timeline-entry(
       headingLeft: card.headingLeft,
       headingRight: card.headingRight,
       subheadingLeft: card.subheadingLeft,
@@ -30,7 +30,7 @@
       ))
     )
   } else if card.CARD == "projects_section" {
-    project_entry(
+    project-entry(
       name: card.name,
       url: card.url,
       body: eval-markup(card.BODY),
