@@ -1,44 +1,44 @@
+#import "@local/quillmark-helper:0.1.0": data, eval-markup, parse-date
 #import "@preview/ttq-classic-resume:0.1.0": *
 
 #show: resume
 
-#resume_header(
-  name: {{ name | String }},
-  contacts: {{ contacts | Lines }},
+#resume-header(
+  name: data.name,
+  contacts: data.contacts,
 )
 
-{% for card in CARDS %}
-  {% if card.title %}
-    #section_header({{ card.title | String }})
-  {% endif %}
+#for card in data.CARDS {
+  if "title" in card and card.title != "" {
+    section-header(card.title)
+  }
 
-  {% if card.CARD == "experience_section" %}
-    #timeline_entry(
-      headingLeft: {{ card.headingLeft | String }},
-      headingRight: {{ card.headingRight | String }},
-      subheadingLeft: {{ card.subheadingLeft | String }},
-      subheadingRight: {{ card.subheadingRight | String }},
-      body: {{ card.BODY | Content }},
+  if card.CARD == "experience_section" {
+    timeline-entry(
+      heading-left: card.at("headingLeft", default: ""),
+      heading-right: card.at("headingRight", default: ""),
+      subheading-left: card.at("subheadingLeft", default: none),
+      subheading-right: card.at("subheadingRight", default: none),
+      body: eval-markup(card.at("BODY", default: "")),
     )
-  {% elif card.CARD == "skills_section" %}
-    #table(
+  } else if card.CARD == "skills_section" {
+    table(
       columns: 2,
-      items: (
-        {% for item in card.cells %}
-          (category: {{ item.category | String }}, text: {{ item.skills | String }}),
-        {% endfor %}
-      )
+      items: card.cells.map(item => (
+        category: item.category,
+        text: item.skills,
+      ))
     )
-  {% elif card.CARD == "projects_section" %}
-    #project_entry(
-      name: {{ card.name | String }},
-      url: {{ card.url | String }},
-      body: {{ card.BODY | Content }},
+  } else if card.CARD == "projects_section" {
+    project-entry(
+      name: card.name,
+      url: card.at("url", default: none),
+      body: eval-markup(card.at("BODY", default: "")),
     )
-  {% elif card.CARD == "certifications_section" %}
-    #table(
+  } else if card.CARD == "certifications_section" {
+    table(
       columns: 2,
-      items: {{ card.cells | Lines }}
+      items: card.cells
     )
-  {% endif %}
-{% endfor %}
+  }
+}

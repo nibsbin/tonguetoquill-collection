@@ -44,7 +44,7 @@ subheadingRight = { title = "Subheading Right (e.g., Date)", type = "string" }
 [cards.skills_section]
 title = "Skills Grid"
 description = "A grid of skill categories with key-value pairs."
-ui.metadata_only = true
+ui.hide_body = true
 
 [cards.skills_section.fields]
 title = { title = "Section Title", type = "string", default = "Skills" }
@@ -74,7 +74,7 @@ url = { title = "Project URL", type = "string" }
 [cards.certifications_section]
 title = "Certifications Grid"
 description = "A grid of certifications."
-ui.metadata_only = true
+ui.hide_body = true
 
 [cards.certifications_section.fields]
 title = { title = "Section Title", type = "string", default = "Certifications" }
