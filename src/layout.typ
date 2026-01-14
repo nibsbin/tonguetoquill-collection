@@ -3,10 +3,10 @@
 // --- Configurations ---
 #let config = (
   font: "eb garamond",
-  base_size: 12pt,
+  base-size: 12pt,
   leading: 0.5em, // Global spacing value (vertical rhythm)
-  section_spacing: 5pt,
-  entry_spacing: 5pt,
+  section-spacing: 5pt,
+  entry-spacing: 5pt,
   margin: 0.5in,
 )
 
@@ -22,7 +22,7 @@
 
   set text(
     font: config.font,
-    size: config.base_size,
+    size: config.base-size,
   )
 
   set par(
