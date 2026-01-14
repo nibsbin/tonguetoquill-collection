@@ -6,7 +6,7 @@
   department: data.department,
   address: data.address,
   url: data.url,
-  date: parse-date(data.date),
+  date: if "date" in data { parse-date(data.date) } else { datetime.today() },
   recipient: data.recipient,
 )
 
