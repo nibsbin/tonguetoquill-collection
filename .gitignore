@@ -1,22 +1,14 @@
-# macOS
-.DS_Store
+dev_assets/
+.claude/
+.github/
+pdfs/
+**.pdf
+tests/
+build.sh
+.gitignore~*
+orchestration.txt
+prose/
 
-# Editor directories and files
-.vscode/
-.idea/
-*.swp
-*~
-
-# Typst / build outputs
-*.zip
-release-artifacts/
-
-# Secrets and environment
-.env
-*.pem
-*.key
-
-outputs/
-
-MIGRATION.md
-references/
+template/
+README.md
+LIMITATIONS.md
