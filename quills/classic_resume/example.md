@@ -1,5 +1,5 @@
 ---
-QUILL: classic_resume
+QUILL: classic_resume:0.1
 name: John Doe
 contacts:
   - john.doe@example.com
