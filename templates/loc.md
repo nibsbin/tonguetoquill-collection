@@ -24,11 +24,11 @@ compress_indorsements: true
 **NOTE: This template is undergoing major refinement. It is included for demonstration purposes.**
 
 <!-- EDIT: Describe the incident: what the member did or failed to do, citing specific incidents and dates, and if possible, with UCMJ articles. -->
-Investigation has disclosed the {{incident_description}}.
+Investigation has disclosed the (:incident_description:).
 
 <!-- EDIT: Counseling paragraph: Discuss the impact of the member's actions and what improvement is expected. -->
 You are hereby counseled.
-{{impact_and_expected_improvement}}.
+(:impact_and_expected_improvement:).
 Your conduct is unacceptable and any future misconduct may result in more severe action.
 
 The following information required by the Privacy Act is provided for your information. **AUTHORITY**: 10 U.S.C. § 8013. **PURPOSE**: To obtain any comments or documents you desire to submit (on a voluntary basis) for consideration concerning this action. **ROUTINE USES**: Provides you an opportunity to submit comments or documents for consideration. If provided, the comments and documents you submit become a part of the action. **DISCLOSURE**: Your written acknowledgement of receipt and signature are mandatory. Any other comments or documents you provide are voluntary.
