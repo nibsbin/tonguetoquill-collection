@@ -26,7 +26,7 @@ fields:
         - Title
     ui:
       group: Essentials
-    description: The signer's information. Line 1: Name. Line 2: Title.
+    description: "The signer's information. Line 1: Name. Line 2: Title."
 
   department:
     title: Name of the department or unit
