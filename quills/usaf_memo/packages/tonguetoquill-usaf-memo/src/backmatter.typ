@@ -4,7 +4,7 @@
 // AFH 33-337 Chapter 14 "The Closing Section". It handles:
 // - Signature block placement and formatting
 // - Attachments listing
-// - Courtesy copy (cc:) distribution
+// - Courtesy copy (cc:} distribution
 // - Distribution lists
 
 #import "primitives.typ": *

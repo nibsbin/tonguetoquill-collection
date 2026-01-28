@@ -21,7 +21,7 @@ In the data above, edit:
 - Signature block
 -->
 
-Dear (:Dr. Heinz Doofenshmirtz:),
+Dear {:Dr. Heinz Doofenshmirtz:},
 
 Write your letter content here. This template uses the CMU letter format for professional academic correspondence.
 
