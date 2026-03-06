@@ -1,5 +1,5 @@
 ---
-QUILL: cmu_letter:0.1
+QUILL: cmu_letter@0.1
 department: Department Here
 address:
   - 5000 Forbes Avenue
