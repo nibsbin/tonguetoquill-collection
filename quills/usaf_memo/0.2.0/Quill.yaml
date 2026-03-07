@@ -189,6 +189,22 @@ cards:
           group: Additional
         description: "Format style: 'standard' (formal on same page), 'informal' (less formal routing), or 'separate_page' (starts on new page)."
         default: standard
+      action:
+        title: Action Decision
+        type: string
+        enum:
+          - approved
+          - disapproved
+        ui:
+          group: Additional
+        description: "Action taken by the endorser ('approved' or 'disapproved')."
+      show_action:
+        title: Show Action Line
+        type: boolean
+        default: false
+        ui:
+          group: Additional
+        description: "Display the APPROVED / DISAPPROVED action line."
       attachments:
         title: Attachments for this endorsement
         type: array

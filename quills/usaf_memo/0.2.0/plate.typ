@@ -67,6 +67,8 @@
       ..if "cc" in card { (cc: card.cc) },
       format: card.at("format", default: "standard"),
       ..if "date" in card { (date: card.date) },
+      ..if "action" in card { (action: card.action) },
+      ..if "show_action" in card { (show_action: card.show_action) },
     )[
       #eval-markup(card.BODY)
     ]
