@@ -1,6 +1,10 @@
 {
   "name": "@tonguetoquill/collection",
   "version": "0.1.2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nibsbin/tonguetoquill-collection.git"
+  },
   "main": "index.js",
   "types": "index.d.ts",
   "exports": {
