@@ -9,7 +9,7 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { FileSystemSource } from "@quillmark/registry";
@@ -37,25 +37,46 @@ for (const [name, config] of Object.entries(subtrees)) {
   console.log();
 
   try {
-    const output = execFileSync(
-      "git",
-      [
-        "subtree",
-        "pull",
-        `--prefix=${prefix}`,
-        config.repo,
-        config.branch,
-        "--squash",
-        "-m",
-        `chore: update ${name} subtree from upstream`,
-      ],
-      { cwd: repoRoot, stdio: "inherit" }
-    );
+    const isNew = !existsSync(resolve(repoRoot, prefix));
+    
+    if (isNew) {
+      console.log(`Prefix not found, adding as new subtree...`);
+      execFileSync(
+        "git",
+        [
+          "subtree",
+          "add",
+          `--prefix=${prefix}`,
+          config.repo,
+          config.branch,
+          "--squash",
+          "-m",
+          `chore: add ${name} subtree from upstream`,
+        ],
+        { cwd: repoRoot, stdio: "inherit" }
+      );
+    } else {
+      execFileSync(
+        "git",
+        [
+          "subtree",
+          "pull",
+          `--prefix=${prefix}`,
+          config.repo,
+          config.branch,
+          "--squash",
+          "-m",
+          `chore: update ${name} subtree from upstream`,
+        ],
+        { cwd: repoRoot, stdio: "inherit" }
+      );
+    }
+    
     console.log();
-    console.log(`✓ ${name} subtree updated successfully`);
+    console.log(`✓ ${name} subtree ${isNew ? 'added' : 'updated'} successfully`);
   } catch (err) {
     console.error();
-    console.error(`✗ ${name} subtree update failed (exit code ${err.status})`);
+    console.error(`✗ ${name} subtree ${!existsSync(resolve(repoRoot, prefix)) ? 'add' : 'update'} failed (exit code ${err.status})`);
     failed = true;
   }
   console.log();
