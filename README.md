@@ -1,12 +1,12 @@
-# @tonguetoquill/quills
+# @tonguetoquill/collection
 
-This package redistributes the core Quills and supporting templates from the [TongueToQuill](https://github.com/tonguetoquill/tonguetoquill-collection) project for consumption in Node.js, Deno, and Bun environments.
+This package redistributes the core Quills and supporting templates from the [TTQ Quills and Templates Collection](https://github.com/nibsbin/tonguetoquill-collection) for consumption in Node.js environments.
 
 ## Installation
 
 ```bash
 # npm
-npm install @tonguetoquill/quills
+npm install @tonguetoquill/collection
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ You can use `QUILLS_DIR` with the `FileSystemSource` from the [`@quillmark/regis
 ```typescript
 import { Quillmark } from '@quillmark/wasm';
 import { QuillRegistry, FileSystemSource } from '@quillmark/registry';
-import { QUILLS_DIR } from '@tonguetoquill/quills';
+import { QUILLS_DIR } from '@tonguetoquill/collection';
 
 async function setupRegistry() {
   const engine = new Quillmark();
