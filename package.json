@@ -1,0 +1,12 @@
+{
+  "name": "tonguetoquill-collection",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "update-subtrees": "node scripts/update-subtrees.mjs"
+  },
+  "dependencies": {
+    "@quillmark/registry": "^0.5.3"
+  }
+}
