@@ -1,5 +1,5 @@
 #import "@local/quillmark-helper:0.1.0": data, eval-markup, parse-date
-#import "@preview/tonguetoquill-usaf-memo:1.0.0": backmatter, frontmatter, indorsement, mainmatter
+#import "@preview/tonguetoquill-usaf-memo:1.1.0": backmatter, frontmatter, indorsement, mainmatter
 
 // Frontmatter configuration
 #show: frontmatter.with(
@@ -68,7 +68,6 @@
       format: card.at("format", default: "standard"),
       ..if "date" in card { (date: card.date) },
       ..if "action" in card { (action: card.action) },
-      ..if "show_action" in card { (show_action: card.show_action) },
     )[
       #eval-markup(card.BODY)
     ]

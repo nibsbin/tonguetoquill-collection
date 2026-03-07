@@ -193,18 +193,11 @@ cards:
         title: Action Decision
         type: string
         enum:
-          - approved
-          - disapproved
+          - approve
+          - disapprove
         ui:
           group: Additional
-        description: "Action taken by the endorser ('approved' or 'disapproved')."
-      show_action:
-        title: Show Action Line
-        type: boolean
-        default: false
-        ui:
-          group: Additional
-        description: "Display the APPROVED / DISAPPROVED action line."
+        description: "Action taken by the endorser. When set, the APPROVE / DISAPPROVE line is displayed with the selected option highlighted."
       attachments:
         title: Attachments for this endorsement
         type: array
