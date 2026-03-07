@@ -193,11 +193,12 @@ cards:
         title: Action Decision
         type: string
         enum:
+          - undecided
           - approve
           - disapprove
         ui:
-          group: Additional
-        description: "Action taken by the endorser. When set, the APPROVE / DISAPPROVE line is displayed with the selected option highlighted."
+          group: Action
+        description: "Action taken by the endorser. Use 'undecided' to display the Approve/Disapprove line with neither option circled, 'approve' or 'disapprove' to circle the selected option."
       attachments:
         title: Attachments for this endorsement
         type: array
