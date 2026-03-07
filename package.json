@@ -1,10 +1,16 @@
 {
   "name": "ttq-quills",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "update-subtrees": "node scripts/update-subtrees.mjs"
+    "update-subtrees": "node scripts/update-subtrees.mjs",
+    "lint": "tsc --noEmit",
+    "preversion": "npm test",
+    "postversion": "git push --follow-tags",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major"
   },
   "dependencies": {
     "@quillmark/registry": "^0.5.3"
