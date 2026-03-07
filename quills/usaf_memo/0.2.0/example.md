@@ -47,8 +47,7 @@ CARD: indorsement
 for: ORG/SYMBOL
 format: standard
 from: ORG/SYMBOL
-action: approve
-show_action: true
+action: undecided
 signature_block:
   - FIRST M. LAST, Rank, USAF
   - Duty Title
