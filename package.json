@@ -1,11 +1,12 @@
 {
-  "name": "ttq-quills",
+  "name": "@tonguetoquill/quills",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "scripts": {
     "update-subtrees": "node scripts/update-subtrees.mjs",
     "lint": "tsc --noEmit",
+    "test": "echo \"No test specified\"",
+    "build": "echo \"No build specified\"",
     "preversion": "npm test",
     "postversion": "git push --follow-tags",
     "release:patch": "npm version patch",
