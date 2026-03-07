@@ -37,10 +37,32 @@ for (const [name, config] of Object.entries(subtrees)) {
   console.log();
 
   try {
-    const isNew = !existsSync(resolve(repoRoot, prefix));
+    let isNew = !existsSync(resolve(repoRoot, prefix));
+    let isSubtree = false;
+
+    if (!isNew) {
+      try {
+        const logOutput = execFileSync(
+          "git",
+          ["log", `--grep=git-subtree-dir: ${prefix}`, "-1", "--format=%H"],
+          { cwd: repoRoot, encoding: "utf-8" }
+        );
+        isSubtree = logOutput.trim().length > 0;
+      } catch (err) {
+        // ignore
+      }
+    }
     
-    if (isNew) {
-      console.log(`Prefix not found, adding as new subtree...`);
+    if (isNew || !isSubtree) {
+      if (!isNew) {
+        console.log(`Directory exists but is not a subtree. Converting...`);
+        // Remove the regular directory and commit the removal so subtree add works
+        execFileSync("git", ["rm", "-rf", prefix], { cwd: repoRoot, stdio: "inherit" });
+        execFileSync("git", ["commit", "-m", `chore: remove non-subtree ${prefix} prior to subtree add`, "--allow-empty"], { cwd: repoRoot, stdio: "inherit" });
+      } else {
+        console.log(`Prefix not found, adding as new subtree...`);
+      }
+      
       execFileSync(
         "git",
         [
@@ -73,10 +95,12 @@ for (const [name, config] of Object.entries(subtrees)) {
     }
     
     console.log();
-    console.log(`✓ ${name} subtree ${isNew ? 'added' : 'updated'} successfully`);
+    const action = (!isNew && isSubtree) ? 'updated' : (isNew ? 'added' : 'converted and added');
+    console.log(`✓ ${name} subtree ${action} successfully`);
   } catch (err) {
     console.error();
-    console.error(`✗ ${name} subtree ${!existsSync(resolve(repoRoot, prefix)) ? 'add' : 'update'} failed (exit code ${err.status})`);
+    const action = (!existsSync(resolve(repoRoot, prefix))) ? 'add' : 'update';
+    console.error(`✗ ${name} subtree ${action} failed (exit code ${err.status})`);
     failed = true;
   }
   console.log();
