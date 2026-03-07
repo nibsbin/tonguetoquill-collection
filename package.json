@@ -18,7 +18,6 @@
   "type": "module",
   "scripts": {
     "update-subtrees": "node scripts/update-subtrees.mjs",
-    "lint": "tsc --noEmit",
     "test": "echo \"No test specified\"",
     "build": "echo \"No build specified\"",
     "preversion": "npm test",
