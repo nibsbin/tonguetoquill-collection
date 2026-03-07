@@ -1,6 +1,20 @@
 {
   "name": "@tonguetoquill/quills",
   "version": "0.1.0",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    }
+  },
+  "files": [
+    "quills",
+    "templates",
+    "index.js",
+    "index.d.ts"
+  ],
   "type": "module",
   "scripts": {
     "update-subtrees": "node scripts/update-subtrees.mjs",
