@@ -27,6 +27,9 @@
     "release:minor": "npm version minor",
     "release:major": "npm version major"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@quillmark/registry": "^0.5.3"
   }
