@@ -22,7 +22,7 @@
   "type": "module",
   "scripts": {
     "update-subtrees": "node scripts/update-subtrees.mjs",
-    "test": "echo \"No test specified\"",
+    "test": "node scripts/test.mjs",
     "build": "echo \"No build specified\"",
     "preversion": "npm test",
     "postversion": "git push --follow-tags",
