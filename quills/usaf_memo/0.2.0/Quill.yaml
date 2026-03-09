@@ -197,7 +197,7 @@ cards:
           - approve
           - disapprove
         ui:
-          group: Action
+          group: Addressing
         description: "Action taken by the endorser. Use 'undecided' to display the Approve/Disapprove line with neither option circled, 'approve' or 'disapprove' to circle the selected option."
       attachments:
         title: Attachments for this endorsement
