@@ -33,10 +33,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "dependencies": {
-    "@quillmark/registry": "^0.5.3"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@quillmark/registry": "^0.5.3",
     "@quillmark/wasm": "^0.39.0"
   }
 }
