@@ -20,25 +20,36 @@ init();
 const engine = new Quillmark();
 
 try {
+  const startTime = performance.now();
+
   const { passed, failed, results } = await validateQuills({
     quillsDir,
     engine,
     parseMarkdown: Quillmark.parseMarkdown,
   });
 
+  const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+
   for (const entry of results) {
-    const status = entry.error ? '✗' : '✓';
-    console.log(`  ${status} ${entry.name}@${entry.version}`);
+    const icon = entry.error ? '✗' : '✓';
+    const ref = `${entry.name}@${entry.version}`;
+
     if (entry.error) {
-      console.error(`    ${entry.error}`);
+      console.log(`  ${icon} ${ref}`);
+      console.log(`    register: ${entry.registered ? 'ok' : 'FAILED'}`);
+      console.log(`    render:   ${entry.rendered ? 'ok' : 'FAILED'}`);
+      console.error(`    error: ${entry.error}`);
+    } else {
+      console.log(`  ${icon} ${ref}  (register: ok, render: ok)`);
     }
   }
 
   console.log();
-  console.log(`${passed} passed, ${failed} failed out of ${results.length} quills.`);
-
   if (failed > 0) {
+    console.error(`✗ ${failed} of ${results.length} quills failed validation (${elapsed}s)`);
     process.exit(1);
+  } else {
+    console.log(`✓ All ${passed} quills validated successfully (${elapsed}s)`);
   }
 } finally {
   engine.free();
