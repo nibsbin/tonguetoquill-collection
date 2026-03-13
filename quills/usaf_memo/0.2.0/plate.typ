@@ -6,7 +6,7 @@
   // Letterhead configuration
   letterhead_title: data.letterhead_title,
   letterhead_caption: data.letterhead_caption,
-  letterhead_seal: image("assets/dow_seal.jpg"),
+  letterhead_seal: image("assets/dow_seal.png"),
 
   // Date
   date: parse-date(data.date),
