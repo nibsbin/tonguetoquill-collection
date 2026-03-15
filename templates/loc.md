@@ -43,7 +43,7 @@ signature_block: SUBJECT FIRST M. LAST, RANK, USAF
 ---
 
 <!-- EDIT: First Indorsement: Subject acknowledges receipt of the LOC -->
-I acknowledge receipt and understanding of this letter on ________________ at ___________ hours. I understand that I have 3 duty days from the date I received this letter to provide a response and that I must include in my response any comments or documents I wish to be considered concerning this Letter of Counseling.
+I acknowledge receipt and understanding of this letter on {:date and time:}. I understand that I have 3 duty days from the date I received this letter to provide a response and that I must include in my response any comments or documents I wish to be considered concerning this Letter of Counseling.
 
 ---
 CARD: indorsement
@@ -76,4 +76,4 @@ date: "Date: _____________"
 ---
 
 <!-- EDIT: Fourth Indorsement: Subject acknowledges final decision -->
-I acknowledge receipt of the final decision regarding disposition of this Letter of Counseling on ____________ at __________ hours.
+I acknowledge receipt of the final decision regarding disposition of this Letter of Counseling on {:date and time:}.
