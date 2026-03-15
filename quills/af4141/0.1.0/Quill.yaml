@@ -3,6 +3,8 @@ Quill:
   version: 0.1.0
   backend: typst
   plate_file: plate.typ
+  ui:
+    hide_body: true
   example_file: example.md
   description: "AF Form 4141 — Individual's Record of Duties and Experience, Ground Environment Personnel"
 
@@ -41,6 +43,8 @@ cards:
   experience:
     title: Record of Experience
     description: Each card represents one row in the Record of Experience table. Rows fill page 1 (up to 16 rows) then page 2 (up to 21 rows), for a maximum of 37 rows.
+    ui:
+      hide_body: true
     fields:
       date:
         title: Date
