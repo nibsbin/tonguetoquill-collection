@@ -40,5 +40,11 @@
 		"description": "USAF special pass request memorandum template",
 		"file": "pass_request.md",
 		"production": true
+	},
+	{
+		"name": "AF Form 4141",
+		"description": "Individual's Record of Duties and Experience, Ground Environment Personnel",
+		"file": "af4141.md",
+		"production": true
 	}
 ]
