@@ -1,27 +1,36 @@
 ---
-QUILL: taro@0.1
-author: Nibs
-ice_cream: Taro
-title: "My Favorite Ice Cream Flavor"
+QUILL: af4141@0.1
+name: "DOE, JOHN A."
+unit: "1 CACS/DOT"
+grade: "GS-13"
+commanders_auth: "Verified by unit commander"
 ---
 
-I love Taro ice cream for its subtly sweet, nutty flavor and creamy, earthy undertones that set it apart from more common flavors. Its unique purple hue and smooth texture make it both visually striking and deliciously comforting. Here are some quotes from satisfied customers:
-
-
 ---
-CARD: quotes
-author: Albert Einstein
+CARD: experience
+date: "2025-01-15"
+action: "Assigned to 1 CACS/DOT as Weapons Director"
+written_grade: "3"
+written_grade_date: "2025-01-20"
+positional_grade: "3"
+positional_grade_date: "2025-01-20"
+auth_or_remarks: "Initial assignment"
 ---
-Without taro ice cream, life would be a mistake.
-
----
-CARD: quotes
-author: Friedrich Nietzsche
----
-He who has taro ice cream in his heart will never be alone.
 
 ---
-CARD: quotes
-author: Mark Twain
+CARD: experience
+date: "2025-06-01"
+action: "Completed WD upgrade evaluation — certified Mission Ready"
+written_grade: "5"
+written_grade_date: "2025-06-10"
+positional_grade: "5"
+positional_grade_date: "2025-06-10"
+auth_or_remarks: "Per AFMAN 13-1CRCV1"
 ---
-The secret of getting ahead is getting started... with taro ice cream.
+
+---
+CARD: experience
+date: "2025-09-15"
+action: "PCS to 726 ACS/DOT"
+auth_or_remarks: "Outprocessed 1 CACS"
+---

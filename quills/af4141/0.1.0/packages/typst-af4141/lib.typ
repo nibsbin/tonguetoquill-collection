@@ -14,14 +14,16 @@
       context {
         let default-size = height * 0.6
         let min-size = 6pt
+        let x-inset = 1.5pt
         let m = measure(text(size: default-size, str(value)))
-        let scale = calc.min(1.0, width / m.width)
+        let scale = calc.min(1.0, (width - 2 * x-inset) / m.width)
         let final-size = calc.max(min-size, default-size * scale)
         box(
           width: width,
           height: height,
           clip: true,
-          align(left + horizon, text(size: final-size, str(value)))
+          inset: (x: x-inset),
+          align(left + horizon, text(size: final-size, str(value))),
         )
       }
     }
@@ -30,7 +32,7 @@
       box(
         width: width,
         height: height,
-        align(center + horizon, text(size: height * 0.8, "✓"))
+        align(center + horizon, text(size: height * 0.8, "✓")),
       )
     }
   } else if field-type == "radio" {
@@ -41,7 +43,7 @@
       box(
         width: width,
         height: height,
-        align(center + horizon, circle(radius: dot-r, fill: black))
+        align(center + horizon, circle(radius: dot-r, fill: black)),
       )
     }
   } else if field-type == "combobox" or field-type == "listbox" {
@@ -58,14 +60,16 @@
       context {
         let default-size = height * 0.6
         let min-size = 6pt
+        let x-inset = 2pt
         let m = measure(text(size: default-size, display))
-        let scale = calc.min(1.0, width / m.width)
+        let scale = calc.min(1.0, (width - 2 * x-inset) / m.width)
         let final-size = calc.max(min-size, default-size * scale)
         box(
           width: width,
           height: height,
           clip: true,
-          align(left + horizon, text(size: final-size, display))
+          inset: (x: x-inset),
+          align(left + horizon, text(size: final-size, display)),
         )
       }
     }
@@ -180,11 +184,13 @@
       #place(top + left, image(bg, width: pw, height: ph, fit: "stretch"))
 
       // Field overlays
-      #for field in page-fields.filter(f => ("text", "checkbox", "radio", "combobox", "listbox").contains(lower(f.type))) {
-        let x  = field.bbox.at(0) * 1pt
-        let y  = field.bbox.at(1) * 1pt
-        let w  = (field.bbox.at(2) - field.bbox.at(0)) * 1pt
-        let h  = (field.bbox.at(3) - field.bbox.at(1)) * 1pt
+      #for field in page-fields.filter(f => ("text", "checkbox", "radio", "combobox", "listbox").contains(lower(
+        f.type,
+      ))) {
+        let x = field.bbox.at(0) * 1pt
+        let y = field.bbox.at(1) * 1pt
+        let w = (field.bbox.at(2) - field.bbox.at(0)) * 1pt
+        let h = (field.bbox.at(3) - field.bbox.at(1)) * 1pt
 
         let field-type = lower(field.type)
         let val = values.at(field.name, default: none)
