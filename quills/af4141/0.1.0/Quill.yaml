@@ -13,30 +13,22 @@ fields:
     title: Name (Last, First, MI)
     type: string
     required: true
-    ui:
-      group: Personnel
     description: Full name in Last, First, Middle Initial format.
 
   unit:
     title: Unit of Assignment
     type: string
     required: true
-    ui:
-      group: Personnel
     description: Unit or organization of assignment.
 
   grade:
     title: Grade/CCC Level
     type: string
-    ui:
-      group: Personnel
     description: Current grade or CCC level.
 
   commanders_auth:
     title: Commander's Record of Authentication
     type: string
-    ui:
-      group: Personnel
     description: Commander's authentication entry on page 1.
 
 cards:
