@@ -1,6 +1,8 @@
 #import "@local/quillmark-helper:0.1.0": data
 #import "@local/typst-af4141:0.1.0": form
 
+#set text(font: ("NimbusRomNo9L", "Times New Roman", "serif"))
+
 // Column order within each 7-field row group
 #let col-keys = (
   "date",
