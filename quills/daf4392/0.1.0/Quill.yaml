@@ -1,0 +1,110 @@
+Quill:
+  name: daf4392
+  version: 0.1.0
+  backend: typst
+  plate_file: plate.typ
+  ui:
+    hide_body: true
+  example_file: example.md
+  description: "DAF Form 4392 - Pre-Departure Safety Briefing (Page 2)"
+
+fields:
+  transportation_mode:
+    title: Mode of Transportation
+    type: string
+    required: true
+    description: "Matches the check box. Valid options: pmv, airplane, bus, train, motorcycle, other."
+
+  departure_date:
+    title: Departure Date
+    type: string
+    required: true
+    description: "Date of initial departure."
+
+  final_destination:
+    title: Final Destination
+    type: string
+    required: true
+    description: "Final travel destination."
+
+  notes:
+    title: Notes
+    type: string
+    description: "Additional notes or remarks for the travel."
+
+  organization:
+    title: Organization
+    type: string
+    required: true
+    description: "Unit / Organization conducting the brief."
+
+  briefed_date:
+    title: Date Briefed
+    type: string
+    required: true
+    description: "Date the brief took place."
+
+  briefee_name:
+    title: Individual Receiving Brief (Name)
+    type: string
+    required: true
+    description: "Name (Last, First) of the individual receiving the brief."
+
+  briefee_grade:
+    title: Individual Receiving Brief (Grade)
+    type: string
+    description: "Grade of the individual receiving the brief."
+
+  briefer_name:
+    title: Briefer / Reviewer Name
+    type: string
+    required: true
+    description: "Name (Last, First) of the briefer."
+
+  briefer_grade:
+    title: Briefer / Reviewer Grade
+    type: string
+    description: "Grade of the briefer."
+
+  emergency_contact:
+    title: Emergency Contact
+    type: string
+    description: "Name and phone number of the emergency contact person at the bottom of the form."
+
+cards:
+  itinerary:
+    title: Proposed Travel Itinerary
+    description: "Each card represents one row in the travel itinerary table. Up to 5 rows are supported."
+    ui:
+      hide_body: true
+    fields:
+      date:
+        title: Date
+        type: string
+        ui:
+          group: Itinerary Entry
+        description: "Date for the itinerary row."
+      departure_point:
+        title: Departure Point
+        type: string
+        ui:
+          group: Itinerary Entry
+        description: "Point of departure."
+      arrival_point:
+        title: Arrival Point
+        type: string
+        ui:
+          group: Itinerary Entry
+        description: "Point of arrival."
+      rest_length:
+        title: Length of Rest Period
+        type: string
+        ui:
+          group: Itinerary Entry
+        description: "Duration of rest period."
+      mileage:
+        title: Approximate Mileage
+        type: string
+        ui:
+          group: Itinerary Entry
+        description: "Approximate mileage for this leg."
