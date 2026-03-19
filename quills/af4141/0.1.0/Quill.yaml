@@ -57,6 +57,7 @@ cards:
         type: string
         ui:
           group: Record
+          compact: true
         description: Written grade, if applicable (column C).
 
       written_grade_date:
@@ -64,6 +65,7 @@ cards:
         type: string
         ui:
           group: Record
+          compact: true
         description: Date of written grade (column D).
 
       positional_grade:
@@ -71,6 +73,7 @@ cards:
         type: string
         ui:
           group: Record
+          compact: true
         description: Positional grade, if applicable (column E).
 
       positional_grade_date:
@@ -78,6 +81,7 @@ cards:
         type: string
         ui:
           group: Record
+          compact: true
         description: Date of positional grade (column F).
 
       auth_or_remarks:
