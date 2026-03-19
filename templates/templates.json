@@ -46,5 +46,11 @@
 		"description": "Individual's Record of Duties and Experience, Ground Environment Personnel",
 		"file": "af4141.md",
 		"production": true
+	},
+	{
+		"name": "DAF Form 4392",
+		"description": "Pre-Departure Safety Briefing (Page 2)",
+		"file": "daf4392.md",
+		"production": true
 	}
 ]
