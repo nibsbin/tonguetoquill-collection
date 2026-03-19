@@ -1,6 +1,46 @@
 // Formalizer Engine – rendering engine
 // Renders pixel-perfect PDF form replicas from a PyMuPDF-extracted schema.
 
+/// Global configuration for text rendering.
+/// Adjust these to change the overall form text appearance.
+#let FORM_MAX_TEXT_SIZE = 14pt
+#let FORM_MIN_TEXT_SIZE = 6pt
+#let FORM_MIN_CHARS_PER_LINE = 7
+
+/// Render a text-like field with word-wrapping and shrink-to-fit.
+#let render-text-field(display, width, height, x-inset, y-inset) = {
+  set par(leading: 0.25em)
+  context {
+    let final-size = FORM_MIN_TEXT_SIZE
+    let current = FORM_MAX_TEXT_SIZE
+    let step = 0.5pt
+
+    // Find the largest font size that fits both horizontally and vertically
+    // and optionally leaves enough room for a minimum number of characters
+    while current >= FORM_MIN_TEXT_SIZE {
+      let m = measure(block(width: width - 2 * x-inset, text(size: current, display)))
+      let char-m = measure(text(size: current, "0" * FORM_MIN_CHARS_PER_LINE))
+
+      if m.height <= height - 2 * y-inset and char-m.width <= width - 2 * x-inset {
+        final-size = current
+        break
+      }
+      current = current - step
+    }
+    // Alignment: center vertically if it's a short box (likely single line),
+    // otherwise top-align for multi-line paragraphs.
+    let vert-align = if height < 24pt { horizon } else { top }
+
+    box(
+      width: width,
+      height: height,
+      clip: true,
+      inset: (x: x-inset, y: y-inset),
+      align(left + vert-align, text(size: final-size, display)),
+    )
+  }
+}
+
 /// Render a single field's content overlay.
 ///
 /// - field-type (str): normalised lowercase type
@@ -11,21 +51,7 @@
 #let render-field(field-type, value, width, height, field) = {
   if field-type == "text" {
     if value != none and str(value) != "" {
-      context {
-        let default-size = height * 0.6
-        let min-size = 6pt
-        let x-inset = 1.5pt
-        let m = measure(text(size: default-size, str(value)))
-        let scale = calc.min(1.0, (width - 2 * x-inset) / m.width)
-        let final-size = calc.max(min-size, default-size * scale)
-        box(
-          width: width,
-          height: height,
-          clip: true,
-          inset: (x: x-inset),
-          align(left + horizon, text(size: final-size, str(value))),
-        )
-      }
+      render-text-field(str(value), width, height, 1.5pt, 1pt)
     }
   } else if field-type == "checkbox" {
     if value == true {
@@ -57,21 +83,7 @@
       }
     }
     if display != "" {
-      context {
-        let default-size = height * 0.6
-        let min-size = 6pt
-        let x-inset = 2pt
-        let m = measure(text(size: default-size, display))
-        let scale = calc.min(1.0, (width - 2 * x-inset) / m.width)
-        let final-size = calc.max(min-size, default-size * scale)
-        box(
-          width: width,
-          height: height,
-          clip: true,
-          inset: (x: x-inset),
-          align(left + horizon, text(size: final-size, display)),
-        )
-      }
+      render-text-field(display, width, height, 2pt, 1pt)
     }
   }
 }
