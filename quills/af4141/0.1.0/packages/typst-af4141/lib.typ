@@ -7,29 +7,60 @@
 #let FORM_MIN_TEXT_SIZE = 6pt
 #let FORM_MIN_CHARS_PER_LINE = 7
 
-/// Render a text-like field with word-wrapping and shrink-to-fit.
+/// Should this field shrink text to a single line rather than word-wrap?
+/// True for short/narrow fields with brief content (grades, ranks, dates).
+#let should-shrink-to-fit(display, width, height) = {
+  let aspect = width / height
+  let char-count = display.len()
+  char-count <= 10 or height < 20pt or aspect > 4.0
+}
+
+/// Render a text-like field with shrink-to-fit and word-wrap fallback.
 #let render-text-field(display, width, height, x-inset, y-inset) = {
   set par(leading: 0.25em)
   context {
+    let avail-w = width - 2 * x-inset
+    let avail-h = height - 2 * y-inset
+    let shrink = should-shrink-to-fit(display, width, height)
+
     let final-size = FORM_MIN_TEXT_SIZE
     let current = FORM_MAX_TEXT_SIZE
     let step = 0.5pt
 
-    // Find the largest font size that fits both horizontally and vertically
-    // and optionally leaves enough room for a minimum number of characters
     while current >= FORM_MIN_TEXT_SIZE {
-      let m = measure(block(width: width - 2 * x-inset, text(size: current, display)))
+      let m = if shrink {
+        // Measure as a single line (no width constraint → no wrapping)
+        measure(text(size: current, display))
+      } else {
+        // Measure with wrapping within the available width
+        measure(block(width: avail-w, text(size: current, display)))
+      }
       let char-m = measure(text(size: current, "0" * FORM_MIN_CHARS_PER_LINE))
 
-      if m.height <= height - 2 * y-inset and char-m.width <= width - 2 * x-inset {
+      if m.width <= avail-w and m.height <= avail-h and char-m.width <= avail-w {
         final-size = current
         break
       }
       current = current - step
     }
-    // Alignment: center vertically if it's a short box (likely single line),
-    // otherwise top-align for multi-line paragraphs.
-    let vert-align = if height < 24pt { horizon } else { top }
+
+    // Fallback: if shrink-to-fit hit min size and still overflows,
+    // re-try with word-wrap enabled as a last resort.
+    if shrink and current < FORM_MIN_TEXT_SIZE {
+      current = FORM_MAX_TEXT_SIZE
+      while current >= FORM_MIN_TEXT_SIZE {
+        let m = measure(block(width: avail-w, text(size: current, display)))
+        let char-m = measure(text(size: current, "0" * FORM_MIN_CHARS_PER_LINE))
+        if m.height <= avail-h and char-m.width <= avail-w {
+          final-size = current
+          break
+        }
+        current = current - step
+      }
+    }
+
+    // Default to vertically centered. Only top-align for tall "text areas".
+    let vert-align = if height >= 40pt { top } else { horizon }
 
     box(
       width: width,
