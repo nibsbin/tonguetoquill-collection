@@ -43,7 +43,7 @@
 }
 
 // Notes
-#tf(40pt, 360pt)[#data.at("notes", default: "")]
+#tf(40pt, 360pt)[#block(width: 530pt)[#data.at("notes", default: "")]]
 
 // Acknowledgements
 #tf(40pt, 420pt)[#data.at("organization", default: "")]
@@ -57,4 +57,4 @@
 
 // Emergency Contact
 #tf(40pt, 500pt)[#text(size: 16pt, weight: "bold")[EMERGENCY CONTACT]]
-#tf(40pt, 520pt)[#text(size: 12pt)[#data.at("emergency_contact", default: "")]]
+#tf(40pt, 520pt)[#text(size: 12pt)[#data.at("emergency_contact_name", default: ""): #data.at("emergency_contact_phone", default: "")]]

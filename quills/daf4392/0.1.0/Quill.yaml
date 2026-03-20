@@ -12,19 +12,24 @@ fields:
   transportation_mode:
     title: Mode of Transportation
     type: string
+    enum: [pmv, airplane, bus, train, motorcycle, other]
     required: true
-    description: "Matches the check box. Valid options: pmv, airplane, bus, train, motorcycle, other."
+    description: "Matches the check box."
 
   departure_date:
     title: Departure Date
     type: string
     required: true
+    ui:
+      compact: true
     description: "Date of initial departure."
 
   final_destination:
     title: Final Destination
     type: string
     required: true
+    ui:
+      compact: true
     description: "Final travel destination."
 
   notes:
@@ -36,40 +41,56 @@ fields:
     title: Organization
     type: string
     required: true
+    ui:
+      compact: true
     description: "Unit / Organization conducting the brief."
 
   briefed_date:
     title: Date Briefed
     type: string
     required: true
+    ui:
+      compact: true
     description: "Date the brief took place."
 
   briefee_name:
     title: Individual Receiving Brief (Name)
     type: string
     required: true
+    ui:
+      compact: true
     description: "Name (Last, First) of the individual receiving the brief."
 
   briefee_grade:
     title: Individual Receiving Brief (Grade)
     type: string
+    ui:
+      compact: true
     description: "Grade of the individual receiving the brief."
 
   briefer_name:
     title: Briefer / Reviewer Name
     type: string
-    required: true
+    ui:
+      compact: true
     description: "Name (Last, First) of the briefer."
 
   briefer_grade:
     title: Briefer / Reviewer Grade
     type: string
+    ui:
+      compact: true
     description: "Grade of the briefer."
 
-  emergency_contact:
-    title: Emergency Contact
+  emergency_contact_name:
+    title: Emergency Contact Name
     type: string
-    description: "Name and phone number of the emergency contact person at the bottom of the form."
+    description: "Name of the emergency contact person at the bottom of the form."
+
+  emergency_contact_phone:
+    title: Emergency Contact Phone
+    type: string
+    description: "Phone number of the emergency contact person at the bottom of the form."
 
 cards:
   itinerary:
@@ -80,7 +101,7 @@ cards:
     fields:
       date:
         title: Date
-        type: string
+        type: date
         ui:
           group: Itinerary Entry
         description: "Date for the itinerary row."
