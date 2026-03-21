@@ -68,20 +68,6 @@ fields:
       compact: true
     description: "Grade of the individual receiving the brief."
 
-  briefer_name:
-    title: Briefer / Reviewer Name
-    type: string
-    ui:
-      compact: true
-    description: "Name (Last, First) of the briefer."
-
-  briefer_grade:
-    title: Briefer / Reviewer Grade
-    type: string
-    ui:
-      compact: true
-    description: "Grade of the briefer."
-
   emergency_contact_name:
     title: Emergency Contact Name
     type: string
