@@ -28,7 +28,8 @@
     "postversion": "git push --follow-tags",
     "release:patch": "npm version patch",
     "release:minor": "npm version minor",
-    "release:major": "npm version major"
+    "release:major": "npm version major",
+    "prerelease": "npm version prerelease --preid beta && npm publish --tag beta"
   },
   "publishConfig": {
     "access": "public"
