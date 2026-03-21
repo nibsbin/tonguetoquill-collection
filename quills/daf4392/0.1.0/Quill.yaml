@@ -18,7 +18,7 @@ fields:
 
   departure_date:
     title: Departure Date
-    type: string
+    type: date
     required: true
     ui:
       compact: true
@@ -47,7 +47,7 @@ fields:
 
   briefed_date:
     title: Date Briefed
-    type: string
+    type: date
     required: true
     ui:
       compact: true
