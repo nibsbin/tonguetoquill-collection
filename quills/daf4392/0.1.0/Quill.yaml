@@ -104,28 +104,33 @@ cards:
         type: date
         ui:
           group: Itinerary Entry
+          compact: true
         description: "Date for the itinerary row."
       departure_point:
         title: Departure Point
         type: string
         ui:
           group: Itinerary Entry
+          compact: true
         description: "Point of departure."
       arrival_point:
         title: Arrival Point
         type: string
         ui:
           group: Itinerary Entry
+          compact: true
         description: "Point of arrival."
       rest_length:
         title: Length of Rest Period
         type: string
         ui:
           group: Itinerary Entry
+          compact: true
         description: "Duration of rest period."
       mileage:
         title: Approximate Mileage
         type: string
         ui:
           group: Itinerary Entry
+          compact: true
         description: "Approximate mileage for this leg."
