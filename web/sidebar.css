@@ -1,0 +1,24 @@
+/* Sidebar hamburger menu button hover styles.
+ * Only the icon color changes on hover — no background color change. */
+
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+/* Remove background color change on hover */
+.sidebar-toggle:hover {
+  background-color: transparent;
+}
+
+/* Only the icon color responds to hover */
+.sidebar-toggle:hover .sidebar-toggle__icon {
+  color: var(--color-accent, #4f46e5);
+}
