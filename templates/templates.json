@@ -1,53 +1,62 @@
 [
 	{
+		"id": "usaf-memo",
 		"name": "USAF Memo",
 		"description": "Official U.S. Air Force memorandum template",
 		"file": "usaf_template.md",
 		"production": true
 	},
 	{
+		"id": "ussf-memo",
 		"name": "USSF Memo",
 		"description": "Official U.S. Space Force memorandum template",
 		"file": "ussf_template.md",
 		"production": true
 	},
 	{
+		"id": "letter-of-counseling",
 		"name": "Letter of Counseling",
 		"description": "Letter of Counseling template",
 		"file": "loc.md",
 		"production": false
 	},
 	{
+		"id": "rebuttal",
 		"name": "Rebuttal",
 		"description": "Rebuttal template for LOC",
 		"file": "rebuttal.md",
 		"production": true
 	},
 	{
+		"id": "taro-template",
 		"name": "Taro Template",
 		"description": "Official Taro ice cream template",
 		"file": "taro.md",
 		"production": false
 	},
 	{
+		"id": "cmu-letter",
 		"name": "CMU Letter",
 		"description": "Carnegie Mellon University academic letter template",
 		"file": "cmu_letter_template.md",
 		"production": true
 	},
 	{
+		"id": "pass-request",
 		"name": "Pass Request",
 		"description": "USAF special pass request memorandum template",
 		"file": "pass_request.md",
 		"production": true
 	},
 	{
+		"id": "af-form-4141",
 		"name": "AF Form 4141",
 		"description": "Individual's Record of Duties and Experience, Ground Environment Personnel",
 		"file": "af4141.md",
 		"production": true
 	},
 	{
+		"id": "daf-form-4392",
 		"name": "DAF Form 4392",
 		"description": "Pre-Departure Safety Briefing (Page 2)",
 		"file": "daf4392.md",
