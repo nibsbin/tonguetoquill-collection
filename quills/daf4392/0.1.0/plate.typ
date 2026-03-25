@@ -45,7 +45,7 @@
 // Flight Info
 #{
   let d-flight = str(data.at("dept_flight_num", default: ""))
-  if d-flight != "" { tf(400pt, 545pt)[#text(weight: "bold")[Dept Flight:] #d-flight] }
+  if d-flight != "" { tf(350pt, 545pt)[#text(weight: "bold")[Dept Flight:] #d-flight] }
   
   let a-flight = str(data.at("arrival_flight_num", default: ""))
   if a-flight != "" { tf(450pt, 545pt)[#text(weight: "bold")[Arr Flight:] #a-flight] }
