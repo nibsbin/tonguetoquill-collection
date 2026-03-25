@@ -16,16 +16,6 @@ fields:
     required: true
     description: "Matches the check box."
 
-  dept_flight_num:
-    title: Departure Flight Number
-    type: string
-    description: "Departure flight number."
-
-  arrival_flight_num:
-    title: Arrival Flight Number
-    type: string
-    description: "Arrival flight number."
-
 
   departure_date:
     title: Departure Date
@@ -42,6 +32,20 @@ fields:
     ui:
       compact: true
     description: "Final travel destination."
+    
+  dept_flight_num:
+    title: Departure Flight Number
+    type: string
+    ui:
+      compact: true
+    description: "Departure flight number."
+
+  arrival_flight_num:
+    title: Arrival Flight Number
+    type: string
+    ui:
+      compact: true
+    description: "Arrival flight number."
 
   notes:
     title: Notes
