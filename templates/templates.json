@@ -1,13 +1,13 @@
 [
 	{
-		"id": "usaf-memo",
+		"id": "usaf-default",
 		"name": "USAF Memo",
 		"description": "Official U.S. Air Force memorandum template",
 		"file": "usaf_template.md",
 		"production": true
 	},
 	{
-		"id": "ussf-memo",
+		"id": "ussf-default",
 		"name": "USSF Memo",
 		"description": "Official U.S. Space Force memorandum template",
 		"file": "ussf_template.md",

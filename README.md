@@ -13,7 +13,9 @@ npm install @tonguetoquill/collection
 
 This package doesn't export any logic. Instead, it exports two string constants—`QUILLS_DIR` and `TEMPLATES_DIR`—that represent the absolute file paths to the bundled quills and templates on your local filesystem.
 
-You can use `QUILLS_DIR` with the `FileSystemSource` from the [`@quillmark/registry`](https://www.npmjs.com/package/@quillmark/registry) package to load them into the engine.
+Use [`@quillmark/registry`](https://www.npmjs.com/package/@quillmark/registry) and [`@quillmark/wasm`](https://www.npmjs.com/package/@quillmark/wasm) from npm alongside this package. The engine and registry APIs replace a separate Quillmark CLI install for Node.js workflows.
+
+You can use `QUILLS_DIR` with the `FileSystemSource` from `@quillmark/registry` to load them into the engine.
 
 ```typescript
 import { Quillmark } from '@quillmark/wasm';

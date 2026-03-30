@@ -3,33 +3,34 @@ Quill:
   version: 0.1.0
   backend: typst
   plate_file: plate.typ
-  ui:
-    hide_body: true
   example_file: example.md
   description: "AF Form 4141 — Individual's Record of Duties and Experience, Ground Environment Personnel"
 
-fields:
-  name:
-    title: Name (Last, First, MI)
-    type: string
-    required: true
-    description: Full name in Last, First, Middle Initial format.
+main:
+  ui:
+    hide_body: true
+  fields:
+    name:
+      title: Name (Last, First, MI)
+      type: string
+      required: true
+      description: Full name in Last, First, Middle Initial format.
 
-  unit:
-    title: Unit of Assignment
-    type: string
-    required: true
-    description: Unit or organization of assignment.
+    unit:
+      title: Unit of Assignment
+      type: string
+      required: true
+      description: Unit or organization of assignment.
 
-  grade:
-    title: Grade/CCC Level
-    type: string
-    description: Current grade or CCC level.
+    grade:
+      title: Grade/CCC Level
+      type: string
+      description: Current grade or CCC level.
 
-  commanders_auth:
-    title: Commander's Record of Authentication
-    type: string
-    description: Commander's authentication entry on page 1.
+    commanders_auth:
+      title: Commander's Record of Authentication
+      type: string
+      description: Commander's authentication entry on page 1.
 
 cards:
   experience:
