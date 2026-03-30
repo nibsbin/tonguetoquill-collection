@@ -3,80 +3,81 @@ Quill:
   version: 0.1.0
   backend: typst
   plate_file: plate.typ
-  ui:
-    hide_body: true
   example_file: example.md
   description: "DAF Form 4392 - Pre-Departure Safety Briefing (Page 2)"
 
-fields:
-  transportation_mode:
-    title: Mode of Transportation
-    type: string
-    enum: [pmv, airplane, bus, train, motorcycle, other]
-    required: true
-    description: "Matches the check box."
+main:
+  ui:
+    hide_body: true
+  fields:
+    transportation_mode:
+      title: Mode of Transportation
+      type: string
+      enum: [pmv, airplane, bus, train, motorcycle, other]
+      required: true
+      description: "Matches the check box."
 
-  departure_date:
-    title: Departure Date
-    type: date
-    required: true
-    ui:
-      compact: true
-    description: "Date of initial departure."
+    departure_date:
+      title: Departure Date
+      type: date
+      required: true
+      ui:
+        compact: true
+      description: "Date of initial departure."
 
-  final_destination:
-    title: Final Destination
-    type: string
-    required: true
-    ui:
-      compact: true
-    description: "Final travel destination."
+    final_destination:
+      title: Final Destination
+      type: string
+      required: true
+      ui:
+        compact: true
+      description: "Final travel destination."
 
-  notes:
-    title: Notes
-    type: string
-    description: "Additional notes or remarks for the travel."
+    notes:
+      title: Notes
+      type: string
+      description: "Additional notes or remarks for the travel."
 
-  organization:
-    title: Organization
-    type: string
-    required: true
-    ui:
-      compact: true
-    description: "Unit / Organization conducting the brief."
+    organization:
+      title: Organization
+      type: string
+      required: true
+      ui:
+        compact: true
+      description: "Unit / Organization conducting the brief."
 
-  briefed_date:
-    title: Date Briefed
-    type: date
-    required: true
-    ui:
-      compact: true
-    description: "Date the brief took place."
+    briefed_date:
+      title: Date Briefed
+      type: date
+      required: true
+      ui:
+        compact: true
+      description: "Date the brief took place."
 
-  briefee_name:
-    title: Individual Receiving Brief (Name)
-    type: string
-    required: true
-    ui:
-      compact: true
-    description: "Name (Last, First) of the individual receiving the brief."
+    briefee_name:
+      title: Individual Receiving Brief (Name)
+      type: string
+      required: true
+      ui:
+        compact: true
+      description: "Name (Last, First) of the individual receiving the brief."
 
-  briefee_grade:
-    title: Individual Receiving Brief (Grade)
-    type: string
-    ui:
-      compact: true
-    description: "Grade of the individual receiving the brief."
+    briefee_grade:
+      title: Individual Receiving Brief (Grade)
+      type: string
+      ui:
+        compact: true
+      description: "Grade of the individual receiving the brief."
 
-  emergency_contact_name:
-    title: Emergency Contact Name
-    type: string
-    description: "Name of the emergency contact person at the bottom of the form."
+    emergency_contact_name:
+      title: Emergency Contact Name
+      type: string
+      description: "Name of the emergency contact person at the bottom of the form."
 
-  emergency_contact_phone:
-    title: Emergency Contact Phone
-    type: string
-    description: "Phone number of the emergency contact person at the bottom of the form."
+    emergency_contact_phone:
+      title: Emergency Contact Phone
+      type: string
+      description: "Phone number of the emergency contact person at the bottom of the form."
 
 cards:
   itinerary:
