@@ -3,95 +3,96 @@ Quill:
   version: 0.1.0
   backend: typst
   plate_file: plate.typ
-  ui:
-    hide_body: true
   example_file: example.md
   description: "DAF Form 4392 - Pre-Departure Safety Briefing (Page 2)"
 
-fields:
-  transportation_mode:
-    title: Mode of Transportation
-    type: string
-    enum: [pmv, airplane, bus, train, motorcycle, other]
-    required: true
-    description: "Matches the check box."
+main:
+  ui:
+    hide_body: true
+  fields:
+    transportation_mode:
+      title: Mode of Transportation
+      type: string
+      enum: [pmv, airplane, bus, train, motorcycle, other]
+      required: true
+      description: "Matches the check box."
 
 
-  departure_date:
-    title: Departure Date
-    type: date
-    required: true
-    ui:
-      compact: true
-    description: "Date of initial departure."
+    departure_date:
+      title: Departure Date
+      type: date
+      required: true
+      ui:
+        compact: true
+      description: "Date of initial departure."
 
-  final_destination:
-    title: Final Destination
-    type: string
-    required: true
-    ui:
-      compact: true
-    description: "Final travel destination."
-    
-  dept_flight_num:
-    title: Departure Flight Number
-    type: string
-    ui:
-      compact: true
-    description: "Departure flight number."
+    final_destination:
+      title: Final Destination
+      type: string
+      required: true
+      ui:
+        compact: true
+      description: "Final travel destination."
 
-  arrival_flight_num:
-    title: Arrival Flight Number
-    type: string
-    ui:
-      compact: true
-    description: "Arrival flight number."
+    dept_flight_num:
+      title: Departure Flight Number
+      type: string
+      ui:
+        compact: true
+      description: "Departure flight number."
 
-  notes:
-    title: Notes
-    type: string
-    description: "Additional notes or remarks for the travel."
+    arrival_flight_num:
+      title: Arrival Flight Number
+      type: string
+      ui:
+        compact: true
+      description: "Arrival flight number."
 
-  organization:
-    title: Organization
-    type: string
-    required: true
-    ui:
-      compact: true
-    description: "Unit / Organization."
+    notes:
+      title: Notes
+      type: string
+      description: "Additional notes or remarks for the travel."
 
-  briefed_date:
-    title: Date Briefed
-    type: date
-    required: true
-    ui:
-      compact: true
-    description: "Put in today's date."
+    organization:
+      title: Organization
+      type: string
+      required: true
+      ui:
+        compact: true
+      description: "Unit / Organization."
 
-  briefee_name:
-    title: Individual Receiving Brief (Name)
-    type: string
-    required: true
-    ui:
-      compact: true
-    description: "Put in your Name (Last, First)."
+    briefed_date:
+      title: Date Briefed
+      type: date
+      required: true
+      ui:
+        compact: true
+      description: "Put in today's date."
 
-  briefee_grade:
-    title: Individual Receiving Brief (Grade)
-    type: string
-    ui:
-      compact: true
-    description: "Put in your Grade."
+    briefee_name:
+      title: Individual Receiving Brief (Name)
+      type: string
+      required: true
+      ui:
+        compact: true
+      description: "Put in your Name (Last, First)."
 
-  emergency_contact_name:
-    title: Emergency Contact Name
-    type: string
-    description: "Put in your Emergency Contact Name."
+    briefee_grade:
+      title: Individual Receiving Brief (Grade)
+      type: string
+      ui:
+        compact: true
+      description: "Put in your Grade."
 
-  emergency_contact_phone:
-    title: Emergency Contact Phone
-    type: string
-    description: "Put in your Emergency Contact's Phone Number."
+    emergency_contact_name:
+      title: Emergency Contact Name
+      type: string
+      description: "Put in your Emergency Contact Name."
+
+    emergency_contact_phone:
+      title: Emergency Contact Phone
+      type: string
+      description: "Put in your Emergency Contact's Phone Number."
 
 cards:
   itinerary:
@@ -127,11 +128,11 @@ cards:
         ui:
           group: Itinerary Entry
           compact: true
-        description: "Duration of rest period."
+        description: "Duration of stay at arrival point"
       mileage:
         title: Approximate Mileage
         type: string
         ui:
           group: Itinerary Entry
           compact: true
-        description: "Approximate mileage for this leg."
+        description: "Approximate mileage for this leg. No need to put in if not applicable such as flights."
