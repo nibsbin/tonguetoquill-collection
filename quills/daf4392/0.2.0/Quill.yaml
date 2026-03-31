@@ -97,7 +97,7 @@ main:
       description: "Put in your Emergency Contact's Phone Number."
 
 cards:
-  itinerary:
+  leg:
     title: Proposed Travel Itinerary
     description: "Each card represents one row in the travel itinerary table. Up to 10 rows are supported."
     ui:
