@@ -11,8 +11,7 @@ briefee_name: "Doe, Jane"
 briefee_grade: "O-1"
 briefer_name: ""
 briefer_grade: ""
-emergency_contact_name: "John Doe"
-emergency_contact_phone: "999-999-9999"
+emergency_contact: "John Doe: 999-999-9999"
 ---
 
 ---

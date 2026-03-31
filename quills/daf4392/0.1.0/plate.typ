@@ -65,4 +65,4 @@
 #tf(270pt, 680pt)[#data.at("briefer_grade", default: "")]
 
 // Emergency Contact
-#tf(40pt, 700pt)[#text(size: 10pt, weight: "bold")[EMERGENCY CONTACT:] #text(size: 10pt)[#data.at("emergency_contact_name", default: ""): #data.at("emergency_contact_phone", default: "")]]
+#tf(40pt, 700pt)[#text(size: 10pt, weight: "bold")[EMERGENCY CONTACT:] #text(size: 10pt)[#data.at("emergency_contact", default: "")]]

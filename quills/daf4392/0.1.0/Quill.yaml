@@ -84,17 +84,10 @@ main:
         compact: true
       description: "Put in your Grade."
 
-    emergency_contact_name:
-      title: Emergency Contact Name
+    emergency_contact:
+      title: Emergency Contact
       type: string
-      required: true
-      description: "Put in your Emergency Contact Name."
-
-    emergency_contact_phone:
-      title: Emergency Contact Phone
-      type: string
-      required: true
-      description: "Put in your Emergency Contact's Phone Number."
+      description: "Name and phone number of the emergency contact person at the bottom of the form."
 
 cards:
   itinerary:
