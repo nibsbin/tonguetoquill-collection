@@ -1,0 +1,52 @@
+Quill:
+  name: daf1206
+  version: 0.1.0
+  backend: typst
+  plate_file: plate.typ
+  example_file: example.md
+  description: "DAF Form 1206 — Nomination for Award"
+
+main:
+  ui:
+    hide_body: true
+  fields:
+    AWARD:
+      title: Award
+      type: string
+      required: true
+    CATEGORY:
+      title: Category (If Applicable)
+      type: string
+    AWARD_PERIOD:
+      title: Award Period
+      type: string
+      required: true
+    RANKNAME_OF_NOMINEE:
+      title: Rank/Name of Nominee (First, Middle Initial, Last)
+      type: string
+      required: true
+    MAJCOM_FLDCOM_FOA_OR_DRU:
+      title: MAJCOM/FLDCOM/FOA/DRU
+      type: string
+    DAFSCDUTY_TITLE:
+      title: DAFSC/Duty Title
+      type: string
+    NOMINEES_TELEPHONE:
+      title: Nominee's Telephone (DSN/Commercial)
+      type: string
+    UNITOFFICE_SYMBOL:
+      title: Unit/Office Symbol/Street Address/Base/State/Zip Code
+      type: string
+    UNIT_COMMANDER:
+      title: Rank/Name of Unit Commander & Telephone
+      type: string
+    ACCOMPLISHMENTS:
+      title: Specific Accomplishments (Page 1)
+      type: string
+      ui:
+        multiline: true
+    ACCOMPLISHMENTS_CONTINUED:
+      title: Specific Accomplishments (Continued - Page 2)
+      type: string
+      ui:
+        multiline: true

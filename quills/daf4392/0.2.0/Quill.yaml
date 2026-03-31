@@ -1,6 +1,6 @@
 Quill:
   name: daf4392
-  version: 0.1.0
+  version: 0.2.0
   backend: typst
   plate_file: plate.typ
   example_file: example.md
@@ -84,10 +84,17 @@ main:
         compact: true
       description: "Put in your Grade."
 
-    emergency_contact:
-      title: Emergency Contact
+    emergency_contact_name:
+      title: Emergency Contact Name
       type: string
-      description: "Name and phone number of the emergency contact person at the bottom of the form."
+      required: true
+      description: "Put in your Emergency Contact Name."
+
+    emergency_contact_phone:
+      title: Emergency Contact Phone
+      type: string
+      required: true
+      description: "Put in your Emergency Contact's Phone Number."
 
 cards:
   itinerary:
