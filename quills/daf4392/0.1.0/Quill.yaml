@@ -39,14 +39,14 @@ main:
       type: string
       ui:
         compact: true
-      description: "Departure flight number."
+      description: "Departure flight number. (tenative or confirmed)"
 
     arrival_flight_num:
       title: Arrival Flight Number
       type: string
       ui:
         compact: true
-      description: "Arrival flight number."
+      description: "Arrival flight number. (tenative or confirmed)"
 
     notes:
       title: Notes
@@ -87,11 +87,13 @@ main:
     emergency_contact_name:
       title: Emergency Contact Name
       type: string
+      required: true
       description: "Put in your Emergency Contact Name."
 
     emergency_contact_phone:
       title: Emergency Contact Phone
       type: string
+      required: true
       description: "Put in your Emergency Contact's Phone Number."
 
 cards:
@@ -135,4 +137,4 @@ cards:
         ui:
           group: Itinerary Entry
           compact: true
-        description: "Approximate mileage for this leg. No need to put in if not applicable such as flights."
+        description: "Approximate mileage for this leg (leave blank if not applicable, e.g., flights)."

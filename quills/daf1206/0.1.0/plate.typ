@@ -1,7 +1,7 @@
 #import "@local/quillmark-helper:0.1.0": data
 #import "@local/typst-daf1206:0.1.0": form
 
-#set text(font: ("NimbusRomNo9L", "Times New Roman", "serif"))
+#set text(font: "Arimo")
 
 // Build the values dictionary for the form
 #let vals = (:)

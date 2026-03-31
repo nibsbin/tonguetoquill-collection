@@ -3,8 +3,8 @@
 
 /// Global configuration for text rendering.
 /// Adjust these to change the overall form text appearance.
-#let FORM_MAX_TEXT_SIZE = 14pt
-#let FORM_MIN_TEXT_SIZE = 6pt
+#let FORM_MAX_TEXT_SIZE = 11pt
+#let FORM_MIN_TEXT_SIZE = 5pt
 #let FORM_MIN_CHARS_PER_LINE = 7
 
 /// Should this field shrink text to a single line rather than word-wrap?
@@ -17,7 +17,7 @@
 
 /// Render a text-like field with shrink-to-fit and word-wrap fallback.
 #let render-text-field(display, width, height, x-inset, y-inset) = {
-  set par(leading: 0.25em)
+  set par(leading: 0.5em)
   context {
     let avail-w = width - 2 * x-inset
     let avail-h = height - 2 * y-inset
