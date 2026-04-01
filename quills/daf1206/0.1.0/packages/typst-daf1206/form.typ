@@ -3,34 +3,34 @@
 
 #let form(
   debug: false,
-  AWARD: "",  // text
-  CATEGORY_If_Applicable: "",  // text
-  AWARD_PERIOD: "",  // text
-  RANKNAME_OF_NOMINEE_First_Middle_Initial_Last: "",  // text
-  MAJCOM_FLDCOM_FOA_OR_DRU: "",  // text
-  DAFSCDUTY_TITLE: "",  // text
-  NOMINEES_TELEPHONE__DSN__Commercial: "",  // text
-  UNITOFFICE_SYMBOLSTREET_ADDRESSBASESTATEZIP_CODE: "",  // text
-  RANKNAME_OF_UNIT_COMMANDER_First_Middle_Initial_LastCOMMANDERS_TELEPHONE_DSN__Commercial: "",  // text
-  SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806: "",  // text
-  RANKNAME_OF_NOMINEE_First_Middle_Initial_Last_2: "",  // text
-  SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806_Continued: "",  // text
+  award: "",  // text
+  category: "",  // text
+  award_period: "",  // text
+  rankname_of_nominee: "",  // text
+  majcom_fldcom_foa_or_dru: "",  // text
+  dafscduty_title: "",  // text
+  nominees_telephone: "",  // text
+  unitoffice_symbol: "",  // text
+  unit_commander: "",  // text
+  accomplishments: "",  // text
+  rankname_of_nominee_2: "",  // text
+  accomplishments_continued: "",  // text
 ) = render-form(
   schema: json("FIELDS.json"),
   backgrounds: ("page1.png", "page2.png",),
   values: (
-    "AWARD": AWARD,
-    "CATEGORY If Applicable": CATEGORY_If_Applicable,
-    "AWARD PERIOD": AWARD_PERIOD,
-    "RANKNAME OF NOMINEE First Middle Initial Last": RANKNAME_OF_NOMINEE_First_Middle_Initial_Last,
-    "MAJCOM FLDCOM FOA OR DRU": MAJCOM_FLDCOM_FOA_OR_DRU,
-    "DAFSCDUTY TITLE": DAFSCDUTY_TITLE,
-    "NOMINEES TELEPHONE  DSN  Commercial": NOMINEES_TELEPHONE__DSN__Commercial,
-    "UNITOFFICE SYMBOLSTREET ADDRESSBASESTATEZIP CODE": UNITOFFICE_SYMBOLSTREET_ADDRESSBASESTATEZIP_CODE,
-    "RANKNAME OF UNIT COMMANDER First Middle Initial LastCOMMANDERS TELEPHONE DSN  Commercial": RANKNAME_OF_UNIT_COMMANDER_First_Middle_Initial_LastCOMMANDERS_TELEPHONE_DSN__Commercial,
-    "SPECIFIC ACCOMPLISHMENTS Use Performance Statements IAW DAFMAN 362806": SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806,
-    "RANKNAME OF NOMINEE First Middle Initial Last_2": RANKNAME_OF_NOMINEE_First_Middle_Initial_Last_2,
-    "SPECIFIC ACCOMPLISHMENTS Use Performance Statements IAW DAFMAN 362806 Continued": SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806_Continued,
+    "award": award,
+    "category": category,
+    "award_period": award_period,
+    "rankname_of_nominee": rankname_of_nominee,
+    "majcom_fldcom_foa_or_dru": majcom_fldcom_foa_or_dru,
+    "dafscduty_title": dafscduty_title,
+    "nominees_telephone": nominees_telephone,
+    "unitoffice_symbol": unitoffice_symbol,
+    "unit_commander": unit_commander,
+    "accomplishments": accomplishments,
+    "rankname_of_nominee_2": rankname_of_nominee_2,
+    "accomplishments_continued": accomplishments_continued,
   ),
   debug: debug,
 )

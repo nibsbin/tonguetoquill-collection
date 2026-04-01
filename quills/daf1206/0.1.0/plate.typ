@@ -7,22 +7,22 @@
 #let vals = (:)
 
 // --- Admin fields (page 1 header) ---
-#if "AWARD" in data { vals.insert("AWARD", data.AWARD) }
-#if "CATEGORY" in data { vals.insert("CATEGORY_If_Applicable", data.CATEGORY) }
-#if "AWARD_PERIOD" in data { vals.insert("AWARD_PERIOD", data.AWARD_PERIOD) }
+#if "award" in data { vals.insert("award", data.award) }
+#if "category" in data { vals.insert("category", data.category) }
+#if "award_period" in data { vals.insert("award_period", data.award_period) }
 
-#if "RANKNAME_OF_NOMINEE" in data { vals.insert("RANKNAME_OF_NOMINEE_First_Middle_Initial_Last", data.RANKNAME_OF_NOMINEE) }
-#if "RANKNAME_OF_NOMINEE" in data { vals.insert("RANKNAME_OF_NOMINEE_First_Middle_Initial_Last_2", data.RANKNAME_OF_NOMINEE) }
+#if "rankname_of_nominee" in data { vals.insert("rankname_of_nominee", data.rankname_of_nominee) }
+#if "rankname_of_nominee" in data { vals.insert("rankname_of_nominee_2", data.rankname_of_nominee) }
 
-#if "MAJCOM_FLDCOM_FOA_OR_DRU" in data { vals.insert("MAJCOM_FLDCOM_FOA_OR_DRU", data.MAJCOM_FLDCOM_FOA_OR_DRU) }
-#if "DAFSCDUTY_TITLE" in data { vals.insert("DAFSCDUTY_TITLE", data.DAFSCDUTY_TITLE) }
-#if "NOMINEES_TELEPHONE" in data { vals.insert("NOMINEES_TELEPHONE__DSN__Commercial", data.NOMINEES_TELEPHONE) }
-#if "UNITOFFICE_SYMBOL" in data { vals.insert("UNITOFFICE_SYMBOLSTREET_ADDRESSBASESTATEZIP_CODE", data.UNITOFFICE_SYMBOL) }
-#if "UNIT_COMMANDER" in data { vals.insert("RANKNAME_OF_UNIT_COMMANDER_First_Middle_Initial_LastCOMMANDERS_TELEPHONE_DSN__Commercial", data.UNIT_COMMANDER) }
+#if "majcom_fldcom_foa_or_dru" in data { vals.insert("majcom_fldcom_foa_or_dru", data.majcom_fldcom_foa_or_dru) }
+#if "dafscduty_title" in data { vals.insert("dafscduty_title", data.dafscduty_title) }
+#if "nominees_telephone" in data { vals.insert("nominees_telephone", data.nominees_telephone) }
+#if "unitoffice_symbol" in data { vals.insert("unitoffice_symbol", data.unitoffice_symbol) }
+#if "unit_commander" in data { vals.insert("unit_commander", data.unit_commander) }
 
 // --- Accomplishments (page 1 & 2 content) ---
-#if "ACCOMPLISHMENTS" in data { vals.insert("SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806", data.ACCOMPLISHMENTS) }
-#if "ACCOMPLISHMENTS_CONTINUED" in data { vals.insert("SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806_Continued", data.ACCOMPLISHMENTS_CONTINUED) }
+#if "accomplishments" in data { vals.insert("accomplishments", data.accomplishments) }
+#if "accomplishments_continued" in data { vals.insert("accomplishments_continued", data.accomplishments_continued) }
 
 // Render the form with assembled values
 #form(..vals)
