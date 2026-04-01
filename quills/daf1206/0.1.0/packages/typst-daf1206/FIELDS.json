@@ -11,7 +11,7 @@
   ],
   "fields": [
     {
-      "name": "AWARD",
+      "name": "award",
       "type": "text",
       "bbox": [
         21.479999542236328,
@@ -23,7 +23,7 @@
       "options": null
     },
     {
-      "name": "CATEGORY If Applicable",
+      "name": "category",
       "type": "text",
       "bbox": [
         309.1199951171875,
@@ -35,7 +35,7 @@
       "options": null
     },
     {
-      "name": "AWARD PERIOD",
+      "name": "award_period",
       "type": "text",
       "bbox": [
         424.9200134277344,
@@ -47,7 +47,7 @@
       "options": null
     },
     {
-      "name": "RANKNAME OF NOMINEE First Middle Initial Last",
+      "name": "rankname_of_nominee",
       "type": "text",
       "bbox": [
         21.360000610351562,
@@ -59,7 +59,7 @@
       "options": null
     },
     {
-      "name": "MAJCOM FLDCOM FOA OR DRU",
+      "name": "majcom_fldcom_foa_or_dru",
       "type": "text",
       "bbox": [
         350.1600036621094,
@@ -71,7 +71,7 @@
       "options": null
     },
     {
-      "name": "DAFSCDUTY TITLE",
+      "name": "dafscduty_title",
       "type": "text",
       "bbox": [
         21.479999542236328,
@@ -83,7 +83,7 @@
       "options": null
     },
     {
-      "name": "NOMINEES TELEPHONE  DSN  Commercial",
+      "name": "nominees_telephone",
       "type": "text",
       "bbox": [
         288.4800109863281,
@@ -95,7 +95,7 @@
       "options": null
     },
     {
-      "name": "UNITOFFICE SYMBOLSTREET ADDRESSBASESTATEZIP CODE",
+      "name": "unitoffice_symbol",
       "type": "text",
       "bbox": [
         21.360000610351562,
@@ -107,7 +107,7 @@
       "options": null
     },
     {
-      "name": "RANKNAME OF UNIT COMMANDER First Middle Initial LastCOMMANDERS TELEPHONE DSN  Commercial",
+      "name": "unit_commander",
       "type": "text",
       "bbox": [
         21.479999542236328,
@@ -119,7 +119,7 @@
       "options": null
     },
     {
-      "name": "SPECIFIC ACCOMPLISHMENTS Use Performance Statements IAW DAFMAN 362806",
+      "name": "accomplishments",
       "type": "text",
       "bbox": [
         22.079999923706055,
@@ -131,7 +131,7 @@
       "options": null
     },
     {
-      "name": "RANKNAME OF NOMINEE First Middle Initial Last_2",
+      "name": "rankname_of_nominee_2",
       "type": "text",
       "bbox": [
         21.479999542236328,
@@ -143,7 +143,7 @@
       "options": null
     },
     {
-      "name": "SPECIFIC ACCOMPLISHMENTS Use Performance Statements IAW DAFMAN 362806 Continued",
+      "name": "accomplishments_continued",
       "type": "text",
       "bbox": [
         22.079999923706055,
