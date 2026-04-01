@@ -16,7 +16,7 @@ emergency_contact_phone: "999-999-9999"
 ---
 
 ---
-CARD: itinerary
+CARD: leg
 date: "XX Mar"
 departure_point: "Biloxi, MS"
 arrival_point: "Fake City, MS"
@@ -25,7 +25,7 @@ mileage: "250"
 ---
 
 ---
-CARD: itinerary
+CARD: leg
 date: "XX Mar"
 departure_point: "Fake City, MS"
 arrival_point: "Biloxi, MS"
