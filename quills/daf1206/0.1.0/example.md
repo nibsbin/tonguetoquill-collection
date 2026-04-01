@@ -1,8 +1,8 @@
 ---
 QUILL: daf1206@0.1.0
 award: "AIR AND SPACE ACHIEVEMENT MEDAL"
-category: "asdfasdfasdf"
-award_period: "1 Jan 24 - 31 Dec 24 asdfasdfasdf"
+category: ""
+award_period: "1 Jan 24 - 31 Dec 24"
 rankname_of_nominee: "SSgt Doe, John A."
 majcom_fldcom_foa_or_dru: "ACC"
 dafscduty_title: "1D7X1 / Cyber Operator"
