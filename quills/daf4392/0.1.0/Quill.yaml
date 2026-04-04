@@ -1,6 +1,6 @@
 Quill:
   name: daf4392
-  version: 0.1.0
+  version: 0.2.0
   backend: typst
   plate_file: plate.typ
   example_file: example.md
@@ -85,9 +85,10 @@ main:
       description: "Put in your Grade."
 
     emergency_contact:
-      title: Emergency Contact
-      type: string
-      description: "Name and phone number of the emergency contact person at the bottom of the form."
+      title: Emergency Contacts
+      type: markdown
+      description: "Emergency contact (name and number)"
+
 
 cards:
   itinerary:
@@ -95,6 +96,7 @@ cards:
     description: "Each card represents one row in the travel itinerary table. Up to 10 rows are supported."
     ui:
       hide_body: true
+      default_title: Leg
     fields:
       date:
         title: Date
