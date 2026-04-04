@@ -37,6 +37,6 @@
   "dependencies": {},
   "devDependencies": {
     "@quillmark/registry": "^0.10.0",
-    "@quillmark/wasm": "^0.46.0"
+    "@quillmark/wasm": "^0.48.0"
   }
 }
