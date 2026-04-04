@@ -87,17 +87,12 @@ main:
     emergency_contact_name:
       title: Emergency Contact Name
       type: string
-      required: true
       description: "Put in your Emergency Contact Name."
-      ui.compact: true
 
     emergency_contact_phone:
       title: Emergency Contact Phone
       type: string
-      required: true
       description: "Put in your Emergency Contact's Phone Number."
-      ui.compact: true
-
 
 cards:
   itinerary:
