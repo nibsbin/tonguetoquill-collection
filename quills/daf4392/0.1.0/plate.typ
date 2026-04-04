@@ -65,4 +65,15 @@
 #tf(270pt, 680pt)[#data.at("briefer_grade", default: "")]
 
 // Emergency Contact
-#tf(40pt, 700pt)[#text(size: 10pt, weight: "bold")[EMERGENCY CONTACT:] #text(size: 10pt)[#eval-markup(data.at("emergency_contact", default:""))]]
+#{
+  let emergency_name = str(data.at("emergency_contact_name", default: ""))
+  let emergency_phone = str(data.at("emergency_contact_phone", default: ""))
+  let emergency_contact = if emergency_name != "" and emergency_phone != "" {
+    emergency_name + ": " + emergency_phone
+  } else if emergency_name != "" {
+    emergency_name
+  } else {
+    emergency_phone
+  }
+  tf(40pt, 700pt)[#text(size: 10pt, weight: "bold")[EMERGENCY CONTACT:] #text(size: 10pt)[#eval-markup(emergency_contact)]]
+}

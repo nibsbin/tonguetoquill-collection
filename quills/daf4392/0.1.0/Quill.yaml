@@ -84,10 +84,17 @@ main:
         compact: true
       description: "Put in your Grade."
 
-    emergency_contact:
-      title: Emergency Contacts
-      type: markdown
-      description: "Emergency contact (name and number)"
+    emergency_contact_name:
+      title: Emergency Contact Name
+      type: string
+      required: true
+      description: "Put in your Emergency Contact Name."
+
+    emergency_contact_phone:
+      title: Emergency Contact Phone
+      type: string
+      required: true
+      description: "Put in your Emergency Contact's Phone Number."
 
 
 cards:
