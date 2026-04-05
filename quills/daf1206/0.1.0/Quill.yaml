@@ -13,18 +13,15 @@ main:
     award:
       title: Award
       type: string
-      required: true
     category:
       title: Category (If Applicable)
       type: string
     award_period:
       title: Award Period
       type: string
-      required: true
     rankname_of_nominee:
       title: Rank/Name of Nominee (First, Middle Initial, Last)
       type: string
-      required: true
     majcom_fldcom_foa_or_dru:
       title: MAJCOM/FLDCOM/FOA/DRU
       type: string

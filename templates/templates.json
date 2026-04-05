@@ -60,7 +60,7 @@
 		"name": "DAF Form 4392",
 		"description": "Pre-Departure Safety Briefing (Page 2)",
 		"file": "daf4392.md",
-		"production": true
+		"production": false
 	},
 	{
 		"id": "daf-form-1206",
