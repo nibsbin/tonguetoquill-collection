@@ -10,42 +10,42 @@ main:
   ui:
     hide_body: true
   fields:
-    AWARD:
+    award:
       title: Award
       type: string
       required: true
-    CATEGORY:
+    category:
       title: Category (If Applicable)
       type: string
-    AWARD_PERIOD:
+    award_period:
       title: Award Period
       type: string
       required: true
-    RANKNAME_OF_NOMINEE:
+    rankname_of_nominee:
       title: Rank/Name of Nominee (First, Middle Initial, Last)
       type: string
       required: true
-    MAJCOM_FLDCOM_FOA_OR_DRU:
+    majcom_fldcom_foa_or_dru:
       title: MAJCOM/FLDCOM/FOA/DRU
       type: string
-    DAFSCDUTY_TITLE:
+    dafscduty_title:
       title: DAFSC/Duty Title
       type: string
-    NOMINEES_TELEPHONE:
+    nominees_telephone:
       title: Nominee's Telephone (DSN/Commercial)
       type: string
-    UNITOFFICE_SYMBOL:
+    unitoffice_symbol:
       title: Unit/Office Symbol/Street Address/Base/State/Zip Code
       type: string
-    UNIT_COMMANDER:
+    unit_commander:
       title: Rank/Name of Unit Commander & Telephone
       type: string
-    ACCOMPLISHMENTS:
+    accomplishments:
       title: Specific Accomplishments (Page 1)
       type: string
       ui:
         multiline: true
-    ACCOMPLISHMENTS_CONTINUED:
+    accomplishments_continued:
       title: Specific Accomplishments (Continued - Page 2)
       type: string
       ui:
