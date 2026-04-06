@@ -60,13 +60,13 @@
 		"name": "DAF Form 4392",
 		"description": "Pre-Departure Safety Briefing (Page 2)",
 		"file": "daf4392.md",
-		"production": false
+		"production": true
 	},
 	{
 		"id": "daf-form-1206",
 		"name": "DAF Form 1206",
 		"description": "Nomination for Award",
 		"file": "daf1206.md",
-		"production": true
+		"production": false
 	}
 ]
