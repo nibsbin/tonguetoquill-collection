@@ -11,7 +11,7 @@ unitoffice_symbol: "1st Communications Squadron / SC, 123 Main St, AFB, ST 12345
 unit_commander: "Capt Jane Smith / DSN: 123-4568 / Comm: (123) 456-7891"
 
 accomplishments: |-
-  - Spearheaded major network upgrade; improved speed by 50%
+  - **Spearheaded major network upgrade**; improved speed by 50%
   - Mentored 5 Airmen; 100% upgrade training completion rate
 
 accomplishments_continued: |-

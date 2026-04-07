@@ -1,4 +1,4 @@
-#import "@local/quillmark-helper:0.1.0": data, eval-markup
+#import "@local/quillmark-helper:0.1.0": data
 
 #set page(width: 8.5in, height: 11in, margin: 0in)
 #set text(font: "Arimo", size: 10pt)
@@ -75,5 +75,5 @@
   } else {
     emergency_phone
   }
-  tf(40pt, 700pt)[#text(size: 10pt, weight: "bold")[EMERGENCY CONTACT:] #text(size: 10pt)[#eval-markup(emergency_contact)]]
+  tf(40pt, 700pt)[#text(size: 10pt, weight: "bold")[EMERGENCY CONTACT:] #text(size: 10pt)[#emergency_contact]]
 }
