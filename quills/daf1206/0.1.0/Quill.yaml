@@ -8,7 +8,7 @@ Quill:
 
 main:
   ui:
-    hide_body: true
+    hide_body: false
   fields:
     award:
       title: Award
@@ -37,16 +37,11 @@ main:
     unit_commander_rank_name_and_telephone:
       title: Rank/Name of Unit Commander & Telephone (DSN/Commercial)
       type: string
-    accomplishments:
-      title: Specific Accomplishments (Page 1)
-      type: markdown
-      ui:
-        multiline: true
-    rankname_of_nominee_page_2:
-      title: Rank/Name of Nominee (Page 2 — optional; defaults to Page 1)
-      type: string
-    accomplishments_continued:
-      title: Specific Accomplishments (Continued — Page 2)
-      type: markdown
-      ui:
-        multiline: true
+
+cards:
+  accomplishments_continued:
+    title: Specific Accomplishments (Continued — Page 2)
+    description: Optional. Add this card only when page 2 overflow is required. Use the card body for continued bullets. Rank/name on page 2 matches the main nominee line automatically.
+    ui:
+      hide_body: false
+    fields: {}

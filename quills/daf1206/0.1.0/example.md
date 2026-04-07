@@ -1,19 +1,23 @@
 ---
 QUILL: daf1206@0.1.0
-award: "AIR AND SPACE ACHIEVEMENT MEDAL"
-category: "Terrestrial"
-award_period: "1 Jan 24 - 31 Dec 24"
-rankname_of_nominee: "SSgt Doe, John A."
-majcom_fldcom_foa_or_dru: "ACC"
-dafscduty_title: "1D7X1 / Cyber Operator"
-nominees_telephone: "DSN: 123-4567 / Comm: (123) 456-7890"
-unitoffice_symbol: "1st Communications Squadron / SC, 123 Main St, AFB, ST 12345"
-unit_commander: "Capt Jane Smith / DSN: 123-4568 / Comm: (123) 456-7891"
-
-accomplishments: |-
-  - **Spearheaded major network upgrade**; improved speed by 50%
-  - Mentored 5 Airmen; 100% upgrade training completion rate
-
-accomplishments_continued: |-
-  - Continued excellence in supporting base communications
+award: "CY2018 Stripes for Exceptional Performers II Board"
+category_if_applicable: "Senior Master Sgt"
+award_period: "N/A"
+rankname_of_nominee: "Smith, John Q., SMSgt"
+majcom_fldcom_foa_or_dru: "MAJCOM of Assignment"
+dafsc_duty_title: "3F071/NCOIC, 123rd Force Support Squadron"
+nominees_telephone_dsn_commercial: "DSN XXXX-XXXX, Comm (XXX) XXX-XXXX"
+unit_office_symbol_street_address_base_state_zip: "123 FSS/FMSPD, Someplace AFB, CO XXXXX"
+unit_commander_rank_name_and_telephone: "Lt Col Jane C. Doe, DSN XXX-XXXXXXX, Comm (XXX) XXX-XXXX"
 ---
+
+Use this main body for page 1 accomplishments.
+- Keep bullet format.
+- Replace all placeholder values.
+
+---
+CARD: accomplishments_continued
+---
+
+Use this card body only if page 2 overflow is needed.
+- Add continuation bullets here.

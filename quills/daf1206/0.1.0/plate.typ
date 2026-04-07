@@ -9,7 +9,10 @@
 #if "award" in data { vals.insert("AWARD", data.award) }
 #if "category_if_applicable" in data { vals.insert("CATEGORY_If_Applicable", data.category_if_applicable) }
 #if "award_period" in data { vals.insert("AWARD_PERIOD", data.award_period) }
-#if "rankname_of_nominee" in data { vals.insert("RANKNAME_OF_NOMINEE_First_Middle_Initial_Last", data.rankname_of_nominee) }
+#if "rankname_of_nominee" in data {
+  vals.insert("RANKNAME_OF_NOMINEE_First_Middle_Initial_Last", data.rankname_of_nominee)
+  vals.insert("RANKNAME_OF_NOMINEE_First_Middle_Initial_Last_2", data.rankname_of_nominee)
+}
 #if "majcom_fldcom_foa_or_dru" in data { vals.insert("MAJCOM_FLDCOM_FOA_OR_DRU", data.majcom_fldcom_foa_or_dru) }
 #if "dafsc_duty_title" in data { vals.insert("DAFSCDUTY_TITLE", data.dafsc_duty_title) }
 #if "nominees_telephone_dsn_commercial" in data {
@@ -27,22 +30,18 @@
     data.unit_commander_rank_name_and_telephone,
   )
 }
-#if "accomplishments" in data {
+#if "BODY" in data {
   vals.insert(
     "SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806",
-    data.accomplishments,
+    data.BODY,
   )
 }
-#if "rankname_of_nominee_page_2" in data {
-  vals.insert("RANKNAME_OF_NOMINEE_First_Middle_Initial_Last_2", data.rankname_of_nominee_page_2)
-} else if "rankname_of_nominee" in data {
-  vals.insert("RANKNAME_OF_NOMINEE_First_Middle_Initial_Last_2", data.rankname_of_nominee)
-}
-#if "accomplishments_continued" in data {
-  vals.insert(
-    "SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806_Continued",
-    data.accomplishments_continued,
-  )
+
+#let continued-key = "SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806_Continued"
+#for card in data.CARDS {
+  if card.CARD == "accomplishments_continued" and continued-key not in vals and "BODY" in card {
+    vals.insert(continued-key, card.BODY)
+  }
 }
 
 #form(..vals)
