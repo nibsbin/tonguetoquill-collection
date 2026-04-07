@@ -67,6 +67,6 @@
 		"name": "DAF Form 1206",
 		"description": "Nomination for Award",
 		"file": "daf1206.md",
-		"production": false
+		"production": true
 	}
 ]
