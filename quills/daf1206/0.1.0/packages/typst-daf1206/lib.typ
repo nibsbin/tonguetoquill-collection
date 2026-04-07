@@ -3,21 +3,41 @@
 
 /// Global configuration for text rendering.
 /// Adjust these to change the overall form text appearance.
-#let FORM_MAX_TEXT_SIZE = 11pt
-#let FORM_MIN_TEXT_SIZE = 5pt
+#let FORM_MAX_TEXT_SIZE = 14pt
+#let FORM_MIN_TEXT_SIZE = 6pt
 #let FORM_MIN_CHARS_PER_LINE = 7
+
+/// Coerce any user-supplied scalar value to a plain string.
+/// Accepts the same types as Typst's built-in str(), plus content –
+/// content is extracted via repr() with its surrounding square brackets stripped.
+/// This lets callers write `[Hello]` (content) instead of `"Hello"` (string).
+#let to-str(value) = {
+  if type(value) == content {
+    let r = repr(value)
+    // repr([hello]) → "[hello]" — strip the outer square brackets
+    if r.starts-with("[") and r.ends-with("]") {
+      r.slice(1, r.len() - 1)
+    } else {
+      r
+    }
+  } else {
+    str(value)
+  }
+}
 
 /// Should this field shrink text to a single line rather than word-wrap?
 /// True for short/narrow fields with brief content (grades, ranks, dates).
+/// `display` may be a string or content; char-count is skipped for content.
 #let should-shrink-to-fit(display, width, height) = {
   let aspect = width / height
-  let char-count = display.len()
+  // content has no .len(); treat as "long" so only the dimension conditions apply
+  let char-count = if type(display) == str { display.len() } else { 99 }
   char-count <= 10 or height < 20pt or aspect > 4.0
 }
 
 /// Render a text-like field with shrink-to-fit and word-wrap fallback.
 #let render-text-field(display, width, height, x-inset, y-inset) = {
-  set par(leading: 0.5em)
+  set par(leading: 0.25em)
   context {
     let avail-w = width - 2 * x-inset
     let avail-h = height - 2 * y-inset
@@ -81,8 +101,14 @@
 /// - field (dictionary): raw field entry from the schema
 #let render-field(field-type, value, width, height, field) = {
   if field-type == "text" {
-    if value != none and str(value) != "" {
-      render-text-field(str(value), width, height, 1.5pt, 1pt)
+    if value != none {
+      // Pass content through directly so styling (bold, italic, …) is preserved;
+      // for plain strings, skip empty values.
+      if type(value) == content {
+        render-text-field(value, width, height, 1.5pt, 1pt)
+      } else if str(value) != "" {
+        render-text-field(str(value), width, height, 1.5pt, 1pt)
+      }
     }
   } else if field-type == "checkbox" {
     if value == true {
@@ -104,16 +130,17 @@
       )
     }
   } else if field-type == "combobox" or field-type == "listbox" {
-    let display = if value != none { str(value) } else { "" }
-    // Resolve export value → display label when options are present
+    // Default: render the raw value, preserving content styling if present.
+    // Override with the schema's display label when the export value matches.
+    let display = value
     if field.at("options", default: none) != none and value != none {
       for opt in field.options {
-        if str(opt.at(0)) == str(value) {
+        if str(opt.at(0)) == to-str(value) {
           display = str(opt.at(1))
         }
       }
     }
-    if display != "" {
+    if display != none and to-str(display) != "" {
       render-text-field(display, width, height, 2pt, 1pt)
     }
   }
@@ -129,10 +156,10 @@
   if group-value == none { return false }
   let ev = field.at("export_value", default: none)
   if ev != none {
-    return str(ev) == str(group-value)
+    return str(ev) == to-str(group-value)
   }
   // Fallback: match against the stringified index
-  str(index-in-group) == str(group-value)
+  str(index-in-group) == to-str(group-value)
 }
 
 /// Draw a debug overlay rectangle with a label for a field.

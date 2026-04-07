@@ -13,7 +13,7 @@ main:
     award:
       title: Award
       type: string
-    category:
+    category_if_applicable:
       title: Category (If Applicable)
       type: string
     award_period:
@@ -25,25 +25,28 @@ main:
     majcom_fldcom_foa_or_dru:
       title: MAJCOM/FLDCOM/FOA/DRU
       type: string
-    dafscduty_title:
+    dafsc_duty_title:
       title: DAFSC/Duty Title
       type: string
-    nominees_telephone:
+    nominees_telephone_dsn_commercial:
       title: Nominee's Telephone (DSN/Commercial)
       type: string
-    unitoffice_symbol:
+    unit_office_symbol_street_address_base_state_zip:
       title: Unit/Office Symbol/Street Address/Base/State/Zip Code
       type: string
-    unit_commander:
-      title: Rank/Name of Unit Commander & Telephone
+    unit_commander_rank_name_and_telephone:
+      title: Rank/Name of Unit Commander & Telephone (DSN/Commercial)
       type: string
     accomplishments:
       title: Specific Accomplishments (Page 1)
-      type: string
+      type: markdown
       ui:
         multiline: true
-    accomplishments_continued:
-      title: Specific Accomplishments (Continued - Page 2)
+    rankname_of_nominee_page_2:
+      title: Rank/Name of Nominee (Page 2 — optional; defaults to Page 1)
       type: string
+    accomplishments_continued:
+      title: Specific Accomplishments (Continued — Page 2)
+      type: markdown
       ui:
         multiline: true

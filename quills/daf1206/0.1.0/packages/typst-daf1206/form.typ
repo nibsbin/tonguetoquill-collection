@@ -17,7 +17,7 @@
   SPECIFIC_ACCOMPLISHMENTS_Use_Performance_Statements_IAW_DAFMAN_362806_Continued: "",  // text
 ) = render-form(
   schema: json("FIELDS.json"),
-  backgrounds: ("page1.png", "page2.png",),
+  backgrounds: ("page1.svg", "page2.svg",),
   values: (
     "AWARD": AWARD,
     "CATEGORY If Applicable": CATEGORY_If_Applicable,
