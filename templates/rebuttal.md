@@ -1,15 +1,15 @@
 ---
 QUILL: usaf_memo@0.2
 letterhead_title: DEPARTMENT OF THE AIR FORCE
-letterhead_caption: !fill
+letterhead_caption:
   - YOUR SQUADRON HERE
   - USAF BASE, STATE
-memo_for: !fill
+memo_for:
   - Issuer's Rank FIRST M. LAST, USAF
-memo_from: !fill
+memo_from:
   - Subject's ORG/SYMBOL
-subject: !fill Response to Letter of Counseling, (Subject of LOC), dated DD Month YYYY
-signature_block: !fill
+subject: Response to Letter of Counseling, Late Arrival to Formation, dated 10 March 2026
+signature_block:
   - Subject's FIRST M. LAST, Rank, USAF
   - Duty Title
 ---
@@ -19,7 +19,7 @@ signature_block: !fill
   - State the date and subject matter clearly
   - Express intent to respond professionally
 ------------------------------------------------------>
-I received the Letter of Counseling dated {:DD Month YYYY:} regarding {:my late arrival to formation on DD Month YYYY:}. I respectfully submit this response for your consideration.
+I received the Letter of Counseling dated 10 March 2026 regarding my late arrival to formation on 8 March 2026. I respectfully submit this response for your consideration.
 
 <!-----------------------------------------------------
 2. RESPONSE TO ALLEGATIONS
