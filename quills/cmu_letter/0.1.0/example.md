@@ -1,20 +1,19 @@
 ---
 QUILL: cmu_letter@0.1
-department: !fill Department Here
+department: Department Here
 address:
   - 5000 Forbes Avenue
   - Pittsburgh, PA 15213-3890
 url: cmu.edu
-recipient: !fill
+recipient:
   - Dr. Heinz Doofenshmirtz
   - 9297 Polly Parkway
   - City, Virginia 46231
-signature_block: !fill
+signature_block:
   - Phineas Flynn
   - Masters Student
 ---
-
-Dear {:Dr. Heinz Doofenshmirtz:},
+Dear Dr. Heinz Doofenshmirtz,
 
 Write your letter content here. This template uses the CMU letter format for professional academic correspondence.
 
