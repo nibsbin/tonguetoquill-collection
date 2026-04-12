@@ -78,14 +78,6 @@ main:
         group: Letterhead
       description: Organizational motto at the bottom of the page.
 
-    date:
-      title: Date of memo (YYYY-MM-DD); defaults to today
-      type: string
-      default: ""
-      ui:
-        group: Additional
-      description: YYYY-MM-DD. Leave blank to use today's date.
-
     references:
       title: References for the memo
       type: array
@@ -135,8 +127,9 @@ main:
         - CONFIDENTIAL
       ui:
         group: Additional
+        compact: true
       description: Follow AFI 31-401 and applicable DoD guidance for classification markings. Leave blank for unclassified.
-
+    
     font_size:
       title: Font size for the memo text (int pt)
       type: number
@@ -145,7 +138,17 @@ main:
         - 11
       ui:
         group: Additional
+        compact: true
       description: Font size for the memo text (pt).
+
+    date:
+      title: Date of memo (YYYY-MM-DD); defaults to today
+      type: date
+      default: ""
+      ui:
+        group: Additional
+      description: YYYY-MM-DD. Leave blank to use today's date.
+
 
 cards:
   indorsement:
@@ -214,7 +217,7 @@ cards:
         description: List of office symbols to receive copies of this endorsement.
       date:
         title: Date of endorsement (YYYY-MM-DD)
-        type: string
+        type: date
         ui:
           group: Additional
         description: Date of the endorsement. Leave blank to omit.

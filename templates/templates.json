@@ -28,13 +28,6 @@
 		"production": true
 	},
 	{
-		"id": "taro-template",
-		"name": "Taro Template",
-		"description": "Official Taro ice cream template",
-		"file": "taro.md",
-		"production": false
-	},
-	{
 		"id": "cmu-letter",
 		"name": "CMU Letter",
 		"description": "Carnegie Mellon University academic letter template",

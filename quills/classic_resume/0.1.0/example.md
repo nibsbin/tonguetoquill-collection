@@ -36,10 +36,10 @@ cells:
 ---
 CARD: experience_section
 title: Work Experience
-headingLeft: Templar Archives Research Division
-headingRight: August 2024 – Present
-subheadingLeft: Psionic Research Analyst
-subheadingRight: Aiur
+heading_left: Templar Archives Research Division
+heading_right: August 2024 – Present
+subheading_left: Psionic Research Analyst
+subheading_right: Aiur
 ---
 
 - Analyzed Khala disruption patterns following Amon's corruption, developing countermeasures to protect remaining neural link infrastructure.
@@ -47,10 +47,10 @@ subheadingRight: Aiur
 
 ---
 CARD: experience_section
-headingLeft: Terran Dominion Ghost Academy
-headingRight: May 2025 – July 2025
-subheadingLeft: Covert Ops Trainee
-subheadingRight: Tarsonis (Remote)
+heading_left: Terran Dominion Ghost Academy
+heading_right: May 2025 – July 2025
+subheading_left: Covert Ops Trainee
+subheading_right: Tarsonis (Remote)
 ---
 
 - Developed tactical HUD displays for Ghost operatives integrating real-time Zerg hive cluster intelligence.
@@ -59,10 +59,10 @@ subheadingRight: Tarsonis (Remote)
 
 ---
 CARD: experience_section
-headingLeft: Abathur's Evolution Pit
-headingRight: June 2023 – July 2023
-subheadingLeft: Biomass Research Intern
-subheadingRight: Char
+heading_left: Abathur's Evolution Pit
+heading_right: June 2023 – July 2023
+subheading_left: Biomass Research Intern
+subheading_right: Char
 ---
 
 - Developed tracking algorithms for Overlord surveillance networks; supported pattern-of-life analysis for Terran outpost elimination.
@@ -70,10 +70,10 @@ subheadingRight: Char
 
 ---
 CARD: experience_section
-headingLeft: Raynor's Raiders
-headingRight: January 2018 – June 2020
-subheadingLeft: Combat Engineer
-subheadingRight: Mar Sara
+heading_left: Raynor's Raiders
+heading_right: January 2018 – June 2020
+subheading_left: Combat Engineer
+subheading_right: Mar Sara
 ---
 
 - Administered Hyperion shipboard systems, SCV maintenance protocols, and bunker defense automation for 30,000+ colonists.
@@ -84,18 +84,18 @@ subheadingRight: Mar Sara
 ---
 CARD: experience_section
 title: Education
-headingLeft: Carnegie Mellon University
-headingRight: December 2025
-subheadingLeft: Master of Information Technology Strategy
-subheadingRight: Pittsburgh, PA
+heading_left: Carnegie Mellon University
+heading_right: December 2025
+subheading_left: Master of Information Technology Strategy
+subheading_right: Pittsburgh, PA
 ---
 
 ---
 CARD: experience_section
-headingLeft: United States Air Force Academy
-headingRight: May 2024
-subheadingLeft: BS, Data Science
-subheadingRight: Colorado Springs, CO
+heading_left: United States Air Force Academy
+heading_right: May 2024
+subheading_left: BS, Data Science
+subheading_right: Colorado Springs, CO
 ---
 
 - Distinguished Graduate (top 10%); Chinese language minor (L2+/R1 on DLPT).
@@ -104,24 +104,24 @@ subheadingRight: Colorado Springs, CO
 
 ---
 CARD: experience_section
-headingLeft: Western Governors University
-headingRight: April 2022
-subheadingLeft: BS, Cybersecurity and Information Assurance
-subheadingRight: Remote
+heading_left: Western Governors University
+heading_right: April 2022
+subheading_left: BS, Cybersecurity and Information Assurance
+subheading_right: Remote
 ---
 
 ---
 CARD: experience_section
-headingLeft: Community College of the Air Force
-headingRight: February 2019
-subheadingLeft: AS, Information Systems Technology
-subheadingRight: Remote
+heading_left: Community College of the Air Force
+heading_right: February 2019
+subheading_left: AS, Information Systems Technology
+subheading_right: Remote
 ---
 
 ---
 CARD: experience_section
 title: Cyber Competition
-headingLeft: 1st in SANS Academy Cup 2024
+heading_left: 1st in SANS Academy Cup 2024
 ---
 
 - Competed as the Delogrand Web Exploit SME, solving SQLi, API, and HTTP packet crafting problems.
@@ -129,7 +129,7 @@ headingLeft: 1st in SANS Academy Cup 2024
 
 ---
 CARD: experience_section
-headingLeft: 1st in NCX 2023
+heading_left: 1st in NCX 2023
 ---
 
 - Developed strategies, defensive scripts, and exploits for the Cyber Combat event.
@@ -137,7 +137,7 @@ headingLeft: 1st in NCX 2023
 
 ---
 CARD: experience_section
-headingLeft: 1st in SANS Academy Cup 2023
+heading_left: 1st in SANS Academy Cup 2023
 ---
 
 - Competed as the Delogrand Web Exploit SME, solving XSS, XXE, SQLi, and HTTP crafting problems.
@@ -145,14 +145,14 @@ headingLeft: 1st in SANS Academy Cup 2023
 
 ---
 CARD: experience_section
-headingLeft: 1st in RMCS 2023
+heading_left: 1st in RMCS 2023
 ---
 
 - Competed as the Delogrand Web Exploit SME, solving obfuscated JS, Wasm, XSS, and SQLi problems.
 
 ---
 CARD: experience_section
-headingLeft: 1st in NCX 2022
+heading_left: 1st in NCX 2022
 ---
 
 - Trained and strategized teams for the Cyber Combat event.

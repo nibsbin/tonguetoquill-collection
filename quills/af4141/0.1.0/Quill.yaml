@@ -41,7 +41,7 @@ cards:
     fields:
       date:
         title: Date
-        type: string
+        type: date
         ui:
           group: Record
         description: Date of the action (column A).
@@ -63,7 +63,7 @@ cards:
 
       written_grade_date:
         title: Written Grade Date
-        type: string
+        type: date
         ui:
           group: Record
           compact: true
@@ -79,7 +79,7 @@ cards:
 
       positional_grade_date:
         title: Positional Grade Date
-        type: string
+        type: date
         ui:
           group: Record
           compact: true

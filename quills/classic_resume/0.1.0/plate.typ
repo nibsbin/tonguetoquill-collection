@@ -1,4 +1,4 @@
-#import "@local/quillmark-helper:0.1.0": data, parse-date
+#import "@local/quillmark-helper:0.1.0": data
 #import "@local/ttq-classic-resume:0.1.0": *
 
 #show: resume
@@ -15,10 +15,10 @@
 
   if card.CARD == "experience_section" {
     timeline-entry(
-      heading-left: card.at("headingLeft", default: ""),
-      heading-right: card.at("headingRight", default: ""),
-      subheading-left: card.at("subheadingLeft", default: none),
-      subheading-right: card.at("subheadingRight", default: none),
+      heading-left: card.at("heading_left", default: ""),
+      heading-right: card.at("heading_right", default: ""),
+      subheading-left: card.at("subheading_left", default: none),
+      subheading-right: card.at("subheading_right", default: none),
       body: card.at("BODY", default: none),
     )
   } else if card.CARD == "skills_section" {
