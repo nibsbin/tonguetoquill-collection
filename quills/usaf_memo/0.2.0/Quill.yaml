@@ -72,7 +72,7 @@ main:
 
     tag_line:
       title: Tag line at bottom of memo
-      type: string
+      type: date
       default: ""
       ui:
         group: Letterhead
@@ -80,7 +80,7 @@ main:
 
     date:
       title: Date of memo (YYYY-MM-DD); defaults to today
-      type: string
+      type: date
       default: ""
       ui:
         group: Additional
@@ -135,6 +135,7 @@ main:
         - CONFIDENTIAL
       ui:
         group: Additional
+        compact: true
       description: Follow AFI 31-401 and applicable DoD guidance for classification markings. Leave blank for unclassified.
 
     font_size:
@@ -145,6 +146,7 @@ main:
         - 11
       ui:
         group: Additional
+        compact: true
       description: Font size for the memo text (pt).
 
 cards:
@@ -214,7 +216,7 @@ cards:
         description: List of office symbols to receive copies of this endorsement.
       date:
         title: Date of endorsement (YYYY-MM-DD)
-        type: string
+        type: date
         ui:
           group: Additional
         description: Date of the endorsement. Leave blank to omit.

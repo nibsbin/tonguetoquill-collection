@@ -1,4 +1,4 @@
-#import "@local/quillmark-helper:0.1.0": data, parse-date
+#import "@local/quillmark-helper:0.1.0": data
 #import "@local/tonguetoquill-cmu-letter:0.1.0": backmatter, frontmatter, mainmatter
 
 #show: frontmatter.with(
@@ -6,7 +6,11 @@
   department: data.department,
   address: data.address,
   url: data.url,
-  date: if "date" in data { parse-date(data.date) } else { datetime.today() },
+  date: if "date" in data and data.date != none {
+    data.date
+  } else {
+    datetime.today()
+  },
   recipient: data.recipient,
 )
 

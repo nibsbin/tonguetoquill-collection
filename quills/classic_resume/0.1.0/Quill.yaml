@@ -38,17 +38,17 @@ cards:
         title: Section Title
         type: string
         default: Experience
-      headingLeft:
+      heading_left:
         title: Heading Left (e.g., Company/School)
         type: string
         required: true
-      headingRight:
+      heading_right:
         title: Heading Right (e.g., Location)
         type: string
-      subheadingLeft:
+      subheading_left:
         title: Subheading Left (e.g., Title/Degree)
         type: string
-      subheadingRight:
+      subheading_right:
         title: Subheading Right (e.g., Date)
         type: string
 

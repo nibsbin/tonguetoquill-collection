@@ -80,8 +80,7 @@ main:
 
     date:
       title: Date of memo (YYYY-MM-DD); defaults to today
-      type: string
-      default: ""
+      type: date
       ui:
         group: Additional
       description: YYYY-MM-DD. Leave blank to use today's date.
@@ -204,7 +203,7 @@ cards:
         description: List of office symbols to receive copies of this endorsement.
       date:
         title: Date of endorsement (YYYY-MM-DD)
-        type: string
+        type: date
         ui:
           group: Additional
         description: Date of the endorsement. Leave blank to omit.
