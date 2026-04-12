@@ -72,7 +72,7 @@ main:
 
     tag_line:
       title: Tag line at bottom of memo
-      type: date
+      type: string
       default: ""
       ui:
         group: Letterhead

@@ -3,6 +3,16 @@
 
 #set text(font: ("NimbusRomNo9L", "Times New Roman", "serif"))
 
+// `type: date` fields arrive as Typst `datetime`; PDF overlay expects strings.
+#let form-cell(v) = {
+  if v == none { "" }
+  else if type(v) == datetime {
+    v.display("[month padding:none]/[day padding:none]/[year]")
+  } else {
+    str(v)
+  }
+}
+
 // Column order within each 7-field row group
 #let col-keys = (
   "date",
@@ -33,7 +43,7 @@
     if card.CARD == "experience" {
       if row < max-rows {
         for (col, key) in col-keys.enumerate() {
-          let value = card.at(key, default: "")
+          let value = form-cell(card.at(key, default: none))
           if value != "" {
             let field-name = if row < 16 {
               // Page 1: fields start at index 4, stride 7
