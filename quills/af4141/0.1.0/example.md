@@ -33,9 +33,9 @@ CARD: experience
 date: 2025-01-15
 action: "Assigned to 1 ACCS/DOT as Weapons Director"
 written_grade: ""
-written_grade_date: ""
+written_grade_date: 2025-01-15
 positional_grade: ""
-positional_grade_date: ""
+positional_grade_date: 2025-01-15
 auth_or_remarks: "Initial assignment"
 ---
 
@@ -47,7 +47,7 @@ action: "Completed written upgrade evaluation for 3-Level"
 written_grade: "3"
 written_grade_date: 2025-03-15
 positional_grade: ""
-positional_grade_date: ""
+positional_grade_date: 2025-03-15
 auth_or_remarks: "Per AFMAN 13-1CRCV1"
 ---
 
@@ -57,7 +57,7 @@ CARD: experience
 date: 2025-06-20
 action: "Certified Mission Ready — positional upgrade"
 written_grade: ""
-written_grade_date: ""
+written_grade_date: 2025-06-20
 positional_grade: "4"
 positional_grade_date: 2025-06-20
 auth_or_remarks: "SSgt Jones, T.R."
@@ -81,8 +81,8 @@ CARD: experience
 date: 2025-09-01
 action: "PCS to 726 ACS/MOC, Tinker AFB OK"
 written_grade: ""
-written_grade_date: ""
+written_grade_date: 2025-09-01
 positional_grade: ""
-positional_grade_date: ""
+positional_grade_date: 2025-09-01
 auth_or_remarks: "Outprocessed 1 ACCS/DOT"
 ---
