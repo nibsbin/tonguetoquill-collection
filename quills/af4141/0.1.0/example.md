@@ -75,14 +75,12 @@ positional_grade_date: 2025-08-01
 auth_or_remarks: "Verified by unit commander"
 ---
 
-<!-- Example 5: PCS departure — no grade columns needed -->
+<!-- Example 5: PCS departure — no written/positional grade; omit grade dates (or use "") -->
 ---
 CARD: experience
 date: 2025-09-01
 action: "PCS to 726 ACS/MOC, Tinker AFB OK"
 written_grade: ""
-written_grade_date: 2025-09-01
 positional_grade: ""
-positional_grade_date: 2025-09-01
 auth_or_remarks: "Outprocessed 1 ACCS/DOT"
 ---

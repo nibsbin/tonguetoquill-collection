@@ -4,8 +4,10 @@
 #set text(font: ("NimbusRomNo9L", "Times New Roman", "serif"))
 
 // `type: date` fields arrive as Typst `datetime`; PDF overlay expects strings.
+// Missing / blank dates: helper uses `none`; empty strings may also appear from input.
 #let form-cell(v) = {
   if v == none { "" }
+  else if type(v) == str and v == "" { "" }
   else if type(v) == datetime {
     v.display("[month padding:none]/[day padding:none]/[year]")
   } else {
