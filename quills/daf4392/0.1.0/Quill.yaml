@@ -17,6 +17,7 @@ main:
       required: true
       description: "Matches the check box."
 
+
     departure_date:
       title: Departure Date
       type: date
@@ -33,6 +34,20 @@ main:
         compact: true
       description: "Final travel destination."
 
+    dept_flight_num:
+      title: Departure Flight Number
+      type: string
+      ui:
+        compact: true
+      description: "Departure flight number. (tenative or confirmed)"
+
+    arrival_flight_num:
+      title: Arrival Flight Number
+      type: string
+      ui:
+        compact: true
+      description: "Arrival flight number. (tenative or confirmed)"
+
     notes:
       title: Notes
       type: string
@@ -44,7 +59,7 @@ main:
       required: true
       ui:
         compact: true
-      description: "Unit / Organization conducting the brief."
+      description: "Unit / Organization."
 
     briefed_date:
       title: Date Briefed
@@ -52,7 +67,7 @@ main:
       required: true
       ui:
         compact: true
-      description: "Date the brief took place."
+      description: "Put in today's date."
 
     briefee_name:
       title: Individual Receiving Brief (Name)
@@ -60,31 +75,32 @@ main:
       required: true
       ui:
         compact: true
-      description: "Name (Last, First) of the individual receiving the brief."
+      description: "Put in your Name (Last, First)."
 
     briefee_grade:
       title: Individual Receiving Brief (Grade)
       type: string
       ui:
         compact: true
-      description: "Grade of the individual receiving the brief."
+      description: "Put in your Grade."
 
     emergency_contact_name:
       title: Emergency Contact Name
       type: string
-      description: "Name of the emergency contact person at the bottom of the form."
+      description: "Put in your Emergency Contact Name."
 
     emergency_contact_phone:
       title: Emergency Contact Phone
       type: string
-      description: "Phone number of the emergency contact person at the bottom of the form."
+      description: "Put in your Emergency Contact's Phone Number."
 
 cards:
   itinerary:
     title: Proposed Travel Itinerary
-    description: "Each card represents one row in the travel itinerary table. Up to 5 rows are supported."
+    description: "Each card represents one row in the travel itinerary table. Up to 10 rows are supported."
     ui:
       hide_body: true
+      default_title: Leg
     fields:
       date:
         title: Date
@@ -113,11 +129,11 @@ cards:
         ui:
           group: Itinerary Entry
           compact: true
-        description: "Duration of rest period."
+        description: "Duration of stay at arrival point"
       mileage:
         title: Approximate Mileage
         type: string
         ui:
           group: Itinerary Entry
           compact: true
-        description: "Approximate mileage for this leg."
+        description: "Approximate mileage for this leg (leave blank if not applicable, e.g., flights)."

@@ -1,6 +1,6 @@
 {
   "name": "@tonguetoquill/collection",
-  "version": "0.6.0",
+  "version": "0.16.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nibsbin/tonguetoquill-collection.git"
@@ -36,7 +36,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@quillmark/registry": "^0.10.0",
-    "@quillmark/wasm": "^0.46.0"
+    "@quillmark/registry": "^0.13.0",
+    "@quillmark/wasm": "^0.54.0"
   }
 }

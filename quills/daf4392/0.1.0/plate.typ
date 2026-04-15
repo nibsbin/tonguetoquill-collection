@@ -1,5 +1,12 @@
 #import "@local/quillmark-helper:0.1.0": data
 
+// `type: date` fields arrive as Typst `datetime`; overlay text must be plain strings.
+#let show-date(v) = {
+  if v == none { "" }
+  else if type(v) == datetime { v.display("[month padding:none]/[day padding:none]/[year]") }
+  else { str(v) }
+}
+
 #set page(width: 8.5in, height: 11in, margin: 0in)
 #set text(font: "Arimo", size: 10pt)
 
@@ -19,8 +26,8 @@
 #check(411pt, 67pt, mode == "other")
 
 // Fields
-#tf(40pt, 100pt)[#data.at("departure_date", default: "")]
-#tf(120pt, 100pt)[#data.at("final_destination", default: "")]
+#tf(40pt, 100pt)[#show-date(data.at("departure_date", default: none))]
+#tf(123pt, 100pt)[#data.at("final_destination", default: "")]
 
 // Itinerary Rows (via CARDS)
 #{
@@ -29,11 +36,11 @@
   let dy-step = 40pt
   if "CARDS" in data {
     for card in data.CARDS {
-      if card.CARD == "itinerary" and row < 5 {
+      if card.CARD == "itinerary" and row < 10 {
         let dy = dy-start + (row * dy-step)
-        tf(80pt, dy)[#card.at("date", default: "")]
+        tf(80pt, dy)[#show-date(card.at("date", default: none))]
         tf(135pt, dy)[#card.at("departure_point", default: "")]
-        tf(300pt, dy)[#card.at("arrival_point", default: "")]
+        tf(295pt, dy)[#card.at("arrival_point", default: "")]
         tf(450pt, dy)[#card.at("rest_length", default: "")]
         tf(515pt, dy)[#card.at("mileage", default: "")]
         row = row + 1
@@ -42,19 +49,38 @@
   }
 }
 
+// Flight Info
+#{
+  let d-flight = str(data.at("dept_flight_num", default: ""))
+  if d-flight != "" { tf(350pt, 545pt)[#text(weight: "bold")[Dept Flight:] #d-flight] }
+  
+  let a-flight = str(data.at("arrival_flight_num", default: ""))
+  if a-flight != "" { tf(450pt, 545pt)[#text(weight: "bold")[Arr Flight:] #a-flight] }
+}
+
 // Notes
-#tf(40pt, 360pt)[#block(width: 530pt)[#data.at("notes", default: "")]]
+#tf(40pt, 565pt)[#block(width: 530pt)[#data.at("notes", default: "")]]
 
 // Acknowledgements
-#tf(40pt, 420pt)[#data.at("organization", default: "")]
-#tf(500pt, 420pt)[#data.at("briefed_date", default: "")]
+#tf(40pt, 620pt)[#data.at("organization", default: "")]
+#tf(500pt, 620pt)[#show-date(data.at("briefed_date", default: none))]
 
-#tf(40pt, 450pt)[#data.at("briefee_name", default: "")]
-#tf(270pt, 450pt)[#data.at("briefee_grade", default: "")]
+#tf(40pt, 650pt)[#data.at("briefee_name", default: "")]
+#tf(270pt, 650pt)[#data.at("briefee_grade", default: "")]
 
-#tf(40pt, 480pt)[#data.at("briefer_name", default: "")]
-#tf(270pt, 480pt)[#data.at("briefer_grade", default: "")]
+#tf(40pt, 680pt)[#data.at("briefer_name", default: "")]
+#tf(270pt, 680pt)[#data.at("briefer_grade", default: "")]
 
 // Emergency Contact
-#tf(40pt, 500pt)[#text(size: 16pt, weight: "bold")[EMERGENCY CONTACT]]
-#tf(40pt, 520pt)[#text(size: 12pt)[#data.at("emergency_contact_name", default: ""): #data.at("emergency_contact_phone", default: "")]]
+#{
+  let emergency_name = str(data.at("emergency_contact_name", default: ""))
+  let emergency_phone = str(data.at("emergency_contact_phone", default: ""))
+  let emergency_contact = if emergency_name != "" and emergency_phone != "" {
+    emergency_name + ": " + emergency_phone
+  } else if emergency_name != "" {
+    emergency_name
+  } else {
+    emergency_phone
+  }
+  tf(40pt, 700pt)[#text(size: 10pt, weight: "bold")[EMERGENCY CONTACT:] #text(size: 10pt)[#emergency_contact]]
+}

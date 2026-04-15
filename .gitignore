@@ -22,4 +22,10 @@ release-artifacts/
 outputs/
 
 MIGRATION.md
-references/
+
+# Claude metadata
+.claude/
+
+example.pdf
+
+**/out/**

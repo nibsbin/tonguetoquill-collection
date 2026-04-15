@@ -5,8 +5,9 @@
  *
  * For each template defined in templates/templates.json:
  *   1. Parse the markdown to extract the QUILL reference
- *   2. Register the required quill with the engine
- *   3. Render the template to validate it compiles
+ *   2. Require major.minor (or finer) on that reference — not major-only
+ *   3. Register the required quill with the engine
+ *   4. Render the template to validate it compiles
  *
  * Templates marked as `production: false` are validated but do not cause
  * test failures if they fail to compile.
@@ -22,6 +23,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
 const templatesDir = path.join(repoRoot, 'templates');
 const quillsDir = path.join(repoRoot, 'quills');
+
+/**
+ * True if the quill reference pins at least major.minor (e.g. name@0.2 or name@0.2.1).
+ * Bare major-only (name@1) is rejected.
+ *
+ * @param {string} ref - Full quill reference like "usaf_memo@0.2"
+ */
+function quillRefHasAtLeastMinorVersion(ref) {
+  const at = ref.indexOf('@');
+  if (at === -1) return false;
+  const version = ref.slice(at + 1).trim();
+  if (!version) return false;
+  const core = version.split(/[-+]/)[0];
+  const segments = core.split('.').filter((s) => s.length > 0);
+  return segments.length >= 2;
+}
 
 /**
  * Normalizes a quill reference to use full semver.
@@ -87,6 +104,13 @@ try {
       }
 
       entry.quillRef = quillRef;
+
+      if (!quillRefHasAtLeastMinorVersion(quillRef)) {
+        entry.error =
+          'Quill reference must pin at least major.minor (e.g. name@0.2), not major-only or bare name';
+        results.push(entry);
+        continue;
+      }
 
       // Normalize the quill reference to full semver
       const normalizedRef = normalizeQuillRef(quillRef);

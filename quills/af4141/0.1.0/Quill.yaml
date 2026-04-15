@@ -41,7 +41,7 @@ cards:
     fields:
       date:
         title: Date
-        type: string
+        type: date
         ui:
           group: Record
         description: Date of the action (column A).
@@ -63,11 +63,12 @@ cards:
 
       written_grade_date:
         title: Written Grade Date
-        type: string
+        type: date
+        default: ""
         ui:
           group: Record
           compact: true
-        description: Date of written grade (column D).
+        description: Date of written grade (column D). Omit or leave blank when there is no written grade.
 
       positional_grade:
         title: Positional Grade
@@ -79,11 +80,12 @@ cards:
 
       positional_grade_date:
         title: Positional Grade Date
-        type: string
+        type: date
+        default: ""
         ui:
           group: Record
           compact: true
-        description: Date of positional grade (column F).
+        description: Date of positional grade (column F). Omit or leave blank when there is no positional grade.
 
       auth_or_remarks:
         title: Record of Authentication or Remarks

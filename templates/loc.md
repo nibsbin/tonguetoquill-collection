@@ -21,14 +21,12 @@ compress_indorsements: true
 # Based on LOCAR template from https://www.shaw.af.mil/Portals/98/Docs/Legal/Revamp/2022%20LOCAR%20TEMPLATE%20(Enlisted).docx
 ---
 
-**NOTE: This template is undergoing major refinement. It is included for demonstration purposes.**
-
 <!-- EDIT: Describe the incident: what the member did or failed to do, citing specific incidents and dates, and if possible, with UCMJ articles. -->
-Investigation has disclosed the {:incident_description:}.
+Investigation has disclosed that on 8 March 2026, you failed to report to 0730 formation as directed and did not notify your supervisor until 0815.
 
 <!-- EDIT: Counseling paragraph: Discuss the impact of the member's actions and what improvement is expected. -->
 You are hereby counseled.
-{:impact_and_expected_improvement:}.
+Your actions disrupted accountability procedures and delayed mission tasking for your section. You are expected to report on time for all formations and immediately notify your chain of command if an emergency prevents timely reporting.
 Your conduct is unacceptable and any future misconduct may result in more severe action.
 
 The following information required by the Privacy Act is provided for your information. **AUTHORITY**: 10 U.S.C. § 8013. **PURPOSE**: To obtain any comments or documents you desire to submit (on a voluntary basis) for consideration concerning this action. **ROUTINE USES**: Provides you an opportunity to submit comments or documents for consideration. If provided, the comments and documents you submit become a part of the action. **DISCLOSURE**: Your written acknowledgement of receipt and signature are mandatory. Any other comments or documents you provide are voluntary.
@@ -43,7 +41,7 @@ signature_block: SUBJECT FIRST M. LAST, RANK, USAF
 ---
 
 <!-- EDIT: First Indorsement: Subject acknowledges receipt of the LOC -->
-I acknowledge receipt and understanding of this letter on {:date and time:}. I understand that I have 3 duty days from the date I received this letter to provide a response and that I must include in my response any comments or documents I wish to be considered concerning this Letter of Counseling.
+I acknowledge receipt and understanding of this letter on 10 March 2026 at 1430. I understand that I have 3 duty days from the date I received this letter to provide a response and that I must include in my response any comments or documents I wish to be considered concerning this Letter of Counseling.
 
 ---
 CARD: indorsement
@@ -76,4 +74,4 @@ date: "Date: _____________"
 ---
 
 <!-- EDIT: Fourth Indorsement: Subject acknowledges final decision -->
-I acknowledge receipt of the final decision regarding disposition of this Letter of Counseling on {:date and time:}.
+I acknowledge receipt of the final decision regarding disposition of this Letter of Counseling on 14 March 2026 at 0930.
