@@ -18,7 +18,7 @@ signature_block:
 tag_line: Semper Supra
 ---
 
-Write your paragraphs here. Separate them with two new lines.
+Write your paragraphs here.
 
 - Use bullets to nest paragraphs.
   - Indent to go deeper.
