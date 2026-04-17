@@ -142,9 +142,14 @@ try {
       // Handle error objects that might be thrown from WASM
       if (err instanceof Error) {
         entry.error = err.message;
+      } else if (err instanceof Map) {
+        entry.error = err.get('message') ?? String(err);
       } else if (typeof err === 'object' && err !== null) {
         // Try to extract message from WASM error objects
-        entry.error = err.message || JSON.stringify(err, null, 2);
+        entry.error =
+          err.message ||
+          (typeof err.get === 'function' ? err.get('message') : null) ||
+          JSON.stringify(err, null, 2);
       } else {
         entry.error = String(err);
       }

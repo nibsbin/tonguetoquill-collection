@@ -70,6 +70,15 @@ main:
         group: Letterhead
       description: The full organization name of your unit.
 
+    letterhead_seal_subtitle:
+      title: Subtitle under letterhead seal
+      type: string
+      default: ""
+      ui:
+        group: Letterhead
+        compact: true
+      description: Optional line below the DoW seal (bold caps). Leave blank to omit.
+
     tag_line:
       title: Tag line at bottom of memo
       type: string
@@ -118,18 +127,19 @@ main:
       ui:
         group: Additional
       description: List attachments in the order they are mentioned in the memo. Briefly describe each; do not use 'as stated' or abbreviations.
-
-    classification:
-      title: Classification level of the memo that displays in the banner
+ 
+    memo_style:
+      title: Memorandum style
       type: string
-      default: ""
-      examples:
-        - CONFIDENTIAL
+      enum:
+        - usaf
+        - daf
+      default: usaf
       ui:
         group: Additional
         compact: true
-      description: Follow AFI 31-401 and applicable DoD guidance for classification markings. Leave blank for unclassified.
-    
+      description: "USAF memorandum (default) or DAF headquarters memorandum. DAF changes date formatting and body paragraph layout per AFH 33-337."
+
     font_size:
       title: Font size for the memo text (int pt)
       type: number
@@ -147,9 +157,19 @@ main:
       default: ""
       ui:
         group: Additional
+        compact: true
       description: YYYY-MM-DD. Leave blank to use today's date.
-
-
+    classification:
+      title: Classification level of the memo that displays in the banner
+      type: string
+      default: ""
+      examples:
+        - CONFIDENTIAL
+      ui:
+        group: Additional
+        compact: true
+      description: Follow AFI 31-401 and applicable DoD guidance for classification markings. Leave blank for unclassified.
+    
 cards:
   indorsement:
     title: Routing indorsement

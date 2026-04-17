@@ -1,5 +1,5 @@
 #import "@local/quillmark-helper:0.1.0": data
-#import "@local/tonguetoquill-usaf-memo:2.0.0": backmatter, frontmatter, indorsement, mainmatter
+#import "@local/tonguetoquill-usaf-memo:3.0.0": backmatter, frontmatter, indorsement, mainmatter
 
 // Frontmatter configuration
 #show: frontmatter.with(
@@ -7,6 +7,7 @@
   letterhead_title: data.letterhead_title,
   letterhead_caption: data.letterhead_caption,
   letterhead_seal: image("assets/dow_seal.png"),
+  letterhead_seal_subtitle: data.at("letterhead_seal_subtitle", default: none),
 
   // Date
   date: data.at("date", default: none),
@@ -28,6 +29,9 @@
 
   // Optional classification level
   ..if "classification" in data { (classification_level: data.classification) },
+
+  // USAF vs DAF memorandum style (date format, body indentation)
+  memo_style: data.at("memo_style", default: "usaf"),
 
   // Font size
   ..if "font_size" in data { (font_size: float(data.font_size) * 1pt) },
