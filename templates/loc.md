@@ -48,7 +48,6 @@ CARD: indorsement
 from: SUBJECT RANK FIRST M. LAST
 for: ISSUER ORG/SYMBOL
 signature_block: SUBJECT FIRST M. LAST, RANK, USAF
-date: "Date: _____________"
 ---
 
 <!-- EDIT: Second Indorsement: Subject's response - choose one option -->
@@ -59,7 +58,6 @@ CARD: indorsement
 from: ISSUER RANK FIRST M. LAST
 for: SUBJECT RANK FIRST M. LAST
 signature_block: ISSUER FIRST M. LAST, RANK, USAF
-date: "Date: _____________"
 ---
 
 <!-- EDIT: Third Indorsement: Issuer's final decision - choose appropriate options -->
@@ -70,7 +68,6 @@ CARD: indorsement
 from: SUBJECT RANK FIRST M. LAST
 for: ISSUER ORG/SYMBOL
 signature_block: SUBJECT FIRST M. LAST, RANK, USAF
-date: "Date: _____________"
 ---
 
 <!-- EDIT: Fourth Indorsement: Subject acknowledges final decision -->
