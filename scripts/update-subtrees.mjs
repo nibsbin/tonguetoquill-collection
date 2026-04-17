@@ -4,6 +4,9 @@
  * Updates all subtrees from upstream, targeting the latest version folder
  * for each quill.
  *
+ * Requires a clean git working tree (no unstaged/staged changes). Commit or
+ * stash before running; otherwise `git subtree` fails with "Cannot add".
+ *
  * Usage: node scripts/update-subtrees.mjs
  *        npm run update-subtrees
  */
@@ -17,16 +20,65 @@ import { FileSystemSource } from "@quillmark/registry";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..");
 
+/** Exits the process if there are any staged or unstaged changes. */
+function requireCleanWorkingTree(cwd) {
+  const porcelain = execFileSync("git", ["status", "--porcelain"], {
+    cwd,
+    encoding: "utf-8",
+  });
+  if (!porcelain.trim()) return;
+
+  console.error(
+    "Cannot update subtrees: working tree is not clean.\n" +
+      "Commit or stash your changes, then run again.\n\n" +
+      "git status --short:\n" +
+      porcelain
+  );
+  process.exit(1);
+}
+
 const subtrees = JSON.parse(
   readFileSync(join(repoRoot, "subtrees.json"), "utf-8")
 );
 
 const source = new FileSystemSource(join(repoRoot, "quills"));
 
+/** @param {string} a @param {string} b @returns {number} */
+function compareSemver(a, b) {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    const d = (pa[i] ?? 0) - (pb[i] ?? 0);
+    if (d !== 0) return d;
+  }
+  return 0;
+}
+
+/**
+ * Latest X.Y.Z folder for a quill, per FileSystemSource.getManifest().
+ * @param {import("@quillmark/registry").QuillManifest} manifest
+ * @param {string} name
+ */
+function resolveLatestVersion(manifest, name) {
+  const versions = manifest.quills
+    .filter((q) => q.name === name)
+    .map((q) => q.version);
+  if (versions.length === 0) {
+    throw new Error(
+      `No versioned quill "${name}" under quills/ (need semver dir with Quill.yaml)`
+    );
+  }
+  versions.sort(compareSemver);
+  return versions[versions.length - 1];
+}
+
+const manifest = await source.getManifest();
+requireCleanWorkingTree(repoRoot);
+
 let failed = false;
 
 for (const [name, config] of Object.entries(subtrees)) {
-  const version = await source.resolveLatestVersion(name);
+  const version = resolveLatestVersion(manifest, name);
   const prefix = `quills/${name}/${version}/packages/${config.package}`;
 
   console.log("=========================================");
@@ -37,32 +89,11 @@ for (const [name, config] of Object.entries(subtrees)) {
   console.log();
 
   try {
-    let isNew = !existsSync(resolve(repoRoot, prefix));
-    let isSubtree = false;
+    const prefixAbs = resolve(repoRoot, prefix);
+    const isNew = !existsSync(prefixAbs);
 
-    if (!isNew) {
-      try {
-        const logOutput = execFileSync(
-          "git",
-          ["log", `--grep=git-subtree-dir: ${prefix}`, "-1", "--format=%H"],
-          { cwd: repoRoot, encoding: "utf-8" }
-        );
-        isSubtree = logOutput.trim().length > 0;
-      } catch (err) {
-        // ignore
-      }
-    }
-    
-    if (isNew || !isSubtree) {
-      if (!isNew) {
-        console.log(`Directory exists but is not a subtree. Converting...`);
-        // Remove the regular directory and commit the removal so subtree add works
-        execFileSync("git", ["rm", "-rf", prefix], { cwd: repoRoot, stdio: "inherit" });
-        execFileSync("git", ["commit", "-m", `chore: remove non-subtree ${prefix} prior to subtree add`, "--allow-empty"], { cwd: repoRoot, stdio: "inherit" });
-      } else {
-        console.log(`Prefix not found, adding as new subtree...`);
-      }
-      
+    if (isNew) {
+      console.log(`Prefix not found, adding as new subtree...`);
       execFileSync(
         "git",
         [
@@ -93,10 +124,9 @@ for (const [name, config] of Object.entries(subtrees)) {
         { cwd: repoRoot, stdio: "inherit" }
       );
     }
-    
+
     console.log();
-    const action = (!isNew && isSubtree) ? 'updated' : (isNew ? 'added' : 'converted and added');
-    console.log(`✓ ${name} subtree ${action} successfully`);
+    console.log(`✓ ${name} subtree ${isNew ? "added" : "updated"} successfully`);
   } catch (err) {
     console.error();
     const action = (!existsSync(resolve(repoRoot, prefix))) ? 'add' : 'update';
