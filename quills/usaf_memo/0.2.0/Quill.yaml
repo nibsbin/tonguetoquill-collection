@@ -70,6 +70,15 @@ main:
         group: Letterhead
       description: The full organization name of your unit.
 
+    letterhead_seal_subtitle:
+      title: Subtitle under letterhead seal
+      type: string
+      default: ""
+      ui:
+        group: Letterhead
+        compact: true
+      description: Optional line below the DoW seal (bold caps). Leave blank to omit.
+
     tag_line:
       title: Tag line at bottom of memo
       type: string
