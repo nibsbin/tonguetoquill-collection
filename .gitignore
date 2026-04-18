@@ -1,31 +1,7 @@
-# Node
-node_modules/
-
-# macOS
-.DS_Store
-
-# Editor directories and files
-.vscode/
-.idea/
-*.swp
-*~
-
-# Typst / build outputs
-*.zip
-release-artifacts/
-
-# Secrets and environment
-.env
-*.pem
-*.key
-
-outputs/
-
-MIGRATION.md
-
-# Claude metadata
-.claude/
-
-example.pdf
-
-**/out/**
+*
+!*/
+!/.gitignore
+!/LICENSE
+!/typst.toml
+!/src/**
+!/fonts/**
