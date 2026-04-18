@@ -143,9 +143,9 @@ main:
     font_size:
       title: Font size for the memo text (int pt)
       type: number
-      default: 11
+      default: 12
       examples:
-        - 11
+        - 12
       ui:
         group: Additional
         compact: true
