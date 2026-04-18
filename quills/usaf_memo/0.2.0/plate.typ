@@ -34,7 +34,7 @@
   memo_style: data.at("memo_style", default: "usaf"),
 
   // Font size
-  ..if "font_size" in data { (font_size: data.font_size * 1pt) },
+  font_size: data.at("font_size", default: 12) * 1pt,
 
   // List recipients in vertical list
   memo_for_cols: 1,
