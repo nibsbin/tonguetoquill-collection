@@ -6,8 +6,14 @@
   // Letterhead configuration
   letterhead_title: data.letterhead_title,
   letterhead_caption: data.letterhead_caption,
-  letterhead_seal: image("assets/dow_seal.png"),
   letterhead_seal_subtitle: data.at("letterhead_seal_subtitle", default: none),
+  letterhead_seal: image(
+    if data.at("letterhead_seal", default: "dow") == "dod" {
+      "assets/dod_seal.png"
+    } else {
+      "assets/dow_seal.png"
+    }
+  ),
 
   // Date
   date: data.at("date", default: none),

@@ -70,6 +70,18 @@ main:
         group: Letterhead
       description: The full organization name of your unit.
 
+    letterhead_seal:
+      title: Letterhead seal
+      type: string
+      enum:
+        - dow
+        - dod
+      default: dow
+      ui:
+        group: Letterhead
+        compact: true
+      description: Department of War (DoW) or Department of Defense (DoD) seal shown in the letterhead.
+
     letterhead_seal_subtitle:
       title: Subtitle under letterhead seal
       type: string
