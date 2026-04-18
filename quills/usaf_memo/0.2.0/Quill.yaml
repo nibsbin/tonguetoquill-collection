@@ -142,7 +142,7 @@ main:
 
     font_size:
       title: Font size for the memo text (int pt)
-      type: number
+      type: integer
       default: 12
       examples:
         - 12
